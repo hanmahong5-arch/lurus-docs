@@ -1,0 +1,162 @@
+/**
+ * Lurus Docs brand theme — overrides VitePress CSS variables
+ * Brand palette sourced from lurus-www design tokens
+ */
+
+/* ─── Light mode ─────────────────────────────────────────── */
+:root {
+  /* Primary brand: ochre/copper from lurus-www product-switch */
+  --vp-c-brand-1: #C67B5C;
+  --vp-c-brand-2: #B36A4A;
+  --vp-c-brand-3: #9E5A3A;
+  --vp-c-brand-soft: rgba(198, 123, 92, 0.14);
+
+  /* Backgrounds: warm cream from lurus-www cream-50 */
+  --vp-c-bg: #F8F4F0;
+  --vp-c-bg-soft: #F0EAE4;
+  --vp-c-bg-mute: #E8E0D8;
+
+  /* Text: ink tones from lurus-www ink-900 */
+  --vp-c-text-1: #3D3530;
+  --vp-c-text-2: #6B5E57;
+  --vp-c-text-3: #9E8E85;
+
+  /* Dividers */
+  --vp-c-divider: #DDD5CC;
+  --vp-c-border: #C8BEB4;
+
+  /* Code block */
+  --vp-code-bg: #EDE7E0;
+  --vp-code-color: #3D3530;
+
+  /* Button */
+  --vp-button-brand-bg: #C67B5C;
+  --vp-button-brand-hover-bg: #B36A4A;
+  --vp-button-brand-active-bg: #9E5A3A;
+  --vp-button-brand-text: #FFFFFF;
+  --vp-button-brand-hover-text: #FFFFFF;
+  --vp-button-brand-active-text: #FFFFFF;
+
+  /* Home hero */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(135deg, #C67B5C 0%, #E8A87C 50%, #C67B5C 100%);
+  --vp-home-hero-image-background-image: radial-gradient(ellipse, rgba(198, 123, 92, 0.3) 0%, transparent 70%);
+  --vp-home-hero-image-filter: blur(44px);
+
+  /* Nav */
+  --vp-nav-bg-color: rgba(248, 244, 240, 0.92);
+
+  /* Sidebar */
+  --vp-sidebar-bg-color: #F4EFE9;
+
+  /* Custom property shorthand */
+  --lurus-brand: #C67B5C;
+  --lurus-cream: #F8F4F0;
+  --lurus-ink: #3D3530;
+}
+
+/* ─── Dark mode ──────────────────────────────────────────── */
+.dark {
+  --vp-c-brand-1: #E8A87C;
+  --vp-c-brand-2: #D49060;
+  --vp-c-brand-3: #C67B5C;
+  --vp-c-brand-soft: rgba(232, 168, 124, 0.16);
+
+  --vp-c-bg: #1C1815;
+  --vp-c-bg-soft: #252018;
+  --vp-c-bg-mute: #2E2820;
+
+  --vp-c-text-1: #F0EAE4;
+  --vp-c-text-2: #C8B8AE;
+  --vp-c-text-3: #9E8E85;
+
+  --vp-c-divider: #3D3530;
+  --vp-c-border: #4D4540;
+
+  --vp-code-bg: #2A2320;
+  --vp-code-color: #E8D8CC;
+
+  --vp-button-brand-bg: #E8A87C;
+  --vp-button-brand-hover-bg: #D49060;
+  --vp-button-brand-active-bg: #C67B5C;
+  --vp-button-brand-text: #1C1815;
+  --vp-button-brand-hover-text: #1C1815;
+  --vp-button-brand-active-text: #1C1815;
+
+  --vp-home-hero-name-background: linear-gradient(135deg, #E8A87C 0%, #F0C09A 50%, #E8A87C 100%);
+  --vp-home-hero-image-background-image: radial-gradient(ellipse, rgba(232, 168, 124, 0.25) 0%, transparent 70%);
+
+  --vp-nav-bg-color: rgba(28, 24, 21, 0.92);
+  --vp-sidebar-bg-color: #201C18;
+}
+
+/* ─── Component overrides ────────────────────────────────── */
+
+/* Navbar backdrop blur */
+.VPNav {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Home hero image sizing */
+.VPHero .image-container {
+  max-width: 320px;
+}
+
+/* Feature cards hover lift */
+.VPFeature {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 12px !important;
+}
+.VPFeature:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(198, 123, 92, 0.15);
+}
+
+/* Code block rounded corners */
+div[class*='language-'] {
+  border-radius: 10px !important;
+}
+
+/* Inline code */
+code {
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* Custom admonition (tip/warning/danger) accent */
+.custom-block.tip {
+  border-color: var(--vp-c-brand-1);
+}
+.custom-block.tip .custom-block-title {
+  color: var(--vp-c-brand-1);
+}
+
+/* Scrollbar (webkit) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--vp-c-brand-soft);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vp-c-brand-1);
+}
+
+/* Table styling */
+.vp-doc table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.vp-doc th {
+  background-color: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+.vp-doc tr:hover {
+  background-color: var(--vp-c-brand-soft);
+}

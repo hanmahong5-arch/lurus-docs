@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 380" width="480" height="380">
+  <defs>
+    <linearGradient id="centerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C67B5C;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#E8A87C;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="nodeGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.85"/>
+    </linearGradient>
+    <linearGradient id="nodeGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#0891B2;stop-opacity:0.85"/>
+    </linearGradient>
+    <linearGradient id="nodeGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16A34A;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:0.85"/>
+    </linearGradient>
+    <linearGradient id="nodeGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#EA580C;stop-opacity:0.85"/>
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.85"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="softShadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.12)"/>
+    </filter>
+  </defs>
+
+  <!-- Background circle (subtle) -->
+  <circle cx="240" cy="190" r="160" fill="rgba(198,123,92,0.04)" stroke="rgba(198,123,92,0.08)" stroke-width="1"/>
+  <circle cx="240" cy="190" r="110" fill="rgba(198,123,92,0.04)" stroke="rgba(198,123,92,0.06)" stroke-width="1"/>
+
+  <!-- Connection lines -->
+  <!-- Center to node 1 (top-left: GuShen) -->
+  <line x1="240" y1="190" x2="100" y2="88" stroke="url(#nodeGrad1)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
+  <!-- Center to node 2 (top-right: Webmail) -->
+  <line x1="240" y1="190" x2="380" y2="88" stroke="url(#nodeGrad2)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
+  <!-- Center to node 3 (bottom-right: Switch) -->
+  <line x1="240" y1="190" x2="380" y2="292" stroke="url(#nodeGrad3)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
+  <!-- Center to node 4 (bottom-left: API) -->
+  <line x1="240" y1="190" x2="100" y2="292" stroke="url(#nodeGrad4)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
+
+  <!-- Animated pulse dots along lines -->
+  <circle r="4" fill="#C67B5C" opacity="0.7">
+    <animateMotion dur="2.4s" repeatCount="indefinite" path="M240,190 L100,88"/>
+  </circle>
+  <circle r="4" fill="#C67B5C" opacity="0.7">
+    <animateMotion dur="2.8s" repeatCount="indefinite" path="M240,190 L380,88"/>
+  </circle>
+  <circle r="4" fill="#C67B5C" opacity="0.7">
+    <animateMotion dur="2.2s" repeatCount="indefinite" path="M240,190 L380,292"/>
+  </circle>
+  <circle r="4" fill="#C67B5C" opacity="0.7">
+    <animateMotion dur="3s" repeatCount="indefinite" path="M240,190 L100,292"/>
+  </circle>
+
+  <!-- Center node: Lurus -->
+  <circle cx="240" cy="190" r="46" fill="url(#centerGrad)" filter="url(#softShadow)"/>
+  <circle cx="240" cy="190" r="46" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+  <text x="240" y="185" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="700" fill="white" letter-spacing="0.5">Lurus</text>
+  <text x="240" y="202" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9.5" font-weight="400" fill="rgba(255,255,255,0.85)" letter-spacing="0.3">API Gateway</text>
+
+  <!-- Node 1: GuShen (top-left) -->
+  <circle cx="100" cy="88" r="34" fill="url(#nodeGrad1)" filter="url(#softShadow)"/>
+  <circle cx="100" cy="88" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="100" y="84" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">GuShen</text>
+  <text x="100" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">量化交易</text>
+
+  <!-- Node 2: Webmail (top-right) -->
+  <circle cx="380" cy="88" r="34" fill="url(#nodeGrad2)" filter="url(#softShadow)"/>
+  <circle cx="380" cy="88" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="380" y="84" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Webmail</text>
+  <text x="380" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">企业邮件</text>
+
+  <!-- Node 3: Switch (bottom-right) -->
+  <circle cx="380" cy="292" r="34" fill="url(#nodeGrad3)" filter="url(#softShadow)"/>
+  <circle cx="380" cy="292" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="380" y="288" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Switch</text>
+  <text x="380" y="303" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">智能客户端</text>
+
+  <!-- Node 4: API (bottom-left) -->
+  <circle cx="100" cy="292" r="34" fill="url(#nodeGrad4)" filter="url(#softShadow)"/>
+  <circle cx="100" cy="292" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="100" y="288" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Lurus API</text>
+  <text x="100" y="303" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">LLM 网关</text>
+
+  <!-- Decorative small dots -->
+  <circle cx="170" cy="138" r="3" fill="#C67B5C" opacity="0.35"/>
+  <circle cx="310" cy="138" r="3" fill="#C67B5C" opacity="0.35"/>
+  <circle cx="170" cy="242" r="3" fill="#C67B5C" opacity="0.35"/>
+  <circle cx="310" cy="242" r="3" fill="#C67B5C" opacity="0.35"/>
+</svg>

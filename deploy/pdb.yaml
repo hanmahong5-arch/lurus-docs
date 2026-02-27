@@ -1,0 +1,14 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: lurus-docs-pdb
+  namespace: lurus-system
+  labels:
+    app: lurus-docs
+    app.kubernetes.io/name: lurus-docs
+    app.kubernetes.io/part-of: lurus
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: lurus-docs

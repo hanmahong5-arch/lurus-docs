@@ -1,0 +1,55 @@
+# Lurus Docs
+
+> 一站式产品文档
+
+Lurus API · GuShen · Webmail · Switch — 所有产品的完整文档
+
+## Table of Contents
+
+### 入门指南
+
+- [Lurus API 简介](/guide/introduction.md)
+- [快速开始](/guide/quickstart.md)
+- [获取 API Key](/guide/get-api-key.md)
+- [支持的模型](/guide/models.md)
+- [常见问题](/guide/faq.md)
+
+### 客户端集成
+
+- [Cherry Studio 配置](/guide/clients/cherry-studio.md)
+- [Lobe Chat 配置](/guide/clients/lobe-chat.md)
+- [OpenCat 配置](/guide/clients/opencat.md)
+- [其他客户端](/guide/clients/others.md)
+
+### API 参考
+
+- [API 概述](/api/overview.md)
+- [认证](/api/authentication.md)
+- [Chat Completions API](/api/chat-completions.md)
+- [错误处理](/api/errors.md)
+
+### 开发者指南
+
+- [系统架构](/developer/architecture.md)
+
+### GuShen 文档
+
+- [GuShen — AI 量化交易平台](/gushen.md)
+- [GuShen 快速开始](/gushen/quickstart.md)
+- [策略编写指南](/gushen/strategy.md)
+- [GuShen API 参考](/gushen/api.md)
+
+### Webmail 文档
+
+- [Webmail — 企业邮件平台](/webmail.md)
+- [Webmail 快速开始](/webmail/quickstart.md)
+- [邮件客户端配置](/webmail/client-setup.md)
+- [Webmail 常见问题](/webmail/faq.md)
+
+### Switch 文档
+
+- [Lurus Switch — 智能桌面客户端](/switch.md)
+- [Switch 安装指南](/switch/install.md)
+- [Switch 配置说明](/switch/configuration.md)
+- [Switch 使用手册](/switch/usage.md)
+

@@ -1,0 +1,25 @@
+{
+  "name": "lurus-docs",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lurus API Documentation",
+  "scripts": {
+    "sync": "bun scripts/sync.ts",
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs",
+    "deploy": "bun run sync && bun run build"
+  },
+  "keywords": [
+    "lurus",
+    "api",
+    "documentation"
+  ],
+  "author": "Lurus Technologies",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-llms": "^1.3.4",
+    "vitepress-plugin-tabs": "^0.5.0"
+  }
+}

@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lurus-docs
+  namespace: lurus-system
+  labels:
+    app: lurus-docs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lurus-docs
+  template:
+    metadata:
+      labels:
+        app: lurus-docs
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 65534
+      containers:
+        - name: lurus-docs
+          image: ghcr.io/hanmahong5-arch/lurus-docs:main
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lurus-docs
+  namespace: lurus-system
+  labels:
+    app: lurus-docs
+spec:
+  selector:
+    app: lurus-docs
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lurus-docs-route
+  namespace: lurus-system
+  labels:
+    app: lurus-docs
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`docs.lurus.cn`)
+      kind: Rule
+      services:
+        - name: lurus-docs
+          port: 80
+  tls:
+    secretName: lurus-cn-wildcard-tls

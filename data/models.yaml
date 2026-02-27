@@ -1,0 +1,104 @@
+# Source of truth for model documentation.
+# Edit this file when adding or removing model support.
+# Run `bun run sync` or push to trigger CI rebuild.
+
+vendors:
+  - name: DeepSeek
+    tagline: 日常对话、代码生成、中文写作、数学推理
+    models:
+      - id: deepseek-chat
+        context: 64K
+        price: "¥1/M tokens"
+        status: available
+        tags: [对话, 中文]
+      - id: deepseek-reasoner
+        context: 64K
+        price: "¥2/M tokens"
+        status: available
+        tags: [推理, 数学, 代码]
+      - id: deepseek-v3-2-251201
+        context: 64K
+        price: "¥2/M tokens"
+        status: available
+        tags: [最新]
+
+  - name: Google Gemini
+    tagline: 长文档分析、图文理解、多轮对话
+    models:
+      - id: gemini-3-pro-preview
+        context: 1M
+        price: "¥5/M tokens"
+        status: beta
+        tags: [多模态, 长上下文]
+      - id: gemini-3-flash-preview
+        context: 1M
+        price: "¥2/M tokens"
+        status: beta
+        tags: [快速, 长上下文]
+      - id: gemini-3-pro-image-preview
+        context: 1M
+        price: "¥5/M tokens"
+        status: beta
+        tags: [图像]
+
+  - name: OpenAI
+    tagline: 复杂任务、专业领域、英文优先
+    models:
+      - id: gpt-4o
+        context: 128K
+        price: "¥30/M tokens"
+        status: available
+        tags: [多模态, 强推理]
+      - id: gpt-4o-mini
+        context: 128K
+        price: "¥3/M tokens"
+        status: available
+        tags: [高性价比]
+      - id: gpt-4-turbo
+        context: 128K
+        price: "¥25/M tokens"
+        status: available
+        tags: [稳定]
+      - id: gpt-3.5-turbo
+        context: 16K
+        price: "¥1/M tokens"
+        status: available
+        tags: [经典]
+
+  - name: Anthropic Claude
+    tagline: 长文本处理、创意写作、安全敏感场景
+    models:
+      - id: claude-3-5-sonnet
+        context: 200K
+        price: "¥15/M tokens"
+        status: available
+        tags: [均衡, 最新]
+      - id: claude-3-opus
+        context: 200K
+        price: "¥50/M tokens"
+        status: available
+        tags: [最强推理]
+      - id: claude-3-sonnet
+        context: 200K
+        price: "¥15/M tokens"
+        status: available
+        tags: [均衡]
+      - id: claude-3-haiku
+        context: 200K
+        price: "¥3/M tokens"
+        status: available
+        tags: [快速]
+
+  - name: 图像生成
+    tagline: 艺术风格创作、精准指令遵循
+    models:
+      - id: midjourney
+        context: "—"
+        price: "¥0.5/张"
+        status: available
+        tags: [图像, 艺术]
+      - id: dall-e-3
+        context: "—"
+        price: "¥0.3/张"
+        status: available
+        tags: [图像]
