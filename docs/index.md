@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Lurus Docs"
   text: "一站式产品文档"
-  tagline: Lurus API · GuShen · Webmail · Switch — 所有产品的完整文档
+  tagline: Lurus API · GuShen · Webmail · Switch · MemX — 所有产品的完整文档
   image:
     src: /hero-image.svg
     alt: Lurus Platform
@@ -40,6 +40,11 @@ features:
     details: 桌面端 AI 模型网关，Windows/macOS/Linux 全平台，本地代理路由，一键切换模型服务，离线可用。
     link: /switch/
     linkText: 查看 Switch 文档
+  - icon: 🧠
+    title: MemX — AI 智能记忆
+    details: 基于 ACE 引擎的 AI 记忆管理，零 LLM 成本知识提取，仿生遗忘曲线，四层混合检索，全链路隐私保护。
+    link: /memx/
+    linkText: 查看 MemX 文档
 
 ---
 
@@ -91,6 +96,18 @@ features:
       { label: '安装指南', href: '/switch/install', primary: true },
       { label: '配置说明', href: '/switch/configuration' },
       { label: '使用手册', href: '/switch/usage' },
+    ]"
+  />
+  <ActionCard
+    name="MemX"
+    tagline="AI 智能记忆，零 LLM 成本，仿生遗忘曲线"
+    icon="🧠"
+    color="#9333EA"
+    :actions="[
+      { label: '快速开始', href: '/memx/quickstart', primary: true },
+      { label: '核心概念', href: '/memx/concepts' },
+      { label: '架构设计', href: '/memx/architecture' },
+      { label: '常见问题', href: '/memx/faq' },
     ]"
   />
 </div>
@@ -162,6 +179,27 @@ def strategy(context):
 | Linux | Ubuntu 20.04+ | [安装指南](/switch/install#linux) |
 
 → [安装指南](/switch/install) · [配置说明](/switch/configuration)
+
+---
+
+### MemX — 让 AI 拥有记忆
+
+```python
+from memx import Memory
+
+m = Memory(config={"ace_enabled": True})
+
+# 从对话中自动学习知识（零 LLM 成本）
+m.add([
+    {"role": "user", "content": "pytest 超时怎么办？"},
+    {"role": "assistant", "content": "用 pytest -x --timeout=30 逐个排查"}
+], user_id="dev1", scope="project:backend")
+
+# 四层混合检索，结合时间衰减和作用域
+results = m.search("pytest 调试", user_id="dev1")
+```
+
+→ [快速开始](/memx/quickstart) · [核心概念](/memx/concepts) · [架构设计](/memx/architecture)
 
 ---
 

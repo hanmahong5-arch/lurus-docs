@@ -4,7 +4,7 @@ import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 
 export default defineConfig({
   title: 'Lurus Docs',
-  description: 'Lurus Platform Documentation — API Gateway, GuShen, Webmail, Switch',
+  description: 'Lurus Platform Documentation — API Gateway, GuShen, Webmail, Switch, MemX',
   lang: 'zh-CN',
 
   cleanUrls: true,
@@ -17,7 +17,7 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Lurus Docs — 一站式产品文档' }],
-    ['meta', { property: 'og:description', content: 'Lurus API · GuShen · Webmail · Switch — 所有产品的完整文档' }],
+    ['meta', { property: 'og:description', content: 'Lurus API · GuShen · Webmail · Switch · MemX — 所有产品的完整文档' }],
     ['meta', { property: 'og:image', content: 'https://docs.lurus.cn/hero-image.svg' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Lurus Docs' }],
@@ -79,6 +79,16 @@ export default defineConfig({
           { text: '安装指南', link: '/switch/install' },
           { text: '配置说明', link: '/switch/configuration' },
           { text: '使用手册', link: '/switch/usage' },
+        ]
+      },
+      {
+        text: 'MemX',
+        items: [
+          { text: '简介', link: '/memx/' },
+          { text: '快速开始', link: '/memx/quickstart' },
+          { text: '核心概念', link: '/memx/concepts' },
+          { text: '架构设计', link: '/memx/architecture' },
+          { text: '常见问题', link: '/memx/faq' },
         ]
       },
     ],
@@ -154,6 +164,18 @@ export default defineConfig({
             { text: '安装指南', link: '/switch/install' },
             { text: '配置说明', link: '/switch/configuration' },
             { text: '使用手册', link: '/switch/usage' },
+          ]
+        }
+      ],
+      '/memx/': [
+        {
+          text: 'MemX 文档',
+          items: [
+            { text: '简介', link: '/memx/' },
+            { text: '快速开始', link: '/memx/quickstart' },
+            { text: '核心概念', link: '/memx/concepts' },
+            { text: '架构设计', link: '/memx/architecture' },
+            { text: '常见问题', link: '/memx/faq' },
           ]
         }
       ],
