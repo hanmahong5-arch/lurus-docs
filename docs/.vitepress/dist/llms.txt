@@ -2,7 +2,7 @@
 
 > 一站式产品文档
 
-Lurus API · GuShen · Webmail · Switch — 所有产品的完整文档
+Lurus API · Webmail · Switch · MemX — 所有产品的完整文档
 
 ## Table of Contents
 
@@ -32,13 +32,6 @@ Lurus API · GuShen · Webmail · Switch — 所有产品的完整文档
 
 - [系统架构](/developer/architecture.md)
 
-### GuShen 文档
-
-- [GuShen — AI 量化交易平台](/gushen.md)
-- [GuShen 快速开始](/gushen/quickstart.md)
-- [策略编写指南](/gushen/strategy.md)
-- [GuShen API 参考](/gushen/api.md)
-
 ### Webmail 文档
 
 - [Webmail — 企业邮件平台](/webmail.md)
@@ -52,4 +45,12 @@ Lurus API · GuShen · Webmail · Switch — 所有产品的完整文档
 - [Switch 安装指南](/switch/install.md)
 - [Switch 配置说明](/switch/configuration.md)
 - [Switch 使用手册](/switch/usage.md)
+
+### MemX 文档
+
+- [MemX — AI 智能记忆管理](/memx.md)
+- [快速开始](/memx/quickstart.md)
+- [核心概念](/memx/concepts.md)
+- [架构设计](/memx/architecture.md)
+- [常见问题](/memx/faq.md)
 

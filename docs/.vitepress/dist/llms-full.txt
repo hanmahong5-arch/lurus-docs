@@ -1,248 +1,4 @@
 ---
-url: /gushen/strategy.md
----
-# 策略编写指南
-
-## 策略结构
-
-一个完整的 GuShen 策略由以下函数组成：
-
-```python
-def initialize(context):
-    """初始化函数，策略启动时执行一次"""
-    context.symbol = "000001.SZ"   # 标的代码
-    context.max_position = 0.8     # 最大仓位
-
-def before_market_open(context):
-    """每日开盘前执行（可选）"""
-    pass
-
-def strategy(context):
-    """策略主函数，每个 bar（K 线周期）执行一次"""
-    # 在此编写买卖逻辑
-    pass
-
-def after_market_close(context):
-    """每日收盘后执行（可选）"""
-    pass
-```
-
-## context 对象
-
-`context` 是贯穿整个策略的核心对象，包含行情、账户、技术指标等所有数据。
-
-### 账户信息
-
-```python
-# 总资产（现金 + 持仓市值）
-total = context.portfolio.total_value
-
-# 可用现金
-cash = context.portfolio.cash
-
-# 当前持仓
-positions = context.portfolio.positions
-# positions 是一个字典：{symbol: Position}
-
-# 查询单个标的持仓
-pos = context.portfolio.positions.get("000001.SZ")
-if pos:
-    print(pos.amount)       # 持仓数量（股）
-    print(pos.cost_basis)   # 持仓成本价
-    print(pos.last_price)   # 最新价格
-    print(pos.pnl)          # 浮动盈亏（元）
-    print(pos.pnl_pct)      # 浮动盈亏（%）
-```
-
-### 行情数据
-
-```python
-# 当前 bar 的 OHLCV 数据
-bar = context.bar("000001.SZ")
-bar.open   # 开盘价
-bar.high   # 最高价
-bar.low    # 最低价
-bar.close  # 收盘价
-bar.volume # 成交量
-
-# 获取历史 K 线（返回 pandas DataFrame）
-history = context.history("000001.SZ", periods=60, frequency="1d")
-# columns: open, high, low, close, volume
-# index: DatetimeIndex
-
-# 简写：最近 N 根收盘价（返回 numpy array）
-closes = context.close("000001.SZ", periods=30)
-```
-
-### 技术指标
-
-所有指标返回 `numpy.ndarray`，最后一个元素（`[-1]`）为当前值，`[-2]` 为上一个 bar 值。
-
-```python
-ta = context.ta
-
-# 移动平均线
-ma5  = ta.sma("000001.SZ", period=5)   # 简单移动平均
-ema20 = ta.ema("000001.SZ", period=20)  # 指数移动平均
-
-# RSI 相对强弱指数
-rsi = ta.rsi("000001.SZ", period=14)
-
-# MACD
-macd, signal, hist = ta.macd("000001.SZ", fast=12, slow=26, signal=9)
-
-# 布林带
-upper, middle, lower = ta.bbands("000001.SZ", period=20, std=2)
-
-# ATR 真实波动幅度
-atr = ta.atr("000001.SZ", period=14)
-
-# 成交量移动平均
-vol_ma = ta.volume_ma("000001.SZ", period=20)
-
-# 使用示例：金叉信号
-if ma5[-1] > ema20[-1] and ma5[-2] <= ema20[-2]:
-    print("金叉，考虑买入")
-```
-
-### 下单函数
-
-```python
-# 按目标仓位比例下单（推荐）
-# ratio: 0.0 = 清仓，1.0 = 满仓
-context.order_percent("000001.SZ", 0.5)   # 买入到 50% 仓位
-context.order_percent("000001.SZ", 0)      # 清仓
-
-# 按金额下单
-context.order_value("000001.SZ", 100000)   # 买入 10 万元
-context.order_value("000001.SZ", -100000)  # 卖出 10 万元（负数）
-
-# 按股数下单
-context.order("000001.SZ", 1000)    # 买入 1000 股
-context.order("000001.SZ", -1000)   # 卖出 1000 股
-
-# 限价单
-context.order_limit("000001.SZ", 1000, price=15.50)
-```
-
-### 日志输出
-
-```python
-context.log.info("策略日志：当前收盘价 {}".format(bar.close))
-context.log.warn("仓位过高，触发风控")
-context.log.error("数据异常")
-```
-
-## 完整策略示例
-
-### 示例 1：双均线策略
-
-```python
-def initialize(context):
-    context.symbol = "000001.SZ"
-
-def strategy(context):
-    ma5  = context.ta.sma(context.symbol, period=5)
-    ma20 = context.ta.sma(context.symbol, period=20)
-
-    pos = context.portfolio.positions.get(context.symbol)
-
-    # 金叉买入
-    if ma5[-1] > ma20[-1] and ma5[-2] <= ma20[-2]:
-        if not pos:
-            context.order_percent(context.symbol, 0.5)
-            context.log.info("金叉买入，MA5={:.2f}, MA20={:.2f}".format(
-                ma5[-1], ma20[-1]
-            ))
-
-    # 死叉卖出
-    elif ma5[-1] < ma20[-1] and ma5[-2] >= ma20[-2]:
-        if pos:
-            context.order_percent(context.symbol, 0)
-            context.log.info("死叉卖出")
-```
-
-### 示例 2：RSI 超买超卖策略
-
-```python
-def initialize(context):
-    context.symbol = "600036.SH"  # 招商银行
-    context.rsi_low  = 30         # 超卖阈值
-    context.rsi_high = 70         # 超买阈值
-
-def strategy(context):
-    rsi = context.ta.rsi(context.symbol, period=14)
-    pos = context.portfolio.positions.get(context.symbol)
-
-    # 超卖买入
-    if rsi[-1] < context.rsi_low and not pos:
-        context.order_percent(context.symbol, 0.6)
-        context.log.info("RSI 超卖({:.1f})，买入".format(rsi[-1]))
-
-    # 超买卖出
-    elif rsi[-1] > context.rsi_high and pos:
-        context.order_percent(context.symbol, 0)
-        context.log.info("RSI 超买({:.1f})，卖出".format(rsi[-1]))
-```
-
-### 示例 3：布林带 + 止损策略
-
-```python
-def initialize(context):
-    context.symbol     = "510300.SH"   # 沪深300 ETF
-    context.stop_loss  = 0.05           # 5% 止损
-
-def strategy(context):
-    upper, middle, lower = context.ta.bbands(context.symbol, period=20, std=2)
-    bar = context.bar(context.symbol)
-    pos = context.portfolio.positions.get(context.symbol)
-
-    # 价格触及下轨买入
-    if bar.close <= lower[-1] and not pos:
-        context.order_percent(context.symbol, 0.8)
-
-    elif pos:
-        # 价格触及上轨获利了结
-        if bar.close >= upper[-1]:
-            context.order_percent(context.symbol, 0)
-
-        # 止损：跌破成本 5% 离场
-        elif bar.close < pos.cost_basis * (1 - context.stop_loss):
-            context.order_percent(context.symbol, 0)
-            context.log.warn("触发止损，成本={:.2f}，现价={:.2f}".format(
-                pos.cost_basis, bar.close
-            ))
-```
-
-## 多标的策略
-
-```python
-def initialize(context):
-    context.symbols = ["000001.SZ", "600036.SH", "601318.SH"]
-
-def strategy(context):
-    for symbol in context.symbols:
-        rsi = context.ta.rsi(symbol, period=14)
-        pos = context.portfolio.positions.get(symbol)
-
-        if rsi[-1] < 30 and not pos:
-            # 均等仓位分配
-            context.order_percent(symbol, 1.0 / len(context.symbols))
-
-        elif rsi[-1] > 70 and pos:
-            context.order_percent(symbol, 0)
-```
-
-## 注意事项
-
-1. **未来函数（Look-ahead bias）**: 禁止使用当日收盘价决策后再以当日价格成交。默认以**下一个 bar 开盘价**成交。
-2. **A 股最小交易单位**: 买入最小 100 股，系统自动向下取整。
-3. **涨跌停**: 涨停不能买入，跌停不能卖出，框架自动处理。
-4. **复权**: 行情数据默认使用**前复权**价格，避免除权日信号失真。
-
----
-
----
 url: /guide/faq.md
 ---
 # 常见问题
@@ -335,6 +91,117 @@ API Key 无法找回，请登录控制台创建新的 Key。
 ***
 
 没有找到答案？请 [联系我们](mailto:support@lurus.cn)。
+
+---
+
+---
+url: /memx/faq.md
+---
+# 常见问题
+
+## 基础问题
+
+### MemX 和 mem0 是什么关系？
+
+MemX 是在 [mem0](https://github.com/mem0ai/mem0) 基础上构建的增强版本，新增了 ACE（Adaptive Context Engine）智能记忆管理层。当 `ace_enabled=False` 时，MemX 与 mem0 的行为完全一致，零额外开销。你可以将 MemX 视为 mem0 的"超集"。
+
+### 需要 GPU 吗？
+
+不需要。MemX 的本地嵌入模型（all-MiniLM-L6-v2）通过 ONNX Runtime 在 CPU 上运行，推理速度 < 5ms/条。知识提取（Reflector）的规则预筛选阶段不依赖 GPU，hybrid 模式下的 LLM 精炼通过远程 API 完成。
+
+### 会消耗额外的 LLM Token 吗？
+
+默认的 `hybrid` 模式会对有价值的候选项调用 LLM 精炼，但由于规则预筛选过滤了大量低价值内容，实际 LLM 开销远低于 mem0 等全量调用方案（减少 90%+ 的调用）。如需完全零 LLM 调用，可将 `reflector.mode` 切换为 `"rules"` 模式。
+
+### 支持哪些向量数据库？
+
+MemX 继承 mem0 的全部向量数据库支持，包括：Qdrant、Chroma、Pinecone、Weaviate、Milvus 等。默认使用内存向量存储，适合开发和测试。
+
+## 使用问题
+
+### 如何从 mem0 迁移到 MemX？
+
+1. 安装 MemX：`pip install git+https://github.com/UU114/memx.git`
+2. 将 `from mem0 import Memory` 改为 `from memx import Memory`
+3. 现有代码无需任何改动（ACE 默认关闭）
+4. 准备好后，添加 `config={"ace_enabled": True}` 开启智能功能
+
+### 知识库数据存在哪里？
+
+取决于你配置的向量数据库后端。默认使用内存存储（重启后丢失）。生产环境建议使用 Qdrant 或 Chroma 等持久化后端。本地嵌入模型缓存在 `~/.memx/models/`。
+
+### 如何控制知识的衰减速度？
+
+调整以下参数：
+
+| 参数 | 效果 |
+|------|------|
+| `decay.half_life_days` | 增大 → 衰减更慢（默认 30 天） |
+| `decay.boost_factor` | 增大 → 召回增强更明显（默认 0.1） |
+| `decay.permanent_threshold` | 减小 → 更容易成为永久记忆（默认 15 次） |
+
+### 如何处理误判的知识？
+
+```bash
+# 查看所有知识
+memx list --scope project:my-app
+
+# 删除错误的知识
+memx forget <memory-id>
+
+# 手动添加正确的知识
+memx learn "correct knowledge here"
+```
+
+### 多人/多 Agent 如何共享知识？
+
+启用守护进程模式，多个 Agent 通过 IPC Socket 共享同一个知识库。适用于 IDE 插件、团队协作等场景。注意使用 `scope` 区分不同项目或工作区的知识。
+
+## 隐私问题
+
+### 隐私过滤可以关闭吗？
+
+**不可以**。12 种内置的 PII 过滤规则是不可禁用的安全底线。你只能通过 `privacy_custom_patterns` 添加额外的过滤规则。
+
+### 支持哪些 PII 类型的过滤？
+
+| PII 类型 | 示例 |
+|---------|------|
+| PEM 私钥 | `-----BEGIN RSA PRIVATE KEY-----` |
+| Bearer / JWT Token | `Bearer eyJhbG...` |
+| Anthropic API Key | `sk-ant-api03-*` |
+| OpenAI API Key | `sk-proj-*` |
+| GitHub Token | `ghp_*`, `github_pat_*` |
+| AWS Access Key | `AKIA*` |
+| AWS Secret Key | 40 字符 base64 |
+| 数据库连接串 | `postgres://user:pass@host/db` |
+| 操作系统路径 | `/home/user/.ssh/id_rsa` |
+| 自定义规则 | 通过 `privacy_custom_patterns` 添加 |
+
+### 过滤后的敏感信息去哪了？
+
+敏感信息被替换为占位符（如 `[REDACTED:api_key]`），原始值不会被存储到任何地方。过滤在写入管道的最前端执行，确保敏感信息不会进入后续处理流程。
+
+## 性能问题
+
+### 知识库能存多少条记忆？
+
+取决于向量数据库后端的容量。MemX 本身没有硬性限制。配合衰减引擎的自动归档机制，知识库会保持在合理的活跃规模。
+
+### 检索延迟是多少？
+
+典型场景（< 10,000 条记忆）：
+
+| 操作 | 延迟 |
+|------|------|
+| 四层混合搜索 | 10-50ms |
+| 纯关键词搜索（L4 降级） | 5-20ms |
+| 本地嵌入计算 | < 5ms |
+| 写入（含 Reflector + Curator） | 20-100ms |
+
+### RecallReinforcer 会影响搜索性能吗？
+
+不会。RecallReinforcer 在异步后台线程中运行，在返回搜索结果后才更新 `recall_count`，不阻塞搜索响应。
 
 ---
 
@@ -565,6 +432,223 @@ async function chatWithRetry(messages, maxRetries = 3) {
 ---
 
 ---
+url: /memx/concepts.md
+---
+# 核心概念
+
+MemX 的 ACE（Adaptive Context Engine）引擎由四大核心模块组成，每个模块独立运作、协同配合，实现知识的完整生命周期管理。
+
+## Reflector — 知识蒸馏引擎
+
+Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
+
+传统 AI 记忆系统依赖 LLM 调用来从对话中提取知识点，每次消耗 2-5K tokens。Reflector 支持三种运行模式，默认使用 **hybrid** 混合模式，通过规则预筛选大幅减少 LLM 调用，仅对有价值的候选项调用 LLM 精炼，相比全量 LLM 方案减少 90%+ 的调用开销。
+
+### 三种运行模式
+
+| 模式 | 说明 | LLM 开销 |
+|------|------|---------|
+| `rules` | 纯规则引擎，完全基于模式匹配 | 零 LLM 调用 |
+| `hybrid`（默认） | 规则预筛选 + LLM 精炼，取平均分数 | 仅对候选项调用，减少 90%+ |
+| `llm` | 完全依赖 LLM 提取知识 | 每次 2-5K tokens |
+
+**hybrid 工作流程**：
+
+```
+原始对话 → PatternDetector (规则检测) → 候选知识项
+                                           ↓
+                              LLM 评估 + 蒸馏 (仅对候选项)
+                                           ↓
+                              取规则分数与 LLM 分数的平均值
+                                           ↓
+                        KnowledgeScorer → PrivacySanitizer → BulletDistiller
+                            评分分类          隐私脱敏           压缩精炼
+```
+
+::: tip
+当 LLM 不可用时（API 故障、网络问题），hybrid 模式自动降级到 rules 模式，确保服务不中断。
+:::
+
+### 五种检测规则
+
+| 规则 | 检测逻辑 | 置信度 | 典型场景 |
+|------|---------|--------|---------|
+| ErrorFixRule | 识别「报错 → 解决方案」结构 | 0.8 | "TypeError: ... → 原来要加类型断言" |
+| RetrySuccessRule | 检测多次尝试后的成功路径 | 0.7 | "试了 A、B 都不行，最后 C 方案解决" |
+| ConfigChangeRule | 匹配配置/环境变量修改 | 0.6 | "把 MAX\_POOL\_SIZE 从 10 改到 50" |
+| NewToolRule | 识别首次使用的工具/库 | 0.65 | "第一次用 pnpm，比 npm 快多了" |
+| RepetitiveOpRule | 统计重复操作（≥3 次触发） | 0.5+ | "每次部署都要手动清理缓存" |
+
+### 知识分类体系
+
+每条被提取的知识自动归入 **Section**（主题）和 **KnowledgeType**（类型）两个维度：
+
+**8 种 Section**:
+`COMMANDS` · `DEBUGGING` · `ARCHITECTURE` · `WORKFLOW` · `TOOLS` · `PATTERNS` · `PREFERENCES` · `GENERAL`
+
+**5 种 KnowledgeType**:
+`METHOD`（方法论） · `TRICK`（技巧） · `PITFALL`（踩坑） · `PREFERENCE`（偏好） · `KNOWLEDGE`（事实）
+
+### Instructivity Score
+
+每条知识获得 0-100 的**教学价值评分**。分数由以下因素综合计算：
+
+* 模式匹配的置信度
+* 知识的具体性和可操作性
+* 是否包含明确的因果关系
+
+低于 `min_score`（默认 30）的候选项被丢弃，避免噪音污染知识库。
+
+## Curator — 语义去重引擎
+
+随着知识积累，不可避免会出现重复和矛盾。Curator 在每次写入时自动处理：
+
+### 三级去重策略
+
+```
+新知识写入
+    │
+    ▼
+计算与现有知识的余弦相似度
+    │
+    ├── ≥ 0.8  → 自动合并（keep_best 或 merge_content）
+    │
+    ├── 0.5~0.8 → 标记潜在冲突，等待确认
+    │
+    └── < 0.5  → 视为独立知识，正常写入
+```
+
+**合并策略**:
+
+* `keep_best`（默认）: 保留 instructivity\_score 更高的版本
+* `merge_content`: 合并两条知识的内容，生成更完整的版本
+
+### 冲突检测
+
+主动扫描知识库中的矛盾记忆，例如：
+
+```
+冲突: "Redis 连接池设置 10 即可" vs "Redis 连接池至少 50 才稳定"
+原因: 相似度 0.72，但结论相反
+建议: 确认当前最佳实践，删除过时版本
+```
+
+通过 CLI 可以随时检测：`memx conflicts`
+
+## Decay — 时间衰减引擎
+
+模拟人类记忆的自然遗忘曲线，确保知识库始终保持"新鲜"。
+
+### 衰减公式
+
+```
+base_weight = 2^(-age_days / half_life)
+boosted     = base_weight × (1 + boost_factor × recall_count)
+final       = clamp(boosted, 0.0, 1.0)
+```
+
+**核心参数**:
+
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `half_life` | 30 天 | 权重衰减到 50% 所需的天数 |
+| `boost_factor` | 0.1 | 每次召回的权重加成系数 |
+
+### 三层保护机制
+
+```
+recall_count ≥ 15  →  永久记忆（weight 固定为 1.0）
+age ≤ 7 天          →  保护期（weight 固定为 1.0）
+weight < 0.02       →  归档候选（可清理）
+```
+
+**直觉理解**: 就像人的记忆一样——
+
+* 刚学到的东西（7 天内）记得很清楚
+* 经常回忆的知识越来越牢固
+* 被反复使用 15 次以上的知识成为"肌肉记忆"
+* 长时间不用的知识逐渐模糊，最终遗忘
+
+### 检索时的衰减影响
+
+衰减权重直接参与检索排序的最终评分：
+
+```
+Final Score = Blended Search Score × DecayWeight × RecencyBoost × ScopeBoost
+```
+
+* `RecencyBoost`: 7 天内创建的知识获得 1.2x 加成
+* `ScopeBoost`: 匹配当前作用域的知识获得 1.3x 加成
+
+## Generator — 混合检索引擎
+
+突破纯向量搜索的局限，四层搜索覆盖从精确匹配到语义理解的完整频谱。
+
+### 四层搜索架构
+
+| 层级 | 引擎 | 匹配方式 | 优势场景 |
+|------|------|---------|---------|
+| L1 | ExactMatcher | 精确词匹配 | "pytest -v"、API 名称 |
+| L2 | FuzzyMatcher | 模糊 Token 匹配 | 拼写变体、形态变化 |
+| L3 | MetadataMatcher | tools / entities / tags 的 Jaccard 相似度 | "关于 Redis 的知识" |
+| L4 | VectorSearcher | 向量嵌入语义搜索 | "如何提升测试性能" |
+
+### 分数融合公式
+
+```
+NormKeyword = (L1 + L2 + L3) / 35.0        # 归一化到 [0, 1]
+Blended     = NormKeyword × 0.6 + Semantic × 0.4
+Final       = Blended × DecayWeight × RecencyBoost × ScopeBoost
+```
+
+关键词搜索权重（0.6）高于语义搜索（0.4），确保精确匹配的结果优先展示。
+
+### 优雅降级
+
+当 L4 向量搜索不可用时（如嵌入模型加载失败），自动降级为纯关键词模式：
+
+```
+keyword_weight = 1.0, semantic_weight = 0.0
+```
+
+系统在任何单一搜索层故障时都不会中断服务。
+
+## Token 预算管理
+
+检索结果受双重约束：
+
+* `max_results`: 最大返回条数（默认 5）
+* `token_budget`: 最大 Token 预算（默认 2000）
+
+### CJK 感知
+
+MemX 对中日韩文字使用更精确的 Token 估算：
+
+| 字符类型 | 估算比例 |
+|---------|---------|
+| CJK 字符 | 1.5 字符 / token |
+| 拉丁字符 | 4.0 字符 / token |
+
+这确保中文内容不会因为错误的 Token 估算而被过度裁剪。
+
+## 层级作用域
+
+知识按层级组织，实现精准的访问控制：
+
+```
+global                    ← 所有项目可见
+├── project:my-backend    ← 仅该项目可见
+│   └── workspace:feat-auth  ← 仅该工作区可见
+└── project:my-frontend
+```
+
+* 检索时，匹配当前 scope 的知识获得 1.3x 评分加成
+* 上层 scope 的知识对下层可见（global 对所有项目可见）
+* 下层 scope 的知识对上层不可见
+
+---
+
+---
 url: /guide/get-api-key.md
 ---
 # 获取 API Key
@@ -641,6 +725,233 @@ API Key 无法找回，请创建一个新的 Key。
 ### Q: 额度用完了怎么办？
 
 联系管理员充值或升级套餐。
+
+---
+
+---
+url: /memx/architecture.md
+---
+# 架构设计
+
+MemX 采用管道（Pipeline）架构，写入和检索分别由独立管道编排，所有组件支持独立失败和优雅降级。
+
+## 系统总览
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                       MemX Memory API                          │
+│  add() / search() / status() / detect_conflicts() / export()  │
+└────────────┬──────────────────────────────┬────────────────────┘
+             │                              │
+    ┌────────▼─────────┐          ┌────────▼──────────┐
+    │  IngestPipeline  │          │ RetrievalPipeline  │
+    │  (写入管道)       │          │  (检索管道)        │
+    └────────┬─────────┘          └────────┬──────────┘
+             │                              │
+    ┌────────▼─────────┐          ┌────────▼──────────┐
+    │ Privacy Sanitizer │          │ Generator (L1-L4) │
+    │ Reflector         │          │ ScoreMerger       │
+    │ Curator           │          │ TokenBudgetTrimmer│
+    │ mem0.add()        │          │ RecallReinforcer  │
+    └──────────────────┘          └───────────────────┘
+             │                              │
+             └──────────┬───────────────────┘
+                        │
+              ┌─────────▼────────┐
+              │  Decay Engine    │
+              │  (异步衰减计算)   │
+              └─────────┬────────┘
+                        │
+              ┌─────────▼────────┐
+              │  Vector Store    │
+              │  (mem0 Backend)  │
+              └──────────────────┘
+```
+
+## 写入管道 — IngestPipeline
+
+```
+Raw Input
+    │
+    ▼
+┌─────────────────────┐
+│  Privacy Sanitizer   │  ← 12 种内置 PII 规则 + 自定义正则
+│  (不可绕过)           │     净化器永不抛异常
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│  Reflector           │  ← hybrid 模式：规则预筛 + LLM 精炼
+│  ├─ PatternDetector  │     5 种模式检测
+│  ├─ KnowledgeScorer  │     评分 + 分类
+│  ├─ PrivacySanitizer │     候选知识脱敏
+│  └─ BulletDistiller  │     压缩为精炼知识条目
+│                      │     失败时 → 回退到原始 add
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│  Curator             │  ← 余弦相似度去重
+│  ├─ ≥ 0.8: 合并     │     merge_content / keep_best
+│  ├─ 0.5-0.8: 标记   │     潜在冲突
+│  └─ < 0.5: 通过     │     独立知识
+│                      │     失败时 → 跳过去重，直接写入
+└─────────┬───────────┘
+          ▼
+┌─────────────────────┐
+│  BulletFactory       │  ← 元数据格式转换
+│  mem0.add()          │     持久化到向量数据库
+└─────────────────────┘
+```
+
+### 写入管道的降级路径
+
+每个阶段都有独立的错误处理：
+
+| 阶段 | 失败行为 | 数据影响 |
+|------|---------|---------|
+| Privacy Sanitizer | 永不失败（内部 try-catch） | 原始数据通过 |
+| Reflector | 回退到原始 `mem0.add()` | 知识不经提炼直接存储 |
+| Curator | 跳过去重 | 可能产生重复条目 |
+| mem0.add | 抛出异常 | 写入失败 |
+
+## 检索管道 — RetrievalPipeline
+
+```
+Query
+    │
+    ▼
+┌─────────────────────────┐
+│  Generator Engine        │
+│  ├─ L1: ExactMatcher     │  精确词匹配
+│  ├─ L2: FuzzyMatcher     │  模糊 Token 匹配
+│  ├─ L3: MetadataMatcher  │  元数据 Jaccard 相似度
+│  └─ L4: VectorSearcher   │  向量语义搜索
+│                          │  L4 失败 → 纯关键词模式
+└─────────┬───────────────┘
+          ▼
+┌─────────────────────────┐
+│  ScoreMerger             │  ← 加权融合
+│  NormKW = (L1+L2+L3)/35 │
+│  Blended = KW×0.6+S×0.4 │
+│  Final = B×Decay×Recent  │
+│          ×Scope          │
+└─────────┬───────────────┘
+          ▼
+┌─────────────────────────┐
+│  TokenBudgetTrimmer      │  ← 双重约束
+│  max_results: 5          │     CJK 感知 Token 估算
+│  token_budget: 2000      │
+└─────────┬───────────────┘
+          │
+          ├──→ 返回结果给调用方
+          │
+          └──→ RecallReinforcer（异步）
+               递增被命中记忆的 recall_count
+               不阻塞搜索响应
+```
+
+## 数据模型
+
+每条记忆（Bullet）携带的完整元数据：
+
+```python
+{
+    "id": "mem_a1b2c3d4",
+    "content": "pytest 超时问题：使用 -x --timeout=30 逐个运行",
+    "section": "DEBUGGING",
+    "knowledge_type": "TRICK",
+    "instructivity_score": 78,
+    "source_type": "INTERACTION",
+
+    # Decay tracking
+    "recall_count": 3,
+    "decay_weight": 0.89,
+    "created_at": "2026-02-20T10:30:00Z",
+    "last_recalled_at": "2026-02-27T15:00:00Z",
+
+    # Taxonomy
+    "related_tools": ["pytest"],
+    "key_entities": ["timeout", "test-isolation"],
+    "tags": ["python", "testing"],
+    "scope": "project:my-backend"
+}
+```
+
+## 本地嵌入
+
+MemX 使用 ONNX Runtime 在本地运行嵌入模型，无需外部 API：
+
+| 属性 | 值 |
+|------|-----|
+| 模型 | all-MiniLM-L6-v2 |
+| 维度 | 384 |
+| 运行时 | ONNX Runtime |
+| 存储位置 | `~/.memx/models/` |
+| 首次下载 | 约 90MB |
+| 推理速度 | < 5ms / 条 |
+
+完全离线运行，无隐私泄露风险。
+
+## 守护进程模式
+
+可选的后台守护进程，支持多 Agent / 多进程共享同一个知识库：
+
+```
+Agent A ──→ ┐
+             │
+Agent B ──→ ├──→ MemX Daemon (IPC Socket) ──→ Vector Store
+             │
+Agent C ──→ ┘
+```
+
+* 通过 IPC Socket 通信，避免数据库连接竞争
+* 空闲超时自动退出（默认 300 秒）
+* 适用于 IDE 插件、多窗口等场景
+
+## 配置参考
+
+```python
+from memx import Memory
+
+m = Memory(config={
+    # ACE Engine
+    "ace_enabled": True,
+
+    # Reflector — hybrid mode: rule pre-filter + LLM refinement
+    "reflector": {
+        "mode": "hybrid",       # "rules" | "hybrid"(default) | "llm"
+        "min_score": 30.0,      # minimum knowledge score threshold
+        "llm_model": "openai/gpt-4o-mini",
+    },
+
+    # Curator — semantic deduplication
+    "curator": {
+        "similarity_threshold": 0.8,    # auto-merge threshold
+        "merge_strategy": "keep_best",  # "keep_best" or "merge_content"
+    },
+
+    # Decay — bionic forgetting curve
+    "decay": {
+        "half_life_days": 30.0,         # days to decay to 50%
+        "boost_factor": 0.1,            # recall reinforcement coefficient
+        "permanent_threshold": 15,      # min recalls for permanent memory
+    },
+
+    # Retrieval — hybrid 4-layer search
+    "retrieval": {
+        "keyword_weight": 0.6,
+        "semantic_weight": 0.4,
+        "max_results": 5,
+        "token_budget": 2000,
+    },
+
+    # Privacy — PII filtering
+    "privacy": {
+        "custom_patterns": [
+            r"INTERNAL_KEY_\w+"
+        ],
+    },
+})
+```
 
 ---
 
@@ -866,6 +1177,168 @@ func main() {
 * [Chat Completions 完整文档](/api/chat-completions) — 参数详解、Function Calling、多模态
 * [支持的模型](/guide/models) — 完整模型列表与选型建议
 * [配置 AI 客户端](/guide/clients/cherry-studio) — 在 Cherry Studio、Lobe Chat 等工具中使用
+
+---
+
+---
+url: /memx/quickstart.md
+---
+# 快速开始
+
+本指南带你在 5 分钟内体验 MemX 的核心功能。
+
+## 安装
+
+:::tabs
+\== GitHub
+
+```bash
+pip install git+https://github.com/UU114/memx.git
+```
+
+\== GitHub (完整安装)
+
+```bash
+pip install "git+https://github.com/UU114/memx.git#egg=memx[all]"
+```
+
+:::
+
+::: tip
+MemX 需要 Python 3.9+。首次运行时会自动下载本地嵌入模型（约 90MB），存放在 `~/.memx/models/`。
+:::
+
+## 第一步：初始化
+
+```python
+from memx import Memory
+
+# 开启 ACE 引擎（核心功能）
+m = Memory(config={"ace_enabled": True})
+```
+
+默认配置即可满足大多数场景。ACE 开启后，所有写入和检索都经过智能管道处理。
+
+## 第二步：写入知识
+
+从对话中自动提取和学习知识：
+
+```python
+# 从一段对话中学习
+result = m.add(
+    [
+        {"role": "user", "content": "pytest 总是超时怎么办？"},
+        {"role": "assistant", "content": "试试 pytest -x --timeout=30，逐个测试跑可以定位慢的用例"}
+    ],
+    user_id="developer_1",
+    scope="project:my-backend"
+)
+
+print(result)
+# {
+#   "ace_ingest": {
+#     "bullets_added": 1,
+#     "bullets_merged": 0,
+#     "bullets_skipped": 0,
+#     "privacy_filtered": 0
+#   }
+# }
+```
+
+也可以手动注入知识：
+
+```python
+# 手动添加一条经验
+m.add(
+    "部署前必须运行 go test -race ./... 检查竞态条件",
+    user_id="developer_1",
+    scope="project:my-backend",
+    metadata={"knowledge_type": "method", "section": "workflow"}
+)
+```
+
+## 第三步：检索知识
+
+```python
+results = m.search(
+    "pytest 调试技巧",
+    user_id="developer_1",
+    scope="project:my-backend"
+)
+
+for item in results["results"]:
+    print(f"[{item['score']:.2f}] {item['memory']}")
+# [0.87] pytest 超时问题：使用 -x --timeout=30 逐个运行定位慢用例
+```
+
+检索自动融合四层搜索结果（精确 + 模糊 + 元数据 + 语义），并考虑时间衰减和作用域匹配。
+
+## 第四步：查看知识库状态
+
+```python
+status = m.status(user_id="developer_1")
+print(status)
+# {
+#   "total_memories": 42,
+#   "by_section": {"debugging": 12, "workflow": 8, "tools": 6, ...},
+#   "avg_decay_weight": 0.73,
+#   "permanent_count": 5,
+#   "archive_candidates": 2
+# }
+```
+
+## CLI 快速体验
+
+MemX 提供完整的命令行工具：
+
+```bash
+# 查看知识库统计
+memx status
+
+# 搜索知识
+memx search "pytest 调试"
+
+# 手动添加知识
+memx learn "always use -v flag for verbose output"
+
+# 列出指定作用域的知识
+memx list --scope project:my-backend
+
+# 删除指定知识
+memx forget <memory-id>
+
+# 手动触发衰减计算
+memx sweep
+
+# 检测矛盾知识
+memx conflicts
+
+# 导出/导入知识库
+memx export --format json > knowledge.json
+memx import knowledge.json
+```
+
+## 纯 mem0 兼容模式
+
+如果只需要基础记忆功能，可以关闭 ACE 引擎，此时行为与 mem0 完全一致：
+
+```python
+m = Memory()  # ace_enabled 默认为 False
+
+# 与 mem0 API 100% 兼容
+m.add("some knowledge", user_id="user1")
+results = m.search("query", user_id="user1")
+```
+
+::: info
+ACE 关闭时零开销透传，可以从 mem0 无缝迁移，逐步开启 ACE 功能。
+:::
+
+## 下一步
+
+* [核心概念](/memx/concepts) — 深入了解 ACE 引擎的四大核心模块
+* [架构设计](/memx/architecture) — 完整的管道架构和数据流
+* [常见问题](/memx/faq) — 使用中遇到问题？
 
 ---
 
@@ -2342,430 +2815,6 @@ cherrystudio://providers/api-keys?v=1&data={cherryConfig}
 ---
 
 ---
-url: /gushen.md
----
-# GuShen — AI 量化交易平台
-
-## 什么是 GuShen？
-
-**GuShen（股神）** 是 Lurus 旗下的 AI 驱动量化交易平台。你用自然语言描述策略逻辑，平台 AI 自动生成可执行的 Python 策略代码，并支持历史回测、实时行情接入与风险控制。
-
-* 平台地址：[gushen.lurus.cn](https://gushen.lurus.cn)
-* 支持市场：A 股（沪深）、期货、加密货币
-
-## 核心功能
-
-### 🤖 AI 策略生成
-
-用中文描述你的交易思路，AI 自动生成可执行的量化策略代码：
-
-```
-输入："当 RSI 低于 30 时买入，高于 70 时卖出，仓位 50%"
-
-↓ AI 生成 ↓
-
-def strategy(context):
-    rsi = context.ta.rsi(period=14)
-    pos = context.portfolio.positions.get("000001.SZ")
-    if rsi[-1] < 30 and not pos:
-        context.order_percent("000001.SZ", 0.5)
-    elif rsi[-1] > 70 and pos:
-        context.order_percent("000001.SZ", 0)
-```
-
-### 📊 历史回测
-
-* 支持任意时间段回测（最早 2010 年）
-* 输出收益曲线、最大回撤、夏普比率、胜率等核心指标
-* 与沪深 300、中证 500 等基准对比
-
-### 📡 实时行情
-
-* 接入 Level-1 行情数据（1 分钟最小粒度）
-* 支持分钟线、日线、周线等多周期数据
-* 实时推送到策略 `context` 对象
-
-### 🛡️ 风险控制
-
-* 单笔最大仓位限制
-* 单日最大亏损止损
-* 持仓集中度告警
-
-## 工作流程
-
-```
-1. 注册/登录 → gushen.lurus.cn
-2. 创建策略 → 自然语言输入 → AI 生成代码
-3. 调整参数 → 历史回测验证
-4. 满意后 → 开启模拟盘 / 实盘跟踪
-```
-
-## 下一步
-
-* [快速开始](/gushen/quickstart) — 5 分钟创建你的第一个策略
-* [策略编写指南](/gushen/strategy) — 深入了解策略 API
-* [API 参考](/gushen/api) — 完整的 context 对象文档
-
----
-
----
-url: /gushen/quickstart.md
----
-# GuShen 快速开始
-
-10 分钟内完成第一个量化策略的创建和回测。
-
-## 第一步：注册并登录
-
-访问 [gushen.lurus.cn](https://gushen.lurus.cn)，使用邮箱或手机号注册。
-
-::: tip 已有 Lurus 账号
-GuShen 与 Lurus API 共享账号体系，直接登录即可，无需重新注册。
-:::
-
-***
-
-## 第二步：创建策略
-
-登录后点击「**策略管理**」→「**新建策略**」，选择创建方式：
-
-### 方式 A — AI 生成（推荐新手）
-
-在「策略描述」框中用自然语言描述你的逻辑：
-
-```
-当股价的 5 日均线上穿 20 日均线时，买入平安银行（000001.SZ）50% 仓位；
-当 5 日均线下穿 20 日均线时，全部卖出。
-```
-
-点击「**AI 生成代码**」，几秒后自动生成可执行策略：
-
-```python
-def initialize(context):
-    context.symbol = "000001.SZ"
-
-def strategy(context):
-    ma5  = context.ta.sma(symbol=context.symbol, period=5)
-    ma20 = context.ta.sma(symbol=context.symbol, period=20)
-
-    # Golden cross — buy signal
-    if ma5[-1] > ma20[-1] and ma5[-2] <= ma20[-2]:
-        context.order_percent(context.symbol, 0.5)
-
-    # Death cross — sell signal
-    elif ma5[-1] < ma20[-1] and ma5[-2] >= ma20[-2]:
-        context.order_percent(context.symbol, 0)
-```
-
-### 方式 B — 手动编写
-
-直接在代码编辑器中输入 Python 策略，参考 [策略编写指南](/gushen/strategy) 了解完整 API。
-
-***
-
-## 第三步：配置回测参数
-
-| 参数 | 说明 | 建议值 |
-|------|------|--------|
-| 开始日期 | 回测起始时间 | 至少 3 年前（如 2020-01-01） |
-| 结束日期 | 回测结束时间 | 近期日期，留 6 个月验证集 |
-| 初始资金 | 模拟本金（元） | 1,000,000（便于计算收益率） |
-| 手续费率 | 买卖费率 | 0.03%（A 股常见费率） |
-| 滑点 | 成交偏差 | 0.1%（保守估计） |
-
-::: tip 为什么要留验证集？
-用 2020–2023 年数据优化参数，再用 2024 年数据验证，可以避免「在未来数据上表现好但实盘差」的过拟合。
-:::
-
-***
-
-## 第四步：运行回测并解读结果
-
-点击「**开始回测**」，等待约 5–15 秒后查看报告：
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  GuShen 回测报告 · 双均线策略 · 000001.SZ
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  时间区间    2020-01-01 → 2024-12-31
-  初始资金    ¥1,000,000
-  最终资产    ¥1,382,450   (+38.2%)
-  年化收益    +6.8%
-  最大回撤    -18.3%
-  夏普比率    0.87
-  胜率        54.2%（127 次交易）
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  基准（沪深300）  +12.4%
-```
-
-### 如何判断结果好坏？
-
-| 指标 | 基准线 | 解读 |
-|------|--------|------|
-| **年化收益** | > 基准指数 | 高于沪深 300 说明策略有 alpha |
-| **最大回撤** | < 20% | 超过 30% 则风险偏高，实盘心理压力大 |
-| **夏普比率** | > 1.0 | 越高说明每单位风险获得的收益越高 |
-| **胜率** | > 50% | 高频策略更依赖胜率；低频趋势策略胜率低无妨 |
-
-***
-
-## ⚠️ 回测陷阱：这些坑让新手亏损
-
-::: danger 过拟合（最常见）
-在历史数据上反复调整参数直到「看起来很好」，实盘却亏损。
-
-**识别方法**：用你从未触碰的验证集测试——如果训练期年化 40%、验证期却只有 5%，说明过拟合严重。
-
-**正确做法**：先定义策略逻辑，再选定固定参数，一次性回测，不要反复调参优化。
-:::
-
-::: warning 前向偏差（Look-ahead Bias）
-策略代码中无意间使用了「当时还不知道的未来数据」。
-
-**常见例子**：
-
-```python
-# ❌ 错误：用当天收盘价判断，但收盘才知道
-if context.close[-1] > yesterday_close:
-    context.order(...)   # 实际上下单时还没收盘
-
-# ✅ 正确：用前一天数据判断
-if context.close[-2] > context.close[-3]:
-    context.order(...)
-```
-
-:::
-
-::: warning 生存者偏差
-只用「现在还存在的股票」做回测，会高估历史表现——已退市的烂股不在你的样本里。
-
-GuShen 的 A 股数据集已包含退市标的，但使用第三方数据时请注意核实。
-:::
-
-***
-
-## 第五步：查看图表分析
-
-回测报告包含以下图表：
-
-* **净值曲线** — 策略净值 vs 基准指数，直观看超额收益
-* **回撤曲线** — 历史最大回撤区间标记，评估风险
-* **持仓记录** — 每笔买卖的时间、价格、数量、盈亏
-* **月度热力图** — 12 × N 年的盈亏分布，找出季节性规律
-
-***
-
-## 下一步
-
-* [策略编写指南](/gushen/strategy) — 完整 API 参考，编写均值回归、事件驱动等复杂策略
-* [API 参考](/gushen/api) — `context` 对象所有方法与属性
-* [进入平台](https://gushen.lurus.cn) — 动手创建你的第一个策略
-
-***
-
-## 常见问题
-
-### 支持哪些市场？
-
-| 市场 | 数据来源 | 最小频率 |
-|------|---------|---------|
-| A 股（沪深两市） | 同花顺 Level-1，前复权 | 分钟线 |
-| 期货 | 交易所官方主力合约数据 | 分钟线 |
-| 加密货币 | Binance 历史 K 线 | 分钟线 |
-
-### 回测、模拟盘、实盘有什么区别？
-
-| 模式 | 说明 | 资金 |
-|------|------|------|
-| **回测** | 历史数据验证，毫秒级完成 | 不涉及真实资金 |
-| **模拟盘** | 实时行情模拟交易，验证策略延迟和滑点 | 不涉及真实资金 |
-| **实盘跟踪** | 绑定券商账户自动下单 | 真实资金，开发中 |
-
-::: warning
-即使回测表现极好，也请先运行至少 1 个月模拟盘，再考虑实盘操作。历史不代表未来。
-:::
-
----
-
----
-url: /gushen/api.md
----
-# GuShen API 参考
-
-## context 对象完整 API
-
-### context.portfolio
-
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| `total_value` | float | 总资产（现金 + 持仓市值） |
-| `cash` | float | 可用现金 |
-| `positions` | dict | 持仓字典 `{symbol: Position}` |
-| `returns` | float | 今日浮动盈亏率 |
-
-### Position 对象
-
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| `symbol` | str | 标的代码 |
-| `amount` | int | 持仓数量（股） |
-| `cost_basis` | float | 持仓均价 |
-| `last_price` | float | 最新价格 |
-| `market_value` | float | 持仓市值 |
-| `pnl` | float | 浮动盈亏（元） |
-| `pnl_pct` | float | 浮动盈亏（%） |
-
-### context.bar(symbol)
-
-返回当前 bar 数据：
-
-| 属性 | 类型 | 描述 |
-|------|------|------|
-| `open` | float | 开盘价 |
-| `high` | float | 最高价 |
-| `low` | float | 最低价 |
-| `close` | float | 收盘价 |
-| `volume` | int | 成交量（股） |
-| `amount` | float | 成交金额（元） |
-| `datetime` | datetime | 当前 bar 时间 |
-
-### context.history(symbol, periods, frequency)
-
-返回历史 K 线 DataFrame：
-
-```python
-df = context.history("000001.SZ", periods=60, frequency="1d")
-# df.columns: ['open', 'high', 'low', 'close', 'volume', 'amount']
-# df.index: DatetimeIndex (由近到远倒序)
-
-# 示例
-close_yesterday = df['close'].iloc[0]  # 昨收
-close_5days_ago = df['close'].iloc[4]  # 5 日前收盘
-```
-
-**frequency 可选值**:
-
-| 值 | 说明 |
-|----|------|
-| `"1m"` | 1 分钟线 |
-| `"5m"` | 5 分钟线 |
-| `"15m"` | 15 分钟线 |
-| `"30m"` | 30 分钟线 |
-| `"60m"` | 60 分钟线 |
-| `"1d"` | 日线（默认） |
-| `"1w"` | 周线 |
-
-### context.ta — 技术指标
-
-所有指标返回 `numpy.ndarray`，最新值为 `arr[-1]`：
-
-#### 趋势类
-
-| 方法 | 参数 | 描述 |
-|------|------|------|
-| `ta.sma(symbol, period)` | period: int | 简单移动平均 |
-| `ta.ema(symbol, period)` | period: int | 指数移动平均 |
-| `ta.wma(symbol, period)` | period: int | 加权移动平均 |
-| `ta.macd(symbol, fast, slow, signal)` | 默认 12/26/9 | 返回 (macd, signal, hist) |
-
-#### 震荡类
-
-| 方法 | 参数 | 描述 |
-|------|------|------|
-| `ta.rsi(symbol, period)` | period: int（默认 14）| 相对强弱指数 0-100 |
-| `ta.stoch(symbol, k, d, smooth)` | 默认 14/3/3 | 返回 (K, D) |
-| `ta.cci(symbol, period)` | period: int（默认 14）| 顺势指标 |
-
-#### 波动类
-
-| 方法 | 参数 | 描述 |
-|------|------|------|
-| `ta.bbands(symbol, period, std)` | 默认 20/2.0 | 返回 (upper, middle, lower) |
-| `ta.atr(symbol, period)` | period: int（默认 14）| 真实波动幅度 |
-| `ta.keltner(symbol, period, atr_mult)` | 默认 20/2.0 | 返回 (upper, middle, lower) |
-
-#### 成交量类
-
-| 方法 | 参数 | 描述 |
-|------|------|------|
-| `ta.volume_ma(symbol, period)` | period: int | 成交量移动平均 |
-| `ta.obv(symbol)` | — | 能量潮 |
-| `ta.vwap(symbol)` | — | 成交量加权均价 |
-
-### 下单函数
-
-#### order\_percent(symbol, ratio)
-
-按目标仓位比例调仓（最常用）：
-
-```python
-context.order_percent("000001.SZ", 0.5)  # 调到 50%
-context.order_percent("000001.SZ", 0)    # 清仓
-context.order_percent("000001.SZ", 1.0)  # 满仓
-```
-
-| 参数 | 类型 | 描述 |
-|------|------|------|
-| `symbol` | str | 标的代码 |
-| `ratio` | float | 目标仓位比例 0.0~1.0 |
-
-#### order\_value(symbol, value)
-
-按金额下单：
-
-```python
-context.order_value("000001.SZ", 50000)   # 买入 5 万
-context.order_value("000001.SZ", -50000)  # 卖出 5 万（负数）
-```
-
-#### order(symbol, amount)
-
-按股数下单（A 股须为 100 的整数倍）：
-
-```python
-context.order("000001.SZ", 1000)   # 买入 1000 股
-context.order("000001.SZ", -500)   # 卖出 500 股
-```
-
-#### order\_limit(symbol, amount, price)
-
-限价单：
-
-```python
-context.order_limit("000001.SZ", 1000, price=14.80)
-```
-
-### context.log
-
-| 方法 | 描述 |
-|------|------|
-| `context.log.info(msg)` | 信息日志 |
-| `context.log.warn(msg)` | 警告日志 |
-| `context.log.error(msg)` | 错误日志 |
-
-## 标的代码格式
-
-| 市场 | 格式 | 示例 |
-|------|------|------|
-| 上交所 A 股 | `{6位代码}.SH` | `600036.SH`（招商银行） |
-| 深交所 A 股 | `{6位代码}.SZ` | `000001.SZ`（平安银行） |
-| 上交所 ETF | `{6位代码}.SH` | `510300.SH`（沪深300 ETF）|
-| 期货主力 | `{品种}0.CF` | `IF0.CF`（沪深300期货）|
-| 加密货币 | `{BASE}/{QUOTE}` | `BTC/USDT` |
-
-## 错误码
-
-| 错误 | 原因 | 处理 |
-|------|------|------|
-| `InsufficientCash` | 可用资金不足 | 检查 `context.portfolio.cash` |
-| `InvalidSymbol` | 标的代码不存在 | 确认代码格式是否正确 |
-| `MarketClosed` | 非交易时段 | 仅在交易时间内下单 |
-| `PositionNotFound` | 卖出时无持仓 | 先检查 `positions.get()` 是否为 None |
-| `AmountTooSmall` | 买入金额不足最小单位 | A 股买入至少 100 股（约 ≥ 500 元）|
-
----
-
----
 url: /guide/clients/lobe-chat.md
 ---
 # Lobe Chat 配置
@@ -2974,6 +3023,108 @@ Switch 在本地暴露一个兼容 OpenAI API 的端点（默认 `http://localho
 * [安装指南](/switch/install) — 下载并完成首次安装
 * [配置说明](/switch/configuration) — 添加模型、设置路由规则
 * [使用手册](/switch/usage) — 日常使用和高级功能
+
+---
+
+---
+url: /memx.md
+---
+# MemX — AI 智能记忆管理
+
+## 什么是 MemX？
+
+**MemX** 是 Lurus 推出的 GUI 化 AI 记忆管理产品，基于 [ACE（Adaptive Context Engine）](https://github.com/UU114/memx) 核心引擎构建。它为 AI Agent 提供完整的知识生命周期管理：**智能提取 → 自动去重 → 时间衰减 → 混合召回**，让 AI 拥有真正像人类一样的"记忆力"。
+
+与传统的 AI 记忆系统相比，MemX 的核心优势在于：
+
+* **极低 LLM 成本**的知识提取 — 规则预筛减少 90%+ 的 LLM 调用
+* **仿生遗忘曲线** — 重要知识越用越牢，过时知识自然淡出
+* **全链路隐私保护** — 敏感信息永远不会进入向量数据库
+
+## 核心特性
+
+### 智能知识蒸馏
+
+MemX 的 Reflector 引擎采用 hybrid 混合模式（规则预筛选 + LLM 精炼），从对话中自动识别 5 种知识模式：
+
+| 模式 | 说明 | 示例 |
+|------|------|------|
+| 错误修复 | 识别「报错 → 解决」模式 | "pytest 超时问题，改用 `-x` 参数解决" |
+| 重试成功 | 检测反复尝试后的正确方案 | "第三次换用 `asyncio.gather` 终于跑通" |
+| 配置变更 | 记录环境/配置修改 | "Redis 连接池从 10 调到 50" |
+| 新工具使用 | 识别首次使用的工具或库 | "引入 `pydantic-settings` 管理配置" |
+| 重复操作 | 检测高频重复的操作模式 | "每次部署都要手动清理缓存" |
+
+每条知识自动评分（0-100），低于阈值的噪音数据被过滤，只保留高价值知识。
+
+### 语义去重与冲突检测
+
+Curator 引擎通过余弦相似度自动处理重复知识：
+
+* **相似度 ≥ 0.8** → 自动合并，保留最优版本
+* **相似度 0.5-0.8** → 标记为潜在冲突，等待用户确认
+* **相似度 < 0.5** → 视为独立知识
+
+### 仿生记忆衰减
+
+模拟人类记忆的自然遗忘曲线：
+
+* **7 天保护期** — 新知识不会被衰减
+* **指数衰减** — 不被检索的知识逐步降低权重
+* **召回增强** — 每次被检索到的知识获得权重加成
+* **永久记忆** — 被检索 15 次以上的知识自动晋升，不再衰减
+
+### 四层混合检索
+
+超越纯向量搜索的多层检索架构：
+
+```
+L1 精确匹配 → L2 模糊匹配 → L3 元数据匹配 → L4 向量语义搜索
+        ↓           ↓            ↓              ↓
+                ScoreMerger 加权融合
+                        ↓
+              DecayWeight × RecencyBoost × ScopeBoost
+                        ↓
+                    最终排序结果
+```
+
+### 隐私优先设计
+
+12 种内置的不可绕过的隐私过滤规则，在任何知识写入前自动拦截：
+
+* API Key（OpenAI / Anthropic / AWS / GitHub）
+* 数据库连接串
+* PEM 私钥 / JWT Token
+* 自定义正则规则（可扩展）
+
+## 适用场景
+
+| 场景 | 说明 |
+|------|------|
+| **编程助手** | 记住你的代码习惯、踩过的坑、项目约定 |
+| **客服系统** | 积累客户历史交互知识，提供个性化服务 |
+| **个人知识库** | 从日常对话中自动提炼和组织知识 |
+| **团队协作** | 共享团队级记忆，新成员快速获取上下文 |
+
+## 与传统记忆系统的对比
+
+| 能力 | 传统方案 (mem0) | MemX (ACE) |
+|------|----------------|------------|
+| 知识提取 | LLM（每次 2-5K tokens） | hybrid 混合引擎（规则预筛 + LLM 精炼，减少 90%+ 调用） |
+| 去重 | LLM 逐条判断 | 余弦相似度自动合并 |
+| 遗忘 | 永久存储，无法淘汰 | 指数衰减 + 召回增强 |
+| 搜索 | 仅向量搜索 | 四层混合搜索 |
+| 隐私 | 无内置保护 | 12 种内置 PII 过滤 |
+| 作用域 | 扁平（user / agent） | 层级化（global / project / workspace） |
+| Token 管理 | 调用方自行管理 | 内置预算裁剪（CJK 感知） |
+| 本地嵌入 | 需要 API | ONNX 本地推理，完全离线 |
+
+## 下一步
+
+* [快速开始](/memx/quickstart) — 5 分钟体验 MemX 的核心功能
+* [核心概念](/memx/concepts) — 深入理解 ACE 引擎的设计原理
+* [架构设计](/memx/architecture) — 了解完整的系统架构
+* [常见问题](/memx/faq) — 使用中的常见问题解答
 
 ---
 

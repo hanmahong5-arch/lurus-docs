@@ -4,7 +4,7 @@ import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 
 export default defineConfig({
   title: 'Lurus Docs',
-  description: 'Lurus Platform Documentation — API Gateway, GuShen, Webmail, Switch, MemX',
+  description: 'Lurus Platform Documentation — API Gateway, Webmail, Switch, MemX',
   lang: 'zh-CN',
 
   cleanUrls: true,
@@ -17,7 +17,7 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Lurus Docs — 一站式产品文档' }],
-    ['meta', { property: 'og:description', content: 'Lurus API · GuShen · Webmail · Switch · MemX — 所有产品的完整文档' }],
+    ['meta', { property: 'og:description', content: 'Lurus API · Webmail · Switch · MemX — 所有产品的完整文档' }],
     ['meta', { property: 'og:image', content: 'https://docs.lurus.cn/hero-image.svg' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Lurus Docs' }],
@@ -50,16 +50,6 @@ export default defineConfig({
           { text: '支持的模型', link: '/guide/models' },
           { text: 'API 参考', link: '/api/overview' },
           { text: '控制台', link: 'https://api.lurus.cn' },
-        ]
-      },
-      {
-        text: 'GuShen',
-        items: [
-          { text: '简介', link: '/gushen/' },
-          { text: '快速开始', link: '/gushen/quickstart' },
-          { text: '策略指南', link: '/gushen/strategy' },
-          { text: 'API 参考', link: '/gushen/api' },
-          { text: '进入平台', link: 'https://gushen.lurus.cn' },
         ]
       },
       {
@@ -131,17 +121,6 @@ export default defineConfig({
           text: '开发者指南',
           items: [
             { text: '系统架构', link: '/developer/architecture' }
-          ]
-        }
-      ],
-      '/gushen/': [
-        {
-          text: 'GuShen 文档',
-          items: [
-            { text: '简介', link: '/gushen/' },
-            { text: '快速开始', link: '/gushen/quickstart' },
-            { text: '策略编写指南', link: '/gushen/strategy' },
-            { text: 'API 参考', link: '/gushen/api' },
           ]
         }
       ],
