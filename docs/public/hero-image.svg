@@ -1,98 +1,164 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 380" width="480" height="380">
   <defs>
-    <linearGradient id="centerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <!-- Gradients for products -->
+    <linearGradient id="apiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#C67B5C;stop-opacity:1"/>
       <stop offset="100%" style="stop-color:#E8A87C;stop-opacity:1"/>
     </linearGradient>
-    <linearGradient id="nodeGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:0.85"/>
-      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.85"/>
+    <linearGradient id="webmailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#0891B2;stop-opacity:0.9"/>
     </linearGradient>
-    <linearGradient id="nodeGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2563EB;stop-opacity:0.85"/>
-      <stop offset="100%" style="stop-color:#0891B2;stop-opacity:0.85"/>
+    <linearGradient id="switchGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#16A34A;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:0.9"/>
     </linearGradient>
-    <linearGradient id="nodeGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#16A34A;stop-opacity:0.85"/>
-      <stop offset="100%" style="stop-color:#059669;stop-opacity:0.85"/>
+    <linearGradient id="memxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9333EA;stop-opacity:0.9"/>
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.9"/>
     </linearGradient>
-    <linearGradient id="nodeGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#EA580C;stop-opacity:0.85"/>
-      <stop offset="100%" style="stop-color:#D97706;stop-opacity:0.85"/>
+    <linearGradient id="identityGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#64748B;stop-opacity:0.15"/>
+      <stop offset="50%" style="stop-color:#64748B;stop-opacity:0.25"/>
+      <stop offset="100%" style="stop-color:#64748B;stop-opacity:0.15"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <linearGradient id="userGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#94A3B8;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#64748B;stop-opacity:0.7"/>
+    </linearGradient>
+    <linearGradient id="targetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#475569;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#334155;stop-opacity:0.6"/>
+    </linearGradient>
     <filter id="softShadow">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.12)"/>
+      <feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="rgba(0,0,0,0.1)"/>
     </filter>
   </defs>
 
-  <!-- Background circle (subtle) -->
-  <circle cx="240" cy="190" r="160" fill="rgba(198,123,92,0.04)" stroke="rgba(198,123,92,0.08)" stroke-width="1"/>
-  <circle cx="240" cy="190" r="110" fill="rgba(198,123,92,0.04)" stroke="rgba(198,123,92,0.06)" stroke-width="1"/>
+  <!-- Row positions: y=55, y=125, y=195, y=265 -->
+  <!-- Column positions: left=60, center=240, right=420 -->
 
-  <!-- Connection lines -->
-  <!-- Center to node 1 (top-left: GuShen) -->
-  <line x1="240" y1="190" x2="100" y2="88" stroke="url(#nodeGrad1)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
-  <!-- Center to node 2 (top-right: Webmail) -->
-  <line x1="240" y1="190" x2="380" y2="88" stroke="url(#nodeGrad2)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
-  <!-- Center to node 3 (bottom-right: Switch) -->
-  <line x1="240" y1="190" x2="380" y2="292" stroke="url(#nodeGrad3)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
-  <!-- Center to node 4 (bottom-left: API) -->
-  <line x1="240" y1="190" x2="100" y2="292" stroke="url(#nodeGrad4)" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.6"/>
+  <!-- ═══ Identity bottom bar ═══ -->
+  <rect x="30" y="320" width="420" height="36" rx="8" fill="url(#identityGrad)" stroke="#64748B" stroke-width="0.8" stroke-opacity="0.3"/>
+  <text x="240" y="342" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="#64748B" letter-spacing="1.5">lurus-identity  ·  Auth / Billing</text>
 
-  <!-- Animated pulse dots along lines -->
-  <circle r="4" fill="#C67B5C" opacity="0.7">
-    <animateMotion dur="2.4s" repeatCount="indefinite" path="M240,190 L100,88"/>
+  <!-- Identity dashed connections to products -->
+  <line x1="150" y1="320" x2="150" y2="75" stroke="#64748B" stroke-width="0.8" stroke-dasharray="3,4" opacity="0.2"/>
+  <line x1="240" y1="320" x2="240" y2="145" stroke="#64748B" stroke-width="0.8" stroke-dasharray="3,4" opacity="0.2"/>
+  <line x1="330" y1="320" x2="330" y2="215" stroke="#64748B" stroke-width="0.8" stroke-dasharray="3,4" opacity="0.2"/>
+
+  <!-- ═══ Row 1: Developer → Lurus API → LLM Providers ═══ -->
+
+  <!-- Arrow: Developer → API -->
+  <line x1="108" y1="55" x2="171" y2="55" stroke="#C67B5C" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="171,51 179,55 171,59" fill="#C67B5C" opacity="0.6"/>
+  <!-- Arrow: API → LLM -->
+  <line x1="310" y1="55" x2="353" y2="55" stroke="#C67B5C" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="353,51 361,55 353,59" fill="#C67B5C" opacity="0.6"/>
+
+  <!-- Pulse dot: Developer → API -->
+  <circle r="3.5" fill="#C67B5C" opacity="0.7">
+    <animateMotion dur="2s" repeatCount="indefinite" path="M108,55 L179,55"/>
   </circle>
-  <circle r="4" fill="#C67B5C" opacity="0.7">
-    <animateMotion dur="2.8s" repeatCount="indefinite" path="M240,190 L380,88"/>
-  </circle>
-  <circle r="4" fill="#C67B5C" opacity="0.7">
-    <animateMotion dur="2.2s" repeatCount="indefinite" path="M240,190 L380,292"/>
-  </circle>
-  <circle r="4" fill="#C67B5C" opacity="0.7">
-    <animateMotion dur="3s" repeatCount="indefinite" path="M240,190 L100,292"/>
+  <!-- Pulse dot: API → LLM -->
+  <circle r="3.5" fill="#C67B5C" opacity="0.7">
+    <animateMotion dur="2.2s" repeatCount="indefinite" path="M310,55 L361,55"/>
   </circle>
 
-  <!-- Center node: Lurus -->
-  <circle cx="240" cy="190" r="46" fill="url(#centerGrad)" filter="url(#softShadow)"/>
-  <circle cx="240" cy="190" r="46" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
-  <text x="240" y="185" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="700" fill="white" letter-spacing="0.5">Lurus</text>
-  <text x="240" y="202" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9.5" font-weight="400" fill="rgba(255,255,255,0.85)" letter-spacing="0.3">API Gateway</text>
+  <!-- Developer node -->
+  <rect x="18" y="38" width="90" height="34" rx="8" fill="url(#userGrad)" filter="url(#softShadow)"/>
+  <text x="63" y="59" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="white">Developer</text>
 
-  <!-- Node 1: GuShen (top-left) -->
-  <circle cx="100" cy="88" r="34" fill="url(#nodeGrad1)" filter="url(#softShadow)"/>
-  <circle cx="100" cy="88" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-  <text x="100" y="84" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">GuShen</text>
-  <text x="100" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">量化交易</text>
+  <!-- Lurus API node -->
+  <rect x="180" y="38" width="130" height="34" rx="8" fill="url(#apiGrad)" filter="url(#softShadow)"/>
+  <text x="245" y="59" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Lurus API</text>
 
-  <!-- Node 2: Webmail (top-right) -->
-  <circle cx="380" cy="88" r="34" fill="url(#nodeGrad2)" filter="url(#softShadow)"/>
-  <circle cx="380" cy="88" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-  <text x="380" y="84" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Webmail</text>
-  <text x="380" y="99" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">企业邮件</text>
+  <!-- LLM Providers node -->
+  <rect x="362" y="38" width="100" height="34" rx="8" fill="url(#targetGrad)" filter="url(#softShadow)"/>
+  <text x="412" y="53" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="600" fill="white">LLM Providers</text>
+  <text x="412" y="66" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8" fill="rgba(255,255,255,0.7)">GPT / Claude</text>
 
-  <!-- Node 3: Switch (bottom-right) -->
-  <circle cx="380" cy="292" r="34" fill="url(#nodeGrad3)" filter="url(#softShadow)"/>
-  <circle cx="380" cy="292" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-  <text x="380" y="288" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Switch</text>
-  <text x="380" y="303" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">智能客户端</text>
+  <!-- ═══ Row 2: Desktop → Switch → API (curve) ═══ -->
 
-  <!-- Node 4: API (bottom-left) -->
-  <circle cx="100" cy="292" r="34" fill="url(#nodeGrad4)" filter="url(#softShadow)"/>
-  <circle cx="100" cy="292" r="34" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-  <text x="100" y="288" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Lurus API</text>
-  <text x="100" y="303" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8.5" fill="rgba(255,255,255,0.8)">LLM 网关</text>
+  <!-- Arrow: Desktop → Switch -->
+  <line x1="108" y1="125" x2="171" y2="125" stroke="#16A34A" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="171,121 179,125 171,129" fill="#16A34A" opacity="0.6"/>
 
-  <!-- Decorative small dots -->
-  <circle cx="170" cy="138" r="3" fill="#C67B5C" opacity="0.35"/>
-  <circle cx="310" cy="138" r="3" fill="#C67B5C" opacity="0.35"/>
-  <circle cx="170" cy="242" r="3" fill="#C67B5C" opacity="0.35"/>
-  <circle cx="310" cy="242" r="3" fill="#C67B5C" opacity="0.35"/>
+  <!-- Curve: Switch → API (going up to row 1) -->
+  <path d="M310,125 C340,125 340,55 310,55" fill="none" stroke="#16A34A" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.4"/>
+  <circle r="3.5" fill="#16A34A" opacity="0.7">
+    <animateMotion dur="2.5s" repeatCount="indefinite" path="M310,125 C340,125 340,55 310,55"/>
+  </circle>
+
+  <!-- Pulse dot: Desktop → Switch -->
+  <circle r="3.5" fill="#16A34A" opacity="0.7">
+    <animateMotion dur="2.3s" repeatCount="indefinite" path="M108,125 L179,125"/>
+  </circle>
+
+  <!-- Desktop node -->
+  <rect x="18" y="108" width="90" height="34" rx="8" fill="url(#userGrad)" filter="url(#softShadow)"/>
+  <text x="63" y="129" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="white">Desktop</text>
+
+  <!-- Switch node -->
+  <rect x="180" y="108" width="130" height="34" rx="8" fill="url(#switchGrad)" filter="url(#softShadow)"/>
+  <text x="245" y="129" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Switch</text>
+
+  <!-- ═══ Row 3: Email → Webmail → Mail Server ═══ -->
+
+  <!-- Arrow: Email → Webmail -->
+  <line x1="108" y1="195" x2="171" y2="195" stroke="#2563EB" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="171,191 179,195 171,199" fill="#2563EB" opacity="0.6"/>
+  <!-- Arrow: Webmail → Mail Server -->
+  <line x1="310" y1="195" x2="353" y2="195" stroke="#2563EB" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="353,191 361,195 353,199" fill="#2563EB" opacity="0.6"/>
+
+  <!-- Pulse dots -->
+  <circle r="3.5" fill="#2563EB" opacity="0.7">
+    <animateMotion dur="2.1s" repeatCount="indefinite" path="M108,195 L179,195"/>
+  </circle>
+  <circle r="3.5" fill="#2563EB" opacity="0.7">
+    <animateMotion dur="2.4s" repeatCount="indefinite" path="M310,195 L361,195"/>
+  </circle>
+
+  <!-- Email node -->
+  <rect x="18" y="178" width="90" height="34" rx="8" fill="url(#userGrad)" filter="url(#softShadow)"/>
+  <text x="63" y="199" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="white">Email</text>
+
+  <!-- Webmail node -->
+  <rect x="180" y="178" width="130" height="34" rx="8" fill="url(#webmailGrad)" filter="url(#softShadow)"/>
+  <text x="245" y="199" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">Webmail</text>
+
+  <!-- Mail Server node -->
+  <rect x="362" y="178" width="100" height="34" rx="8" fill="url(#targetGrad)" filter="url(#softShadow)"/>
+  <text x="412" y="199" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="600" fill="white">Mail Server</text>
+
+  <!-- ═══ Row 4: AI App → MemX → Knowledge Store ═══ -->
+
+  <!-- Arrow: AI App → MemX -->
+  <line x1="108" y1="265" x2="171" y2="265" stroke="#9333EA" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="171,261 179,265 171,269" fill="#9333EA" opacity="0.6"/>
+  <!-- Arrow: MemX → Knowledge -->
+  <line x1="310" y1="265" x2="353" y2="265" stroke="#9333EA" stroke-width="1.5" opacity="0.5"/>
+  <polygon points="353,261 361,265 353,269" fill="#9333EA" opacity="0.6"/>
+
+  <!-- Pulse dots -->
+  <circle r="3.5" fill="#9333EA" opacity="0.7">
+    <animateMotion dur="2.6s" repeatCount="indefinite" path="M108,265 L179,265"/>
+  </circle>
+  <circle r="3.5" fill="#9333EA" opacity="0.7">
+    <animateMotion dur="2s" repeatCount="indefinite" path="M310,265 L361,265"/>
+  </circle>
+
+  <!-- AI App node -->
+  <rect x="18" y="248" width="90" height="34" rx="8" fill="url(#userGrad)" filter="url(#softShadow)"/>
+  <text x="63" y="269" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="white">AI App</text>
+
+  <!-- MemX node -->
+  <rect x="180" y="248" width="130" height="34" rx="8" fill="url(#memxGrad)" filter="url(#softShadow)"/>
+  <text x="245" y="269" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="700" fill="white">MemX</text>
+
+  <!-- Knowledge Store node -->
+  <rect x="362" y="248" width="100" height="34" rx="8" fill="url(#targetGrad)" filter="url(#softShadow)"/>
+  <text x="412" y="259" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" font-weight="600" fill="white">Knowledge</text>
+  <text x="412" y="272" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="8" fill="rgba(255,255,255,0.7)">Store</text>
 </svg>

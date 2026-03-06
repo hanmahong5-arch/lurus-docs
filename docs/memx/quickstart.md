@@ -5,18 +5,18 @@
 ## 安装
 
 :::tabs
-== pip
+== GitHub
 ```bash
-pip install memx
+pip install git+https://github.com/UU114/memx.git
 ```
-== pip (国内源)
+== GitHub (完整安装)
 ```bash
-pip install memx -i https://pypi.tuna.tsinghua.edu.cn/simple
+pip install "git+https://github.com/UU114/memx.git#egg=memx[all]"
 ```
 :::
 
 ::: tip
-MemX 需要 Python 3.10+。首次运行时会自动下载本地嵌入模型（约 90MB），存放在 `~/.memx/models/`。
+MemX 需要 Python 3.9+。首次运行时会自动下载本地嵌入模型（约 90MB），存放在 `~/.memx/models/`。
 :::
 
 ## 第一步：初始化

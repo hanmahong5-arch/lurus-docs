@@ -4,14 +4,34 @@ MemX 的 ACE（Adaptive Context Engine）引擎由四大核心模块组成，每
 
 ## Reflector — 知识蒸馏引擎
 
-Reflector 是 MemX 最核心的创新：**零 LLM 成本**的知识提取。
+Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
 
-传统 AI 记忆系统依赖 LLM 调用来从对话中提取知识点，每次消耗 2-5K tokens。Reflector 使用纯规则引擎实现同等效果，四步完成知识蒸馏：
+传统 AI 记忆系统依赖 LLM 调用来从对话中提取知识点，每次消耗 2-5K tokens。Reflector 支持三种运行模式，默认使用 **hybrid** 混合模式，通过规则预筛选大幅减少 LLM 调用，仅对有价值的候选项调用 LLM 精炼，相比全量 LLM 方案减少 90%+ 的调用开销。
+
+### 三种运行模式
+
+| 模式 | 说明 | LLM 开销 |
+|------|------|---------|
+| `rules` | 纯规则引擎，完全基于模式匹配 | 零 LLM 调用 |
+| `hybrid`（默认） | 规则预筛选 + LLM 精炼，取平均分数 | 仅对候选项调用，减少 90%+ |
+| `llm` | 完全依赖 LLM 提取知识 | 每次 2-5K tokens |
+
+**hybrid 工作流程**：
 
 ```
-原始对话 → PatternDetector → KnowledgeScorer → PrivacySanitizer → BulletDistiller
-                检测模式          评分分类          隐私脱敏           压缩精炼
+原始对话 → PatternDetector (规则检测) → 候选知识项
+                                           ↓
+                              LLM 评估 + 蒸馏 (仅对候选项)
+                                           ↓
+                              取规则分数与 LLM 分数的平均值
+                                           ↓
+                        KnowledgeScorer → PrivacySanitizer → BulletDistiller
+                            评分分类          隐私脱敏           压缩精炼
 ```
+
+::: tip
+当 LLM 不可用时（API 故障、网络问题），hybrid 模式自动降级到 rules 模式，确保服务不中断。
+:::
 
 ### 五种检测规则
 
@@ -95,7 +115,7 @@ final       = clamp(boosted, 0.0, 1.0)
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
 | `half_life` | 30 天 | 权重衰减到 50% 所需的天数 |
-| `boost_factor` | 0.15 | 每次召回的权重加成系数 |
+| `boost_factor` | 0.1 | 每次召回的权重加成系数 |
 
 ### 三层保护机制
 

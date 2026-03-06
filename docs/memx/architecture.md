@@ -47,7 +47,7 @@ Raw Input
 └─────────┬───────────┘
           ▼
 ┌─────────────────────┐
-│  Reflector           │  ← 纯规则引擎，零 LLM 成本
+│  Reflector           │  ← hybrid 模式：规则预筛 + LLM 精炼
 │  ├─ PatternDetector  │     5 种模式检测
 │  ├─ KnowledgeScorer  │     评分 + 分类
 │  ├─ PrivacySanitizer │     候选知识脱敏
@@ -183,30 +183,39 @@ m = Memory(config={
     # ACE Engine
     "ace_enabled": True,
 
-    # Reflector
-    "reflector_mode": "rules",          # "rules" (零 LLM) 或 "llm"
-    "reflector_min_score": 30.0,        # 最低知识评分阈值
+    # Reflector — hybrid mode: rule pre-filter + LLM refinement
+    "reflector": {
+        "mode": "hybrid",       # "rules" | "hybrid"(default) | "llm"
+        "min_score": 30.0,      # minimum knowledge score threshold
+        "llm_model": "openai/gpt-4o-mini",
+    },
 
-    # Curator
-    "curator_merge_threshold": 0.8,     # 自动合并阈值
-    "curator_conflict_threshold": 0.5,  # 冲突检测阈值
-    "curator_strategy": "keep_best",    # "keep_best" 或 "merge_content"
+    # Curator — semantic deduplication
+    "curator": {
+        "similarity_threshold": 0.8,    # auto-merge threshold
+        "merge_strategy": "keep_best",  # "keep_best" or "merge_content"
+    },
 
-    # Decay
-    "decay_half_life": 30,              # 半衰期（天）
-    "decay_boost_factor": 0.15,         # 召回增强系数
-    "decay_permanent_threshold": 15,    # 永久记忆的最低召回次数
+    # Decay — bionic forgetting curve
+    "decay": {
+        "half_life_days": 30.0,         # days to decay to 50%
+        "boost_factor": 0.1,            # recall reinforcement coefficient
+        "permanent_threshold": 15,      # min recalls for permanent memory
+    },
 
-    # Generator
-    "search_max_results": 5,            # 最大返回条数
-    "search_token_budget": 2000,        # Token 预算
+    # Retrieval — hybrid 4-layer search
+    "retrieval": {
+        "keyword_weight": 0.6,
+        "semantic_weight": 0.4,
+        "max_results": 5,
+        "token_budget": 2000,
+    },
 
-    # Privacy
-    "privacy_custom_patterns": [        # 自定义 PII 规则
-        r"INTERNAL_KEY_\w+"
-    ],
-
-    # Embedding
-    "embedding_model": "all-MiniLM-L6-v2",  # ONNX 本地模型
+    # Privacy — PII filtering
+    "privacy": {
+        "custom_patterns": [
+            r"INTERNAL_KEY_\w+"
+        ],
+    },
 })
 ```

@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Lurus Docs"
   text: "一站式产品文档"
-  tagline: Lurus API · GuShen · Webmail · Switch · MemX — 所有产品的完整文档
+  tagline: Lurus API · Webmail · Switch · MemX — 所有产品的完整文档
   image:
     src: /hero-image.svg
     alt: Lurus Platform
@@ -25,11 +25,6 @@ features:
     details: 一个 API Key 接入 50+ 主流 AI 模型（GPT、Claude、Gemini、DeepSeek），完全兼容 OpenAI SDK，3 行代码迁移。
     link: /guide/introduction
     linkText: 查看 API 文档
-  - icon: 📈
-    title: GuShen — AI 量化交易
-    details: 自然语言描述策略需求，AI 自动生成可回测的量化代码。支持 A 股、期货、加密货币多市场。
-    link: /gushen/
-    linkText: 查看 GuShen 文档
   - icon: 📧
     title: Webmail — 企业邮件
     details: 自建企业邮件系统，针对中国网络环境优化送达率（99%），支持 IMAP/SMTP/CalDAV/CardDAV 全协议。
@@ -42,7 +37,7 @@ features:
     linkText: 查看 Switch 文档
   - icon: 🧠
     title: MemX — AI 智能记忆
-    details: 基于 ACE 引擎的 AI 记忆管理，零 LLM 成本知识提取，仿生遗忘曲线，四层混合检索，全链路隐私保护。
+    details: 基于 ACE 引擎的 AI 记忆管理，智能知识蒸馏（规则预筛 + LLM 精炼），仿生遗忘曲线，四层混合检索，全链路隐私保护。
     link: /memx/
     linkText: 查看 MemX 文档
 
@@ -61,18 +56,6 @@ features:
       { label: '获取 API Key', href: '/guide/get-api-key' },
       { label: '支持的模型', href: '/guide/models' },
       { label: 'API 控制台', href: 'https://api.lurus.cn', external: true },
-    ]"
-  />
-  <ActionCard
-    name="GuShen"
-    tagline="自然语言生成量化策略，A股·期货·加密货币"
-    icon="📈"
-    color="#4F46E5"
-    :actions="[
-      { label: '快速开始', href: '/gushen/quickstart', primary: true },
-      { label: '策略编写指南', href: '/gushen/strategy' },
-      { label: 'API 参考', href: '/gushen/api' },
-      { label: '进入平台', href: 'https://gushen.lurus.cn', external: true },
     ]"
   />
   <ActionCard
@@ -100,7 +83,7 @@ features:
   />
   <ActionCard
     name="MemX"
-    tagline="AI 智能记忆，零 LLM 成本，仿生遗忘曲线"
+    tagline="AI 智能记忆管理，仿生遗忘曲线"
     icon="🧠"
     color="#9333EA"
     :actions="[
@@ -138,26 +121,6 @@ curl https://api.lurus.cn/v1/chat/completions \
 
 ---
 
-### GuShen — 自然语言生成量化策略
-
-```python
-# 在 GuShen 平台描述你的策略需求：
-# "当 5 日均线上穿 20 日均线时买入，跌破时卖出"
-# AI 自动生成以下可执行代码：
-
-def strategy(context):
-    ma5  = context.ta.sma(period=5)
-    ma20 = context.ta.sma(period=20)
-    if ma5[-1] > ma20[-1] and ma5[-2] <= ma20[-2]:
-        context.order_percent("000001.SZ", 0.5)
-    elif ma5[-1] < ma20[-1] and ma5[-2] >= ma20[-2]:
-        context.order_percent("000001.SZ", 0)
-```
-
-→ [快速开始](/gushen/quickstart) · [策略指南](/gushen/strategy) · [进入平台 ↗](https://gushen.lurus.cn)
-
----
-
 ### Webmail — 邮件客户端参数
 
 | 协议 | 服务器 | 端口 | 加密 |
@@ -189,7 +152,7 @@ from memx import Memory
 
 m = Memory(config={"ace_enabled": True})
 
-# 从对话中自动学习知识（零 LLM 成本）
+# 从对话中自动学习知识（规则预筛 + LLM 精炼）
 m.add([
     {"role": "user", "content": "pytest 超时怎么办？"},
     {"role": "assistant", "content": "用 pytest -x --timeout=30 逐个排查"}
