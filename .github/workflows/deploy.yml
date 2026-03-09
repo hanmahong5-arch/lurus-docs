@@ -82,3 +82,25 @@ jobs:
           script: |
             kubectl rollout restart deployment/lurus-docs -n lurus-system
             kubectl rollout status  deployment/lurus-docs -n lurus-system --timeout=120s
+
+      - name: Verify deployment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.K3S_HOST }}
+          username: root
+          key: ${{ secrets.K3S_SSH_KEY }}
+          script: |
+            sleep 10
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' https://docs.lurus.cn/)
+            echo "Homepage: HTTP $STATUS"
+            if [ "$STATUS" != "200" ]; then
+              echo "Homepage verification failed!"
+              exit 1
+            fi
+            STATUS=$(curl -s -o /dev/null -w '%{http_code}' https://docs.lurus.cn/memx/)
+            echo "MemX page: HTTP $STATUS"
+            if [ "$STATUS" != "200" ]; then
+              echo "Subpage verification failed!"
+              exit 1
+            fi
+            echo "Deployment verified successfully."
