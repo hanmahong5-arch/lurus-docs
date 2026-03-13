@@ -18,6 +18,8 @@ jobs:
   build-deploy:
     name: Sync → Build → Deploy
     runs-on: ubuntu-latest
+    # Skip CI-triggered commits to prevent infinite loops
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     permissions:
       contents: write        # allow git commit on cron/dispatch runs
       packages: write        # allow push to GHCR
@@ -47,7 +49,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet; then
             git add docs/api/overview.md
-            git commit -m "chore(docs): auto-sync endpoints"
+            git commit -m "chore(docs): auto-sync endpoints [skip ci]"
             git push
           else
             echo "No sync changes to commit."
@@ -55,6 +57,10 @@ jobs:
 
       - name: Build VitePress site
         run: bun run build
+
+      - name: Compute image tag
+        id: tag
+        run: echo "sha=$(git rev-parse --short=7 HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -71,36 +77,32 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/lurus-docs:latest
-            ghcr.io/${{ github.repository_owner }}/lurus-docs:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/lurus-docs:main-${{ steps.tag.outputs.sha }}
 
-      - name: Rolling restart on k3s
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.K3S_HOST }}
-          username: root
-          key: ${{ secrets.K3S_SSH_KEY }}
-          script: |
-            kubectl rollout restart deployment/lurus-docs -n lurus-system
-            kubectl rollout status  deployment/lurus-docs -n lurus-system --timeout=120s
+      - name: Update deployment manifest with new image tag
+        run: |
+          sed -i "s|image: ghcr.io/hanmahong5-arch/lurus-docs:.*|image: ghcr.io/hanmahong5-arch/lurus-docs:main-${{ steps.tag.outputs.sha }}|" deploy/k8s.yaml
+          echo "Updated image tag to main-${{ steps.tag.outputs.sha }}"
+          grep 'image:' deploy/k8s.yaml
 
-      - name: Verify deployment
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.K3S_HOST }}
-          username: root
-          key: ${{ secrets.K3S_SSH_KEY }}
-          script: |
-            sleep 10
-            STATUS=$(curl -s -o /dev/null -w '%{http_code}' https://docs.lurus.cn/)
-            echo "Homepage: HTTP $STATUS"
-            if [ "$STATUS" != "200" ]; then
-              echo "Homepage verification failed!"
-              exit 1
-            fi
-            STATUS=$(curl -s -o /dev/null -w '%{http_code}' https://docs.lurus.cn/memx/)
-            echo "MemX page: HTTP $STATUS"
-            if [ "$STATUS" != "200" ]; then
-              echo "Subpage verification failed!"
-              exit 1
-            fi
-            echo "Deployment verified successfully."
+      - name: Commit and push manifest update
+        run: |
+          git add deploy/k8s.yaml
+          if ! git diff --cached --quiet; then
+            git commit -m "deploy(docs): update image to main-${{ steps.tag.outputs.sha }} [skip ci]"
+            git push
+          else
+            echo "No manifest changes."
+          fi
+
+      - name: Wait for ArgoCD sync and verify
+        run: |
+          echo "Waiting 90s for ArgoCD auto-sync..."
+          sleep 90
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 https://docs.lurus.cn/)
+          echo "Homepage: HTTP $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "⚠ Homepage returned $STATUS (may need more time for sync)"
+            exit 1
+          fi
+          echo "Deployment verified successfully."

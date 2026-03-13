@@ -72,7 +72,7 @@ bun run deploy
 
 | 触发条件 | 动作 |
 |---------|------|
-| push to main (lurus-docs/\*\* 或 relay.json 或 lurus.yaml 变更) | sync → build → push GHCR → rollout restart |
+| push to main (docs/\*\*, scripts/\*\*, Dockerfile, deploy/\*\*) | sync → build → push GHCR → update manifest → ArgoCD auto-sync |
 | 每周一 02:00 UTC (schedule) | 同上（保持 endpoint 列表最新） |
 | workflow_dispatch | 同上（手动触发） |
 
