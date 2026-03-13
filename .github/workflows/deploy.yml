@@ -46,8 +46,8 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet; then
-            git add docs/api/overview.md docs/webmail/client-setup.md
-            git commit -m "chore(docs): auto-sync endpoints and webmail config"
+            git add docs/api/overview.md
+            git commit -m "chore(docs): auto-sync endpoints"
             git push
           else
             echo "No sync changes to commit."

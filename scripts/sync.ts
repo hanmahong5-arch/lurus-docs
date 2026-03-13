@@ -4,7 +4,6 @@
  *
  * Sources:
  *   ../lurus-api/docs/openapi/relay.json  →  docs/api/overview.md       (endpoint region)
- *   ../lurus.yaml (stalwart section)       →  docs/webmail/client-setup.md (server config region)
  *
  * Usage: bun scripts/sync.ts
  */
@@ -119,116 +118,9 @@ function syncEndpoints(): boolean {
   return true
 }
 
-// ── Webmail config sync ───────────────────────────────────────────────────────
-// lurus.yaml (stalwart.public_ports) → docs/webmail/client-setup.md
-
-interface StalwartPorts {
-  smtp?: string
-  smtps?: string
-  submission?: string
-  imaps?: string
-}
-
-/**
- * Extract stalwart.public_ports from lurus.yaml using line-by-line parsing.
- * This avoids an external YAML dependency while handling the known schema.
- */
-function parseStalwartPorts(yaml: string): StalwartPorts {
-  const ports: StalwartPorts = {}
-  const lines = yaml.split('\n')
-
-  let inStalwart = false
-  let inPublicPorts = false
-  let stalwartIndent = -1
-  let publicPortsIndent = -1
-
-  for (const line of lines) {
-    const trimmed = line.trimStart()
-    if (trimmed === '' || trimmed.startsWith('#')) continue
-
-    const indent = line.length - trimmed.length
-
-    if (trimmed.startsWith('stalwart:')) {
-      inStalwart = true
-      stalwartIndent = indent
-      continue
-    }
-
-    if (inStalwart) {
-      // Detect exit from the stalwart block.
-      if (indent <= stalwartIndent && !trimmed.startsWith('-')) {
-        inStalwart = false
-        inPublicPorts = false
-        continue
-      }
-
-      if (trimmed.startsWith('public_ports:')) {
-        inPublicPorts = true
-        publicPortsIndent = indent
-        continue
-      }
-
-      if (inPublicPorts) {
-        // Detect exit from the public_ports block.
-        if (indent <= publicPortsIndent && !trimmed.startsWith('-')) {
-          inPublicPorts = false
-          continue
-        }
-        const match = trimmed.match(/^(\w+):\s*(.+)$/)
-        if (match) {
-          const [, key, value] = match
-          ;(ports as Record<string, string>)[key] = value.trim()
-        }
-      }
-    }
-  }
-
-  return ports
-}
-
-/** Extract port number from a "host:port" or bare port string. */
-function extractPort(value: string): string {
-  const parts = value.split(':')
-  return parts.length > 1 ? parts[parts.length - 1] : value
-}
-
-function syncWebmailConfig(): boolean {
-  const yamlPath = resolve(ROOT, '..', 'lurus.yaml')
-  const docPath = resolve(DOCS, 'webmail', 'client-setup.md')
-
-  let yamlText: string
-  try {
-    yamlText = readText(yamlPath)
-  } catch (e) {
-    console.warn(`[sync] Cannot read lurus.yaml (${yamlPath}): ${(e as Error).message}`)
-    return false
-  }
-
-  const pts = parseStalwartPorts(yamlText)
-  const imapsPort = extractPort(pts.imaps ?? '993')
-  const submissionPort = extractPort(pts.submission ?? '587')
-  const smtpsPort = extractPort(pts.smtps ?? '465')
-
-  const replacement = [
-    '| 类型 | 服务器地址 | 端口 | 加密方式 |',
-    '|------|-----------|------|---------|',
-    `| **收件（IMAP）** | mail.lurus.cn | ${imapsPort} | SSL/TLS |`,
-    `| **发件（SMTP）** | mail.lurus.cn | ${submissionPort} | STARTTLS |`,
-    `| **发件（SMTP）备用** | mail.lurus.cn | ${smtpsPort} | SSL/TLS |`,
-  ].join('\n')
-
-  const doc = readText(docPath)
-  const updated = replaceBetweenMarkers(doc, 'webmail-config', replacement)
-  if (updated === null) return false
-
-  writeFileSync(docPath, updated, 'utf8')
-  console.log('[sync] docs/webmail/client-setup.md updated (webmail-config)')
-  return true
-}
-
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-const changed = [syncEndpoints(), syncWebmailConfig()].some(Boolean)
+const changed = [syncEndpoints()].some(Boolean)
 if (!changed) {
   console.log('[sync] All sources up-to-date, no changes written.')
 } else {

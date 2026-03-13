@@ -1,6 +1,6 @@
 # lurus-docs
 
-平台统一文档站。VitePress 静态站点，托管于 `docs.lurus.cn`，覆盖 Lurus API、GuShen、Webmail、Switch 四大产品线。
+平台统一文档站。VitePress 静态站点，托管于 `docs.lurus.cn`，覆盖 Lurus API、Switch、MemX 等产品线。
 
 ## Tech Stack
 
@@ -24,13 +24,12 @@ lurus-docs/
 │   ├── api/                # Lurus API reference (overview auto-synced)
 │   ├── guide/              # Lurus API user guide + client integrations
 │   ├── gushen/             # GuShen quant platform docs
-│   ├── webmail/            # Webmail docs (client-setup.md auto-synced)
 │   ├── switch/             # Switch desktop app docs
 │   └── index.md            # Homepage
 ├── data/
 │   └── models.yaml         # Model catalog (source of truth for guide/models)
 ├── scripts/
-│   └── sync.ts             # Auto-sync: relay.json → api/overview.md; lurus.yaml → webmail/client-setup.md
+│   └── sync.ts             # Auto-sync: relay.json → api/overview.md
 ├── deploy/
 │   ├── k8s.yaml            # Deployment + Service + IngressRoute
 │   └── pdb.yaml            # PodDisruptionBudget (minAvailable: 1)
@@ -53,7 +52,6 @@ bun run dev
 bun run sync
 # Sources:
 #   ../lurus-api/docs/openapi/relay.json → docs/api/overview.md  (<!-- sync:endpoints:start/end -->)
-#   ../lurus.yaml (stalwart.public_ports) → docs/webmail/client-setup.md  (<!-- sync:webmail-config:start/end -->)
 
 # Production build → docs/.vitepress/dist/
 bun run build
@@ -69,7 +67,6 @@ bun run deploy
 
 - **模型目录**: 编辑 `data/models.yaml`，运行 `bun run sync` 后重新 build 生效。
 - **API endpoint 列表**: 由 `scripts/sync.ts` 从 `lurus-api/docs/openapi/relay.json` 自动生成，标有 `未实现` tag 的 endpoint 会被跳过。手动修改 `docs/api/overview.md` 中的 sync 标记区域将在下次 sync 时被覆盖。
-- **Webmail 端口配置**: 来自 `lurus.yaml` 的 `stalwart.public_ports`，修改 lurus.yaml 后运行 sync 即更新。
 
 ## CI/CD Triggers
 

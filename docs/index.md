@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Lurus Docs"
   text: "一站式产品文档"
-  tagline: Lurus API · Webmail · Switch · MemX — 所有产品的完整文档
+  tagline: Lurus API · Switch · MemX — 所有产品的完整文档
   image:
     src: /hero-image.svg
     alt: Lurus Platform
@@ -25,11 +25,6 @@ features:
     details: 一个 API Key 接入 50+ 主流 AI 模型（GPT、Claude、Gemini、DeepSeek），完全兼容 OpenAI SDK，3 行代码迁移。
     link: /guide/introduction
     linkText: 查看 API 文档
-  - icon: 📧
-    title: Webmail — 企业邮件
-    details: 自建企业邮件系统，针对中国网络环境优化送达率（99%），支持 IMAP/SMTP/CalDAV/CardDAV 全协议。
-    link: /webmail/
-    linkText: 查看 Webmail 文档
   - icon: 🖥️
     title: Lurus Switch — 智能客户端
     details: 桌面端 AI 模型网关，Windows/macOS/Linux 全平台，本地代理路由，一键切换模型服务，离线可用。
@@ -56,18 +51,6 @@ features:
       { label: '获取 API Key', href: '/guide/get-api-key' },
       { label: '支持的模型', href: '/guide/models' },
       { label: 'API 控制台', href: 'https://api.lurus.cn', external: true },
-    ]"
-  />
-  <ActionCard
-    name="Webmail"
-    tagline="企业邮件，99% 送达率，IMAP/SMTP/CalDAV"
-    icon="📧"
-    color="#2563EB"
-    :actions="[
-      { label: '快速开始', href: '/webmail/quickstart', primary: true },
-      { label: '客户端配置', href: '/webmail/client-setup' },
-      { label: '常见问题', href: '/webmail/faq' },
-      { label: '进入邮箱', href: 'https://mail.lurus.cn', external: true },
     ]"
   />
   <ActionCard
@@ -118,18 +101,6 @@ curl https://api.lurus.cn/v1/chat/completions \
 ```
 
 → [完整文档](/guide/quickstart) · [API 参考](/api/overview) · [控制台 ↗](https://api.lurus.cn)
-
----
-
-### Webmail — 邮件客户端参数
-
-| 协议 | 服务器 | 端口 | 加密 |
-|------|--------|------|------|
-| IMAP | mail.lurus.cn | 993 | SSL/TLS |
-| SMTP | mail.lurus.cn | 465 | SSL/TLS |
-| SMTP | mail.lurus.cn | 587 | STARTTLS |
-
-→ [快速开始](/webmail/quickstart) · [客户端配置](/webmail/client-setup) · [进入邮箱 ↗](https://mail.lurus.cn)
 
 ---
 

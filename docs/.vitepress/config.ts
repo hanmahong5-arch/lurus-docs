@@ -4,7 +4,7 @@ import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 
 export default defineConfig({
   title: 'Lurus Docs',
-  description: 'Lurus Platform Documentation — API Gateway, Webmail, Switch, MemX',
+  description: 'Lurus Platform Documentation — API Gateway, Switch, MemX',
   lang: 'zh-CN',
 
   cleanUrls: true,
@@ -17,7 +17,7 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Lurus Docs — 一站式产品文档' }],
-    ['meta', { property: 'og:description', content: 'Lurus API · Webmail · Switch · MemX — 所有产品的完整文档' }],
+    ['meta', { property: 'og:description', content: 'Lurus API · Switch · MemX — 所有产品的完整文档' }],
     ['meta', { property: 'og:image', content: 'https://docs.lurus.cn/hero-image.svg' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Lurus Docs' }],
@@ -50,16 +50,6 @@ export default defineConfig({
           { text: '支持的模型', link: '/guide/models' },
           { text: 'API 参考', link: '/api/overview' },
           { text: '控制台', link: 'https://api.lurus.cn' },
-        ]
-      },
-      {
-        text: 'Webmail',
-        items: [
-          { text: '简介', link: '/webmail/' },
-          { text: '快速开始', link: '/webmail/quickstart' },
-          { text: '客户端配置', link: '/webmail/client-setup' },
-          { text: '常见问题', link: '/webmail/faq' },
-          { text: '进入邮箱', link: 'https://mail.lurus.cn' },
         ]
       },
       {
@@ -121,17 +111,6 @@ export default defineConfig({
           text: '开发者指南',
           items: [
             { text: '系统架构', link: '/developer/architecture' }
-          ]
-        }
-      ],
-      '/webmail/': [
-        {
-          text: 'Webmail 文档',
-          items: [
-            { text: '简介', link: '/webmail/' },
-            { text: '快速开始', link: '/webmail/quickstart' },
-            { text: '邮件客户端配置', link: '/webmail/client-setup' },
-            { text: '常见问题', link: '/webmail/faq' },
           ]
         }
       ],
