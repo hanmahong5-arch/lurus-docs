@@ -13,17 +13,8 @@ spec:
     requests:
       storage: 1Gi
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: lurus-docs-secrets
-  namespace: lurus-system
-  labels:
-    app: lurus-docs
-type: Opaque
-stringData:
-  admin-api-key: "CHANGE_ME_ADMIN_KEY"
-  webhook-secret: "CHANGE_ME_WEBHOOK_SECRET"
+# Secret `lurus-docs-secrets` is managed manually (kubectl apply).
+# Keys: admin-api-key, webhook-secret
 ---
 apiVersion: apps/v1
 kind: Deployment
