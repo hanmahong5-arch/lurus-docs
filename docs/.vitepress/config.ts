@@ -4,7 +4,7 @@ import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 
 export default defineConfig({
   title: 'Lurus Docs',
-  description: 'Lurus Platform Documentation — API Gateway, Switch, MemX',
+  description: 'Lurus Platform Documentation — API, GuShen, Kova, Switch, MemX, Creator',
   lang: 'zh-CN',
 
   cleanUrls: true,
@@ -17,7 +17,7 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Lurus Docs — 一站式产品文档' }],
-    ['meta', { property: 'og:description', content: 'Lurus API · Switch · MemX — 所有产品的完整文档' }],
+    ['meta', { property: 'og:description', content: 'Lurus API · GuShen · Kova · Switch · MemX · Creator — 所有产品的完整文档' }],
     ['meta', { property: 'og:image', content: 'https://docs.lurus.cn/hero-image.svg' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Lurus Docs' }],
@@ -48,32 +48,29 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       {
-        text: 'Lurus API',
+        text: 'AI 服务',
         items: [
-          { text: '简介', link: '/guide/introduction' },
-          { text: '快速开始', link: '/guide/quickstart' },
-          { text: '支持的模型', link: '/guide/models' },
+          { text: 'Lurus API — LLM 统一网关', link: '/guide/introduction' },
+          { text: 'GuShen — AI 量化交易', link: '/gushen/' },
+          { text: 'Kova — Agent 执行引擎', link: '/kova/' },
+          { text: 'MemX — AI 智能记忆', link: '/memx/' },
+          { text: 'Forge — AI 产品工作台', link: '/forge/' },
+        ]
+      },
+      {
+        text: '桌面工具',
+        items: [
+          { text: 'Switch — 智能客户端', link: '/switch/' },
+          { text: 'Creator — 内容工厂', link: '/creator/' },
+          { text: 'Lumen — 开发者 CLI', link: '/lumen/' },
+        ]
+      },
+      {
+        text: '平台',
+        items: [
+          { text: '账号与计费', link: '/platform/' },
           { text: 'API 参考', link: '/api/overview' },
-          { text: '控制台', link: 'https://api.lurus.cn' },
-        ]
-      },
-      {
-        text: 'Switch',
-        items: [
-          { text: '简介', link: '/switch/' },
-          { text: '安装指南', link: '/switch/install' },
-          { text: '配置说明', link: '/switch/configuration' },
-          { text: '使用手册', link: '/switch/usage' },
-        ]
-      },
-      {
-        text: 'MemX',
-        items: [
-          { text: '简介', link: '/memx/' },
-          { text: '快速开始', link: '/memx/quickstart' },
-          { text: '核心概念', link: '/memx/concepts' },
-          { text: '架构设计', link: '/memx/architecture' },
-          { text: '常见问题', link: '/memx/faq' },
+          { text: '系统架构', link: '/developer/architecture' },
         ]
       },
       { text: 'Updates', link: '/updates/' },
@@ -117,6 +114,64 @@ export default defineConfig({
           text: '开发者指南',
           items: [
             { text: '系统架构', link: '/developer/architecture' }
+          ]
+        }
+      ],
+      '/gushen/': [
+        {
+          text: 'GuShen 文档',
+          items: [
+            { text: '简介', link: '/gushen/' },
+            { text: '快速开始', link: '/gushen/quickstart' },
+            { text: '策略市场', link: '/gushen/strategies' },
+            { text: '常见问题', link: '/gushen/faq' },
+          ]
+        }
+      ],
+      '/kova/': [
+        {
+          text: 'Kova 文档',
+          items: [
+            { text: '简介', link: '/kova/' },
+            { text: '快速开始', link: '/kova/quickstart' },
+            { text: '核心概念', link: '/kova/concepts' },
+            { text: 'API 参考', link: '/kova/api' },
+          ]
+        }
+      ],
+      '/creator/': [
+        {
+          text: 'Creator 文档',
+          items: [
+            { text: '简介', link: '/creator/' },
+            { text: '安装指南', link: '/creator/install' },
+            { text: '使用手册', link: '/creator/usage' },
+          ]
+        }
+      ],
+      '/platform/': [
+        {
+          text: '平台文档',
+          items: [
+            { text: '概述', link: '/platform/' },
+            { text: '计费详解', link: '/platform/billing' },
+            { text: '常见问题', link: '/platform/faq' },
+          ]
+        }
+      ],
+      '/lumen/': [
+        {
+          text: 'Lumen 文档',
+          items: [
+            { text: '简介与安装', link: '/lumen/' },
+          ]
+        }
+      ],
+      '/forge/': [
+        {
+          text: 'Forge 文档',
+          items: [
+            { text: '简介', link: '/forge/' },
           ]
         }
       ],
