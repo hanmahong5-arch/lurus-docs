@@ -6,6 +6,7 @@
       "name": "lurus-docs",
       "dependencies": {
         "hono": "^4.7.0",
+        "markdown-it": "^14.0.0",
       },
       "devDependencies": {
         "vitepress": "^1.6.4",

@@ -6,6 +6,7 @@ import { seedProducts } from './seed';
 import publicRoutes from './routes/public';
 import adminRoutes from './routes/admin';
 import webhookRoutes from './routes/webhook';
+import internalRoutes from './routes/internal';
 
 const app = new Hono();
 
@@ -15,6 +16,7 @@ app.use('*', logger());
 // API routes
 app.route('/api', publicRoutes);
 app.route('/api/admin', adminRoutes);
+app.route('/api/internal', internalRoutes);
 app.route('/api/webhook', webhookRoutes);
 
 // Static files (VitePress build output)

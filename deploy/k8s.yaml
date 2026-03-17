@@ -63,6 +63,11 @@ spec:
                 secretKeyRef:
                   name: lurus-docs-secrets
                   key: webhook-secret
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: lurus-docs-secrets
+                  key: internal-api-key
           resources:
             requests:
               memory: "64Mi"

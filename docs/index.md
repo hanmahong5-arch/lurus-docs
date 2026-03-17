@@ -175,7 +175,7 @@ features:
   />
   <ActionCard
     name="系统架构"
-    tagline="混合云集群、GitOps、可观测性"
+    tagline="混合云集群、GitOps、可观测性 (详细内容需登录)"
     icon="🏗️"
     color="#A8C67B"
     :actions="[

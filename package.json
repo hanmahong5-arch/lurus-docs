@@ -20,7 +20,8 @@
   "author": "Lurus Technologies",
   "license": "MIT",
   "dependencies": {
-    "hono": "^4.7.0"
+    "hono": "^4.7.0",
+    "markdown-it": "^14.0.0"
   },
   "devDependencies": {
     "vitepress": "^1.6.4",

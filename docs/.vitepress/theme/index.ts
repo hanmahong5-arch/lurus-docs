@@ -12,6 +12,9 @@ import AdminLayout from './components/AdminLayout.vue'
 import AdminUpdates from './components/AdminUpdates.vue'
 import AdminProducts from './components/AdminProducts.vue'
 import AdminEditor from './components/AdminEditor.vue'
+import InternalLayout from './components/InternalLayout.vue'
+import InternalContent from './components/InternalContent.vue'
+import InternalSection from './components/InternalSection.vue'
 import './style.css'
 
 export default {
@@ -29,5 +32,8 @@ export default {
     app.component('AdminUpdates', AdminUpdates)
     app.component('AdminProducts', AdminProducts)
     app.component('AdminEditor', AdminEditor)
+    app.component('InternalLayout', InternalLayout)
+    app.component('InternalContent', InternalContent)
+    app.component('InternalSection', InternalSection)
   }
 } satisfies Theme

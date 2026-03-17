@@ -70,7 +70,7 @@ export default defineConfig({
         items: [
           { text: '账号与计费', link: '/platform/' },
           { text: 'API 参考', link: '/api/overview' },
-          { text: '系统架构', link: '/developer/architecture' },
+          { text: '系统架构 &#128274;', link: '/developer/architecture' },
         ]
       },
       { text: 'Updates', link: '/updates/' },
