@@ -160,3 +160,16 @@ code {
 .vp-doc tr:hover {
   background-color: var(--vp-c-brand-soft);
 }
+
+/* ─── Updates page ───────────────────────────────────────── */
+
+.updates-page-header {
+  margin-bottom: 32px;
+}
+
+/* ─── Admin pages ────────────────────────────────────────── */
+
+[class*="admin-"] table code {
+  font-size: 12px;
+  padding: 1px 4px;
+}

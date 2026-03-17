@@ -27,7 +27,12 @@ export default defineConfig({
   vite: {
     plugins: [
       llmstxt(),
-    ]
+    ],
+    server: {
+      proxy: {
+        '/api': 'http://localhost:3000',
+      },
+    },
   },
 
   markdown: {
@@ -71,6 +76,7 @@ export default defineConfig({
           { text: '常见问题', link: '/memx/faq' },
         ]
       },
+      { text: 'Updates', link: '/updates/' },
     ],
 
     sidebar: {
@@ -134,6 +140,24 @@ export default defineConfig({
             { text: '核心概念', link: '/memx/concepts' },
             { text: '架构设计', link: '/memx/architecture' },
             { text: '常见问题', link: '/memx/faq' },
+          ]
+        }
+      ],
+      '/updates/': [
+        {
+          text: 'Product Updates',
+          items: [
+            { text: 'All Updates', link: '/updates/' },
+          ]
+        }
+      ],
+      '/admin/': [
+        {
+          text: 'Admin',
+          items: [
+            { text: 'Dashboard', link: '/admin/' },
+            { text: 'Updates', link: '/admin/updates' },
+            { text: 'Products', link: '/admin/products' },
           ]
         }
       ],

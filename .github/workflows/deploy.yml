@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
+      - 'server/**'
       - 'scripts/**'
       - 'package.json'
       - 'Dockerfile'
@@ -99,10 +100,24 @@ jobs:
         run: |
           echo "Waiting 90s for ArgoCD auto-sync..."
           sleep 90
-          STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 https://docs.lurus.cn/)
-          echo "Homepage: HTTP $STATUS"
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 https://docs.lurus.cn/api/health)
+          echo "Health check: HTTP $STATUS"
           if [ "$STATUS" != "200" ]; then
-            echo "⚠ Homepage returned $STATUS (may need more time for sync)"
+            echo "Health check returned $STATUS (may need more time for sync)"
             exit 1
           fi
           echo "Deployment verified successfully."
+
+      - name: Notify docs webhook (self-track deployment)
+        if: success()
+        continue-on-error: true
+        run: |
+          PAYLOAD=$(cat <<EOF
+          {"product":"lurus-docs","version":"main-${{ steps.tag.outputs.sha }}","title":"lurus-docs deployed (main-${{ steps.tag.outputs.sha }})","type":"improvement","content":"Deployed from CI/CD.\n\nCommit: ${{ steps.tag.outputs.sha }}\nMessage: ${{ github.event.head_commit.message }}"}
+          EOF
+          )
+          SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "${{ secrets.DOCS_WEBHOOK_SECRET }}" | awk '{print $2}')
+          curl -s -X POST https://docs.lurus.cn/api/webhook/deploy \
+            -H "Content-Type: application/json" \
+            -H "X-Webhook-Signature: sha256=$SIGNATURE" \
+            -d "$PAYLOAD" || true

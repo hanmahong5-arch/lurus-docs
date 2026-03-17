@@ -13,5 +13,8 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# SQLite data
+/data/
+
 # BMAD framework (lives at root only)
 _bmad/
