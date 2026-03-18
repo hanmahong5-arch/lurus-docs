@@ -1,6 +1,6 @@
 # 快速开始
 
-5 分钟上手 GuShen AI 交易助手。
+5 分钟上手 Lucrum AI 交易助手。
 
 ## 第一步：注册与登录
 
@@ -69,7 +69,7 @@ AI 助手能理解自然语言，你可以问任何交易相关的问题。
 3. 按提示完成授权
 
 ::: warning 风险提示
-量化交易存在亏损风险。建议先使用模拟盘充分验证策略，再投入实盘资金。GuShen 不提供任何投资建议或收益保证。
+量化交易存在亏损风险。建议先使用模拟盘充分验证策略，再投入实盘资金。Lucrum 不提供任何投资建议或收益保证。
 :::
 
 ---
@@ -80,7 +80,7 @@ AI 助手能理解自然语言，你可以问任何交易相关的问题。
 
 ```python
 # 示例：简单的双均线策略
-from gushen import Strategy, Signal
+from lucrum import Strategy, Signal
 
 class DualMA(Strategy):
     """双均线交叉策略"""
@@ -106,7 +106,7 @@ class DualMA(Strategy):
 
 ## API 接入
 
-GuShen 提供完整的 REST API，可以集成到你自己的交易系统：
+Lucrum 提供完整的 REST API，可以集成到你自己的交易系统：
 
 ```bash
 # 获取 AI 分析

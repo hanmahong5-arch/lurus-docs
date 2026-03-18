@@ -26,7 +26,7 @@ features:
     link: /guide/introduction
     linkText: 查看文档
   - icon: 📈
-    title: GuShen — AI 量化交易
+    title: Lucrum — AI 量化交易
     details: AI 驱动的量化交易平台，智能交易助手 + 策略市场 + 回测引擎，从策略开发到实盘执行的完整工作流。
     link: /gushen/
     linkText: 查看文档
@@ -69,7 +69,7 @@ features:
     ]"
   />
   <ActionCard
-    name="GuShen"
+    name="Lucrum"
     tagline="AI 量化交易平台，策略市场 + 智能助手"
     icon="📈"
     color="#7B8EC6"
@@ -210,7 +210,7 @@ curl https://api.lurus.cn/v1/chat/completions \
 
 ---
 
-### GuShen — AI 量化交易助手
+### Lucrum — AI 量化交易助手
 
 ```
 你: 帮我分析一下最近上证指数的走势

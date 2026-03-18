@@ -51,7 +51,7 @@ export default defineConfig({
         text: 'AI 服务',
         items: [
           { text: 'Lurus API — LLM 统一网关', link: '/guide/introduction' },
-          { text: 'GuShen — AI 量化交易', link: '/gushen/' },
+          { text: 'Lucrum — AI 量化交易', link: '/gushen/' },
           { text: 'Kova — Agent 执行引擎', link: '/kova/' },
           { text: 'MemX — AI 智能记忆', link: '/memx/' },
           { text: 'Forge — AI 产品工作台', link: '/forge/' },
@@ -119,7 +119,7 @@ export default defineConfig({
       ],
       '/gushen/': [
         {
-          text: 'GuShen 文档',
+          text: 'Lucrum 文档',
           items: [
             { text: '简介', link: '/gushen/' },
             { text: '快速开始', link: '/gushen/quickstart' },

@@ -23,7 +23,7 @@ lurus-docs/
 │   │   └── theme/          # Custom theme components
 │   ├── api/                # Lurus API reference (overview auto-synced)
 │   ├── guide/              # Lurus API user guide + client integrations
-│   ├── gushen/             # GuShen quant platform docs
+│   ├── gushen/             # Lucrum quant platform docs
 │   ├── switch/             # Switch desktop app docs
 │   └── index.md            # Homepage
 ├── data/
