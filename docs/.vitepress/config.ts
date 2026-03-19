@@ -4,7 +4,7 @@ import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 
 export default defineConfig({
   title: 'Lurus Docs',
-  description: 'Lurus Platform Documentation — API, GuShen, Kova, Switch, MemX, Creator',
+  description: 'Lurus Platform Documentation — API, Lucrum, Kova, Switch, MemX, Creator',
   lang: 'zh-CN',
 
   cleanUrls: true,
@@ -17,7 +17,7 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Lurus Docs — 一站式产品文档' }],
-    ['meta', { property: 'og:description', content: 'Lurus API · GuShen · Kova · Switch · MemX · Creator — 所有产品的完整文档' }],
+    ['meta', { property: 'og:description', content: 'Lurus API · Lucrum · Kova · Switch · MemX · Creator — 所有产品的完整文档' }],
     ['meta', { property: 'og:image', content: 'https://docs.lurus.cn/hero-image.svg' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Lurus Docs' }],

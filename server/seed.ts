@@ -13,7 +13,7 @@ interface SeedProduct {
 const SEED_PRODUCTS: SeedProduct[] = [
   { id: 'lurus-api',          name: 'Lurus API',          icon: 'zap',          color: '#C67B5C', status: 'active',      sort_order: 1 },
   { id: 'lurus-platform',     name: 'Lurus Platform',     icon: 'shield',       color: '#6B8E7B', status: 'active',      sort_order: 2 },
-  { id: 'lurus-gushen',       name: 'GuShen',             icon: 'trending-up',  color: '#7B8EC6', status: 'active',      sort_order: 3 },
+  { id: 'lurus-lucrum',       name: 'Lucrum',             icon: 'trending-up',  color: '#7B8EC6', status: 'active',      sort_order: 3 },
   { id: 'lurus-switch',       name: 'Switch',             icon: 'toggle-right', color: '#9B7BC6', status: 'active',      sort_order: 4 },
   { id: 'lurus-memorus',      name: 'Memorus',            icon: 'brain',        color: '#C67BB8', status: 'active',      sort_order: 5 },
   { id: 'lurus-notification', name: 'Notification',       icon: 'bell',         color: '#C6A87B', status: 'active',      sort_order: 6 },
