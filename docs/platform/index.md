@@ -1,4 +1,4 @@
-# Lurus Platform — 账号与计费
+# Lurus Platform — 账号与计费 <StatusBadge status="live" />
 
 ## 概述
 

@@ -15,6 +15,7 @@ import AdminEditor from './components/AdminEditor.vue'
 import InternalLayout from './components/InternalLayout.vue'
 import InternalContent from './components/InternalContent.vue'
 import InternalSection from './components/InternalSection.vue'
+import StatusBadge from './components/StatusBadge.vue'
 import './style.css'
 
 export default {
@@ -35,5 +36,6 @@ export default {
     app.component('InternalLayout', InternalLayout)
     app.component('InternalContent', InternalContent)
     app.component('InternalSection', InternalSection)
+    app.component('StatusBadge', StatusBadge)
   }
 } satisfies Theme

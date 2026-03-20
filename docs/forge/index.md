@@ -1,14 +1,31 @@
-# Forge — AI 产品工作台
+# Forge — AI 产品开发工作台 <StatusBadge status="beta" />
 
 ## 什么是 Forge？
 
-**Lurus Forge** 是面向企业和开发团队的 AI 产品开发工作台，提供可视化的界面来构建、测试和管理 AI 驱动的产品功能。
+**Lurus Forge** 是面向 AI 产品团队的开发工作台，核心哲学是"**一切皆对话**"——产品需求通过 Session 对话讨论，功能通过 AI Agent (PM/Architect/Code) 实现，知识通过产品本体论 (Ontology) 可视化。
 
-> Forge 目前处于内测阶段。如需体验，请联系 [business@lurus.cn](mailto:business@lurus.cn)。
+底层通过 [Kova 引擎](/kova/) 实现 Agent 任务的 WAL 持久化，即使执行中断也能无缝恢复。
+
+> Forge 目前处于受邀内测阶段。如需体验，请联系 [business@lurus.cn](mailto:business@lurus.cn)。
 
 ---
 
 ## 核心能力
+
+### 产品本体论 (Ontology)
+
+用树状结构管理产品的用户故事、架构设计、技术栈、设计规范——所有维度并列可视化，AI Agent 在对话中做出的决策自动更新到 Ontology。
+
+### 对话驱动开发
+
+"这个功能的用户故事是什么？" → PM Agent 分析并生成。每个决策都关联到对话上下文，随时可回溯"为什么当初这么决定"。
+
+### Dependency Guardian
+
+超越 Renovate/Dependabot 的三层自动化依赖管理：
+- **Patch**: 自动合并，零人工
+- **Minor**: 审批卡片，一键决策
+- **Major**: 对话式评审，AI 分析 breaking change 对业务的语义影响
 
 ### Prompt 工程工作台
 

@@ -1,6 +1,7 @@
 /**
  * Lurus Docs brand theme — overrides VitePress CSS variables
  * Brand palette sourced from lurus-www design tokens
+ * UX spec: _bmad-output/planning-artifacts/ux-design-specification.md
  */
 
 /* ─── Light mode ─────────────────────────────────────────── */
@@ -53,6 +54,12 @@
   --lurus-brand: #C67B5C;
   --lurus-cream: #F8F4F0;
   --lurus-ink: #3D3530;
+
+  /* Product status colors */
+  --lurus-status-live: #16A34A;
+  --lurus-status-beta: #EA580C;
+  --lurus-status-dev: #2563EB;
+  --lurus-status-plan: #9E8E85;
 }
 
 /* ─── Dark mode ──────────────────────────────────────────── */
@@ -88,6 +95,44 @@
 
   --vp-nav-bg-color: rgba(28, 24, 21, 0.92);
   --vp-sidebar-bg-color: #201C18;
+
+  --lurus-status-live: #4ADE80;
+  --lurus-status-beta: #FB923C;
+  --lurus-status-dev: #60A5FA;
+  --lurus-status-plan: #6B5E57;
+}
+
+/* ─── Global transitions ────────────────────────────────── */
+
+/* Smooth dark/light mode switch */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ─── Typography hierarchy ──────────────────────────────── */
+
+/* Enhanced heading scale for visual hierarchy */
+.vp-doc h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-top: 2rem;
+}
+
+.vp-doc h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.4em;
+  border-bottom: 2px solid var(--vp-c-brand-soft);
+  margin-top: 2.5rem;
+}
+
+.vp-doc h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 1.8rem;
 }
 
 /* ─── Component overrides ────────────────────────────────── */
@@ -103,19 +148,29 @@
   max-width: 320px;
 }
 
-/* Feature cards hover lift */
+/* Feature cards hover lift with enhanced micro-interaction */
 .VPFeature {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.25s ease;
   border-radius: 12px !important;
 }
 .VPFeature:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(198, 123, 92, 0.15);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(198, 123, 92, 0.18);
+  border-color: var(--vp-c-brand-soft);
 }
 
-/* Code block rounded corners */
+/* Feature icon pulse on hover */
+.VPFeature:hover .VPFeatureIcon {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+/* Code block rounded corners + subtle left accent */
 div[class*='language-'] {
   border-radius: 10px !important;
+  border-left: 3px solid var(--vp-c-brand-1);
 }
 
 /* Inline code */
@@ -148,17 +203,254 @@ code {
   background: var(--vp-c-brand-1);
 }
 
-/* Table styling */
+/* Table styling — enhanced */
 .vp-doc table {
   border-collapse: collapse;
   width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
 }
 .vp-doc th {
   background-color: var(--vp-c-bg-soft);
   font-weight: 600;
+  text-align: left;
+}
+.vp-doc tr {
+  transition: background-color 0.15s ease;
 }
 .vp-doc tr:hover {
   background-color: var(--vp-c-brand-soft);
+}
+
+/* ─── Scroll reveal animations ──────────────────────────── */
+
+/* Fade-up on scroll — applied via .reveal class or auto on key elements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Homepage sections animate in */
+.VPHome .VPFeatures {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: 0.1s;
+}
+
+/* Action card grid stagger */
+.action-grid {
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Product status badges ─────────────────────────────── */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-badge--live {
+  background: rgba(22, 163, 74, 0.1);
+  color: var(--lurus-status-live);
+}
+.status-badge--live::before {
+  background: var(--lurus-status-live);
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.status-badge--beta {
+  background: rgba(234, 88, 12, 0.1);
+  color: var(--lurus-status-beta);
+}
+.status-badge--beta::before {
+  background: var(--lurus-status-beta);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.status-badge--dev {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--lurus-status-dev);
+}
+.status-badge--dev::before {
+  background: var(--lurus-status-dev);
+  opacity: 0.7;
+}
+
+.status-badge--plan {
+  background: var(--vp-c-bg-mute);
+  color: var(--lurus-status-plan);
+}
+.status-badge--plan::before {
+  border: 1.5px solid var(--lurus-status-plan);
+  background: transparent;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* ─── Homepage stats bar ────────────────────────────────── */
+
+.platform-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  padding: 40px 0 16px;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation-delay: 0.2s;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+/* Subtle divider between stats */
+.stat-item + .stat-item::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 10%;
+  height: 80%;
+  width: 1px;
+  background: var(--vp-c-divider);
+}
+
+.stat-number {
+  font-size: 2.2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  color: var(--vp-c-text-3);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* ─── Section breathing space ───────────────────────────── */
+
+/* More vertical rhythm between homepage sections */
+.vp-doc h2 + .action-grid {
+  margin-top: 20px;
+}
+
+/* Horizontal rule as subtle section divider */
+.vp-doc hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--vp-c-brand-soft),
+    transparent
+  );
+  margin: 48px 0;
+}
+
+/* ─── Mobile optimizations ──────────────────────────────── */
+
+@media (max-width: 768px) {
+  /* Larger touch targets */
+  .action-card__btn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+
+  /* Stack stats on mobile */
+  .platform-stats {
+    gap: 20px;
+    padding: 24px 0 8px;
+  }
+
+  .stat-item + .stat-item::before {
+    display: none;
+  }
+
+  .stat-number {
+    font-size: 1.6rem;
+  }
+
+  /* Tighter heading spacing on mobile */
+  .vp-doc h1 {
+    font-size: 1.6rem;
+  }
+
+  .vp-doc h2 {
+    font-size: 1.25rem;
+    margin-top: 2rem;
+  }
+
+  /* Section divider thinner margin on mobile */
+  .vp-doc hr {
+    margin: 32px 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .platform-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+/* ─── Sidebar active state enhancement ──────────────────── */
+
+.VPSidebarItem.is-active > .item > .indicator {
+  background-color: var(--vp-c-brand-1);
+}
+
+.VPSidebarItem.is-active > .item > .link > .text {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+
+/* ─── "Why Lurus" table special styling ─────────────────── */
+
+/* Bold first column in comparison tables */
+.vp-doc table td:first-child strong {
+  color: var(--vp-c-brand-1);
 }
 
 /* ─── Updates page ───────────────────────────────────────── */

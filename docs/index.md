@@ -2,9 +2,9 @@
 layout: home
 
 hero:
-  name: "Lurus Docs"
-  text: "一站式产品文档"
-  tagline: AI 服务 · 桌面工具 · 开发者平台 — 所有产品的完整文档
+  name: "Lurus"
+  text: "AI 基础设施与产品平台"
+  tagline: 从执行引擎到量化交易，从智能记忆到内容创作 — 覆盖 AI 全栈的产品矩阵
   image:
     src: /hero-image.svg
     alt: Lurus Platform
@@ -22,43 +22,62 @@ hero:
 features:
   - icon: 🔌
     title: Lurus API — LLM 统一网关
-    details: 一个 API Key 接入 50+ 主流 AI 模型（GPT、Claude、Gemini、DeepSeek），完全兼容 OpenAI SDK，3 行代码迁移。
+    details: 一个 API Key 接入 50+ 主流 AI 模型，完全兼容 OpenAI SDK。智能路由、自动故障转移、per-channel 熔断保护，网关延迟 p95 < 50ms。
     link: /guide/introduction
     linkText: 查看文档
-  - icon: 📈
-    title: Lucrum — AI 量化交易
-    details: AI 驱动的量化交易平台，智能交易助手 + 策略市场 + 回测引擎，从策略开发到实盘执行的完整工作流。
-    link: /gushen/
-    linkText: 查看文档
   - icon: 🤖
-    title: Kova — Agent 执行引擎
-    details: Rust 构建的高性能 AI Agent 持久化执行引擎，WAL-First 架构，崩溃自动恢复，支持 Agent/Workflow/Swarm。
+    title: Kova — Agent 持久执行引擎
+    details: Rust 构建的 WAL-First 架构，152,000 行工业级代码。崩溃自动恢复、微秒级调度、零外部依赖，支持 REST/gRPC/MCP/A2A 五种协议。
     link: /kova/
     linkText: 查看文档
   - icon: 🧠
-    title: MemX — AI 智能记忆
-    details: 基于 ACE 引擎的 AI 记忆管理，智能知识蒸馏，仿生遗忘曲线，四层混合检索，全链路隐私保护。
+    title: MemX — AI 自适应记忆
+    details: 基于 ACE v2.0 的知识蒸馏引擎，零 LLM 成本提取知识、艾宾浩斯衰退遗忘、四层混合检索、12 种 PII 隐私过滤。
     link: /memx/
     linkText: 查看文档
+  - icon: 📈
+    title: Lucrum — AI 量化交易
+    details: 自然语言描述策略，AI 自动生成代码并回测。11 个投资顾问 Agent、Decimal.js 金融级精度、680+ 单元测试覆盖。
+    link: /gushen/
+    linkText: 查看文档
   - icon: 🖥️
-    title: Switch — 智能桌面客户端
-    details: 桌面端 AI 模型网关，全平台支持，本地代理路由，一键切换模型服务，离线可用。
+    title: Switch — AI 工具管理中心
+    details: 一个桌面应用管理 Claude Code / Codex / Gemini CLI 等所有 AI 编程工具的配置、MCP 服务器和成本。单 exe 零依赖。
     link: /switch/
     linkText: 查看文档
   - icon: 🎬
     title: Creator — AI 内容工厂
-    details: 桌面端 AI 内容创作工具，视频下载 → 语音转写 → AI 改写 → 多平台发布，一条龙自动化。
+    details: 粘贴视频链接，AI 一键生成微信/抖音/小红书三平台定制内容并自动发布。支持 8 大视频平台，单 exe 零依赖。
     link: /creator/
     linkText: 查看文档
 
 ---
 
+<div class="platform-stats">
+  <div class="stat-item">
+    <span class="stat-number">12</span>
+    <span class="stat-label">产品矩阵</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number">50+</span>
+    <span class="stat-label">AI 模型接入</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number">5</span>
+    <span class="stat-label">编程语言</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number">3 us</span>
+    <span class="stat-label">Kova 调度延迟</span>
+  </div>
+</div>
+
 ## AI 服务
 
 <div class="action-grid">
   <ActionCard
-    name="Lurus API"
-    tagline="一个 Key 接入 50+ AI 模型，兼容 OpenAI SDK"
+    name="Lurus API &nbsp;<span class='status-badge status-badge--live'>已上线</span>"
+    tagline="一个 Key 接入 50+ AI 模型，兼容 OpenAI SDK，p95 < 50ms"
     icon="🔌"
     color="#C67B5C"
     :actions="[
@@ -69,8 +88,30 @@ features:
     ]"
   />
   <ActionCard
-    name="Lucrum"
-    tagline="AI 量化交易平台，策略市场 + 智能助手"
+    name="Kova &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    tagline="Rust 构建的 Agent 持久执行引擎，WAL 崩溃恢复，152K 行代码"
+    icon="🤖"
+    color="#6B8E7B"
+    :actions="[
+      { label: '快速开始', href: '/kova/quickstart', primary: true },
+      { label: '核心概念', href: '/kova/concepts' },
+      { label: 'API 参考', href: '/kova/api' },
+    ]"
+  />
+  <ActionCard
+    name="MemX &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    tagline="AI 自适应记忆引擎，零 LLM 成本蒸馏，仿生遗忘曲线"
+    icon="🧠"
+    color="#9333EA"
+    :actions="[
+      { label: '快速开始', href: '/memx/quickstart', primary: true },
+      { label: '核心概念', href: '/memx/concepts' },
+      { label: '架构设计', href: '/memx/architecture' },
+    ]"
+  />
+  <ActionCard
+    name="Lucrum &nbsp;<span class='status-badge status-badge--live'>已上线</span>"
+    tagline="AI 量化交易，自然语言生成策略，11 个投资顾问 Agent"
     icon="📈"
     color="#7B8EC6"
     :actions="[
@@ -81,30 +122,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Kova"
-    tagline="AI Agent 持久化执行引擎，Rust 构建"
-    icon="🤖"
-    color="#6B8E7B"
-    :actions="[
-      { label: '快速开始', href: '/kova/quickstart', primary: true },
-      { label: '核心概念', href: '/kova/concepts' },
-      { label: 'API 参考', href: '/kova/api' },
-    ]"
-  />
-  <ActionCard
-    name="MemX"
-    tagline="AI 智能记忆管理，仿生遗忘曲线"
-    icon="🧠"
-    color="#9333EA"
-    :actions="[
-      { label: '快速开始', href: '/memx/quickstart', primary: true },
-      { label: '核心概念', href: '/memx/concepts' },
-      { label: '架构设计', href: '/memx/architecture' },
-    ]"
-  />
-  <ActionCard
-    name="Forge"
-    tagline="AI 产品可视化工作台（内测中）"
+    name="Forge &nbsp;<span class='status-badge status-badge--beta'>内测中</span>"
+    tagline="AI 产品可视化工作台，对话驱动开发"
     icon="🔨"
     color="#C6A87B"
     :actions="[
@@ -117,8 +136,8 @@ features:
 
 <div class="action-grid">
   <ActionCard
-    name="Switch"
-    tagline="桌面 AI 网关，全平台，本地路由，离线可用"
+    name="Switch &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    tagline="AI 编程工具统一管理，配置 + MCP + 成本一站式控制"
     icon="🖥️"
     color="#16A34A"
     :actions="[
@@ -128,8 +147,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Creator"
-    tagline="AI 内容工厂，视频转写 + AI 改写 + 自动发布"
+    name="Creator &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    tagline="AI 内容工厂，视频转写 + 三平台改写 + 自动发布"
     icon="🎬"
     color="#C67B7B"
     :actions="[
@@ -138,8 +157,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Lumen"
-    tagline="Agent 开发者 CLI，本地开发到云端部署"
+    name="Lumen &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    tagline="Agent 可观测性工具，Replay + 崩溃恢复 + 成本追踪"
     icon="⚡"
     color="#AF8B7B"
     :actions="[
@@ -153,7 +172,7 @@ features:
 <div class="action-grid">
   <ActionCard
     name="账号与计费"
-    tagline="统一账号、订阅计划、鹿贝钱包"
+    tagline="统一账号、订阅计划、鹿贝钱包、VIP 体系"
     icon="💰"
     color="#8B9DAF"
     :actions="[
@@ -164,7 +183,7 @@ features:
   />
   <ActionCard
     name="API 参考"
-    tagline="OpenAI 兼容 API，完整端点文档"
+    tagline="OpenAI 兼容 API，完整端点文档与错误码"
     icon="📖"
     color="#7BAFC6"
     :actions="[
@@ -175,7 +194,7 @@ features:
   />
   <ActionCard
     name="系统架构"
-    tagline="混合云集群、GitOps、可观测性 (详细内容需登录)"
+    tagline="混合云集群、GitOps、全栈可观测性"
     icon="🏗️"
     color="#A8C67B"
     :actions="[
@@ -185,11 +204,43 @@ features:
 </div>
 
 <style>
+.platform-stats {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  padding: 40px 0 16px;
+  flex-wrap: wrap;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--vp-c-brand-1);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--vp-c-text-3);
+  font-weight: 500;
+}
 .action-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 16px;
   margin: 24px 0 40px;
+}
+@media (max-width: 640px) {
+  .platform-stats {
+    gap: 24px;
+  }
+  .stat-number {
+    font-size: 1.5rem;
+  }
 }
 </style>
 
@@ -210,32 +261,60 @@ curl https://api.lurus.cn/v1/chat/completions \
 
 ---
 
-### Lucrum — AI 量化交易助手
+### Kova — 创建你的第一个持久化 Agent
+
+```rust
+// cargo add kova
+use kova::prelude::*;
+
+let engine = KovaBuilder::new()
+    .wal_dir("./agent-state")
+    .build()?;
+
+// Agent 崩溃后自动从 WAL 恢复，不重新调用 LLM
+let agent = engine.create_agent("researcher")
+    .model("deepseek-chat")
+    .tools(&["web_search", "file_read"])
+    .build()?;
+```
+
+> [快速开始](/kova/quickstart) · [核心概念](/kova/concepts) · [API 参考](/kova/api)
+
+---
+
+### Lucrum — 自然语言描述策略，AI 生成并回测
 
 ```
-你: 帮我分析一下最近上证指数的走势
+你: 双均线交叉策略，5日线上穿20日线买入，下穿卖出，止损5%
 
-AI: 最近 20 个交易日，上证指数呈现震荡偏强走势...
-    建议关注 3200 支撑位，若放量突破 MA20 可考虑加仓。
+AI: 已生成 vnpy CtaTemplate 策略代码。
+    回测结果 (2024-01 ~ 2025-12):
+    夏普比率: 1.42 | 最大回撤: 8.3% | 胜率: 62%
+    评级: A (收益优秀，风控良好)
 ```
 
 > [快速开始](/gushen/quickstart) · [策略市场](/gushen/strategies) · [交易平台](https://gushen.lurus.cn)
 
 ---
 
-### Kova — 创建你的第一个 Agent
+### MemX — 让 AI 拥有持久记忆
 
-```bash
-# 启动 Kova
-docker run -d -p 8080:8080 -e LURUS_API_KEY=sk-xxx ghcr.io/hanmahong5-arch/kova:latest
+```python
+from memx import Memory
 
-# 创建 Agent
-curl -X POST http://localhost:8080/api/v1/agents \
-  -H "Content-Type: application/json" \
-  -d '{"name":"researcher","model":"deepseek-chat","tools":["web_search"]}'
+m = Memory(config={"ace_enabled": True})
+
+# 从对话中自动蒸馏高价值知识，零 LLM 成本
+m.add([
+    {"role": "user", "content": "pytest 超时怎么办？"},
+    {"role": "assistant", "content": "用 pytest -x --timeout=30 逐个排查"}
+], user_id="dev1", scope="project:backend")
+
+# 四层混合检索 + 衰退加权
+results = m.search("pytest 调试", user_id="dev1")
 ```
 
-> [快速开始](/kova/quickstart) · [核心概念](/kova/concepts) · [API 参考](/kova/api)
+> [快速开始](/memx/quickstart) · [核心概念](/memx/concepts) · [架构设计](/memx/architecture)
 
 ---
 
@@ -247,28 +326,19 @@ curl -X POST http://localhost:8080/api/v1/agents \
 | macOS | macOS 12+ | [安装指南](/switch/install#macos) |
 | Linux | Ubuntu 20.04+ | [安装指南](/switch/install#linux) |
 
-> [安装指南](/switch/install) · [配置说明](/switch/configuration)
+> [安装指南](/switch/install) · [配置说明](/switch/configuration) · [使用手册](/switch/usage)
 
 ---
 
-### MemX — 让 AI 拥有记忆
+## 为什么选择 Lurus？
 
-```python
-from memx import Memory
-
-m = Memory(config={"ace_enabled": True})
-
-# 从对话中自动学习知识
-m.add([
-    {"role": "user", "content": "pytest 超时怎么办？"},
-    {"role": "assistant", "content": "用 pytest -x --timeout=30 逐个排查"}
-], user_id="dev1", scope="project:backend")
-
-# 四层混合检索
-results = m.search("pytest 调试", user_id="dev1")
-```
-
-> [快速开始](/memx/quickstart) · [核心概念](/memx/concepts) · [架构设计](/memx/architecture)
+| 维度 | Lurus 的优势 |
+|------|-------------|
+| **全栈自研** | 从 Rust 执行引擎到 Flutter 移动端，核心技术完全自主可控 |
+| **引擎级性能** | Kova 3 us 调度延迟，比 Temporal 快 500 倍；API 网关 p95 < 50ms |
+| **数据主权** | 私有化部署，数据不出企业边界，支持国密 SM4-GCM |
+| **生态协同** | 12 个产品共享账户/计费/记忆/LLM 网关，越用越值 |
+| **经济高效** | MemX 零 LLM 成本蒸馏；Lucrum Decimal.js 全精度零浮点误差 |
 
 ---
 
@@ -276,4 +346,4 @@ results = m.search("pytest 调试", user_id="dev1")
 
 - **技术支持**: support@lurus.cn
 - **商务合作**: business@lurus.cn
-- **GitHub**: [hanmahong5-arch](https://github.com/hanmahong5-arch)
+- **GitHub**: [github.com/hanmahong5-arch](https://github.com/hanmahong5-arch)

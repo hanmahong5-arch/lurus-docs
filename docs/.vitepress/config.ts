@@ -3,8 +3,8 @@ import llmstxt from 'vitepress-plugin-llms'
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 
 export default defineConfig({
-  title: 'Lurus Docs',
-  description: 'Lurus Platform Documentation — API, Lucrum, Kova, Switch, MemX, Creator',
+  title: 'Lurus',
+  description: 'Lurus AI 基础设施与产品平台 — LLM 网关、Agent 执行引擎、智能记忆、量化交易、桌面工具',
   lang: 'zh-CN',
 
   cleanUrls: true,
@@ -16,12 +16,12 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:title', content: 'Lurus Docs — 一站式产品文档' }],
-    ['meta', { property: 'og:description', content: 'Lurus API · Lucrum · Kova · Switch · MemX · Creator — 所有产品的完整文档' }],
+    ['meta', { property: 'og:title', content: 'Lurus — AI 基础设施与产品平台' }],
+    ['meta', { property: 'og:description', content: 'LLM 统一网关 · Agent 执行引擎 · 智能记忆 · 量化交易 · 桌面工具 — 覆盖 AI 全栈的产品文档' }],
     ['meta', { property: 'og:image', content: 'https://docs.lurus.cn/hero-image.svg' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'Lurus Docs' }],
-    ['meta', { name: 'twitter:description', content: 'Lurus Platform 产品文档中心' }],
+    ['meta', { name: 'twitter:title', content: 'Lurus — AI 基础设施与产品平台' }],
+    ['meta', { name: 'twitter:description', content: '从执行引擎到量化交易，覆盖 AI 全栈的产品平台' }],
   ],
 
   vite: {
@@ -51,18 +51,19 @@ export default defineConfig({
         text: 'AI 服务',
         items: [
           { text: 'Lurus API — LLM 统一网关', link: '/guide/introduction' },
-          { text: 'Lucrum — AI 量化交易', link: '/gushen/' },
           { text: 'Kova — Agent 执行引擎', link: '/kova/' },
           { text: 'MemX — AI 智能记忆', link: '/memx/' },
+          { text: 'Lucrum — AI 量化交易', link: '/gushen/' },
           { text: 'Forge — AI 产品工作台', link: '/forge/' },
         ]
       },
       {
-        text: '桌面工具',
+        text: '桌面 & 移动',
         items: [
-          { text: 'Switch — 智能客户端', link: '/switch/' },
+          { text: 'Switch — AI 工具管理', link: '/switch/' },
           { text: 'Creator — 内容工厂', link: '/creator/' },
           { text: 'Lumen — 开发者 CLI', link: '/lumen/' },
+          { text: 'Lutu — 移动客户端', link: 'https://www.lurus.cn/download#lutu' },
         ]
       },
       {
@@ -70,10 +71,9 @@ export default defineConfig({
         items: [
           { text: '账号与计费', link: '/platform/' },
           { text: 'API 参考', link: '/api/overview' },
-          { text: '系统架构 &#128274;', link: '/developer/architecture' },
+          { text: '产品动态', link: '/updates/' },
         ]
       },
-      { text: 'Updates', link: '/updates/' },
     ],
 
     sidebar: {
@@ -119,7 +119,7 @@ export default defineConfig({
       ],
       '/gushen/': [
         {
-          text: 'Lucrum 文档',
+          text: 'Lucrum 量化交易',
           items: [
             { text: '简介', link: '/gushen/' },
             { text: '快速开始', link: '/gushen/quickstart' },
@@ -130,7 +130,7 @@ export default defineConfig({
       ],
       '/kova/': [
         {
-          text: 'Kova 文档',
+          text: 'Kova 执行引擎',
           items: [
             { text: '简介', link: '/kova/' },
             { text: '快速开始', link: '/kova/quickstart' },
@@ -141,7 +141,7 @@ export default defineConfig({
       ],
       '/creator/': [
         {
-          text: 'Creator 文档',
+          text: 'Creator 内容工厂',
           items: [
             { text: '简介', link: '/creator/' },
             { text: '安装指南', link: '/creator/install' },
@@ -161,7 +161,7 @@ export default defineConfig({
       ],
       '/lumen/': [
         {
-          text: 'Lumen 文档',
+          text: 'Lumen 开发者工具',
           items: [
             { text: '简介与安装', link: '/lumen/' },
           ]
@@ -169,7 +169,7 @@ export default defineConfig({
       ],
       '/forge/': [
         {
-          text: 'Forge 文档',
+          text: 'Forge 产品工作台',
           items: [
             { text: '简介', link: '/forge/' },
           ]
@@ -177,7 +177,7 @@ export default defineConfig({
       ],
       '/switch/': [
         {
-          text: 'Switch 文档',
+          text: 'Switch 工具管理',
           items: [
             { text: '简介', link: '/switch/' },
             { text: '安装指南', link: '/switch/install' },
@@ -188,7 +188,7 @@ export default defineConfig({
       ],
       '/memx/': [
         {
-          text: 'MemX 文档',
+          text: 'MemX 智能记忆',
           items: [
             { text: '简介', link: '/memx/' },
             { text: '快速开始', link: '/memx/quickstart' },
@@ -200,9 +200,9 @@ export default defineConfig({
       ],
       '/updates/': [
         {
-          text: 'Product Updates',
+          text: '产品动态',
           items: [
-            { text: 'All Updates', link: '/updates/' },
+            { text: '全部更新', link: '/updates/' },
           ]
         }
       ],
@@ -229,7 +229,7 @@ export default defineConfig({
 
     footer: {
       message: 'Powered by Lurus Technologies',
-      copyright: 'Copyright © 2024-present Lurus'
+      copyright: 'Copyright &copy; 2024-2026 Lurus'
     },
 
     search: {

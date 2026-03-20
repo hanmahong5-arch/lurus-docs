@@ -1,10 +1,12 @@
-# Kova — AI Agent 持久化执行引擎
+# Kova — AI Agent 持久化执行引擎 <StatusBadge status="dev" />
 
 ## 什么是 Kova？
 
 **Kova** 是 Lurus 的核心 AI Agent 基础设施，一个用 Rust 构建的高性能 Agent 持久化执行引擎。它解决了 AI Agent 开发中最棘手的问题：**如何让 Agent 可靠地长时间运行，在崩溃后恢复状态，并在复杂工作流中协同工作。**
 
-传统 Agent 框架（如 LangChain、CrewAI）在内存中运行，进程退出即丢失所有状态。Kova 采用 WAL（Write-Ahead Log）优先的架构，确保每一步执行都被持久化记录，即使系统崩溃也能精确恢复到中断点。
+传统 Agent 框架（如 LangChain、CrewAI）在内存中运行，进程退出即丢失所有状态。Kova 采用 WAL（Write-Ahead Log）优先的架构，确保每一步执行都被持久化记录，即使系统崩溃也能精确恢复到中断点——不重新调用 LLM，不丢失任何进度，不产生额外费用。
+
+核心技术指标：**FIFO 调度延迟 3.17 us（p50）、吞吐量 315K ops/s、零外部服务依赖**。
 
 ---
 
@@ -91,7 +93,7 @@ Agent 可以在运行时根据任务类型动态切换模型。
 └──────────────────────────────────────────────┘
 ```
 
-Kova 由 18 个 Rust crate 组成的工作空间，核心代码量超过 52,000 行，经过严格的静态分析（`#[deny(clippy::unwrap_used, clippy::panic)]`）。
+Kova 由 19 个 Rust crate 组成的工作空间，代码量超过 152,000 行，1,565+ 测试用例 + 4 个 fuzz target。全面启用严格 lint（`#[deny(clippy::unwrap_used, clippy::panic, missing_docs)]`），工业级代码质量。
 
 ---
 
@@ -119,8 +121,9 @@ Kova 由 18 个 Rust crate 组成的工作空间，核心代码量超过 52,000 
 | 内存效率 | 低 | 低 | 低 | **极高** |
 | MCP 支持 | 第三方 | 无 | 无 | **原生** |
 | A2A 协议 | 无 | 无 | 无 | **原生** |
-| 加密能力 | 无 | 无 | 无 | **SM4/AES** |
-| 部署形态 | Python 进程 | Python 进程 | Python 进程 | **单二进制/容器** |
+| 加密能力 | 无 | 无 | 无 | **SM4-GCM / ChaCha20** |
+| 多协议 | 无 | 无 | 无 | **REST/gRPC/MCP/A2A/PyO3** |
+| 部署形态 | Python 进程 | Python 进程 | Python 进程 | **单二进制 / 容器 / 嵌入式库** |
 
 ---
 

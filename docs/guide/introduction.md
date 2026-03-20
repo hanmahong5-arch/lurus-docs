@@ -1,4 +1,4 @@
-# Lurus API 简介
+# Lurus API 简介 <StatusBadge status="live" />
 
 **一个 API Key，接入 50+ 主流 AI 模型。** 完全兼容 OpenAI SDK，现有代码只需两行改动，无需重写。
 

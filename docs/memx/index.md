@@ -1,8 +1,8 @@
-# MemX — AI 智能记忆管理
+# MemX — AI 自适应记忆引擎 <StatusBadge status="dev" />
 
 ## 什么是 MemX？
 
-**MemX** 是 Lurus 推出的 GUI 化 AI 记忆管理产品，基于 [ACE（Adaptive Context Engine）](https://github.com/UU114/memx) 核心引擎构建。它为 AI Agent 提供完整的知识生命周期管理：**智能提取 → 自动去重 → 时间衰减 → 混合召回**，让 AI 拥有真正像人类一样的"记忆力"。
+**MemX** 是 Lurus 推出的 AI 自适应记忆引擎，基于 **ACE（Adaptive Context Engine）v2.0** 构建。它为 AI Agent 提供完整的知识生命周期管理：**智能蒸馏 → 语义去重 → 衰退遗忘 → 混合检索**，让 AI 拥有真正像人类一样的"记忆力"。
 
 与传统的 AI 记忆系统相比，MemX 的核心优势在于：
 

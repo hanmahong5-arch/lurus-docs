@@ -2,7 +2,7 @@
   "name": "lurus-docs",
   "version": "1.0.0",
   "type": "module",
-  "description": "Lurus API Documentation",
+  "description": "Lurus AI Platform Documentation — API, Kova, MemX, Lucrum, Switch, Creator, Lumen, Forge",
   "scripts": {
     "sync": "bun scripts/sync.ts",
     "dev": "vitepress dev docs",

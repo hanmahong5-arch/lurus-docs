@@ -1,14 +1,52 @@
-# Lumen — Agent 开发者 CLI
+# Lumen — Agent 可观测性与可靠性工具 <StatusBadge status="dev" />
 
 ## 什么是 Lumen？
 
-**Lumen** 是 Lurus 为 AI Agent 开发者打造的命令行工具，用 Rust 编写，提供从本地开发到云端部署的完整工作流。
+**Lumen** 是面向 AI Agent 开发者的**三合一可靠性工具** — Replay（零成本重放）+ Crash Recovery（3us 崩溃恢复）+ Cost Tracking（实时成本追踪）。
 
-它是连接 [Kova Agent 引擎](/kova/) 和开发者日常工作的桥梁——在终端中管理 Agent、调试工作流、监控执行状态。
+核心理念：**Illuminate your AI agents. Never lose a run. Never burn tokens blindly.**
+
+```python
+pip install lumen-ai
+
+from lumen_ai import LumenTracer, LumenCheckpointer, CostTracker
+
+# 三行代码接入 — LangGraph 原生集成
+graph = workflow.compile(
+    checkpointer=LumenCheckpointer(),   # 崩溃恢复
+    callbacks=[LumenTracer()]            # 执行追踪 + 成本追踪
+)
+```
+
+Lumen 底层由 Rust 引擎驱动（lumen-core），Python SDK 提供开发者友好接口，是连接 [Kova Agent 引擎](/kova/) 和 Python 生态的桥梁。
 
 ---
 
-## 核心功能
+## 核心能力
+
+### Replay — 零成本确定性重放
+
+从 trace JSON 重放任意 Agent 执行过程，**不调用 LLM，不花一分钱**。支持从指定步骤开始重放，精确定位问题。
+
+```bash
+lumen replay <trace-id>              # 重放完整执行
+lumen replay <trace-id> --from 5     # 从第 5 步开始
+```
+
+### Crash Recovery — 3 us 级崩溃恢复
+
+**LangGraph CheckpointSaver 完整实现**，直接替换原生 SQLite/Redis Checkpointer。内存+磁盘双层存储，原子写入，比 SQLite 快 100 倍，零外部服务依赖。
+
+### Cost Tracking — 实时成本追踪
+
+内置 30+ 模型定价表（Claude / GPT-4o / Gemini / Llama / DeepSeek），即使 LLM 不返回费用也能估算。单次调用 > 2x 平均值时自动告警。
+
+```bash
+lumen cost --last 24h                # 最近 24 小时费用
+lumen traces                         # 查看所有执行追踪
+```
+
+### 更多功能
 
 | 功能 | 说明 |
 |------|------|
