@@ -76,7 +76,8 @@ features:
 
 <div class="action-grid">
   <ActionCard
-    name="Lurus API &nbsp;<span class='status-badge status-badge--live'>已上线</span>"
+    name="Lurus API"
+    status="live"
     tagline="一个 Key 接入 50+ AI 模型，兼容 OpenAI SDK，p95 < 50ms"
     icon="🔌"
     color="#C67B5C"
@@ -88,7 +89,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Kova &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    name="Kova"
+    status="dev"
     tagline="Rust 构建的 Agent 持久执行引擎，WAL 崩溃恢复，152K 行代码"
     icon="🤖"
     color="#6B8E7B"
@@ -99,7 +101,8 @@ features:
     ]"
   />
   <ActionCard
-    name="MemX &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    name="MemX"
+    status="dev"
     tagline="AI 自适应记忆引擎，零 LLM 成本蒸馏，仿生遗忘曲线"
     icon="🧠"
     color="#9333EA"
@@ -110,7 +113,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Lucrum &nbsp;<span class='status-badge status-badge--live'>已上线</span>"
+    name="Lucrum"
+    status="live"
     tagline="AI 量化交易，自然语言生成策略，11 个投资顾问 Agent"
     icon="📈"
     color="#7B8EC6"
@@ -122,7 +126,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Forge &nbsp;<span class='status-badge status-badge--beta'>内测中</span>"
+    name="Forge"
+    status="beta"
     tagline="AI 产品可视化工作台，对话驱动开发"
     icon="🔨"
     color="#C6A87B"
@@ -136,7 +141,8 @@ features:
 
 <div class="action-grid">
   <ActionCard
-    name="Switch &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    name="Switch"
+    status="dev"
     tagline="AI 编程工具统一管理，配置 + MCP + 成本一站式控制"
     icon="🖥️"
     color="#16A34A"
@@ -147,7 +153,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Creator &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    name="Creator"
+    status="dev"
     tagline="AI 内容工厂，视频转写 + 三平台改写 + 自动发布"
     icon="🎬"
     color="#C67B7B"
@@ -157,7 +164,8 @@ features:
     ]"
   />
   <ActionCard
-    name="Lumen &nbsp;<span class='status-badge status-badge--dev'>开发中</span>"
+    name="Lumen"
+    status="dev"
     tagline="Agent 可观测性工具，Replay + 崩溃恢复 + 成本追踪"
     icon="⚡"
     color="#AF8B7B"

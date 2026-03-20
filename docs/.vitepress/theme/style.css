@@ -104,8 +104,15 @@
 
 /* ─── Global transitions ────────────────────────────────── */
 
-/* Smooth dark/light mode switch */
-html {
+/* Smooth dark/light mode switch — only after user interaction,
+   NOT on initial load (VitePress sets .dark via inline script before render).
+   The .vp-doc class is present after hydration, so this avoids flash. */
+html.dark,
+html:not(.dark) {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+/* Prevent transition on first paint — VitePress adds theme before CSS loads */
+html[data-transitioning] {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -167,10 +174,12 @@ html {
   transition: transform 0.2s ease;
 }
 
-/* Code block rounded corners + subtle left accent */
+/* Code block rounded corners + subtle left accent (only on non-line-numbered blocks) */
 div[class*='language-'] {
   border-radius: 10px !important;
-  border-left: 3px solid var(--vp-c-brand-1);
+}
+div[class*='language-']:not(.line-numbers-mode) {
+  border-left: 3px solid var(--vp-c-brand-soft);
 }
 
 /* Inline code */
@@ -224,7 +233,7 @@ code {
 
 /* ─── Scroll reveal animations ──────────────────────────── */
 
-/* Fade-up on scroll — applied via .reveal class or auto on key elements */
+/* Fade-up keyframes */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -236,15 +245,30 @@ code {
   }
 }
 
-/* Homepage sections animate in */
-.VPHome .VPFeatures {
-  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
-  animation-delay: 0.1s;
+/* Use IntersectionObserver-friendly approach:
+   Elements start invisible, animate when .is-visible is added.
+   For VitePress SPA: elements re-enter viewport on route change = animation replays.
+   Fallback: if JS is disabled, elements are visible by default via noscript. */
+.VPHome .VPFeatures,
+.action-grid,
+.platform-stats {
+  opacity: 0;
+  transform: translateY(20px);
 }
 
-/* Action card grid stagger */
+/* Trigger animation when page is loaded/navigated to.
+   VitePress re-mounts home page components on SPA navigation,
+   so Vue lifecycle causes re-render which retriggers animation. */
+.VPHome .VPFeatures {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+}
+
 .action-grid {
-  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
+}
+
+.platform-stats {
+  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s both;
 }
 
 /* Respect reduced motion preference */
@@ -391,11 +415,8 @@ code {
 /* ─── Mobile optimizations ──────────────────────────────── */
 
 @media (max-width: 768px) {
-  /* Larger touch targets */
-  .action-card__btn {
-    min-height: 44px;
-    padding: 10px 16px;
-  }
+  /* Note: ActionCard button touch targets are handled in ActionCard.vue scoped styles.
+     Global overrides won't work due to Vue scoped style specificity. */
 
   /* Stack stats on mobile */
   .platform-stats {

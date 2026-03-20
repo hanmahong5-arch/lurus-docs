@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import StatusBadge from './StatusBadge.vue'
+
 export interface CardAction {
   label: string
   href: string
@@ -6,11 +8,14 @@ export interface CardAction {
   external?: boolean
 }
 
+type Status = 'live' | 'beta' | 'dev' | 'plan'
+
 interface Props {
   name: string
   tagline: string
   icon?: string
   color?: string
+  status?: Status
   actions: CardAction[]
 }
 
@@ -25,7 +30,10 @@ withDefaults(defineProps<Props>(), {
     <div class="action-card__header">
       <span class="action-card__icon">{{ icon }}</span>
       <div class="action-card__meta">
-        <span class="action-card__name">{{ name }}</span>
+        <span class="action-card__name">
+          {{ name }}
+          <StatusBadge v-if="status" :status="status" />
+        </span>
         <span class="action-card__tagline">{{ tagline }}</span>
       </div>
     </div>
@@ -56,7 +64,9 @@ withDefaults(defineProps<Props>(), {
   border-radius: 14px;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .action-card::before {
@@ -71,7 +81,8 @@ withDefaults(defineProps<Props>(), {
 
 .action-card:hover {
   border-color: var(--card-accent);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
 }
 
 .action-card__header {
@@ -90,13 +101,18 @@ withDefaults(defineProps<Props>(), {
   display: flex;
   flex-direction: column;
   gap: 3px;
+  min-width: 0;
 }
 
 .action-card__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 1rem;
   font-weight: 700;
   color: var(--vp-c-text-1);
   line-height: 1.3;
+  flex-wrap: wrap;
 }
 
 .action-card__tagline {
@@ -116,6 +132,7 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
   gap: 4px;
   padding: 6px 14px;
+  min-height: 36px;
   border-radius: 20px;
   font-size: 0.82rem;
   font-weight: 600;
@@ -155,11 +172,28 @@ withDefaults(defineProps<Props>(), {
   opacity: 0.75;
 }
 
-/* Compact on small screens */
+/* Mobile: larger touch targets */
+@media (max-width: 768px) {
+  .action-card__btn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+}
+
 @media (max-width: 480px) {
   .action-card__btn {
     flex: 1;
     justify-content: center;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .action-card {
+    transition: none;
+  }
+  .action-card:hover {
+    transform: none;
   }
 }
 </style>
