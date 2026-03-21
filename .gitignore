@@ -20,3 +20,4 @@ Thumbs.db
 
 # BMAD framework (lives at root only)
 _bmad/
+test-updates.db*
