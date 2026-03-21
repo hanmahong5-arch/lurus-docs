@@ -1,8 +1,13 @@
+---
+title: MemX 核心概念
+description: MemX ACE 引擎的四大核心模块：智能蒸馏、语义去重、衰退遗忘和混合检索。
+---
+
 # 核心概念
 
 MemX 的 ACE（Adaptive Context Engine）引擎由四大核心模块组成，每个模块独立运作、协同配合，实现知识的完整生命周期管理。
 
-## Reflector — 知识蒸馏引擎
+## <Term t="Reflector">Reflector</Term> — 知识蒸馏引擎
 
 Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
 
@@ -63,7 +68,7 @@ Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
 
 低于 `min_score`（默认 30）的候选项被丢弃，避免噪音污染知识库。
 
-## Curator — 语义去重引擎
+## <Term t="Curator">Curator</Term> — 语义去重引擎
 
 随着知识积累，不可避免会出现重复和矛盾。Curator 在每次写入时自动处理：
 
@@ -98,7 +103,7 @@ Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
 
 通过 CLI 可以随时检测：`memx conflicts`
 
-## Decay — 时间衰减引擎
+## <Term t="Decay">Decay</Term> — 时间衰减引擎
 
 模拟人类记忆的自然遗忘曲线，确保知识库始终保持"新鲜"。
 
@@ -116,6 +121,16 @@ final       = clamp(boosted, 0.0, 1.0)
 |------|--------|------|
 | `half_life` | 30 天 | 权重衰减到 50% 所需的天数 |
 | `boost_factor` | 0.1 | 每次召回的权重加成系数 |
+
+**数值示例**（half_life=30, boost_factor=0.1）:
+
+| 场景 | age_days | recall_count | base_weight | final |
+|------|----------|-------------|-------------|-------|
+| 刚写入 | 0 | 0 | 1.0 | **1.0**（保护期）|
+| 30 天未用 | 30 | 0 | 0.5 | **0.5** |
+| 60 天未用 | 60 | 0 | 0.25 | **0.25** |
+| 30 天，被检索 5 次 | 30 | 5 | 0.5 | **0.75** |
+| 90 天，被检索 15 次 | 90 | 15 | 0.125 | **1.0**（recall>=15 触发永久记忆，跳过公式）|
 
 ### 三层保护机制
 
@@ -145,7 +160,7 @@ Final Score = Blended Search Score × DecayWeight × RecencyBoost × ScopeBoost
 
 ## Generator — 混合检索引擎
 
-突破纯向量搜索的局限，四层搜索覆盖从精确匹配到语义理解的完整频谱。
+突破纯<Term t="Vector Search">向量搜索</Term>的局限，四层搜索覆盖从精确匹配到语义理解的完整频谱。
 
 ### 四层搜索架构
 
@@ -165,6 +180,13 @@ Final       = Blended × DecayWeight × RecencyBoost × ScopeBoost
 ```
 
 关键词搜索权重（0.6）高于语义搜索（0.4），确保精确匹配的结果优先展示。
+
+**数值示例**: 查询 "pytest timeout"，某条记忆的得分计算：
+- L1(精确)=8, L2(模糊)=5, L3(元数据)=3 → NormKeyword = (8+5+3)/35 = 0.457
+- L4(语义) = 0.72
+- Blended = 0.457×0.6 + 0.72×0.4 = 0.562
+- DecayWeight=0.89, RecencyBoost=1.0, ScopeBoost=1.3
+- **Final = 0.562 × 0.89 × 1.0 × 1.3 = 0.650**
 
 ### 优雅降级
 
@@ -208,3 +230,11 @@ global                    ← 所有项目可见
 - 检索时，匹配当前 scope 的知识获得 1.3x 评分加成
 - 上层 scope 的知识对下层可见（global 对所有项目可见）
 - 下层 scope 的知识对上层不可见
+
+---
+
+## 下一步
+
+- [架构设计](/memx/architecture) — 完整的管道架构和数据流
+- [快速开始](/memx/quickstart) — 5 分钟体验 MemX 核心功能
+- [常见问题](/memx/faq) — 使用中的常见问题解答

@@ -1,4 +1,15 @@
+---
+title: Switch 安装指南
+description: Lurus Switch 桌面应用的下载和安装步骤。
+---
+
 # Switch 安装指南
+
+::: info 前置条件
+- Windows 10+ / macOS 12+ / Ubuntu 20.04+（64 位）
+- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)），或其他 Provider 的 Key
+- 预计时间: 3 分钟
+:::
 
 ## 下载 {#download}
 

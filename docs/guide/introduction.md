@@ -1,6 +1,11 @@
+---
+title: Lurus API 简介
+description: 一个 API Key 接入 50+ 主流 AI 模型，完全兼容 OpenAI SDK，两行改动即可接入。
+---
+
 # Lurus API 简介 <StatusBadge status="live" />
 
-**一个 API Key，接入 50+ 主流 AI 模型。** 完全兼容 OpenAI SDK，现有代码只需两行改动，无需重写。
+**一个 <Term t="API Key">API Key</Term>，接入 50+ 主流 AI 模型。** 完全兼容 OpenAI <Term t="SDK">SDK</Term>，现有代码只需两行改动，无需重写。
 
 ---
 

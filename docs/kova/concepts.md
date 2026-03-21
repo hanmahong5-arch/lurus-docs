@@ -1,3 +1,8 @@
+---
+title: Kova 核心概念
+description: Kova 的 WAL、Agent Loop、Checkpoint 等核心架构组件和设计哲学。
+---
+
 # 核心概念
 
 深入理解 Kova 的核心架构组件和设计哲学。
@@ -10,7 +15,7 @@ Agent 是 Kova 的基本执行单元，由以下要素组成：
 
 | 要素 | 说明 |
 |------|------|
-| **System Prompt** | 定义 Agent 的角色、能力边界和行为规范 |
+| **<Term t="System Prompt">System Prompt</Term>** | 定义 Agent 的角色、能力边界和行为规范 |
 | **Model** | 使用的 LLM 模型（可运行时切换） |
 | **Tools** | Agent 可调用的工具集 |
 | **Memory** | Agent 的会话历史和持久化状态 |
@@ -98,7 +103,7 @@ Workflow 将多个 Agent 或步骤编排成有序的执行管道。
 
 ---
 
-## Swarm（群体智能）
+## <Term t="Swarm">Swarm</Term>（群体智能）
 
 Swarm 模式让多个 Agent 自主协作，无需预定义固定流程。
 
@@ -122,7 +127,7 @@ Swarm 模式让多个 Agent 自主协作，无需预定义固定流程。
    └── 综合输出
 ```
 
-Agent 之间通过 A2A（Agent-to-Agent）协议直接通信：
+Agent 之间通过 <Term t="A2A">A2A（Agent-to-Agent）</Term>协议直接通信：
 
 ```json
 {
@@ -141,7 +146,7 @@ Agent 之间通过 A2A（Agent-to-Agent）协议直接通信：
 
 ---
 
-## WAL（Write-Ahead Log）
+## <Term t="WAL">WAL</Term>（Write-Ahead Log）
 
 WAL 是 Kova 持久化的核心机制，借鉴了数据库系统的设计。
 
@@ -183,7 +188,7 @@ Agent 状态变更
     └── 未完成的记录 → 重新执行
 ```
 
-### 环形缓冲
+### <Term t="Ring Buffer">环形缓冲</Term>
 
 WAL 使用 power-of-2 大小的环形缓冲区：
 
@@ -291,3 +296,11 @@ pure-rust (默认)
 ```
 
 最小化编译只需 `pure-rust`，按需叠加其他特性。
+
+---
+
+## 下一步
+
+- [快速开始](/kova/quickstart) — 5 分钟启动你的第一个 Kova Agent
+- [API 参考](/kova/api) — 完整的 REST API 端点文档
+- [MemX 记忆引擎](/memx/) — 为 Agent 添加持久化记忆能力

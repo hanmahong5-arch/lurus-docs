@@ -1,3 +1,8 @@
+---
+title: Forge — AI 产品开发工作台
+description: Web 端 AI 产品协作开发平台，支持团队协同构建 AI 应用。
+---
+
 # Forge — AI 产品开发工作台 <StatusBadge status="beta" />
 
 ## 什么是 Forge？
@@ -6,7 +11,9 @@
 
 底层通过 [Kova 引擎](/kova/) 实现 Agent 任务的 WAL 持久化，即使执行中断也能无缝恢复。
 
-> Forge 目前处于受邀内测阶段。如需体验，请联系 [business@lurus.cn](mailto:business@lurus.cn)。
+::: warning 内测阶段
+Forge 目前处于受邀内测阶段，功能和 API 可能随时调整。如需体验，请联系 [business@lurus.cn](mailto:business@lurus.cn) 申请内测资格。
+:::
 
 ---
 

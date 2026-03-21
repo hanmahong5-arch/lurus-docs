@@ -1,6 +1,19 @@
+---
+title: Kova 快速开始
+description: 5 分钟启动第一个 Kova Agent，从安装到运行的完整指南。
+---
+
 # 快速开始
 
 本指南帮助你在 5 分钟内启动第一个 Kova Agent。
+
+::: info 前置条件
+- Docker 或 Rust 1.93+（任选一种安装方式）
+- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）
+- 8 GB 以上内存（推荐）
+- 基本终端/命令行知识
+- 预计时间: 5 分钟
+:::
 
 ## 安装
 

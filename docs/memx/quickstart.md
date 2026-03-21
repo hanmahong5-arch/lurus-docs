@@ -1,6 +1,18 @@
+---
+title: MemX 快速开始
+description: 5 分钟内体验 MemX AI 自适应记忆引擎的核心功能。
+---
+
 # 快速开始
 
 本指南带你在 5 分钟内体验 MemX 的核心功能。
+
+::: info 前置条件
+- Python 3.9+（`python --version` 确认）
+- pip 包管理器
+- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)），hybrid 模式下用于 LLM 精炼
+- 预计时间: 5 分钟
+:::
 
 ## 安装
 

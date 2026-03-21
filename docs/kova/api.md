@@ -1,8 +1,13 @@
+---
+title: Kova API 参考
+description: Kova Agent 执行引擎 REST API，35+ 端点，基于 Axum 构建。
+---
+
 # API 参考
 
 Kova 提供完整的 REST API（基于 Axum 构建），包含 35+ 个端点。所有请求和响应均使用 JSON 格式。
 
-## Base URL
+## <Term t="Base URL">Base URL</Term>
 
 ```
 http://localhost:8080/api/v1

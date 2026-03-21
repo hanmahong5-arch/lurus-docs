@@ -1,10 +1,15 @@
+---
+title: API 认证
+description: Lurus API 身份认证方式，包括 API Key 格式和请求头配置。
+---
+
 # 认证
 
 所有 Lurus API 请求都需要进行身份认证。
 
 ## 认证方式
 
-使用 Bearer Token 认证，在 HTTP Header 中携带 API Key：
+使用 <Term t="Bearer Token">Bearer Token</Term> 认证，在 HTTP Header 中携带 <Term t="API Key">API Key</Term>：
 
 ```http
 Authorization: Bearer sk-your-api-key
@@ -105,3 +110,11 @@ client = OpenAI(
 3. **限制权限**: 只给 Key 必需的最小权限
 4. **定期轮换**: 定期更换 API Key
 5. **监控日志**: 定期检查 API 调用日志
+
+---
+
+## 下一步
+
+- [Chat Completions API](/api/chat-completions) — 最常用的对话接口
+- [错误处理](/api/errors) — 错误码和重试策略
+- [API 概述](/api/overview) — 完整端点列表

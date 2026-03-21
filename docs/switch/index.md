@@ -1,3 +1,8 @@
+---
+title: Switch — AI 编程工具统一管理中心
+description: 桌面应用，一个界面管理所有 AI 编程工具的配置、MCP 服务器和成本。
+---
+
 # Lurus Switch — AI 编程工具统一管理中心 <StatusBadge status="dev" />
 
 ## 什么是 Lurus Switch？
@@ -11,8 +16,8 @@
 | 功能 | 说明 |
 |------|------|
 | **多工具配置管理** | 可视化编辑 Claude Code (JSON)、Codex (TOML)、Gemini CLI (MD) 等配置，Monaco Editor 实时预览 |
-| **CLAUDE.md 智能助手** | 扫描项目自动生成 CLAUDE.md，质量评分，优化建议 |
-| **MCP 服务器可视化** | 告别手写 JSON，可视化配置 MCP 服务器，跨工具同步 |
+| **<Term t="CLAUDE.md">CLAUDE.md</Term> 智能助手** | 扫描项目自动生成 CLAUDE.md，质量评分，优化建议 |
+| **<Term t="MCP Server">MCP 服务器</Term>可视化** | 告别手写 JSON，可视化配置 MCP 服务器，跨工具同步 |
 | **成本监控仪表盘** | 实时 Token 消耗趋势，按工具/模型分类，预算预警 |
 | **API Key 统一管理** | 跨工具统一存储和使用，安全加密 |
 | **代理与网络** | 系统代理自动检测，Clash/V2Ray 一键配置，API Endpoint 自定义 |
@@ -60,3 +65,10 @@ Switch 在本地暴露一个兼容 OpenAI API 的端点（默认 `http://localho
 - [安装指南](/switch/install) — 下载并完成首次安装
 - [配置说明](/switch/configuration) — 添加模型、设置路由规则
 - [使用手册](/switch/usage) — 日常使用和高级功能
+
+---
+
+## 相关产品
+
+- [Lurus API — LLM 统一网关](/guide/introduction) — Switch 默认路由的云端模型提供商
+- [Creator — 内容工厂](/creator/) — 同为桌面应用，专注 AI 内容创作

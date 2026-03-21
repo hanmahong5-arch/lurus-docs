@@ -1,3 +1,8 @@
+---
+title: 错误处理
+description: Lurus API 错误响应格式、HTTP 状态码和常见错误的处理方法。
+---
+
 # 错误处理
 
 本文档介绍 Lurus API 的错误响应格式和常见错误的处理方法。
@@ -213,3 +218,11 @@ async function chatWithRetry(messages, maxRetries = 3) {
   - 请求 ID (response header 中的 X-Request-ID)
   - 发生时间
   - 复现步骤
+
+---
+
+## 下一步
+
+- [Chat Completions API](/api/chat-completions) — 最常用的对话接口
+- [认证](/api/authentication) — API Key 配置和安全实践
+- [API 概述](/api/overview) — 完整端点列表

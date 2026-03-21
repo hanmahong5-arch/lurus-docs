@@ -1,3 +1,8 @@
+---
+title: Chat Completions API
+description: Lurus Chat Completions API 参考，完全兼容 OpenAI 接口格式。
+---
+
 # Chat Completions API
 
 最常用的 API，用于与 AI 模型进行对话。完全兼容 OpenAI Chat Completions 接口。
@@ -23,7 +28,7 @@ POST https://api.lurus.cn/v1/chat/completions
 |------|------|--------|------|
 | `temperature` | number | 1.0 | 随机性（0–2）。代码/数学用 0.1，创意写作用 0.9 |
 | `max_tokens` | integer | — | 最大生成 Token 数。不设置则由模型决定 |
-| `stream` | boolean | false | 流式输出（SSE），见[流式响应](#流式响应) |
+| `stream` | boolean | false | <Term t="Streaming">流式输出</Term>（SSE），见[流式响应](#流式响应) |
 | `top_p` | number | 1.0 | 核采样，与 temperature 通常二选一调整 |
 | `stop` | string/array | — | 遇到此字符串时停止生成 |
 | `n` | integer | 1 | 同时生成几个候选回复 |
@@ -158,7 +163,7 @@ data: [DONE]
 
 ## Function Calling
 
-让 AI 决定何时调用你提供的函数，并返回结构化参数。适用于搜索、查询数据库、调用外部 API 等场景。
+让 AI 决定何时调用你提供的函数，并返回结构化参数（<Term t="Tool Call">Tool Call</Term>）。适用于搜索、查询数据库、调用外部 API 等场景。
 
 ### 工作流程
 

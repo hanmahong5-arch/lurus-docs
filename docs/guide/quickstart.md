@@ -1,6 +1,18 @@
+---
+title: 快速开始
+description: 5 分钟内完成首次 Lurus API 调用，支持 Python、Node.js、Go 和 cURL。
+---
+
 # 快速开始
 
 5 分钟内完成首次 API 调用。
+
+::: info 前置条件
+- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）
+- Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（任选一种）
+- 基本终端/命令行知识
+- 预计时间: 5 分钟
+:::
 
 ## 第一步：获取 API Key
 
@@ -194,7 +206,7 @@ func main() {
 
 ### 流式响应怎么开启？
 
-在请求体中加 `"stream": true`，详见 [流式响应](/api/chat-completions#流式响应)。
+在请求体中加 `"stream": true`，详见 [<Term t="Streaming">流式响应</Term>](/api/chat-completions#流式响应)。
 
 ---
 

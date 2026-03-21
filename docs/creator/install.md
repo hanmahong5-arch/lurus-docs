@@ -1,4 +1,16 @@
+---
+title: Creator 安装指南
+description: Creator 桌面内容工厂的下载和安装步骤。
+---
+
 # 安装指南
+
+::: info 前置条件
+- Windows 10+ / macOS 12+ / Linux（64 位）
+- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)），用于 AI 改写功能
+- 4 GB 以上内存（推荐 8 GB+）
+- 预计时间: 3 分钟
+:::
 
 ## 下载
 

@@ -1,3 +1,8 @@
+---
+title: 系统架构
+description: Lurus 混合云架构总览，基于 Kubernetes + GitOps 的统一服务部署和治理体系。
+---
+
 # 系统架构
 
 Lurus 采用混合云架构，基于 Kubernetes + GitOps 构建统一的服务部署和治理体系。
@@ -75,3 +80,12 @@ import InternalContent from '../.vitepress/theme/components/InternalContent.vue'
 </script>
 
 <InternalContent slug="architecture-full" />
+
+---
+
+## 下一步
+
+- [Lurus API](/guide/introduction) — LLM 统一网关详细文档
+- [Kova 执行引擎](/kova/) — Agent 持久化执行引擎
+- [MemX 记忆引擎](/memx/) — AI 自适应记忆引擎
+- [Platform 账号计费](/platform/) — 统一账号和计费体系

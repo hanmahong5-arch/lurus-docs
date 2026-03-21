@@ -1,5 +1,7 @@
+import { h } from 'vue'
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
+import NotFound from './components/NotFound.vue'
 import Badge from './components/Badge.vue'
 import ApiEndpoint from './components/ApiEndpoint.vue'
 import ProductCard from './components/ProductCard.vue'
@@ -16,10 +18,18 @@ import InternalLayout from './components/InternalLayout.vue'
 import InternalContent from './components/InternalContent.vue'
 import InternalSection from './components/InternalSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
+import Term from './components/Term.vue'
+import Breadcrumb from './components/Breadcrumb.vue'
 import './style.css'
 
 export default {
   extends: DefaultTheme,
+  Layout() {
+    return h(DefaultTheme.Layout, null, {
+      'not-found': () => h(NotFound),
+      'doc-before': () => h(Breadcrumb),
+    })
+  },
   enhanceApp({ app }) {
     app.component('Badge', Badge)
     app.component('ApiEndpoint', ApiEndpoint)
@@ -37,5 +47,6 @@ export default {
     app.component('InternalContent', InternalContent)
     app.component('InternalSection', InternalSection)
     app.component('StatusBadge', StatusBadge)
+    app.component('Term', Term)
   }
 } satisfies Theme

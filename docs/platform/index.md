@@ -1,3 +1,8 @@
+---
+title: Lurus Platform — 账号与计费
+description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系统说明。
+---
+
 # Lurus Platform — 账号与计费 <StatusBadge status="live" />
 
 ## 概述
@@ -10,7 +15,7 @@
 
 ### 注册与登录
 
-访问任意 Lurus 产品（如 [api.lurus.cn](https://api.lurus.cn)、[gushen.lurus.cn](https://gushen.lurus.cn)），即可注册或登录 Lurus 账号。
+访问任意 Lurus 产品（如 [api.lurus.cn](https://api.lurus.cn)、[lucrum.lurus.cn](https://lucrum.lurus.cn)），即可注册或登录 Lurus 账号。
 
 **支持的登录方式**:
 
@@ -143,7 +148,7 @@ Lurus Platform 内置多渠道通知系统：
 
 | 措施 | 说明 |
 |------|------|
-| **身份认证** | 基于 OIDC 标准的企业级认证系统 |
+| **身份认证** | 基于 <Term t="OIDC">OIDC</Term> 标准的企业级认证系统 |
 | **传输加密** | 全站 HTTPS（TLS 1.3） |
 | **密码安全** | bcrypt 加密存储，不存储明文 |
 | **支付安全** | PCI DSS 合规的第三方支付网关 |
