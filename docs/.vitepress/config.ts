@@ -36,6 +36,8 @@ export default defineConfig({
   },
 
   markdown: {
+    lineNumbers: true,
+    codeCopyButtonTitle: 'Copy',
     config(md) {
       tabsMarkdownPlugin(md)
     }
