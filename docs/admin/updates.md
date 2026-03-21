@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Updates Management
+description: 管理产品动态，创建、编辑、发布和归档更新条目。
 ---
 
 <script setup>

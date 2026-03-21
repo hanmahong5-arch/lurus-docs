@@ -38,7 +38,7 @@ features:
   - icon: 📈
     title: Lucrum — AI 量化交易
     details: 自然语言描述策略，AI 自动生成代码并回测。11 个投资顾问 Agent、Decimal.js 金融级精度、680+ 单元测试覆盖。
-    link: /gushen/
+    link: /lucrum/
     linkText: 查看文档
   - icon: 🖥️
     title: Switch — AI 工具管理中心
@@ -119,10 +119,10 @@ features:
     icon="📈"
     color="#7B8EC6"
     :actions="[
-      { label: '快速开始', href: '/gushen/quickstart', primary: true },
-      { label: '策略市场', href: '/gushen/strategies' },
-      { label: '常见问题', href: '/gushen/faq' },
-      { label: '交易平台', href: 'https://gushen.lurus.cn', external: true },
+      { label: '快速开始', href: '/lucrum/quickstart', primary: true },
+      { label: '策略市场', href: '/lucrum/strategies' },
+      { label: '常见问题', href: '/lucrum/faq' },
+      { label: '交易平台', href: 'https://lucrum.lurus.cn', external: true },
     ]"
   />
   <ActionCard
@@ -301,7 +301,7 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
     评级: A (收益优秀，风控良好)
 ```
 
-> [快速开始](/gushen/quickstart) · [策略市场](/gushen/strategies) · [交易平台](https://gushen.lurus.cn)
+> [快速开始](/lucrum/quickstart) · [策略市场](/lucrum/strategies) · [交易平台](https://lucrum.lurus.cn)
 
 ---
 

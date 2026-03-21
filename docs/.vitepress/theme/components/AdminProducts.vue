@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useAdminApi } from '../composables/useApi'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useAdminApi, friendlyError } from '../composables/useApi'
 import type { Product, ProductStatus } from '../../../../server/types'
 
 const api = useAdminApi()
 
 const products = ref<Product[]>([])
 const loading = ref(false)
+const loadError = ref('')
+const actionError = ref('')
+const saving = ref(false)
 
 const showForm = ref(false)
 const editing = ref<Product | null>(null)
@@ -21,11 +24,17 @@ const form = ref({
 
 const STATUSES: ProductStatus[] = ['planning', 'beta', 'active', 'maintenance', 'deprecated', 'sunset']
 
+let isActive = true
+
 async function loadProducts() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await api.fetchAdminProducts()
+    if (!isActive) return
     products.value = res.data
+  } catch (e) {
+    loadError.value = friendlyError(e)
   } finally {
     loading.value = false
   }
@@ -52,29 +61,36 @@ function openEdit(p: Product) {
 
 async function saveForm() {
   if (!form.value.name) return
+  actionError.value = ''
+  saving.value = true
 
-  if (editing.value) {
-    await api.editProductApi(editing.value.id, {
-      name: form.value.name,
-      icon: form.value.icon,
-      color: form.value.color,
-      status: form.value.status,
-      sort_order: form.value.sort_order,
-    })
-  } else {
-    if (!form.value.id) return
-    await api.createProductApi({
-      id: form.value.id,
-      name: form.value.name,
-      icon: form.value.icon,
-      color: form.value.color,
-      status: form.value.status,
-      sort_order: form.value.sort_order,
-    })
+  try {
+    if (editing.value) {
+      await api.editProductApi(editing.value.id, {
+        name: form.value.name,
+        icon: form.value.icon,
+        color: form.value.color,
+        status: form.value.status,
+        sort_order: form.value.sort_order,
+      })
+    } else {
+      if (!form.value.id) return
+      await api.createProductApi({
+        id: form.value.id,
+        name: form.value.name,
+        icon: form.value.icon,
+        color: form.value.color,
+        status: form.value.status,
+        sort_order: form.value.sort_order,
+      })
+    }
+    showForm.value = false
+    await loadProducts()
+  } catch (e) {
+    actionError.value = `Save failed: ${friendlyError(e)}`
+  } finally {
+    saving.value = false
   }
-
-  showForm.value = false
-  await loadProducts()
 }
 
 function statusColor(s: string) {
@@ -89,7 +105,27 @@ function statusColor(s: string) {
   return map[s] || '#6b7280'
 }
 
-onMounted(loadProducts)
+watch(showForm, (open) => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = open ? 'hidden' : ''
+  }
+})
+
+function onGlobalKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && showForm.value) {
+    showForm.value = false
+  }
+}
+
+onMounted(() => {
+  loadProducts()
+  document.addEventListener('keydown', onGlobalKeydown)
+})
+onUnmounted(() => {
+  isActive = false
+  document.removeEventListener('keydown', onGlobalKeydown)
+  document.body.style.overflow = ''
+})
 </script>
 
 <template>
@@ -99,7 +135,13 @@ onMounted(loadProducts)
       <button class="btn-create" @click="openCreate">+ New Product</button>
     </div>
 
-    <div v-if="showForm" class="form-overlay">
+    <!-- Action feedback -->
+    <div v-if="actionError" class="action-banner action-banner-error" @click="actionError = ''">
+      {{ actionError }}
+      <span class="banner-dismiss">dismiss</span>
+    </div>
+
+    <div v-if="showForm" class="form-overlay" @click.self="showForm = false">
       <div class="form-card">
         <h3>{{ editing ? 'Edit Product' : 'New Product' }}</h3>
 
@@ -140,12 +182,19 @@ onMounted(loadProducts)
 
         <div class="form-actions">
           <button class="btn-cancel" @click="showForm = false">Cancel</button>
-          <button class="btn-save" @click="saveForm" :disabled="!form.name || (!editing && !form.id)">Save</button>
+          <button class="btn-save" @click="saveForm" :disabled="!form.name || (!editing && !form.id) || saving">
+            {{ saving ? 'Saving...' : 'Save' }}
+          </button>
         </div>
       </div>
     </div>
 
     <div v-if="loading" class="loading-text">Loading...</div>
+
+    <div v-else-if="loadError" class="error-text">
+      <p>{{ loadError }}</p>
+      <button class="retry-btn" @click="loadProducts">Retry</button>
+    </div>
 
     <table v-else-if="products.length > 0" class="products-table">
       <thead>
@@ -178,7 +227,7 @@ onMounted(loadProducts)
       </tbody>
     </table>
 
-    <div v-else class="empty-text">No products found.</div>
+    <div v-else class="empty-text">No products yet. Click "+ New Product" to create one.</div>
   </div>
 </template>
 
@@ -322,10 +371,47 @@ onMounted(loadProducts)
 }
 .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.loading-text, .empty-text {
+.action-banner {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.action-banner-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+.banner-dismiss {
+  font-size: 12px;
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.loading-text, .empty-text, .error-text {
   text-align: center;
   padding: 32px 0;
   color: var(--vp-c-text-3);
   font-size: 14px;
+}
+.error-text p {
+  margin: 0 0 12px;
+  color: var(--vp-c-text-2);
+}
+.retry-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  font-size: 13px;
+  cursor: pointer;
+}
+.retry-btn:hover {
+  background: var(--vp-c-brand-soft);
 }
 </style>

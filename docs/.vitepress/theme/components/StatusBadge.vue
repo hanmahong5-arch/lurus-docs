@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+
 type Status = 'live' | 'beta' | 'dev' | 'plan'
 
 interface Props {
@@ -17,7 +19,7 @@ const labels: Record<Status, string> = {
   plan: '规划中',
 }
 
-const displayLabel = props.label || labels[props.status]
+const displayLabel = computed(() => props.label || labels[props.status] || props.status)
 </script>
 
 <template>

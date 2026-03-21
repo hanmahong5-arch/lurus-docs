@@ -1,3 +1,8 @@
+---
+title: Creator — AI 驱动的桌面内容工厂
+description: 基于 Wails 构建的桌面内容生产工具，AI 辅助创作、多格式输出。
+---
+
 # Creator — AI 驱动的桌面内容工厂 <StatusBadge status="dev" />
 
 ## 什么是 Creator？

@@ -1,3 +1,8 @@
+---
+title: 其他客户端
+description: 在其他兼容 OpenAI API 的客户端中配置 Lurus API。
+---
+
 # 其他客户端
 
 任何支持 OpenAI API 的客户端都可以使用 Lurus API。

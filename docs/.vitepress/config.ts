@@ -53,7 +53,7 @@ export default defineConfig({
           { text: 'Lurus API — LLM 统一网关', link: '/guide/introduction' },
           { text: 'Kova — Agent 执行引擎', link: '/kova/' },
           { text: 'MemX — AI 智能记忆', link: '/memx/' },
-          { text: 'Lucrum — AI 量化交易', link: '/gushen/' },
+          { text: 'Lucrum — AI 量化交易', link: '/lucrum/' },
           { text: 'Forge — AI 产品工作台', link: '/forge/' },
         ]
       },
@@ -80,16 +80,19 @@ export default defineConfig({
       '/guide/': [
         {
           text: '入门指南',
+          collapsed: false,
           items: [
             { text: '简介', link: '/guide/introduction' },
             { text: '快速开始', link: '/guide/quickstart' },
             { text: '获取 API Key', link: '/guide/get-api-key' },
             { text: '支持的模型', link: '/guide/models' },
-            { text: '常见问题', link: '/guide/faq' }
+            { text: '常见问题', link: '/guide/faq' },
+            { text: '术语表', link: '/guide/glossary' }
           ]
         },
         {
           text: '客户端集成',
+          collapsed: true,
           items: [
             { text: 'Cherry Studio', link: '/guide/clients/cherry-studio' },
             { text: 'Lobe Chat', link: '/guide/clients/lobe-chat' },
@@ -101,6 +104,7 @@ export default defineConfig({
       '/api/': [
         {
           text: 'API 参考',
+          collapsed: false,
           items: [
             { text: '概述', link: '/api/overview' },
             { text: '认证', link: '/api/authentication' },
@@ -112,25 +116,28 @@ export default defineConfig({
       '/developer/': [
         {
           text: '开发者指南',
+          collapsed: false,
           items: [
             { text: '系统架构', link: '/developer/architecture' }
           ]
         }
       ],
-      '/gushen/': [
+      '/lucrum/': [
         {
           text: 'Lucrum 量化交易',
+          collapsed: false,
           items: [
-            { text: '简介', link: '/gushen/' },
-            { text: '快速开始', link: '/gushen/quickstart' },
-            { text: '策略市场', link: '/gushen/strategies' },
-            { text: '常见问题', link: '/gushen/faq' },
+            { text: '简介', link: '/lucrum/' },
+            { text: '快速开始', link: '/lucrum/quickstart' },
+            { text: '策略市场', link: '/lucrum/strategies' },
+            { text: '常见问题', link: '/lucrum/faq' },
           ]
         }
       ],
       '/kova/': [
         {
           text: 'Kova 执行引擎',
+          collapsed: false,
           items: [
             { text: '简介', link: '/kova/' },
             { text: '快速开始', link: '/kova/quickstart' },
@@ -142,6 +149,7 @@ export default defineConfig({
       '/creator/': [
         {
           text: 'Creator 内容工厂',
+          collapsed: false,
           items: [
             { text: '简介', link: '/creator/' },
             { text: '安装指南', link: '/creator/install' },
@@ -152,6 +160,7 @@ export default defineConfig({
       '/platform/': [
         {
           text: '平台文档',
+          collapsed: false,
           items: [
             { text: '概述', link: '/platform/' },
             { text: '计费详解', link: '/platform/billing' },
@@ -162,6 +171,7 @@ export default defineConfig({
       '/lumen/': [
         {
           text: 'Lumen 开发者工具',
+          collapsed: false,
           items: [
             { text: '简介与安装', link: '/lumen/' },
           ]
@@ -170,6 +180,7 @@ export default defineConfig({
       '/forge/': [
         {
           text: 'Forge 产品工作台',
+          collapsed: false,
           items: [
             { text: '简介', link: '/forge/' },
           ]
@@ -178,6 +189,7 @@ export default defineConfig({
       '/switch/': [
         {
           text: 'Switch 工具管理',
+          collapsed: false,
           items: [
             { text: '简介', link: '/switch/' },
             { text: '安装指南', link: '/switch/install' },
@@ -189,6 +201,7 @@ export default defineConfig({
       '/memx/': [
         {
           text: 'MemX 智能记忆',
+          collapsed: false,
           items: [
             { text: '简介', link: '/memx/' },
             { text: '快速开始', link: '/memx/quickstart' },
@@ -201,6 +214,7 @@ export default defineConfig({
       '/updates/': [
         {
           text: '产品动态',
+          collapsed: false,
           items: [
             { text: '全部更新', link: '/updates/' },
           ]
@@ -209,6 +223,7 @@ export default defineConfig({
       '/admin/': [
         {
           text: 'Admin',
+          collapsed: false,
           items: [
             { text: 'Dashboard', link: '/admin/' },
             { text: 'Updates', link: '/admin/updates' },

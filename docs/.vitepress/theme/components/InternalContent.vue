@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useInternalAuth } from '../composables/useInternalAuth'
 import MarkdownIt from 'markdown-it'
 
@@ -20,18 +20,23 @@ const md = new MarkdownIt({
   typographer: true,
 })
 
+let isActive = true
+
 async function loadContent() {
   loading.value = true
   error.value = ''
   const result = await fetchContent(props.slug)
+  if (!isActive) return
   loading.value = false
 
-  if (result) {
+  if ('content' in result) {
     content.value = md.render(result.content)
     authenticated.value = true
-  } else {
+  } else if (result.error === 'auth') {
     authenticated.value = false
     clearKey()
+  } else {
+    error.value = result.message
   }
 }
 
@@ -42,15 +47,15 @@ async function login() {
   }
   checking.value = true
   error.value = ''
-  const ok = await verifyKey(keyInput.value.trim())
+  const result = await verifyKey(keyInput.value.trim())
 
-  if (ok) {
+  if (result.ok) {
     saveKey(keyInput.value.trim())
     checking.value = false
     await loadContent()
   } else {
     checking.value = false
-    error.value = 'Invalid access key'
+    error.value = result.message
   }
 }
 
@@ -59,6 +64,7 @@ onMounted(async () => {
     await loadContent()
   }
 })
+onUnmounted(() => { isActive = false })
 </script>
 
 <template>
@@ -71,6 +77,12 @@ onMounted(async () => {
 
     <!-- Authenticated: render content -->
     <div v-else-if="authenticated && content" class="ic-rendered vp-doc" v-html="content" />
+
+    <!-- Network/server error — don't show login, show retry -->
+    <div v-else-if="error" class="ic-error">
+      <p class="ic-error-text">{{ error }}</p>
+      <button class="ic-retry-btn" @click="loadContent">Try again</button>
+    </div>
 
     <!-- Not authenticated: login prompt -->
     <div v-else class="ic-gate">
@@ -172,6 +184,29 @@ onMounted(async () => {
   padding-left: 16px;
   margin: 16px 0;
   color: var(--vp-c-text-2);
+}
+
+.ic-error {
+  padding: 24px;
+  text-align: center;
+}
+.ic-error-text {
+  margin: 0 0 16px;
+  color: var(--vp-c-text-2);
+  font-size: 14px;
+}
+.ic-retry-btn {
+  padding: 8px 20px;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ic-retry-btn:hover {
+  background: var(--vp-c-brand-soft);
 }
 
 .ic-gate {

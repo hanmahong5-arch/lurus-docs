@@ -1,3 +1,8 @@
+---
+title: 获取 API Key
+description: 注册 Lurus 账号并获取 API Key 的完整步骤。
+---
+
 # 获取 API Key
 
 本指南介绍如何注册账号并获取 Lurus API Key。

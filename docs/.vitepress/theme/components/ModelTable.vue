@@ -27,6 +27,7 @@ const STATUS_TYPE: Record<string, 'tip' | 'warning' | 'danger'> = {
     <h3 class="vendor-title">{{ vendor }}</h3>
     <p v-if="tagline" class="vendor-tagline">{{ tagline }}</p>
 
+    <div class="model-table-scroll">
     <table class="model-table">
       <thead>
         <tr>
@@ -58,6 +59,7 @@ const STATUS_TYPE: Record<string, 'tip' | 'warning' | 'danger'> = {
         </tr>
       </tbody>
     </table>
+    </div>
   </div>
 </template>
 
@@ -77,6 +79,11 @@ const STATUS_TYPE: Record<string, 'tip' | 'warning' | 'danger'> = {
   font-size: 0.875rem;
   color: var(--vp-c-text-3);
   margin: 0 0 0.75rem;
+}
+
+.model-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .model-table {

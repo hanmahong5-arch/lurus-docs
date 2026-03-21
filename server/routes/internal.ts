@@ -12,7 +12,7 @@ const app = new Hono();
 // Bearer token auth middleware
 app.use('*', async (c, next) => {
   if (!INTERNAL_API_KEY) {
-    return c.json({ error: 'Server misconfigured: INTERNAL_API_KEY not set' }, 500);
+    return c.json({ error: 'Service temporarily unavailable' }, 503);
   }
   const auth = c.req.header('Authorization');
   if (!auth || auth !== `Bearer ${INTERNAL_API_KEY}`) {

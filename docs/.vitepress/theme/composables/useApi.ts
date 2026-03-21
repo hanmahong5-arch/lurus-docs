@@ -2,14 +2,42 @@ import { ref } from 'vue';
 import type { Product, Update, PaginatedResponse } from '../../../../server/types';
 
 const API_BASE = '/api';
+const FETCH_TIMEOUT_MS = 10_000;
+
+export type VerifyResult =
+  | { ok: true }
+  | { ok: false; reason: 'invalid' | 'network'; message: string };
 
 function getAdminKey(): string | null {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('lurus-docs-admin-key');
 }
 
+function fetchWithTimeout(url: string, options?: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+}
+
+export function friendlyError(e: unknown): string {
+  if (e instanceof DOMException && e.name === 'AbortError') {
+    return 'Connection timed out — the server may be slow, please try again';
+  }
+  if (e instanceof TypeError) {
+    return 'Unable to connect — check your network connection';
+  }
+  if (e instanceof Error) {
+    const msg = e.message;
+    if (msg.includes('401') || msg.toLowerCase().includes('unauthorized')) {
+      return 'Session expired — please log in again';
+    }
+    return msg;
+  }
+  return 'An unexpected error occurred';
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, options);
+  const res = await fetchWithTimeout(`${API_BASE}${path}`, options);
   if (!res.ok) {
     const body = await res.json().catch(() => ({ error: res.statusText }));
     throw new Error(body.error || `HTTP ${res.status}`);
@@ -30,19 +58,23 @@ function adminHeaders(): HeadersInit {
 export function useProducts() {
   const products = ref<Product[]>([]);
   const loading = ref(false);
+  const error = ref('');
 
   async function fetch(status?: string) {
     loading.value = true;
+    error.value = '';
     try {
       const qs = status ? `?status=${status}` : '';
       const res = await request<{ data: Product[] }>(`/products${qs}`);
       products.value = res.data;
+    } catch (e) {
+      error.value = friendlyError(e);
     } finally {
       loading.value = false;
     }
   }
 
-  return { products, loading, fetch };
+  return { products, loading, error, fetch };
 }
 
 export function useUpdates() {
@@ -50,6 +82,7 @@ export function useUpdates() {
   const total = ref(0);
   const loading = ref(false);
   const hasMore = ref(false);
+  const error = ref('');
 
   async function fetch(params?: {
     product?: string;
@@ -59,6 +92,7 @@ export function useUpdates() {
     since?: string;
   }) {
     loading.value = true;
+    error.value = '';
     try {
       const qs = new URLSearchParams();
       if (params?.product) qs.set('product', params.product);
@@ -72,25 +106,34 @@ export function useUpdates() {
       updates.value = res.data;
       total.value = res.total;
       hasMore.value = res.hasMore;
+    } catch (e) {
+      error.value = friendlyError(e);
     } finally {
       loading.value = false;
     }
   }
 
-  return { updates, total, loading, hasMore, fetch };
+  return { updates, total, loading, hasMore, error, fetch };
 }
 
 // ─── Admin API ──────────────────────────────────────────────
 
 export function useAdminApi() {
-  async function verifyKey(key: string): Promise<boolean> {
+  async function verifyKey(key: string): Promise<VerifyResult> {
     try {
-      const res = await window.fetch(`${API_BASE}/admin/updates?limit=1`, {
+      const res = await fetchWithTimeout(`${API_BASE}/admin/updates?limit=1`, {
         headers: { Authorization: `Bearer ${key}` },
       });
-      return res.ok;
-    } catch {
-      return false;
+      if (res.ok) return { ok: true };
+      if (res.status === 401) {
+        return { ok: false, reason: 'invalid', message: 'API key not recognized — check and try again' };
+      }
+      return { ok: false, reason: 'network', message: `Server error (${res.status}) — try again later` };
+    } catch (e) {
+      if (e instanceof DOMException && e.name === 'AbortError') {
+        return { ok: false, reason: 'network', message: 'Connection timed out — the server may be slow, try again' };
+      }
+      return { ok: false, reason: 'network', message: 'Unable to connect — check your network connection' };
     }
   }
 

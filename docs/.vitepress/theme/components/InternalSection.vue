@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useInternalAuth } from '../composables/useInternalAuth'
 
 const { verifyKey, saveKey, clearKey, hasKey } = useInternalAuth()
@@ -17,30 +17,33 @@ async function login() {
   }
   checking.value = true
   error.value = ''
-  const ok = await verifyKey(keyInput.value.trim())
+  const result = await verifyKey(keyInput.value.trim())
   checking.value = false
 
-  if (ok) {
+  if (result.ok) {
     saveKey(keyInput.value.trim())
     authenticated.value = true
     showLogin.value = false
   } else {
-    error.value = 'Invalid access key'
+    error.value = result.message
   }
 }
 
+let isActive = true
 onMounted(async () => {
   if (!hasKey()) return
   const stored = localStorage.getItem('lurus-docs-internal-key')
   if (stored) {
-    const ok = await verifyKey(stored)
-    if (ok) {
+    const result = await verifyKey(stored)
+    if (!isActive) return
+    if (result.ok) {
       authenticated.value = true
-    } else {
+    } else if (result.reason === 'invalid') {
       clearKey()
     }
   }
 })
+onUnmounted(() => { isActive = false })
 </script>
 
 <template>

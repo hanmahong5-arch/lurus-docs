@@ -1,3 +1,8 @@
+---
+title: API 概述
+description: Lurus API 基础信息，包括 Base URL、请求格式和端点列表。
+---
+
 # API 概述
 
 Lurus API 完全兼容 OpenAI API 格式，你可以使用任何支持 OpenAI 的 SDK 或工具直接调用。

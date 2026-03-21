@@ -1,3 +1,8 @@
+---
+title: OpenCat 配置
+description: 在 OpenCat iOS/macOS 客户端中配置 Lurus API。
+---
+
 # OpenCat 配置
 
 [OpenCat](https://opencat.app) 是 iOS / macOS 原生 AI 聊天应用，界面简洁，支持自定义 API。

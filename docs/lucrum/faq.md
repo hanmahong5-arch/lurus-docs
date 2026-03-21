@@ -9,7 +9,7 @@ description: Lucrum AI 量化交易平台的常见问题与解答。
 
 ### Q: 如何注册 Lucrum？
 
-访问 [gushen.lurus.cn](https://gushen.lurus.cn)，使用 Lurus 统一账号登录。如果还没有 Lurus 账号，注册一个即可——所有 Lurus 产品共享同一个账号。
+访问 [lucrum.lurus.cn](https://lucrum.lurus.cn)，使用 Lurus 统一账号登录。如果还没有 Lurus 账号，注册一个即可——所有 Lurus 产品共享同一个账号。
 
 ### Q: 需要付费吗？
 

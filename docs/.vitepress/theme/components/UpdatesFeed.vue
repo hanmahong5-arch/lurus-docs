@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useProducts, useUpdates } from '../composables/useApi'
 import UpdateCard from './UpdateCard.vue'
 import UpdateFilters from './UpdateFilters.vue'
 
 const { products, fetch: fetchProducts } = useProducts()
-const { updates, loading, hasMore, total, fetch: fetchUpdates } = useUpdates()
+const { updates, loading, hasMore, total, error: updatesError, fetch: fetchUpdates } = useUpdates()
 
 const selectedProduct = ref('')
 const selectedType = ref('')
@@ -39,10 +39,13 @@ watch([selectedProduct, selectedType], () => {
   loadUpdates()
 })
 
+let isActive = true
 onMounted(async () => {
   await fetchProducts('active')
+  if (!isActive) return
   await loadUpdates()
 })
+onUnmounted(() => { isActive = false })
 </script>
 
 <template>
@@ -54,11 +57,16 @@ onMounted(async () => {
     />
 
     <div v-if="loading && updates.length === 0" class="updates-loading">
-      Loading...
+      Loading updates...
+    </div>
+
+    <div v-else-if="updatesError" class="updates-error">
+      <p class="error-message">{{ updatesError }}</p>
+      <button class="retry-btn" @click="loadUpdates">Try again</button>
     </div>
 
     <div v-else-if="updates.length === 0" class="updates-empty">
-      No updates found.
+      No updates yet — check back later.
     </div>
 
     <template v-else>
@@ -94,11 +102,31 @@ onMounted(async () => {
 }
 
 .updates-loading,
-.updates-empty {
+.updates-empty,
+.updates-error {
   text-align: center;
   padding: 48px 0;
   color: var(--vp-c-text-3);
   font-size: 15px;
+}
+
+.updates-error .error-message {
+  margin: 0 0 16px;
+  color: var(--vp-c-text-2);
+}
+
+.retry-btn {
+  padding: 8px 20px;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.retry-btn:hover {
+  background: var(--vp-c-brand-soft);
 }
 
 .updates-load-more {

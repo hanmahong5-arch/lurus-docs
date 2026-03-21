@@ -1,3 +1,8 @@
+---
+title: Switch 使用手册
+description: Switch 桌面应用的日常使用指南，包括快速接入和高级功能。
+---
+
 # Switch 使用手册
 
 ## 快速接入

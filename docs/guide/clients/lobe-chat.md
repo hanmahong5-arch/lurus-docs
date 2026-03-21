@@ -1,3 +1,8 @@
+---
+title: Lobe Chat 配置
+description: 在 Lobe Chat 中配置 Lurus API 作为模型提供商。
+---
+
 # Lobe Chat 配置
 
 [Lobe Chat](https://lobehub.com) 是一款现代化的开源 AI 聊天应用。

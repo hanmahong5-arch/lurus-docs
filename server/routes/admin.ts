@@ -21,7 +21,7 @@ const app = new Hono();
 // Auth middleware
 app.use('*', async (c, next) => {
   if (!ADMIN_API_KEY) {
-    return c.json({ error: 'Server misconfigured: ADMIN_API_KEY not set' }, 500);
+    return c.json({ error: 'Service temporarily unavailable' }, 503);
   }
   const auth = c.req.header('Authorization');
   if (!auth || auth !== `Bearer ${ADMIN_API_KEY}`) {

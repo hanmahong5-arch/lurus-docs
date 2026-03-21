@@ -5,9 +5,6 @@ WORKDIR /build
 COPY package.json bun.lock* ./
 RUN bun install --frozen-lockfile
 COPY . .
-RUN rm -rf .git \
-    && git config --global user.email "build@lurus.cn" && git config --global user.name "build" \
-    && git init && git add -A && git commit -m "build"
 RUN bun run build
 
 # Stage 2: Production server

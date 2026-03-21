@@ -28,7 +28,7 @@ async function verifySignature(body: string, signature: string | undefined): Pro
 
 app.post('/deploy', async (c) => {
   if (!WEBHOOK_SECRET) {
-    return c.json({ error: 'Server misconfigured: WEBHOOK_SECRET not set' }, 500);
+    return c.json({ error: 'Service temporarily unavailable' }, 503);
   }
 
   const rawBody = await c.req.text();

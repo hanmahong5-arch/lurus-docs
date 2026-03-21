@@ -1,3 +1,8 @@
+---
+title: 支持的模型
+description: Lurus API 支持的所有 AI 模型列表，包括价格、上下文窗口和能力对比。
+---
+
 <script setup>
 import { data } from '../.vitepress/data/models.data'
 </script>

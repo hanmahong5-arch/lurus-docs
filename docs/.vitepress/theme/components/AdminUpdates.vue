@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useAdminApi } from '../composables/useApi'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useAdminApi, friendlyError } from '../composables/useApi'
 import AdminEditor from './AdminEditor.vue'
 import type { Update, Product } from '../../../../server/types'
 
@@ -13,6 +13,10 @@ const total = ref(0)
 const page = ref(1)
 const filterStatus = ref('')
 const filterProduct = ref('')
+const loadError = ref('')
+const actionError = ref('')
+const saving = ref(false)
+const processingId = ref<number | null>(null)
 
 // Form state
 const showForm = ref(false)
@@ -30,8 +34,11 @@ const UPDATE_TYPES = [
   'feature', 'improvement', 'bugfix', 'security', 'deprecation', 'launch', 'sunset',
 ]
 
+let isActive = true
+
 async function loadData() {
   loading.value = true
+  loadError.value = ''
   try {
     const [updatesRes, productsRes] = await Promise.all([
       api.fetchAdminUpdates({
@@ -42,9 +49,12 @@ async function loadData() {
       }),
       api.fetchAdminProducts(),
     ])
+    if (!isActive) return
     updates.value = updatesRes.data
     total.value = updatesRes.total
     products.value = productsRes.data
+  } catch (e) {
+    loadError.value = friendlyError(e)
   } finally {
     loading.value = false
   }
@@ -71,45 +81,78 @@ function openEdit(u: Update) {
 
 async function saveForm() {
   if (!form.value.product_id || !form.value.title) return
+  actionError.value = ''
+  saving.value = true
 
-  if (editing.value) {
-    await api.editUpdateApi(editing.value.id, {
-      product_id: form.value.product_id,
-      title: form.value.title,
-      content: form.value.content,
-      type: form.value.type,
-      version: form.value.version || undefined,
-      is_major: form.value.is_major,
-    })
-  } else {
-    await api.createUpdateApi({
-      product_id: form.value.product_id,
-      title: form.value.title,
-      content: form.value.content,
-      type: form.value.type,
-      version: form.value.version || undefined,
-      is_major: form.value.is_major,
-    })
+  try {
+    if (editing.value) {
+      await api.editUpdateApi(editing.value.id, {
+        product_id: form.value.product_id,
+        title: form.value.title,
+        content: form.value.content,
+        type: form.value.type,
+        version: form.value.version || undefined,
+        is_major: form.value.is_major,
+      })
+    } else {
+      await api.createUpdateApi({
+        product_id: form.value.product_id,
+        title: form.value.title,
+        content: form.value.content,
+        type: form.value.type,
+        version: form.value.version || undefined,
+        is_major: form.value.is_major,
+      })
+    }
+    showForm.value = false
+    await loadData()
+  } catch (e) {
+    actionError.value = `Save failed: ${friendlyError(e)}`
+  } finally {
+    saving.value = false
   }
-
-  showForm.value = false
-  await loadData()
 }
 
 async function publishAction(id: number) {
-  await api.publishUpdateApi(id)
-  await loadData()
+  if (!confirm('Publish this update?\nIt will become visible to all visitors on the docs site.')) return
+  actionError.value = ''
+  processingId.value = id
+  try {
+    await api.publishUpdateApi(id)
+    await loadData()
+  } catch (e) {
+    actionError.value = `Publish failed: ${friendlyError(e)}`
+  } finally {
+    processingId.value = null
+  }
 }
 
 async function archiveAction(id: number) {
-  await api.archiveUpdateApi(id)
-  await loadData()
+  if (!confirm('Archive this update?\nIt will be hidden from the public feed. You can still view it here.')) return
+  actionError.value = ''
+  processingId.value = id
+  try {
+    await api.archiveUpdateApi(id)
+    await loadData()
+  } catch (e) {
+    actionError.value = `Archive failed: ${friendlyError(e)}`
+  } finally {
+    processingId.value = null
+  }
 }
 
 async function deleteAction(id: number) {
-  if (!confirm('Delete this draft update?')) return
-  await api.deleteUpdateApi(id)
-  await loadData()
+  if (!confirm('Delete this draft update?\nThis action cannot be undone.')) return
+  actionError.value = ''
+  processingId.value = id
+  try {
+    await api.deleteUpdateApi(id)
+    await loadData()
+  } catch (e) {
+    actionError.value = `Delete failed: ${friendlyError(e)}`
+  } finally {
+    processingId.value = null
+  }
 }
 
 function statusBadge(s: string) {
@@ -126,7 +169,27 @@ watch([filterStatus, filterProduct], () => {
   loadData()
 })
 
-onMounted(loadData)
+watch(showForm, (open) => {
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = open ? 'hidden' : ''
+  }
+})
+
+function onGlobalKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && showForm.value) {
+    showForm.value = false
+  }
+}
+
+onMounted(() => {
+  loadData()
+  document.addEventListener('keydown', onGlobalKeydown)
+})
+onUnmounted(() => {
+  isActive = false
+  document.removeEventListener('keydown', onGlobalKeydown)
+  document.body.style.overflow = ''
+})
 </script>
 
 <template>
@@ -151,7 +214,7 @@ onMounted(loadData)
     </div>
 
     <!-- Form Modal -->
-    <div v-if="showForm" class="form-overlay">
+    <div v-if="showForm" class="form-overlay" @click.self="showForm = false">
       <div class="form-card">
         <h3>{{ editing ? 'Edit Update' : 'New Update' }}</h3>
 
@@ -192,13 +255,26 @@ onMounted(loadData)
 
         <div class="form-actions">
           <button class="btn-cancel" @click="showForm = false">Cancel</button>
-          <button class="btn-save" @click="saveForm" :disabled="!form.product_id || !form.title">Save</button>
+          <button class="btn-save" @click="saveForm" :disabled="!form.product_id || !form.title || saving">
+            {{ saving ? 'Saving...' : 'Save' }}
+          </button>
         </div>
       </div>
     </div>
 
+    <!-- Action feedback -->
+    <div v-if="actionError" class="action-banner action-banner-error" @click="actionError = ''">
+      {{ actionError }}
+      <span class="banner-dismiss">dismiss</span>
+    </div>
+
     <!-- Table -->
     <div v-if="loading" class="loading-text">Loading...</div>
+
+    <div v-else-if="loadError" class="error-text">
+      <p>{{ loadError }}</p>
+      <button class="retry-btn" @click="loadData">Retry</button>
+    </div>
 
     <table v-else-if="updates.length > 0" class="updates-table">
       <thead>
@@ -219,31 +295,31 @@ onMounted(loadData)
           <td>{{ u.type }}</td>
           <td>{{ u.source }}</td>
           <td class="td-actions">
-            <button class="action-btn" @click="openEdit(u)" title="Edit">Edit</button>
+            <button class="action-btn" @click="openEdit(u)" :disabled="processingId === u.id">Edit</button>
             <button
               v-if="u.status === 'draft'"
               class="action-btn action-publish"
               @click="publishAction(u.id)"
-              title="Publish"
-            >Publish</button>
+              :disabled="processingId === u.id"
+            >{{ processingId === u.id ? '...' : 'Publish' }}</button>
             <button
               v-if="u.status === 'published'"
               class="action-btn action-archive"
               @click="archiveAction(u.id)"
-              title="Archive"
-            >Archive</button>
+              :disabled="processingId === u.id"
+            >{{ processingId === u.id ? '...' : 'Archive' }}</button>
             <button
               v-if="u.status === 'draft'"
               class="action-btn action-delete"
               @click="deleteAction(u.id)"
-              title="Delete"
-            >Delete</button>
+              :disabled="processingId === u.id"
+            >{{ processingId === u.id ? '...' : 'Delete' }}</button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <div v-else class="empty-text">No updates found.</div>
+    <div v-else class="empty-text">No updates match the current filters.</div>
   </div>
 </template>
 
@@ -431,10 +507,47 @@ onMounted(loadData)
 }
 .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.loading-text, .empty-text {
+.action-banner {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.action-banner-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+.banner-dismiss {
+  font-size: 12px;
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.loading-text, .empty-text, .error-text {
   text-align: center;
   padding: 32px 0;
   color: var(--vp-c-text-3);
   font-size: 14px;
+}
+.error-text p {
+  margin: 0 0 12px;
+  color: var(--vp-c-text-2);
+}
+.retry-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--vp-c-brand-1);
+  font-size: 13px;
+  cursor: pointer;
+}
+.retry-btn:hover {
+  background: var(--vp-c-brand-soft);
 }
 </style>

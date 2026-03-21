@@ -22,8 +22,13 @@ const TYPE_LABELS: Record<string, { label: string; cls: string }> = {
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return ''
-  const d = new Date(dateStr.replace(' ', 'T') + 'Z')
-  return d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })
+  try {
+    const d = new Date(dateStr.replace(' ', 'T') + 'Z')
+    if (isNaN(d.getTime())) return dateStr
+    return d.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' })
+  } catch {
+    return dateStr
+  }
 }
 </script>
 

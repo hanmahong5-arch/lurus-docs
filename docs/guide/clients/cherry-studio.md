@@ -1,3 +1,8 @@
+---
+title: Cherry Studio 配置
+description: 在 Cherry Studio 中配置 Lurus API，一键接入 50+ AI 模型。
+---
+
 # Cherry Studio 配置
 
 [Cherry Studio](https://cherry-ai.com) 是一款优秀的跨平台 AI 客户端，支持多种模型供应商。

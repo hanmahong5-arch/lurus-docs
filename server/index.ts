@@ -13,6 +13,9 @@ const app = new Hono();
 // Request logging
 app.use('*', logger());
 
+// Health check for K8s liveness/readiness probes
+app.get('/api/health', (c) => c.json({ status: 'ok' }));
+
 // API routes
 app.route('/api', publicRoutes);
 app.route('/api/admin', adminRoutes);
