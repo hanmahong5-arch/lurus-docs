@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useInternalAuth } from '../composables/useInternalAuth'
 import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
 
 const props = defineProps<{ slug: string }>()
 
@@ -30,7 +31,7 @@ async function loadContent() {
   loading.value = false
 
   if ('content' in result) {
-    content.value = md.render(result.content)
+    content.value = DOMPurify.sanitize(md.render(result.content))
     authenticated.value = true
   } else if (result.error === 'auth') {
     authenticated.value = false

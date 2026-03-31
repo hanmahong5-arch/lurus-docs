@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { timingSafeEqual } from 'crypto';
 import { createUpdate, getProduct } from '../db';
 import type { WebhookDeployBody } from '../types';
 
@@ -23,7 +24,9 @@ async function verifySignature(body: string, signature: string | undefined): Pro
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 
-  return hex === expected;
+  const a = Buffer.from(hex);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 app.post('/deploy', async (c) => {

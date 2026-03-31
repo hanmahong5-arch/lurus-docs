@@ -20,6 +20,7 @@
   "author": "Lurus Technologies",
   "license": "MIT",
   "dependencies": {
+    "dompurify": "^3.3.3",
     "hono": "^4.7.0",
     "markdown-it": "^14.0.0"
   },

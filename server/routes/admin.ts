@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { timingSafeEqual } from 'crypto';
 import {
   listUpdates,
   createUpdate,
@@ -18,13 +19,20 @@ const ADMIN_API_KEY = process.env.ADMIN_API_KEY;
 
 const app = new Hono();
 
+function safeCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
+
 // Auth middleware
 app.use('*', async (c, next) => {
   if (!ADMIN_API_KEY) {
     return c.json({ error: 'Service temporarily unavailable' }, 503);
   }
   const auth = c.req.header('Authorization');
-  if (!auth || auth !== `Bearer ${ADMIN_API_KEY}`) {
+  if (!auth || !safeCompare(auth, `Bearer ${ADMIN_API_KEY}`)) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
   await next();

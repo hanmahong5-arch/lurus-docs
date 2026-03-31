@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed } from 'vue'
+import DOMPurify from 'dompurify'
 
 const props = defineProps<{
   modelValue: string
@@ -10,6 +11,10 @@ const emit = defineEmits<{
 }>()
 
 const showPreview = ref(false)
+
+const safePreview = computed(() =>
+  props.modelValue ? DOMPurify.sanitize(props.modelValue) : '<em>No content</em>'
+)
 
 function onInput(e: Event) {
   emit('update:modelValue', (e.target as HTMLTextAreaElement).value)
@@ -44,7 +49,7 @@ function onInput(e: Event) {
       rows="8"
     />
 
-    <div v-else class="editor-preview" v-html="modelValue || '<em>No content</em>'" />
+    <div v-else class="editor-preview" v-html="safePreview" />
   </div>
 </template>
 

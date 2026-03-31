@@ -1,5 +1,8 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import DOMPurify from 'dompurify'
+
+const props = defineProps<{
   title: string
   type: string
   productName: string
@@ -9,6 +12,8 @@ defineProps<{
   publishedAt: string | null
   isMajor: boolean
 }>()
+
+const safeContent = computed(() => props.content ? DOMPurify.sanitize(props.content) : '')
 
 const TYPE_LABELS: Record<string, { label: string; cls: string }> = {
   feature:      { label: 'New Feature',   cls: 'type-feature' },
@@ -48,7 +53,7 @@ function formatDate(dateStr: string | null): string {
       <span v-if="publishedAt" class="update-date">{{ formatDate(publishedAt) }}</span>
     </div>
     <h3 class="update-title">{{ title }}</h3>
-    <div v-if="content" class="update-content" v-html="content" />
+    <div v-if="safeContent" class="update-content" v-html="safeContent" />
   </div>
 </template>
 
