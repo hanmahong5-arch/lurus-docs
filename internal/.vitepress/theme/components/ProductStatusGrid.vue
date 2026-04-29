@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { products, statusColors, groupColors, type Group } from '../../data/products'
+import { ref, onMounted } from 'vue'
+import { products, statusColors, groupColors, daysSince, type Group } from '../../data/products'
 import RiskBadge from './RiskBadge.vue'
 
 const groupNames: Record<Group, string> = {
@@ -12,6 +13,17 @@ const groupNames: Record<Group, string> = {
 }
 
 const groupOrder: Group[] = ['platform', 'kova', 'lucrum', 'desktop', 'web', 'tooling']
+
+// Computed at mount time so SSR build doesn't bake in a stale "now".
+const now = ref(new Date())
+onMounted(() => { now.value = new Date() })
+
+function reviewedHint(iso: string): { text: string; stale: boolean } {
+  const d = daysSince(iso, now.value)
+  if (d < 0) return { text: '日期未知', stale: false }
+  if (d === 0) return { text: '今日复审', stale: false }
+  return { text: `复审 ${d} 天前`, stale: d > 30 }
+}
 </script>
 
 <template>
@@ -45,6 +57,9 @@ const groupOrder: Group[] = ['platform', 'kova', 'lucrum', 'desktop', 'web', 'to
           <div class="product-card__owner">
             <span :class="['product-card__bus', p.busFactor < 2 ? 'is-warn' : '']">
               owner {{ p.owner }} · bus {{ p.busFactor }}
+            </span>
+            <span :class="['product-card__reviewed', reviewedHint(p.lastReviewed).stale ? 'is-stale' : '']">
+              · {{ reviewedHint(p.lastReviewed).text }}
             </span>
           </div>
           <div v-if="p.riskFlags.length" class="product-card__risks">
@@ -127,5 +142,8 @@ const groupOrder: Group[] = ['platform', 'kova', 'lucrum', 'desktop', 'web', 'to
 .product-card__owner { font-size: 11px; color: var(--vp-c-text-3); }
 .product-card__bus.is-warn { color: #b45309; font-weight: 600; }
 .dark .product-card__bus.is-warn { color: #fbbf24; }
+.product-card__reviewed { color: var(--vp-c-text-3); }
+.product-card__reviewed.is-stale { color: #b45309; font-weight: 600; }
+.dark .product-card__reviewed.is-stale { color: #fbbf24; }
 .product-card__risks { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 4px; }
 </style>

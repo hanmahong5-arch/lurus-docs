@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { products, byStatus, totalRisks, busFactorWarnings } from '../../data/products'
+import { ref, onMounted, computed } from 'vue'
+import { products, byStatus, totalRisks, busFactorWarnings, staleProductCount } from '../../data/products'
 import { servers } from '../../data/servers'
 import KPITile from './KPITile.vue'
 import ProductStatusGrid from './ProductStatusGrid.vue'
@@ -16,10 +17,43 @@ const busFactorIssues = busFactorWarnings()
 const serverCount = servers.length
 const prodLoad = servers.find((s) => s.id === 'r1')?.memPct ?? null
 
-function tone(metric: 'risk' | 'bus' | 'load'): 'good' | 'warn' | 'bad' {
+// Re-evaluate "now" client-side so SSR doesn't bake a stale date into HTML.
+const now = ref(new Date())
+const staleCount = ref(staleProductCount(30))
+
+interface BuildMeta { buildTime: string; gitSha: string; gitBranch: string }
+const buildMeta = ref<BuildMeta | null>(null)
+
+const buildAge = computed<string>(() => {
+  if (!buildMeta.value) return '—'
+  const ms = now.value.getTime() - Date.parse(buildMeta.value.buildTime)
+  if (Number.isNaN(ms) || ms < 0) return '—'
+  const min = Math.floor(ms / 60_000)
+  if (min < 1) return '刚刚'
+  if (min < 60) return `${min} 分钟前`
+  const hr = Math.floor(min / 60)
+  if (hr < 24) return `${hr} 小时前`
+  return `${Math.floor(hr / 24)} 天前`
+})
+
+const buildShortSha = computed<string>(() => buildMeta.value?.gitSha ?? '—')
+
+onMounted(async () => {
+  now.value = new Date()
+  staleCount.value = staleProductCount(30, now.value)
+  try {
+    const res = await fetch('/build-meta.json', { cache: 'no-store' })
+    if (res.ok) buildMeta.value = await res.json()
+  } catch {
+    // build-meta.json missing in dev — leave as null so KPI shows "—"
+  }
+})
+
+function tone(metric: 'risk' | 'bus' | 'load' | 'stale'): 'good' | 'warn' | 'bad' {
   if (metric === 'risk') return riskCount === 0 ? 'good' : riskCount < 8 ? 'warn' : 'bad'
   if (metric === 'bus') return busFactorIssues === 0 ? 'good' : busFactorIssues < 5 ? 'warn' : 'bad'
   if (metric === 'load') return (prodLoad ?? 0) < 60 ? 'good' : (prodLoad ?? 0) < 85 ? 'warn' : 'bad'
+  if (metric === 'stale') return staleCount.value === 0 ? 'good' : staleCount.value < 5 ? 'warn' : 'bad'
   return 'good'
 }
 </script>
@@ -55,6 +89,17 @@ function tone(metric: 'risk' | 'bus' | 'load'): 'good' | 'warn' | 'bad' {
         :value="(prodLoad ?? '—') + '%'"
         hint="生产主节点"
         :tone="tone('load')"
+      />
+      <KPITile
+        label="复审超期"
+        :value="staleCount"
+        hint=">30 天未复审产品"
+        :tone="tone('stale')"
+      />
+      <KPITile
+        label="最新部署"
+        :value="buildAge"
+        :hint="`sha ${buildShortSha}`"
       />
     </div>
 

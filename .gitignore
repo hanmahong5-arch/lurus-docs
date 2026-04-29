@@ -6,6 +6,9 @@ node_modules/
 .vitepress/cache/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+internal/.vitepress/cache/
+dist-internal/
+internal/public/build-meta.json
 
 # IDE
 .vscode/

@@ -298,6 +298,18 @@ export function busFactorWarnings(): number {
   return products.filter((p) => p.busFactor < 2).length
 }
 
+/** Whole days between two ISO dates (positive when `from` is later than `iso`). */
+export function daysSince(iso: string, from: Date = new Date()): number {
+  const t = Date.parse(iso)
+  if (Number.isNaN(t)) return -1
+  return Math.floor((from.getTime() - t) / 86_400_000)
+}
+
+/** Number of products whose lastReviewed is older than `thresholdDays`. */
+export function staleProductCount(thresholdDays = 30, from: Date = new Date()): number {
+  return products.filter((p) => daysSince(p.lastReviewed, from) > thresholdDays).length
+}
+
 export function buildDependencyMermaid(): string {
   const lines = ['graph LR']
   const cap2providers: Record<string, string[]> = {

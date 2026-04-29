@@ -12,7 +12,7 @@
     "deploy": "bun run sync && bun run build",
     "start": "bun run server/index.ts",
     "dev:internal": "vitepress dev internal --port 5174",
-    "build:internal": "bun scripts/secrets-guard.ts && vitepress build internal",
+    "build:internal": "bun scripts/secrets-guard.ts && bun scripts/inject-build-meta.ts && vitepress build internal",
     "preview:internal": "vitepress preview internal --port 4174"
   },
   "keywords": [

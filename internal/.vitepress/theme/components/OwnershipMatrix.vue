@@ -1,9 +1,24 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { ownership } from '../../data/org'
-import { products } from '../../data/products'
+import { products, daysSince } from '../../data/products'
 
 function nameOf(id: string): string {
   return products.find((p) => p.id === id)?.name ?? id
+}
+function lastReviewedOf(id: string): string | undefined {
+  return products.find((p) => p.id === id)?.lastReviewed
+}
+
+const now = ref(new Date())
+onMounted(() => { now.value = new Date() })
+
+function reviewedCell(id: string): { text: string; stale: boolean } {
+  const iso = lastReviewedOf(id)
+  if (!iso) return { text: '—', stale: false }
+  const d = daysSince(iso, now.value)
+  if (d < 0) return { text: iso, stale: false }
+  return { text: d === 0 ? '今日' : `${d} 天前`, stale: d > 30 }
 }
 </script>
 
@@ -16,6 +31,7 @@ function nameOf(id: string): string {
           <th>Primary Owner</th>
           <th>Backup</th>
           <th>Escalation</th>
+          <th>上次复审</th>
         </tr>
       </thead>
       <tbody>
@@ -24,6 +40,7 @@ function nameOf(id: string): string {
           <td>{{ row.primary }}</td>
           <td :class="{ 'is-warn': row.backup === '⚠ 无' }">{{ row.backup }}</td>
           <td>{{ row.escalation }}</td>
+          <td :class="{ 'is-warn': reviewedCell(row.productId).stale }">{{ reviewedCell(row.productId).text }}</td>
         </tr>
       </tbody>
     </table>
