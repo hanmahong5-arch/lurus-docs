@@ -1,0 +1,102 @@
+/**
+ * Color tokens — brand 10-level + 12 product accent + semantic states
+ * Mirror values in tokens.ts. Light as default, dark overrides via `.dark`.
+ */
+
+:root {
+  /* ─── Brand (copper ochre) 10-level scale ─────────── */
+  --lurus-brand-50:  #FBF3EE;
+  --lurus-brand-100: #F5E2D4;
+  --lurus-brand-200: #ECC7AE;
+  --lurus-brand-300: #E1A986;
+  --lurus-brand-400: #D69270;
+  --lurus-brand-500: #C67B5C;
+  --lurus-brand-600: #B36A4A;
+  --lurus-brand-700: #9E5A3A;
+  --lurus-brand-800: #7F4A30;
+  --lurus-brand-900: #5A3524;
+
+  /* ─── Cream (warm background) ─────────────────────── */
+  --lurus-cream-50:  #F8F4F0;
+  --lurus-cream-100: #F0EAE4;
+  --lurus-cream-200: #E8E0D8;
+  --lurus-cream-300: #DDD5CC;
+
+  /* ─── Ink (text) ──────────────────────────────────── */
+  --lurus-ink-900: #3D3530;
+  --lurus-ink-700: #6B5E57;
+  --lurus-ink-500: #9E8E85;
+
+  /* ─── Product accents (12) — one HEX per product ──── */
+  --lurus-color-lurus-api:  #C67B5C;
+  --lurus-color-kova:       #6B8E7B;
+  --lurus-color-memx:       #9333EA;
+  --lurus-color-lucrum:     #7B8EC6;
+  --lurus-color-forge:      #C6A87B;
+  --lurus-color-switch:     #16A34A;
+  --lurus-color-creator:    #C67B7B;
+  --lurus-color-lumen:      #AF8B7B;
+  --lurus-color-platform:   #8B9DAF;
+  --lurus-color-auth:       #C67BAF;
+  --lurus-color-api-ref:    #7BAFC6;
+  --lurus-color-arch:       #A8C67B;
+
+  /* ─── Status ─────────────────────────────────────── */
+  --lurus-status-live: #16A34A;
+  --lurus-status-beta: #EA580C;
+  --lurus-status-dev:  #2563EB;
+  --lurus-status-plan: #9E8E85;
+
+  /* ─── Semantic aliases (point to vitepress vars) ──── */
+  --lurus-bg:         var(--vp-c-bg);
+  --lurus-bg-soft:    var(--vp-c-bg-soft);
+  --lurus-bg-mute:    var(--vp-c-bg-mute);
+  --lurus-text-1:     var(--vp-c-text-1);
+  --lurus-text-2:     var(--vp-c-text-2);
+  --lurus-text-3:     var(--vp-c-text-3);
+  --lurus-border:     var(--vp-c-border);
+  --lurus-divider:    var(--vp-c-divider);
+  --lurus-brand:      var(--vp-c-brand-1);
+  --lurus-brand-soft: var(--vp-c-brand-soft);
+}
+
+/* Dark mode — only overrides where hue needs to shift */
+.dark {
+  --lurus-brand-50:  #3A2B22;
+  --lurus-brand-100: #4A382C;
+  --lurus-brand-200: #5F4938;
+  --lurus-brand-300: #7F5E46;
+  --lurus-brand-400: #A07354;
+  --lurus-brand-500: #E8A87C;
+  --lurus-brand-600: #D49060;
+  --lurus-brand-700: #C67B5C;
+  --lurus-brand-800: #B36A4A;
+  --lurus-brand-900: #9E5A3A;
+
+  --lurus-cream-50:  #1C1815;
+  --lurus-cream-100: #252018;
+  --lurus-cream-200: #2E2820;
+  --lurus-cream-300: #3D3530;
+
+  --lurus-ink-900: #F0EAE4;
+  --lurus-ink-700: #C8B8AE;
+  --lurus-ink-500: #9E8E85;
+
+  --lurus-status-live: #4ADE80;
+  --lurus-status-beta: #FB923C;
+  --lurus-status-dev:  #60A5FA;
+  --lurus-status-plan: #6B5E57;
+
+  --lurus-color-lurus-api:  #E8A87C;
+  --lurus-color-kova:       #8FAD9B;
+  --lurus-color-memx:       #B464F0;
+  --lurus-color-lucrum:     #9FB0DC;
+  --lurus-color-forge:      #DCC09B;
+  --lurus-color-switch:     #4ADE80;
+  --lurus-color-creator:    #E09898;
+  --lurus-color-lumen:      #C9A99A;
+  --lurus-color-platform:   #A9B8C8;
+  --lurus-color-auth:       #DC9FC8;
+  --lurus-color-api-ref:    #9FC8DC;
+  --lurus-color-arch:       #BDDC9F;
+}

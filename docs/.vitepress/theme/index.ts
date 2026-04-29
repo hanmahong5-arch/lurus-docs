@@ -20,6 +20,19 @@ import InternalSection from './components/InternalSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import Term from './components/Term.vue'
 import Breadcrumb from './components/Breadcrumb.vue'
+import Icon from './components/Icon.vue'
+import CopyButton from './components/CopyButton.vue'
+import Hero from './components/Hero.vue'
+import ProductLanding from './components/landing/ProductLanding.vue'
+import ProductHero from './components/landing/ProductHero.vue'
+import CapabilityGrid from './components/landing/CapabilityGrid.vue'
+import ArchitectureDiagram from './components/landing/ArchitectureDiagram.vue'
+import CodeShowcase from './components/landing/CodeShowcase.vue'
+import UserScenarios from './components/landing/UserScenarios.vue'
+import ComparisonTable from './components/landing/ComparisonTable.vue'
+import RelatedProducts from './components/landing/RelatedProducts.vue'
+import NextSteps from './components/landing/NextSteps.vue'
+import MetricStats from './components/landing/MetricStats.vue'
 import './style.css'
 
 export default {
@@ -48,5 +61,18 @@ export default {
     app.component('InternalSection', InternalSection)
     app.component('StatusBadge', StatusBadge)
     app.component('Term', Term)
+    app.component('Icon', Icon)
+    app.component('CopyButton', CopyButton)
+    app.component('Hero', Hero)
+    app.component('ProductLanding', ProductLanding)
+    app.component('ProductHero', ProductHero)
+    app.component('CapabilityGrid', CapabilityGrid)
+    app.component('ArchitectureDiagram', ArchitectureDiagram)
+    app.component('CodeShowcase', CodeShowcase)
+    app.component('UserScenarios', UserScenarios)
+    app.component('ComparisonTable', ComparisonTable)
+    app.component('RelatedProducts', RelatedProducts)
+    app.component('NextSteps', NextSteps)
+    app.component('MetricStats', MetricStats)
   }
 } satisfies Theme

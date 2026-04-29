@@ -47,7 +47,7 @@ Raw Input
     │
     ▼
 ┌─────────────────────┐
-│  Privacy Sanitizer   │  ← 12 种内置 PII 规则 + 自定义正则
+│  Privacy Sanitizer   │  ← 12 条内置敏感信息规则 + 自定义正则
 │  (不可绕过)           │     净化器永不抛异常
 └─────────┬───────────┘
           ▼
@@ -216,7 +216,7 @@ m = Memory(config={
         "token_budget": 2000,
     },
 
-    # Privacy — PII filtering
+    # Privacy — sensitive data filtering (secrets / tokens / local paths)
     "privacy": {
         "custom_patterns": [
             r"INTERNAL_KEY_\w+"

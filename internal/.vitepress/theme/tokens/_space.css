@@ -1,0 +1,22 @@
+/**
+ * Spacing tokens — 8 level scale (4px base unit).
+ * Use sparingly — prefer semantic pairings (card-padding, section-gap) in components.
+ */
+
+:root {
+  --lurus-space-0:   0;
+  --lurus-space-1:   0.25rem;  /* 4px  */
+  --lurus-space-2:   0.5rem;   /* 8px  */
+  --lurus-space-3:   0.75rem;  /* 12px */
+  --lurus-space-4:   1rem;     /* 16px */
+  --lurus-space-5:   1.5rem;   /* 24px */
+  --lurus-space-6:   2rem;     /* 32px */
+  --lurus-space-7:   3rem;     /* 48px */
+  --lurus-space-8:   4rem;     /* 64px */
+
+  /* Semantic compositions */
+  --lurus-card-padding:     var(--lurus-space-5);
+  --lurus-card-gap:         var(--lurus-space-4);
+  --lurus-section-gap:      var(--lurus-space-7);
+  --lurus-inline-gap:       var(--lurus-space-2);
+}

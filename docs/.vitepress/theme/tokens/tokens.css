@@ -1,0 +1,16 @@
+/**
+ * tokens.css — aggregate entry for Lurus design tokens.
+ *
+ * Order matters: colors first (referenced by shadows), then typography,
+ * then spatial/motion/radius (independent).
+ *
+ * All tokens are prefixed `--lurus-*` to coexist with VitePress `--vp-*` vars,
+ * which remain the source of truth for default theme styling.
+ */
+
+@import './_colors.css';
+@import './_typography.css';
+@import './_space.css';
+@import './_motion.css';
+@import './_elevation.css';
+@import './_radius.css';

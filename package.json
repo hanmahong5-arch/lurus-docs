@@ -10,7 +10,10 @@
     "build": "vitepress build docs",
     "preview": "vitepress preview docs",
     "deploy": "bun run sync && bun run build",
-    "start": "bun run server/index.ts"
+    "start": "bun run server/index.ts",
+    "dev:internal": "vitepress dev internal --port 5174",
+    "build:internal": "bun scripts/secrets-guard.ts && vitepress build internal",
+    "preview:internal": "vitepress preview internal --port 4174"
   },
   "keywords": [
     "lurus",
@@ -22,7 +25,9 @@
   "dependencies": {
     "dompurify": "^3.3.3",
     "hono": "^4.7.0",
-    "markdown-it": "^14.0.0"
+    "lucide-vue-next": "^1.0.0",
+    "markdown-it": "^14.0.0",
+    "mermaid": "^11.14.0"
   },
   "devDependencies": {
     "vitepress": "^1.6.4",

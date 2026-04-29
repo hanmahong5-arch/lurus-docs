@@ -5,7 +5,10 @@ description: Lurus API 身份认证方式，包括 API Key 格式和请求头配
 
 # 认证
 
-所有 Lurus API 请求都需要进行身份认证。
+所有 Lurus API 请求都需要进行身份认证。Lurus 支持 **两套互补的认证模式**：
+
+1. **API Key**（本页说明）— 最快上手，适合脚本和个人项目
+2. **OIDC / OAuth2 Token** — 基于统一身份体系，适合需要用户登录的应用、企业 SSO、机器对机器认证。详见 [OIDC 集成](/platform/auth/oidc) 与 [API 认证 (PAT/JWT)](/platform/auth/api-auth)。
 
 ## 认证方式
 

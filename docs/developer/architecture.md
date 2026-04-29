@@ -31,7 +31,7 @@ Lurus 采用混合云架构，基于 Kubernetes + GitOps 构建统一的服务�
 ## 设计原则
 
 - **统一网关**: Traefik 入口，TLS 终止，通配符证书自动管理
-- **多模型 AI 网关**: 50+ LLM 提供商统一接入，per-channel 熔断保护
+- **多模型 AI 网关**: 50+ LLM 渠道统一接入（OpenAI / Claude / Gemini / Deepseek / Qwen / Moonshot 等），per-channel 熔断保护
 - **GitOps 部署**: GitHub Actions → GHCR 容器镜像 → ArgoCD 自动同步
 - **全栈可观测性**: Prometheus 指标 + Grafana 仪表盘 + Loki 日志 + Jaeger 分布式追踪
 - **高可用设计**: 渠道故障自动转移，优先级 + 权重路由，PodDisruptionBudget 保护
@@ -67,7 +67,7 @@ API Gateway 根据模型名称自动匹配可用渠道，支持优先级排序�
 |------|------|
 | **传输** | 全站 HTTPS (TLS 1.3)，通配符证书自动续期 |
 | **网络** | VPN 组网，NetworkPolicy 命名空间隔离 |
-| **认证** | OIDC JWT + API Key 双模式，WebAuthn Passkey |
+| **认证** | [统一身份认证](/platform/auth/)：OIDC JWT + API Key 双模式，WebAuthn Passkey，企业 SSO 联邦 |
 | **授权** | RBAC 角色权限控制，多租户 GORM 自动隔离 |
 | **加密** | ChaCha20-Poly1305 + 国密 SM4-GCM（信创合规） |
 | **审计** | 结构化 JSON 日志 + OpenTelemetry 分布式追踪 |
@@ -89,3 +89,4 @@ import InternalContent from '../.vitepress/theme/components/InternalContent.vue'
 - [Kova 执行引擎](/kova/) — Agent 持久化执行引擎
 - [MemX 记忆引擎](/memx/) — AI 自适应记忆引擎
 - [Platform 账号计费](/platform/) — 统一账号和计费体系
+- [统一身份认证](/platform/auth/) — 全产品 SSO、OIDC、API 认证

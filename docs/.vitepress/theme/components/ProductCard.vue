@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * @deprecated Use <ActionCard :product-id="..."> instead. This component
+ * is kept only to avoid breaking pages that still reference it; it will be
+ * removed in a future minor release.
+ */
 interface Props {
   name: string
   tagline: string

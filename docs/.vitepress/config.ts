@@ -15,6 +15,10 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    // Self-hosted variable fonts — served from /public/fonts/ when present,
+    // otherwise the system stack in tokens/_typography.css takes over.
+    ['link', { rel: 'preload', href: '/fonts/InterVariable.woff2', as: 'font', type: 'font/woff2', crossorigin: '' }],
+    ['link', { rel: 'preload', href: '/fonts/JetBrainsMono-Variable.woff2', as: 'font', type: 'font/woff2', crossorigin: '' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:title', content: 'Lurus — AI 基础设施与产品平台' }],
     ['meta', { property: 'og:description', content: 'LLM 统一网关 · Agent 执行引擎 · 智能记忆 · 量化交易 · 桌面工具 — 覆盖 AI 全栈的产品文档' }],
@@ -50,32 +54,71 @@ export default defineConfig({
     nav: [
       { text: '首页', link: '/' },
       {
-        text: 'AI 服务',
+        text: '开始使用',
         items: [
-          { text: 'Lurus API — LLM 统一网关', link: '/guide/introduction' },
+          { text: '快速开始', link: '/guide/quickstart' },
+          { text: '获取 API Key', link: '/guide/get-api-key' },
+          { text: '常见问题', link: '/guide/faq' },
+          { text: '术语表', link: '/guide/glossary' },
+          { text: '跨产品教程', link: '/tutorials/' },
+          { text: '迁移指南', link: '/migrations/' },
+        ]
+      },
+      {
+        text: '开发者',
+        items: [
+          { text: 'API 参考', link: '/api/overview' },
           { text: 'Kova — Agent 执行引擎', link: '/kova/' },
           { text: 'MemX — AI 智能记忆', link: '/memx/' },
-          { text: 'Lucrum — AI 量化交易', link: '/lucrum/' },
-          { text: 'Forge — AI 产品工作台', link: '/forge/' },
+          { text: 'Lumen — Agent 可观测', link: '/lumen/' },
+          { text: '系统架构', link: '/developer/architecture' },
+          { text: '认证 (PAT/JWT)', link: '/platform/auth/api-auth' },
         ]
       },
       {
-        text: '桌面 & 移动',
+        text: '企业方案',
         items: [
-          { text: 'Switch — AI 工具管理', link: '/switch/' },
-          { text: 'Creator — 内容工厂', link: '/creator/' },
-          { text: 'Lumen — 开发者 CLI', link: '/lumen/' },
-          { text: 'Lutu — 移动客户端', link: 'https://www.lurus.cn/download#lutu' },
+          { text: '方案总览', link: '/solutions/' },
+          { text: '为什么选择 Lurus', link: '/solutions/why-lurus' },
+          { text: '企业部署形态', link: '/solutions/enterprise-deploy' },
+          { text: '金融行业', link: '/solutions/industry-finance' },
+          { text: '内容行业', link: '/solutions/industry-content' },
+          { text: '开发工具行业', link: '/solutions/industry-devtools' },
+          { text: '企业 AI 中台', link: '/solutions/ai-midware' },
         ]
       },
       {
-        text: '平台',
+        text: '产品',
         items: [
-          { text: '账号与计费', link: '/platform/' },
-          { text: 'API 参考', link: '/api/overview' },
-          { text: '产品动态', link: '/updates/' },
+          {
+            text: 'AI 服务',
+            items: [
+              { text: 'Lurus API', link: '/guide/introduction' },
+              { text: 'Kova', link: '/kova/' },
+              { text: 'MemX', link: '/memx/' },
+              { text: 'Lucrum', link: '/lucrum/' },
+              { text: 'Lumen', link: '/lumen/' },
+              { text: 'Forge', link: '/forge/' },
+            ]
+          },
+          {
+            text: '桌面 & 移动',
+            items: [
+              { text: 'Switch', link: '/switch/' },
+              { text: 'Creator', link: '/creator/' },
+              { text: 'Lutu', link: 'https://www.lurus.cn/download#lutu' },
+            ]
+          },
+          {
+            text: '平台',
+            items: [
+              { text: '账号与计费', link: '/platform/' },
+              { text: '统一身份认证', link: '/platform/auth/' },
+            ]
+          },
         ]
       },
+      { text: '动态', link: '/updates/' },
     ],
 
     sidebar: {
@@ -148,17 +191,6 @@ export default defineConfig({
           ]
         }
       ],
-      '/creator/': [
-        {
-          text: 'Creator 内容工厂',
-          collapsed: false,
-          items: [
-            { text: '简介', link: '/creator/' },
-            { text: '安装指南', link: '/creator/install' },
-            { text: '使用手册', link: '/creator/usage' },
-          ]
-        }
-      ],
       '/platform/': [
         {
           text: '平台文档',
@@ -168,14 +200,30 @@ export default defineConfig({
             { text: '计费详解', link: '/platform/billing' },
             { text: '常见问题', link: '/platform/faq' },
           ]
+        },
+        {
+          text: '统一身份认证',
+          collapsed: false,
+          items: [
+            { text: '概述与接入点', link: '/platform/auth/' },
+            { text: '核心概念', link: '/platform/auth/concepts' },
+            { text: '登录与 MFA', link: '/platform/auth/login' },
+            { text: 'OIDC / OAuth2 集成', link: '/platform/auth/oidc' },
+            { text: 'API 认证 (PAT/JWT)', link: '/platform/auth/api-auth' },
+            { text: '控制台管理', link: '/platform/auth/console' },
+          ]
         }
       ],
       '/lumen/': [
         {
-          text: 'Lumen 开发者工具',
+          text: 'Lumen 可观测性',
           collapsed: false,
           items: [
-            { text: '简介与安装', link: '/lumen/' },
+            { text: '简介', link: '/lumen/' },
+            { text: '快速开始', link: '/lumen/quickstart' },
+            { text: 'Python SDK', link: '/lumen/python-sdk' },
+            { text: 'CLI 手册', link: '/lumen/cli' },
+            { text: '生态集成', link: '/lumen/integration' },
           ]
         }
       ],
@@ -185,6 +233,9 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: '简介', link: '/forge/' },
+            { text: 'Ontology', link: '/forge/ontology' },
+            { text: 'Session 工作流', link: '/forge/sessions' },
+            { text: '路线图', link: '/forge/roadmap' },
           ]
         }
       ],
@@ -197,6 +248,66 @@ export default defineConfig({
             { text: '安装指南', link: '/switch/install' },
             { text: '配置说明', link: '/switch/configuration' },
             { text: '使用手册', link: '/switch/usage' },
+            { text: '成本监控', link: '/switch/cost-monitoring' },
+            { text: 'MCP 服务器', link: '/switch/mcp-servers' },
+            { text: '团队同步', link: '/switch/team-config' },
+          ]
+        }
+      ],
+      '/creator/': [
+        {
+          text: 'Creator 内容工厂',
+          collapsed: false,
+          items: [
+            { text: '简介', link: '/creator/' },
+            { text: '安装指南', link: '/creator/install' },
+            { text: '使用手册', link: '/creator/usage' },
+            { text: '使用案例', link: '/creator/use-cases' },
+          ]
+        }
+      ],
+      '/tutorials/': [
+        {
+          text: '跨产品教程',
+          collapsed: false,
+          items: [
+            { text: '教程中心', link: '/tutorials/' },
+            { text: '记忆 Agent (MemX+Kova)', link: '/tutorials/memory-agent' },
+            { text: 'Lumen × LangGraph × Kova', link: '/tutorials/lumen-kova-langgraph' },
+            { text: 'Lucrum 策略完整流', link: '/tutorials/lucrum-strategy-workflow' },
+          ]
+        }
+      ],
+      '/solutions/': [
+        {
+          text: '企业方案',
+          collapsed: false,
+          items: [
+            { text: '方案总览', link: '/solutions/' },
+            { text: '为什么选择 Lurus', link: '/solutions/why-lurus' },
+            { text: '企业部署形态', link: '/solutions/enterprise-deploy' },
+            { text: '企业 AI 中台', link: '/solutions/ai-midware' },
+          ]
+        },
+        {
+          text: '行业方案',
+          collapsed: false,
+          items: [
+            { text: '金融', link: '/solutions/industry-finance' },
+            { text: '内容', link: '/solutions/industry-content' },
+            { text: '开发工具', link: '/solutions/industry-devtools' },
+          ]
+        }
+      ],
+      '/migrations/': [
+        {
+          text: '迁移指南',
+          collapsed: false,
+          items: [
+            { text: '迁移中心', link: '/migrations/' },
+            { text: '从 OpenAI', link: '/migrations/from-openai' },
+            { text: '从 LangGraph', link: '/migrations/from-langgraph' },
+            { text: '从自建 OIDC', link: '/migrations/from-self-oidc' },
           ]
         }
       ],

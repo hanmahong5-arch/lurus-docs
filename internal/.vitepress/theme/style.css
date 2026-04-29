@@ -1,0 +1,92 @@
+/**
+ * Internal theme styles — tokens + page chrome.
+ * Tokens are copied from docs/.vitepress/theme/tokens/ at scaffold time;
+ * keep in sync via `bun scripts/sync-internal-tokens.ts` when public tokens change.
+ */
+@import './tokens/tokens.css';
+
+/* Page typography uses system stack (no self-hosted fonts in internal yet) */
+:root {
+  --vp-c-brand-1: #C67B5C;
+  --vp-c-brand-2: #B26B4D;
+  --vp-c-brand-3: #C67B5C;
+  --vp-c-brand-soft: rgba(198, 123, 92, 0.14);
+}
+
+.dark {
+  --vp-c-brand-1: #E8A87C;
+  --vp-c-brand-2: #D49872;
+}
+
+/* Internal-specific banner */
+.internal-banner {
+  background: linear-gradient(90deg, #fef3c7, #fde68a);
+  color: #78350f;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border-left: 4px solid #d97706;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+.internal-banner strong { font-size: 16px; }
+
+.dark .internal-banner {
+  background: linear-gradient(90deg, #422006, #78350f);
+  color: #fcd34d;
+}
+
+/* Dashboard layout primitives */
+.lurus-grid {
+  display: grid;
+  gap: 16px;
+}
+.lurus-grid--kpi { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.lurus-grid--products { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+.lurus-card {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  padding: 16px;
+  background: var(--vp-c-bg-soft);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+.lurus-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.lurus-status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+}
+
+.lurus-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.lurus-mermaid {
+  background: var(--vp-c-bg-soft);
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid var(--vp-c-divider);
+  overflow-x: auto;
+}
+.lurus-mermaid svg { max-width: 100%; height: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lurus-card { transition: none; }
+  .lurus-card:hover { transform: none; }
+}

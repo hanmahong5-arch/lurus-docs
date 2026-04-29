@@ -7,6 +7,10 @@ description: 注册 Lurus 账号并获取 API Key 的完整步骤。
 
 本指南介绍如何注册账号并获取 Lurus API Key。
 
+::: tip OIDC / OAuth 接入
+若你希望让终端用户以 Lurus 账号直接登录自有应用，或在后端以 Service User + JWT Profile 调用 Lurus API，可改用统一身份认证体系：[OIDC / OAuth2 集成](/platform/auth/oidc) · [API 认证（PAT/JWT）](/platform/auth/api-auth)。API Key 与 OIDC Token 共存，两种认证方式均有效。
+:::
+
 ## 注册账号
 
 1. 访问 [Lurus 控制台](https://api.lurus.cn)

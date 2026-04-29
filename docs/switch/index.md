@@ -1,21 +1,21 @@
 ---
-title: Switch — AI 编程工具统一管理中心
-description: 桌面应用，一个界面管理所有 AI 编程工具的配置、MCP 服务器和成本。
+title: Switch — AI 编程 CLI 统一管理中心
+description: 桌面应用，一个界面管理 5 款主流 AI 编程 CLI 的配置、MCP 服务器和成本。
 ---
 
-# Lurus Switch — AI 编程工具统一管理中心 <StatusBadge status="dev" />
+# Lurus Switch — AI 编程 CLI 统一管理中心 <StatusBadge status="dev" />
 
 ## 什么是 Lurus Switch？
 
-**Lurus Switch** 是一个桌面应用（单 exe，< 15MB），让你用一个界面管理所有 AI 编程工具的配置、MCP 服务器和成本。基于 **Wails**（Go 1.25 + React 18）构建，启动 < 2 秒，支持 Windows / macOS / Linux 全平台。
+**Lurus Switch** 是一个桌面应用（单 exe 零依赖，< 15MB），让你用一个界面管理 **5 款主流 AI 编程 CLI：Claude Code / Codex / Gemini CLI / PicoClaw / NullClaw** 的配置、MCP 服务器和成本。基于 **Wails**（Go 1.25 + React 18）构建，启动 < 2 秒，支持 Windows / macOS / Linux 全平台。
 
-当前开发者同时使用 Claude Code、Codex、Gemini CLI 等多个 AI 工具，配置散落各处、成本各自为政。Switch 将这一切集中管理。
+当前开发者同时使用 Claude Code、Codex、Gemini CLI 等多个 AI CLI，配置散落各处、成本各自为政。Switch 将这一切集中管理。
 
 ## 核心能力
 
 | 功能 | 说明 |
 |------|------|
-| **多工具配置管理** | 可视化编辑 Claude Code (JSON)、Codex (TOML)、Gemini CLI (MD) 等配置，Monaco Editor 实时预览 |
+| **多 CLI 配置管理** | 可视化编辑 Claude Code / Codex / Gemini CLI / PicoClaw / NullClaw 配置，Monaco Editor 实时预览 |
 | **<Term t="CLAUDE.md">CLAUDE.md</Term> 智能助手** | 扫描项目自动生成 CLAUDE.md，质量评分，优化建议 |
 | **<Term t="MCP Server">MCP 服务器</Term>可视化** | 告别手写 JSON，可视化配置 MCP 服务器，跨工具同步 |
 | **成本监控仪表盘** | 实时 Token 消耗趋势，按工具/模型分类，预算预警 |
@@ -30,9 +30,9 @@ description: 桌面应用，一个界面管理所有 AI 编程工具的配置、
 
 | 场景 | 说明 |
 |------|------|
-| **多工具管理** | 同时使用 2-3 个 AI CLI 工具，需要统一配置管理 |
-| **成本控制** | 多工具并行使用，需要统一的费用视图和预算管控 |
-| **团队标准化** | 统一配置分发，确保团队成员使用一致的 AI 工具设置 |
+| **多 CLI 管理** | 同时使用 Claude Code / Codex / Gemini CLI / PicoClaw / NullClaw 中的多个，需要统一配置管理 |
+| **成本控制** | 多 CLI 并行使用，需要统一的费用视图和预算管控 |
+| **团队标准化** | 统一配置分发，确保团队成员使用一致的 AI CLI 设置 |
 | **中国开发者** | 需要翻墙配置、中文界面、国内/海外模型一键切换 |
 
 ## 工作原理
@@ -72,3 +72,13 @@ Switch 在本地暴露一个兼容 OpenAI API 的端点（默认 `http://localho
 
 - [Lurus API — LLM 统一网关](/guide/introduction) — Switch 默认路由的云端模型提供商
 - [Creator — 内容工厂](/creator/) — 同为桌面应用，专注 AI 内容创作
+- [统一身份认证](/platform/auth/) — Switch 登录 Lurus 账号后自动同步配置，基于 OIDC
+
+<!-- lurus:related-block -->
+
+---
+
+## 相关产品与下一步
+
+<RelatedProducts product-id="switch" />
+

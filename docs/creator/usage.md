@@ -84,7 +84,7 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 
 ### 阶段 4：自动发布
 
-通过无头浏览器自动完成内容发布。
+通过 chromedp 无头浏览器自动完成内容发布。**当前仅支持 3 个平台的自动发布：微信公众号 / 抖音 / 小红书。** 其他平台（YouTube Shorts / TikTok / Instagram Reels 等）的文案可由 Creator 生成，但需手动发布。
 
 **首次使用配置**:
 

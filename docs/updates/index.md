@@ -10,6 +10,19 @@ description: Lurus 产品矩阵最新动态与里程碑
 
 ---
 
+## 2026 年 4 月
+
+### 文档站 — 全站文档准确性审计 <StatusBadge status="live" />
+
+- 对齐所有产品线真实现状（代码基准 vs 宣传文案）
+- Kova：LoC 从 15.2 万更新为 17.8 万（21 个 workspace crate），协议修正为 SDK/gRPC/REST/MCP 四种
+- Lucrum：测试口径从"680+ 单元测试"调整为"3000+ Vitest 测试用例"
+- Switch / Creator：明确支持的具体工具与平台边界
+- Forge：正式标注内测阶段，功能描述与代码实现对齐
+- 清理 gushen/ 遗留目录（Lucrum 品牌切换残留）
+
+---
+
 ## 2026 年 3 月
 
 ### Kova — 崩溃恢复可靠性冲刺 <StatusBadge status="dev" />
@@ -30,7 +43,7 @@ description: Lurus 产品矩阵最新动态与里程碑
 ### Lucrum — 7 个 Epic 全部完成 <StatusBadge status="live" />
 
 - AI 策略生成器：自然语言描述 → vnpy CtaTemplate 策略代码
-- 回测引擎 Decimal.js 全精度重写，680+ 单元测试
+- 回测引擎 Decimal.js 全精度重写，3000+ 前端测试用例（Vitest）
 - 11 个 AI 投资顾问 Agent 上线（巴菲特/彼得林奇/利弗莫尔/西蒙斯 4 大师视角）
 - 批量多股并行回测 + PDF 专业报告导出
 - WCAG 2.1 AA 无障碍审计通过
@@ -56,7 +69,7 @@ description: Lurus 产品矩阵最新动态与里程碑
 - 三个项目 (lurus-bilinote + lurus-content + lurus-creator) 合并为一
 - Content Pipeline (yt-dlp → Whisper → LLM) 完成
 - Publisher 重写 (chromedp 替代 Python Playwright) 完成
-- 8 大视频平台 URL 正则校验
+- 多平台视频 URL 正则校验（B 站/YouTube/TikTok/抖音 等）
 
 ### Lutu — Flutter 客户端代码完成 <StatusBadge status="dev" />
 

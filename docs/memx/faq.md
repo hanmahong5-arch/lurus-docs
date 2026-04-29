@@ -17,7 +17,7 @@ MemX 是在 [mem0](https://github.com/mem0ai/mem0) 基础上构建的增强版�
 
 ### 会消耗额外的 LLM Token 吗？
 
-默认的 `hybrid` 模式会对有价值的候选项调用 LLM 精炼，但由于规则预筛选过滤了大量低价值内容，实际 LLM 开销远低于 mem0 等全量调用方案（减少 90%+ 的调用）。如需完全零 LLM 调用，可将 `reflector.mode` 切换为 `"rules"` 模式。
+默认的 `hybrid` 模式会对有价值的候选项调用 LLM 精炼，但由于规则预筛选过滤了大量低价值内容，实际 LLM 开销远低于 mem0 等全量调用方案（减少 90%+ 的调用）。默认混合模式 + 自动降级：LLM 不可用时自动切换到纯规则模式，零调用零成本。如需显式关闭 LLM，可将 `reflector.mode` 切换为 `"rules"` 模式。
 
 ### 支持哪些向量数据库？
 
@@ -67,11 +67,11 @@ memx learn "correct knowledge here"
 
 ### 隐私过滤可以关闭吗？
 
-**不可以**。12 种内置的 PII 过滤规则是不可禁用的安全底线。你只能通过 `privacy_custom_patterns` 添加额外的过滤规则。
+**不可以**。12 条内置敏感信息过滤规则（API 密钥 / Token / 密码 / 本地路径等）是不可禁用的安全底线。你只能通过 `privacy_custom_patterns` 添加额外的过滤规则。
 
-### 支持哪些 PII 类型的过滤？
+### 支持哪些敏感信息类型的过滤？
 
-| PII 类型 | 示例 |
+| 类型 | 示例 |
 |---------|------|
 | PEM 私钥 | `-----BEGIN RSA PRIVATE KEY-----` |
 | Bearer / JWT Token | `Bearer eyJhbG...` |
@@ -83,6 +83,10 @@ memx learn "correct knowledge here"
 | 数据库连接串 | `postgres://user:pass@host/db` |
 | 操作系统路径 | `/home/user/.ssh/id_rsa` |
 | 自定义规则 | 通过 `privacy_custom_patterns` 添加 |
+
+::: info
+这 12 条规则聚焦于**密钥与本地路径**类的敏感信息（secrets + user paths），并非传统意义的 PII（邮箱 / 电话 / 身份证等）。如需 PII 过滤，请通过 `privacy_custom_patterns` 自行扩展。
+:::
 
 ### 过滤后的敏感信息去哪了？
 

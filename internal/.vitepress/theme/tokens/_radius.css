@@ -1,0 +1,11 @@
+/**
+ * Radius tokens — 4 level + a "pill".
+ */
+
+:root {
+  --lurus-radius-sm:   4px;
+  --lurus-radius-md:   8px;
+  --lurus-radius-lg:   14px;
+  --lurus-radius-xl:   22px;
+  --lurus-radius-pill: 999px;
+}

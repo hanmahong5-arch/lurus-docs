@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import StatusBadge from './StatusBadge.vue'
+import Icon from './Icon.vue'
+import { products } from '../../data/products'
 
 export interface CardAction {
   label: string
@@ -11,30 +14,53 @@ export interface CardAction {
 type Status = 'live' | 'beta' | 'dev' | 'plan'
 
 interface Props {
-  name: string
-  tagline: string
+  /** When set, ActionCard pulls name / tagline / status / icon / color from products.ts */
+  productId?: string
+  /** Explicit overrides — take precedence over productId defaults */
+  name?: string
+  tagline?: string
   icon?: string
   color?: string
   status?: Status
-  actions: CardAction[]
+  actions?: CardAction[]
 }
 
-withDefaults(defineProps<Props>(), {
-  icon: '📦',
-  color: '#C67B5C',
+const props = withDefaults(defineProps<Props>(), {
+  productId: '',
+  name: '',
+  tagline: '',
+  icon: '',
+  color: '',
+  actions: () => [],
 })
+
+const product = computed(() => (props.productId ? products[props.productId] : null))
+
+const resolved = computed(() => ({
+  name: props.name || product.value?.name || '',
+  tagline: props.tagline || product.value?.tagline || '',
+  icon: props.icon || product.value?.icon || 'package',
+  color: props.color || (product.value ? `var(${product.value.colorToken})` : 'var(--lurus-brand-500)'),
+  status: props.status || product.value?.status,
+}))
+
+/** Detect whether `icon` is a Lucide icon name or an emoji/character */
+const isLucide = computed(() => /^[a-z][a-z0-9-]*$/.test(resolved.value.icon))
 </script>
 
 <template>
-  <div class="action-card" :style="{ '--card-accent': color }">
+  <div class="action-card" :style="{ '--card-accent': resolved.color }">
     <div class="action-card__header">
-      <span class="action-card__icon">{{ icon }}</span>
+      <span class="action-card__icon">
+        <Icon v-if="isLucide" :name="resolved.icon" :size="26" />
+        <template v-else>{{ resolved.icon }}</template>
+      </span>
       <div class="action-card__meta">
         <span class="action-card__name">
-          {{ name }}
-          <StatusBadge v-if="status" :status="status" />
+          {{ resolved.name }}
+          <StatusBadge v-if="resolved.status" :status="resolved.status" />
         </span>
-        <span class="action-card__tagline">{{ tagline }}</span>
+        <span class="action-card__tagline">{{ resolved.tagline }}</span>
       </div>
     </div>
     <div class="action-card__buttons">
@@ -81,8 +107,8 @@ withDefaults(defineProps<Props>(), {
 
 .action-card:hover {
   border-color: var(--card-accent);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
-  transform: translateY(-3px);
+  box-shadow: var(--lurus-shadow-3);
+  transform: translateY(-4px) rotateX(0.5deg);
 }
 
 .action-card__header {
@@ -95,6 +121,14 @@ withDefaults(defineProps<Props>(), {
   font-size: 1.6rem;
   line-height: 1;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--lurus-radius-md);
+  background: color-mix(in srgb, var(--card-accent) 14%, transparent);
+  color: var(--card-accent);
 }
 
 .action-card__meta {

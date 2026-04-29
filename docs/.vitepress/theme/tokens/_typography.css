@@ -1,0 +1,61 @@
+/**
+ * Typography tokens — fluid clamp scale (7 levels) + font families
+ * Font files injected in Phase 2 — here we only declare the variables.
+ */
+
+/* Optional self-hosted variable fonts.
+   Files live in docs/public/fonts/ — if absent, browser falls back to
+   the system stack below (font-display: swap keeps rendering synchronous). */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: local('Inter var'),
+       local('Inter'),
+       url('/fonts/InterVariable.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: local('JetBrains Mono'),
+       url('/fonts/JetBrainsMono-Variable.woff2') format('woff2-variations');
+}
+
+:root {
+  /* Font stacks — Inter/JetBrains lead, OS + CJK fallbacks handle missing glyphs */
+  --lurus-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC',
+                     'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+  --lurus-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Consolas,
+                     'Liberation Mono', Menlo, monospace;
+
+  /* Fluid font-size scale (min, preferred, max) */
+  --lurus-fs-xs:    clamp(0.72rem, 0.70rem + 0.1vw, 0.78rem);
+  --lurus-fs-sm:    clamp(0.82rem, 0.80rem + 0.1vw, 0.88rem);
+  --lurus-fs-base:  clamp(0.92rem, 0.90rem + 0.2vw, 1.00rem);
+  --lurus-fs-lg:    clamp(1.10rem, 1.05rem + 0.3vw, 1.25rem);
+  --lurus-fs-xl:    clamp(1.30rem, 1.20rem + 0.5vw, 1.50rem);
+  --lurus-fs-2xl:   clamp(1.60rem, 1.40rem + 1.0vw, 2.00rem);
+  --lurus-fs-3xl:   clamp(2.00rem, 1.70rem + 1.5vw, 2.75rem);
+  --lurus-fs-hero:  clamp(2.75rem, 2.00rem + 3.5vw, 4.50rem);
+
+  /* Line-heights */
+  --lurus-lh-tight:   1.15;
+  --lurus-lh-snug:    1.35;
+  --lurus-lh-normal:  1.55;
+  --lurus-lh-relaxed: 1.75;
+
+  /* Letter spacing */
+  --lurus-tracking-tight:  -0.02em;
+  --lurus-tracking-normal:  0;
+  --lurus-tracking-wide:   0.02em;
+
+  /* Weights — leverages variable font when loaded */
+  --lurus-fw-regular:  400;
+  --lurus-fw-medium:   500;
+  --lurus-fw-semibold: 600;
+  --lurus-fw-bold:     700;
+  --lurus-fw-black:    800;
+}

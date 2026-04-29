@@ -2,7 +2,13 @@
  * Lurus Docs brand theme — overrides VitePress CSS variables
  * Brand palette sourced from lurus-www design tokens
  * UX spec: _bmad-output/planning-artifacts/ux-design-specification.md
+ *
+ * Design tokens (colors, typography, spacing, motion, elevation, radius)
+ * live in ./tokens/ and are loaded before VitePress overrides so that
+ * `--lurus-*` variables are available to every downstream rule.
  */
+
+@import './tokens/tokens.css';
 
 /* ─── Light mode ─────────────────────────────────────────── */
 :root {
@@ -100,6 +106,15 @@
   --lurus-status-beta: #FB923C;
   --lurus-status-dev: #60A5FA;
   --lurus-status-plan: #6B5E57;
+}
+
+/* ─── Font application ──────────────────────────────────── */
+body {
+  font-family: var(--lurus-font-sans);
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+}
+code, pre, kbd {
+  font-family: var(--lurus-font-mono);
 }
 
 /* ─── Global transitions ────────────────────────────────── */
@@ -485,4 +500,51 @@ code {
 [class*="admin-"] table code {
   font-size: 12px;
   padding: 1px 4px;
+}
+
+/* ─── Focus-visible accessibility ──────────────────────────
+   2px copper outline with 2px offset so tabbing through cards,
+   buttons, and sidebar items is unmistakable.                   */
+*:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+/* Disable for plain text — only interactive elements */
+p:focus-visible, span:focus-visible, div:focus-visible {
+  outline: none;
+}
+
+/* ─── StatusBadge: dev pulse animation ─────────────────── */
+.status-badge--dev::before {
+  animation: lurus-dev-pulse 2.5s ease-in-out infinite;
+}
+@keyframes lurus-dev-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+/* ─── Landing homepage: stagger product grids ──────────── */
+@keyframes lurus-stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lurus-home .action-grid > * {
+  animation: lurus-stagger-in 0.5s var(--lurus-ease-out) both;
+}
+.lurus-home .action-grid > *:nth-child(1) { animation-delay: 0.0s; }
+.lurus-home .action-grid > *:nth-child(2) { animation-delay: 0.08s; }
+.lurus-home .action-grid > *:nth-child(3) { animation-delay: 0.16s; }
+.lurus-home .action-grid > *:nth-child(4) { animation-delay: 0.24s; }
+.lurus-home .action-grid > *:nth-child(5) { animation-delay: 0.32s; }
+.lurus-home .action-grid > *:nth-child(6) { animation-delay: 0.4s; }
+
+/* ─── Reduced motion: strip decoration, preserve content ─ */
+@media (prefers-reduced-motion: reduce) {
+  .status-badge--dev::before,
+  .status-badge--beta::before,
+  .lurus-home .action-grid > * {
+    animation: none !important;
+  }
+  .lurus-home .action-grid > * { opacity: 1; transform: none; }
 }

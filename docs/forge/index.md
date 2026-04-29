@@ -11,8 +11,8 @@ description: Web 端 AI 产品协作开发平台，支持团队协同构建 AI �
 
 底层通过 [Kova 引擎](/kova/) 实现 Agent 任务的 WAL 持久化，即使执行中断也能无缝恢复。
 
-::: warning 内测阶段
-Forge 目前处于受邀内测阶段，功能和 API 可能随时调整。如需体验，请联系 [business@lurus.cn](mailto:business@lurus.cn) 申请内测资格。
+::: warning 内部研发平台（非商业 SaaS）
+Forge 当前定位为 Lurus **内部 R&D 工具**（ontology 驱动的需求管理 + API Gateway demo），**不是对外售卖的商业产品**。仅受邀内测，API 仍在演进中。如需了解或合作，请联系 [business@lurus.cn](mailto:business@lurus.cn)。
 :::
 
 ---
@@ -27,7 +27,7 @@ Forge 目前处于受邀内测阶段，功能和 API 可能随时调整。如需
 
 "这个功能的用户故事是什么？" → PM Agent 分析并生成。每个决策都关联到对话上下文，随时可回溯"为什么当初这么决定"。
 
-### Dependency Guardian
+### Dependency Guardian `计划中 / Planned`
 
 超越 Renovate/Dependabot 的三层自动化依赖管理：
 - **Patch**: 自动合并，零人工
@@ -46,7 +46,7 @@ Forge 目前处于受邀内测阶段，功能和 API 可能随时调整。如需
 | **批量测试** | 导入测试集，批量评估 Prompt 效果 |
 | **版本历史** | 每次修改自动保存版本，随时回滚 |
 
-### Agent 可视化构建
+### Agent 可视化构建 `开发中`
 
 拖拽式的 Agent 构建界面：
 
@@ -61,7 +61,7 @@ Forge 目前处于受邀内测阶段，功能和 API 可能随时调整。如需
 └─────────────┘     └─────────────┘     └─────────────┘
 ```
 
-### 知识库管理
+### 知识库管理 `开发中`
 
 为 RAG（检索增强生成）应用管理知识库：
 
@@ -70,7 +70,7 @@ Forge 目前处于受邀内测阶段，功能和 API 可能随时调整。如需
 - **向量索引**: 自动生成嵌入向量，支持语义搜索
 - **更新同步**: 文档更新时自动重新索引
 
-### 监控与分析
+### 监控与分析 `开发中`
 
 - **调用统计**: 每个 AI 功能的调用量、延迟、Token 消耗
 - **质量评分**: 用户反馈和自动质量评估
@@ -119,3 +119,13 @@ Forge 目前处于受邀内测阶段。适合以下团队：
 - [Lurus API](/guide/introduction) — 了解底层 AI 能力
 - [Kova](/kova/) — Agent 持久化执行引擎
 - [MemX](/memx/) — AI 智能记忆管理
+- [统一身份认证](/platform/auth/) — Forge 登录 / 团队权限 / SSO 联邦均基于此
+
+<!-- lurus:related-block -->
+
+---
+
+## 相关产品与下一步
+
+<RelatedProducts product-id="forge" />
+

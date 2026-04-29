@@ -1,19 +1,21 @@
 ---
 title: Lumen — Agent 可观测性与可靠性工具
-description: Rust 构建的 CLI 工具，提供 Agent 执行的可观测性、调试和可靠性保障。
+description: Python SDK 优先 + Rust 引擎 + 可选 CLI，为 Agent 开发者提供可观测性、调试和可靠性保障。
 ---
 
 # Lumen — Agent 可观测性与可靠性工具 <StatusBadge status="dev" />
 
-::: info 前置条件（从源码编译）
-- Rust 1.93+（`rustup update` 确认）
-- cargo 包管理器
+::: info 前置条件
+- 首选：Python 3.9+（`pip install lumen-ai`）
+- 可选 CLI：Rust 1.93+ 从源码编译 `lumen-cli`
 - 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）
 :::
 
 ## 什么是 Lumen？
 
 **Lumen** 是面向 AI Agent 开发者的**三合一可靠性工具** — Replay（零成本重放）+ Crash Recovery（3us <Term t="Checkpoint">崩溃恢复</Term>）+ Cost Tracking（实时成本追踪）。
+
+**交付形态**：Python SDK 优先（`pip install lumen-ai`，LangGraph/Agent 开发者首选）+ Rust 引擎（`lumen-core` 性能底座）+ 可选 CLI（`lumen-cli` v0.1.0）。
 
 核心理念：**Illuminate your AI agents. Never lose a run. Never burn tokens blindly.**
 
@@ -72,7 +74,13 @@ lumen traces                         # 查看所有执行追踪
 
 ## 安装
 
-### macOS / Linux
+### Python SDK（推荐）
+
+```bash
+pip install lumen-ai
+```
+
+### CLI — macOS / Linux
 
 ```bash
 curl -fsSL https://get.lurus.cn/lumen | sh
@@ -263,3 +271,12 @@ Lumen 在本地开发时使用轻量级运行时，部署到 Kova 后获得完�
 - [Kova — Agent 持久执行引擎](/kova/) — Lumen 部署 Agent 的目标运行时
 - [Lurus API](/guide/introduction) — 底层 LLM 统一网关
 - [MCP 协议](https://modelcontextprotocol.io/) — Model Context Protocol 官方文档
+
+<!-- lurus:related-block -->
+
+---
+
+## 相关产品与下一步
+
+<RelatedProducts product-id="lumen" />
+

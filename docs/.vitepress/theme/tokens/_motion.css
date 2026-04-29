@@ -1,0 +1,36 @@
+/**
+ * Motion tokens — duration + easing + reusable transforms.
+ */
+
+:root {
+  --lurus-dur-fast:   0.15s;
+  --lurus-dur-base:   0.25s;
+  --lurus-dur-slow:   0.4s;
+  --lurus-dur-slower: 0.8s;
+  --lurus-dur-shimmer: 8s;
+
+  /* Bezier curves */
+  --lurus-ease-out:       cubic-bezier(0.16, 1, 0.3, 1);
+  --lurus-ease-in-out:    cubic-bezier(0.4, 0, 0.2, 1);
+  --lurus-ease-bounce:    cubic-bezier(0.34, 1.56, 0.64, 1);
+  --lurus-ease-linear:    linear;
+
+  /* Transform presets */
+  --lurus-hover-lift:   translateY(-4px);
+  --lurus-hover-rise:   translateY(-2px);
+  --lurus-press:        translateY(1px);
+  --lurus-scale-hover:  scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --lurus-dur-fast:   0.01ms;
+    --lurus-dur-base:   0.01ms;
+    --lurus-dur-slow:   0.01ms;
+    --lurus-dur-slower: 0.01ms;
+    --lurus-dur-shimmer: 0.01ms;
+    --lurus-hover-lift: none;
+    --lurus-hover-rise: none;
+    --lurus-scale-hover: none;
+  }
+}
