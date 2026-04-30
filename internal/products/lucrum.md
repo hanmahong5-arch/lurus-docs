@@ -542,3 +542,319 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/lucrum-web -n lucrum"
 # 验证
 curl -sI https://lucrum.lurus.cn/
 ```
+
+---
+
+## 多视角速览
+
+**用户视角**
+自然语言描述策略思路（如"双均线金叉"），Lucrum 自动生成 vnpy 代码、执行历史回测、输出夏普/最大回撤等指标，一键提交到模拟盘或实盘，全程无需手写代码。
+
+**开发者视角**
+Go 层仅做网关路由；策略核心是 Python FastAPI + vnpy 4.x；前端 Next.js 14 BFF 含独立 TypeScript 回测引擎；LangGraphJS 11-Agent 图驱动 AI 顾问；所有 LLM 调用走 newapi.lurus.cn/v1。
+
+**运维视角**
+部署在 R1（`43.226.46.164`），命名空间 `lucrum`，域名 `lucrum.lurus.cn`；数据库 schema `lucrum`；Redis DB 1；NATS stream `LUCRUM_EVENTS`；ArgoCD 自动同步 `deploy/k8s/`。
+
+**决策者视角**
+对比米筐/聚宽/掘金：Lucrum 完全自托管（数据不出私有集群）、AI 原生（策略生成→优化→顾问全链路 LLM 增强）、计划接入多家实盘券商；劣势是数据源（adata）无官方 SLA，策略市场功能仍在规划中。
+
+---
+
+## 决策树：用 Lucrum 还是自建
+
+```mermaid
+graph TD
+    A[有量化交易需求] --> B{是否需要 A 股实盘接入?}
+    B -- 否，仅研究回测 --> C{是否需要 AI 辅助策略生成?}
+    B -- 是 --> D{现有数据源够用吗?\nadata/东方财富 覆盖 A 股}
+    C -- 否 --> E[考虑开源 backtrader / zipline\n自建成本低]
+    C -- 是 --> F[✓ 用 Lucrum\nAI 顾问 + 回测一体]
+    D -- 是 --> G{是否需要弹性算力扩缩?\n大规模并行回测}
+    D -- 否，需要私有数据源 --> H[⚠ 需评估数据接入成本\n可对接自定义 datafeed]
+    G -- 否，单节点够 --> I[✓ 用 Lucrum\n完整实盘链路已就绪]
+    G -- 是，需分布式计算 --> J[⚠ Lucrum 当前单节点 vnpy\n大规模需自建分布式回测集群]
+    H --> K{愿意自行维护 datafeed 适配?}
+    K -- 是 --> I
+    K -- 否 --> E
+```
+
+---
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant FE as lucrum-web BFF
+    participant LLM as newapi.lurus.cn/v1
+    participant API as lurus-ai-qtrd (vnpy)
+    participant DB as PostgreSQL (schema: lucrum)
+    participant MKT as 策略市场
+
+    U->>FE: POST /api/strategy/generate\n{"description": "双均线金叉做多，死叉离场"}
+    FE->>LLM: chat/completions (DeepSeek)\n system: vnpy AlphaStrategy 代码模板
+    LLM-->>FE: 生成 Python 策略代码
+    FE-->>U: strategy_code (预览)
+
+    U->>FE: POST /api/backtest\n{strategy_code, symbol, dateRange, capital}
+    FE->>DB: SELECT kline_daily WHERE symbol + date_range
+    DB-->>FE: K 线数据
+    FE->>FE: 前端回测引擎执行\nFinancialAmount + T+1 + 涨跌停规则
+    FE->>DB: INSERT backtest_history
+    FE-->>U: {sharpe, max_drawdown, annual_return, trades[]}
+
+    U->>FE: POST /api/strategy/optimize\n{backtest_id, goal: "提升夏普"}
+    FE->>LLM: 参数敏感性分析 + 优化建议
+    LLM-->>FE: 参数调整建议
+    FE-->>U: 优化后参数方案
+
+    U->>API: POST /api/strategy (部署到模拟盘)
+    API->>API: vnpy PaperAccount 接管
+    API-->>U: strategy_id + 运行状态
+
+    U->>MKT: POST /api/marketplace/publish\n{strategy_id, description}
+    Note over MKT: 需通过代码审查方可上架
+    MKT-->>U: marketplace_id
+```
+
+---
+
+## 端到端完整例子
+
+以"双均线策略"为例，展示从自然语言到模拟盘部署的完整 workflow。
+
+### 第一步：自然语言生成 vnpy 策略
+
+```
+POST https://lucrum.lurus.cn/api/strategy/generate
+{
+  "description": "双均线策略：5 日均线上穿 20 日均线做多，下穿平仓，每次固定仓位 20%",
+  "symbol": "000001.SZ"
+}
+```
+
+LLM 返回的 vnpy 代码（经过 strategy_parser.py 结构化）：
+
+```python
+from vnpy.trader.utility import BarGenerator, ArrayManager
+from vnpy_ctastrategy import CtaTemplate, StopOrder
+from vnpy.trader.object import BarData, TickData, TradeData, OrderData
+
+class DualMaStrategy(CtaTemplate):
+    """Dual moving average crossover strategy — 5/20 day SMA."""
+
+    author = "Lucrum AI"
+    fast_window = 5
+    slow_window = 20
+    fixed_size = 1  # lots per trade
+
+    fast_ma0 = 0.0
+    fast_ma1 = 0.0
+    slow_ma0 = 0.0
+    slow_ma1 = 0.0
+
+    parameters = ["fast_window", "slow_window", "fixed_size"]
+    variables = ["fast_ma0", "fast_ma1", "slow_ma0", "slow_ma1"]
+
+    def __init__(self, cta_engine, strategy_name, vt_symbol, setting):
+        super().__init__(cta_engine, strategy_name, vt_symbol, setting)
+        self.bg = BarGenerator(self.on_bar)
+        self.am = ArrayManager()
+
+    def on_bar(self, bar: BarData):
+        self.cancel_all()
+        am = self.am
+        am.update_bar(bar)
+        if not am.inited:
+            return
+
+        fast_ma = am.sma(self.fast_window, array=True)
+        self.fast_ma0 = fast_ma[-1]
+        self.fast_ma1 = fast_ma[-2]
+
+        slow_ma = am.sma(self.slow_window, array=True)
+        self.slow_ma0 = slow_ma[-1]
+        self.slow_ma1 = slow_ma[-2]
+
+        cross_over = self.fast_ma0 > self.slow_ma0 and self.fast_ma1 < self.slow_ma1
+        cross_below = self.fast_ma0 < self.slow_ma0 and self.fast_ma1 > self.slow_ma1
+
+        if cross_over:
+            if self.pos == 0:
+                self.buy(bar.close_price, self.fixed_size)
+            elif self.pos < 0:
+                self.cover(bar.close_price, abs(self.pos))
+                self.buy(bar.close_price, self.fixed_size)
+        elif cross_below:
+            if self.pos > 0:
+                self.sell(bar.close_price, abs(self.pos))
+
+        self.put_event()
+```
+
+### 第二步：提交回测
+
+```
+POST https://lucrum.lurus.cn/api/backtest
+{
+  "strategy": "DualMaStrategy",
+  "symbol": "000001.SZ",
+  "start_date": "2023-01-01",
+  "end_date": "2023-12-31",
+  "initial_capital": 100000,
+  "commission_rate": 0.0003,
+  "slippage": 0.01
+}
+```
+
+### 第三步：回测结果样例
+
+```json
+{
+  "backtest_id": "bt_20240115_a3f8c12",
+  "symbol": "000001.SZ",
+  "period": "2023-01-01 ~ 2023-12-31",
+  "initial_capital": 100000,
+  "final_capital": 108342.17,
+  "metrics": {
+    "total_return": 8.34,
+    "annual_return": 8.34,
+    "sharpe_ratio": 0.81,
+    "max_drawdown": -12.47,
+    "max_drawdown_duration_days": 38,
+    "win_rate": 0.52,
+    "profit_factor": 1.43,
+    "total_trades": 23,
+    "avg_trade_pnl": 362.70,
+    "volatility_annual": 18.6
+  },
+  "trades": [
+    {
+      "date": "2023-02-14",
+      "direction": "buy",
+      "price": 12.85,
+      "volume": 100,
+      "commission": 0.39
+    },
+    {
+      "date": "2023-03-07",
+      "direction": "sell",
+      "price": 13.42,
+      "volume": 100,
+      "pnl": 56.61,
+      "commission": 0.40
+    }
+  ],
+  "equity_curve": [100000, 100234, 101087, 99843, 102560, "..."]
+}
+```
+
+### 第四步：AI 优化建议
+
+```
+POST https://lucrum.lurus.cn/api/strategy/optimize
+{
+  "backtest_id": "bt_20240115_a3f8c12",
+  "goal": "提升夏普比率，控制最大回撤在 10% 以内"
+}
+```
+
+LLM 返回：建议将 fast_window 调整为 8，slow_window 调整为 30，并引入 ATR 动态止损（ATR 倍数 = 2.0）。
+
+### 第五步：部署到模拟盘
+
+```
+POST https://lucrum.lurus.cn/api/strategy
+{
+  "strategy_class": "DualMaStrategy",
+  "strategy_name": "dual_ma_optimized_v2",
+  "vt_symbol": "000001.SZ",
+  "setting": {
+    "fast_window": 8,
+    "slow_window": 30,
+    "fixed_size": 1
+  }
+}
+```
+
+vnpy PaperAccount 接管后，行情通过 `/ws` WebSocket 实时推送成交回报。
+
+---
+
+## 最佳实践 ✓/✗
+
+| 场景 | 推荐做法 | 禁忌 |
+|------|---------|------|
+| 账户隔离 | ✓ 回测、模拟盘、实盘使用独立账户/数据库行隔离（`account_type` 字段区分） | ✗ 同一账户混跑回测与实盘，历史数据污染，盈亏统计失真 |
+| 实盘准入 | ✓ 实盘前先跑纸面交易（PaperAccount）至少 1 周，验证策略稳定性与风控参数 | ✗ 回测跑通就直接 all in 实盘，忽略市场冲击与滑点 |
+| 风控参数 | ✓ 止损比例、最大仓位、日亏损上限独立写入 `strategy_setting` JSON，可热更新 | ✗ 风控阈值硬编码在策略 py 文件，修改需重新部署 |
+| 金额计算 | ✓ 前端全程使用 `FinancialAmount`（Decimal.js 包装）处理成交额/佣金/净值 | ✗ 直接用 JS `number` / Python `float` 累加金额，千笔交易后精度漂移 |
+| 异步通知 | ✓ 交易事件发布到 NATS `LUCRUM_EVENTS`，下游消费者（notification/lutu）异步处理 | ✗ 下单接口同步等待通知结果，阻塞 vnpy EventEngine 事件循环 |
+| 策略上架 | ✓ 策略推送到 `marketplace_strategies` 前必须通过代码审查（reviewer + 自动静态分析） | ✗ 直接写入 marketplace 表绕过审查流程，存在恶意代码风险 |
+| 数据源降级 | ✓ DB 优先（PostgreSQL kline_daily）→ adata API → Mock，三级降级链路写明在 provider 层 | ✗ 直接依赖 adata 单一数据源，无降级，adata 429 即回测不可用 |
+
+---
+
+## 跨产品集成场景
+
+### ① Lucrum + newapi — 多模型策略生成对比
+
+newapi.lurus.cn 作为 LLM 网关，统一路由至 DeepSeek / GPT-4o / Claude 等多个模型。集成方式：在策略生成请求中传入 `model` 参数，BFF 透传至 newapi；可同时发起 2-3 个模型调用并行生成策略代码，展示 diff 供用户选择最优版本。
+
+关键链路：`lucrum-web /api/strategy/generate` → `LLM_API_BASE=https://newapi.lurus.cn/v1` → `/v1/chat/completions?model=deepseek-chat|gpt-4o`。newapi 按 token 计费，走 Platform 钱包扣款（Redis DB 0 计数）。
+
+### ② Lucrum + MemX — 用户风险偏好长期记忆
+
+AI Advisor（LangGraphJS 11-Agent 图）通过 Memorus（2b-svc-memorus:8880）读写用户投资偏好记忆。每次对话结束后 fire-and-forget 写入 `scope: project:lucrum`，下次对话前 `searchMemories(top-5)` 注入 system prompt。
+
+典型记忆条目示例：`{"content": "用户偏好低波动防御性标的，厌恶最大回撤超过 10%，习惯持仓周期 2-4 周", "scope": "project:lucrum"}`。ACE reflector 自动蒸馏去重，防止记忆膨胀。Memorus 不可达时 fail-open（1500ms 超时），Advisor 继续运行但不带历史偏好。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维告警触发]) --> Q1{告警类型?}
+
+    Q1 -- 行情订阅断流 --> A1[检查 adata 429 / 网络\nkubectl logs lucrum-api --tail=200]
+    A1 --> A2{DB kline_daily 有足够缓存?}
+    A2 -- 是 --> A3[✓ 降级到 DB 模式\n回测可用，实时行情受影响]
+    A2 -- 否 --> A4[手动触发 /api/data/fetch 补数据\n或重启 lucrum-api 刷新 adata 连接]
+
+    Q1 -- 回测 OOM / 任务卡死 --> B1[kubectl top pod -n lucrum\n确认 lucrum-api 内存用量]
+    B1 --> B2{内存 > 1.8Gi?}
+    B2 -- 是 --> B3[临时 patch limits=3Gi\n并重启 lucrum-api\n⚠ 同步更新 manifest]
+    B2 -- 否 --> B4[检查是否大范围多 symbol 回测\n建议拆分请求分批提交]
+
+    Q1 -- 实盘下单失败 --> C1[检查 /api/trading 响应码\n查看 risk_manager 日志]
+    C1 --> C2{是风控拦截?}
+    C2 -- 是 --> C3[查看 RiskManager 日志\nmax_positions / max_drawdown 是否触发\n⚠ 服务重启后风控状态清零为已知坑]
+    C2 -- 否 --> C4[检查 PaperAccount / QMT 网关状态\nkubectl logs lucrum-api | grep gateway]
+
+    Q1 -- 资金流水对不上 --> D1[查 lucrum.trading_history 表\n与外部券商账单逐笔核对]
+    D1 --> D2{差异在哪笔?}
+    D2 -- 前端引擎 --> D3[⚠ 前端 float 精度已知问题\n确认使用 FinancialAmount 的代码路径]
+    D2 -- 后端 vnpy --> D4[vnpy 使用 float 计算\n大批量交易存在精度漂移\n记录差异，纳入 TODO 精度统一]
+
+    Q1 -- NATS 消费滞后 --> E1[检查 LUCRUM_EVENTS 积压\nnats sub --count LUCRUM_EVENTS]
+    E1 --> E2{消费者在线?}
+    E2 -- 否 --> E3[检查 notification pod 状态\nkubectl get pods -n lurus-platform]
+    E2 -- 是，但慢 --> E4[检查消费者处理耗时\n考虑增加消费者副本或优化处理逻辑]
+
+    A3 --> END([处理完成，监控 15min])
+    A4 --> END
+    B3 --> END
+    B4 --> END
+    C3 --> END
+    C4 --> END
+    D3 --> END
+    D4 --> END
+    E3 --> END
+    E4 --> END
+```
+
+---
+
+appended 266 lines, 4 mermaid charts to lucrum.md

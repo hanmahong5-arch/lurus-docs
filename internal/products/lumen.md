@@ -542,3 +542,429 @@ lumen cost --last 7d --format json | \
   curl -s -X POST http://loki.lurus.cn/loki/api/v1/push \
   -H "Content-Type: application/json" -d @-
 ```
+
+---
+
+## 多视角速览
+
+### 用户视角（AI 应用开发者）
+
+Lumen 是一个 CLI + Python SDK，帮助开发者在本地命令行操控 agent 的完整生命周期：
+
+- `lumen init` — 初始化项目配置（生成 `lumen.toml`）
+- `lumen agent dev` — 启动开发模式监听，实时打印 trace 摘要
+- `lumen agent list / inspect <trace_id>` — 查看历史执行记录
+- `lumen replay <trace_id>` — 零成本回放某次执行，逐步还原每个 LLM 调用
+- `lumen cost --last 7d` — 统计近期 token 消耗与费用
+- `lumen deploy` — 将 agent 打包推送到 Kova engine 托管执行
+- `lumen doctor` — 一键体检本地环境（依赖、配置、连通性）
+- `lumen workflow` — 管理多步 agent 工作流的声明式编排
+- `lumen mcp` — 管理本地 MCP server 注册与生命周期
+
+面向人群：用 LangGraph / OpenAI SDK / Anthropic SDK 写 agent 的 Python 开发者；无需了解 Kova 或 Lurus 内部架构。
+
+### 开发者视角（Lumen 贡献者）
+
+Lumen 采用 **Rust + Python 双层架构**：
+
+- **lumen-core**（Rust，`Edition 2024`）：核心引擎，提供 `replay`、`cost`、`trace`、`pricing` 四大模块；`#![forbid(unsafe_code)]`，`unwrap_used / expect_used / panic = deny`。
+- **lumen-cli**（Rust，`clap` 4.x）：终端子命令入口，所有子命令通过 `lumen-core` 完成计算。
+- **lumen-sdk**（Python）：`pip install lumen-ai[langgraph,openai,anthropic]`；通过 monkey-patch 实现零侵入 instrument；`LumenCheckpointer` 替换 `SqliteSaver`；`LumenTracer` 实现 `BaseCallbackHandler`。
+
+关键子命令对应代码路径：
+
+| 命令 | Rust 入口 | 核心模块 |
+|---|---|---|
+| `lumen agent` | `lumen-cli/src/cmd/agent.rs` | lumen-core trace + replay |
+| `lumen mcp` | `lumen-cli/src/cmd/mcp.rs` | 本地进程管理 |
+| `lumen workflow` | `lumen-cli/src/cmd/workflow.rs` | YAML 工作流解析 |
+| `lumen deploy` | `lumen-cli/src/cmd/deploy.rs` | Kova HTTP API |
+| `lumen doctor` | `lumen-cli/src/cmd/doctor.rs` | 环境探测 |
+| `lumen init` | `lumen-cli/src/cmd/init.rs` | 模板生成 |
+
+### 运维视角
+
+Lumen 在运维层面承担两个角色：
+
+1. **Kova Checkpointer**：Kova engine 托管的 agent 在执行时，通过 `LumenCheckpointer` 将每个 LangGraph checkpoint 写入本地文件（开发环境）或 PostgreSQL（生产环境，`lurus-pg-rw.database.svc:5432`）。进程崩溃后 Kova 可调用 `get_tuple` 从最后 checkpoint 续跑，实现断点恢复，无需重跑已完成步骤。
+
+2. **OTel Exporter**：配置 `LUMEN_OTLP_ENABLED=true` + `LUMEN_OTLP_ENDPOINT` 后，每次 `TraceSession.finalize()` 向 Grafana Alloy（`grafana-alloy:4317`）推送 OpenTelemetry span，包含 `lumen.cost_usd`、`lumen.iterations`、`lumen.model` 等自定义 attribute。Grafana Tempo 接收后可按 agent 名称、模型、成本等维度聚合查询。⚠ 当前 Phase 1 OTLP 实现待完成，仅配置已就绪。
+
+运维关注点：
+- trace 文件落在 `/data/kova/lumen/traces/`（R6）；注意磁盘水位，`df -h /data`。
+- checkpoint 文件落在 `/data/kova/lumen/checkpoints/`；定期 `ls -lt` 确认无 `.tmp` 残留。
+- `lumen doctor` 可输出 JSON，接入 Prometheus pushgateway 做健康基线。
+
+### 决策者视角
+
+Lumen 为内部 AI 项目解决两个长期成本问题：
+
+| 痛点 | 现有方案 | Lumen 替换方案 |
+|---|---|---|
+| LangGraph checkpoint 持久化 | SQLite（本地脆弱）/ PostgreSQL（配置复杂） | `LumenCheckpointer`：dev 用文件 3μs / prod 用 PG，统一 API 无缝切换 |
+| Agent 执行 trace 可观测 | 自建 `print` / LangSmith（SaaS，外部数据） | `LumenTracer` + `lumen replay`：本地文件，零 API 成本，数据不出境 |
+| Token 成本审计 | 无系统性统计 | `lumen cost` + BudgetTracker：按项目、模型、时间段聚合 |
+| 执行异常发现 | 人工检查 | `AnomalyDetector` 滑动窗口自动报警，阈值可调 |
+
+替代关系：**`LumenCheckpointer` 替代 LangGraph `SqliteSaver` + 自建 PG checkpoint 表；`LumenTracer` + `lumen cost` 替代 LangSmith trace + 自建成本统计。** 商业 SaaS 替代品（LangSmith Pro）价格约 $200/月起，Lumen 自托管成本趋近于零。
+
+---
+
+## 决策树：什么时候装 Lumen
+
+```mermaid
+graph TD
+    A[我在开发 AI Agent] --> B{使用 LangGraph / OpenAI SDK\n / Anthropic SDK?}
+    B -- 否 --> Z1[暂不需要 Lumen\n其他框架支持 roadmap 中]
+    B -- 是 --> C{需要本地 replay\n还原执行过程?}
+    C -- 是 --> D[✓ 安装 lumen-ai\n用 LumenTracer 采集 trace\n用 lumen replay 回放]
+    C -- 否 --> E{需要 checkpoint\n断点续跑?}
+    E -- 是 --> F[✓ 安装 lumen-ai\n用 LumenCheckpointer\n替换 SqliteSaver]
+    E -- 否 --> G{需要统计\ntoken 成本?}
+    G -- 是 --> H[✓ 安装 lumen-ai\nlumen cost --last 7d]
+    G -- 否 --> I{需要部署 agent\n到 Kova 托管执行?}
+    I -- 是 --> J[✓ 安装 lumen-cli\nlumen deploy]
+    I -- 否 --> K{想做本地 MCP\nserver 管理?}
+    K -- 是 --> L[✓ 安装 lumen-cli\nlumen mcp manage]
+    K -- 否 --> M[✓ 仍建议安装\nlumen doctor 可体检本地 AI 环境\n零配置，pip install lumen-ai 即用]
+
+    style D fill:#d4edda
+    style F fill:#d4edda
+    style H fill:#d4edda
+    style J fill:#d4edda
+    style L fill:#d4edda
+    style M fill:#d4edda
+    style Z1 fill:#f8d7da
+```
+
+---
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant DEV as 开发者本地机
+    participant LCLI as lumen CLI
+    participant SDK as lumen-ai (Python SDK)
+    participant NEWAPI as Lurus NewAPI\nnewapi.lurus.cn
+    participant DISK as 本地磁盘\n./traces/ & ./checkpoints/
+    participant CORE as lumen-core (Rust)
+
+    DEV->>LCLI: lumen init
+    LCLI->>DEV: 生成 lumen.toml (trace_dir, budget, model...)
+
+    DEV->>SDK: from lumen import instrument, LumenCheckpointer, LumenTracer
+    DEV->>SDK: instrument()  # 自动 patch OpenAI / Anthropic
+    DEV->>SDK: checkpointer = LumenCheckpointer("./checkpoints")
+    DEV->>SDK: tracer = LumenTracer()
+
+    DEV->>SDK: graph.invoke(input, config={"callbacks":[tracer],\n  "configurable":{"thread_id":"t1"}})
+
+    SDK->>SDK: on_chain_start → _chain_depth++
+    SDK->>NEWAPI: POST /v1/chat/completions (Bearer OPENAI_KEY)
+    NEWAPI-->>SDK: {choices, usage:{prompt_tokens, completion_tokens}}
+
+    SDK->>SDK: on_llm_end → estimate_cost(model, tokens)
+    SDK->>SDK: on_tool_start → _tool_start_ms = now()
+    SDK->>SDK: on_tool_end → 追加 ToolCall 步骤
+    SDK->>SDK: on_chain_end (depth→0) → _write_trace()
+    SDK->>DISK: 原子写 .{trace_id}.json.tmp → rename → {trace_id}.json
+    SDK->>DISK: put() → 原子写 checkpoints/t1.json
+
+    Note over DEV: 开发者想复盘执行过程
+
+    DEV->>LCLI: lumen replay <trace_id>
+    LCLI->>CORE: load_traces("./traces") → serde_json::from_slice
+    CORE->>CORE: build_replay_steps: LlmCall + ToolCall → ReplayStep 序列
+    CORE-->>LCLI: ReplayTrace {steps, original_cost_usd, total_tokens}
+    LCLI->>DEV: 终端逐步打印：Step 1 [LLM] gpt-4o ... $0.0012\nStep 2 [Tool] search_web ...
+
+    Note over DEV: 进程崩溃后重启
+
+    DEV->>SDK: graph.invoke(input, config={"configurable":{"thread_id":"t1"}})
+    SDK->>DISK: get_tuple("t1") → 读 checkpoints/t1.json
+    SDK->>SDK: 从最后 checkpoint 恢复，跳过已完成步骤
+    SDK-->>DEV: agent 继续执行，无需重跑前序步骤
+```
+
+---
+
+## 端到端完整例子
+
+以下示例展示从零开始，用 Lumen 替换 LangGraph `SqliteSaver`，采集 trace，并通过 `lumen replay` 还原执行过程。
+
+### 第一步：初始化项目
+
+```bash
+# 安装 Lumen（包含 LangGraph 集成）
+pip install "lumen-ai[langgraph,openai]"
+
+# 初始化配置
+lumen init
+# 生成 lumen.toml：
+# [tracing] trace_dir="./traces"
+# [cost] budget_usd=10.0
+# [agent] default_model="gpt-4o-mini"
+```
+
+### 第二步：编写 LangGraph Agent（原始版本，使用 SqliteSaver）
+
+```python
+# agent_original.py — 演示替换前的写法
+from langgraph.checkpoint.sqlite import SqliteSaver
+from langgraph.graph import StateGraph, MessagesState
+
+def call_model(state):
+    # ... LLM 调用
+    pass
+
+builder = StateGraph(MessagesState)
+builder.add_node("agent", call_model)
+builder.set_entry_point("agent")
+builder.set_finish_point("agent")
+
+# 旧写法：SqliteSaver，无 trace，无成本统计
+with SqliteSaver.from_conn_string("checkpoints.db") as memory:
+    graph = builder.compile(checkpointer=memory)
+    result = graph.invoke({"messages": [{"role":"user","content":"hello"}]},
+                          config={"configurable":{"thread_id":"t1"}})
+```
+
+### 第三步：用 LumenCheckpointer 替换 SqliteSaver，并加入 LumenTracer
+
+```python
+# agent_lumen.py — 替换后
+from lumen import instrument, LumenTracer
+from lumen.integrations.langgraph import LumenCheckpointer
+from langgraph.graph import StateGraph, MessagesState
+from openai import OpenAI
+
+# 1. 开启全局 instrument（自动 patch OpenAI）
+instrument()
+
+client = OpenAI()
+
+def call_model(state):
+    messages = state["messages"]
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": m["role"], "content": m["content"]} for m in messages],
+    )
+    return {"messages": [{"role": "assistant",
+                          "content": response.choices[0].message.content}]}
+
+builder = StateGraph(MessagesState)
+builder.add_node("agent", call_model)
+builder.set_entry_point("agent")
+builder.set_finish_point("agent")
+
+# 2. 替换 checkpointer（一行改动）
+checkpointer = LumenCheckpointer("./checkpoints")  # 替换 SqliteSaver
+tracer = LumenTracer()                             # 新增 trace 采集
+
+graph = builder.compile(checkpointer=checkpointer)
+
+result = graph.invoke(
+    {"messages": [{"role": "user", "content": "用一句话解释什么是 RAG"}]},
+    config={
+        "callbacks": [tracer],                      # 新增
+        "configurable": {"thread_id": "demo-001"}
+    }
+)
+print(result["messages"][-1]["content"])
+```
+
+### 第四步：查看 trace 并统计成本
+
+```bash
+# 列出所有 trace
+lumen traces
+# 输出示例：
+# trace_id                              agent         status     cost      steps  time
+# a3f8c12d-...                          unknown       Completed  $0.0008   3      2026-04-29 10:23
+
+# 查看成本汇总
+lumen cost --last 24h
+# 输出：Total: $0.0008 | Models: gpt-4o-mini | Traces: 1
+
+# 检查是否有预算异常
+lumen cost --last 7d --anomaly
+```
+
+### 第五步：用 lumen replay 还原执行
+
+```bash
+lumen replay a3f8c12d-...
+# 输出：
+# Replaying trace a3f8c12d (3 steps, original cost: $0.0008)
+# ─────────────────────────────────────────────────────────
+# Step 1 [LangChain/Chain] RunnableSequence
+#   Duration: 1243ms
+# Step 2 [LLM] gpt-4o-mini
+#   Prompt tokens: 52 | Completion tokens: 38
+#   Cost: $0.0008 | Finish: stop
+# Step 3 [LangChain/Chain] RunnableSequence (end)
+# ─────────────────────────────────────────────────────────
+# Replay complete. Total cost: $0.0008 | Steps: 3
+```
+
+### 第六步：模拟进程崩溃后断点续跑
+
+```bash
+# 假设 agent 在第 N 步崩溃，重启后直接 invoke 相同 thread_id
+python agent_lumen.py
+# LumenCheckpointer 从 ./checkpoints/demo-001.json 恢复
+# LangGraph 跳过已完成节点，从断点继续
+```
+
+### 第七步：体检环境
+
+```bash
+lumen doctor
+# 输出：
+# ✓ lumen-ai 0.2.0 installed
+# ✓ lumen-cli 0.1.0 installed
+# ✓ LUMEN_TRACE_DIR: ./traces (writable)
+# ✓ LUMEN_BUDGET_USD: 10.0
+# ⚠ LUMEN_OTLP_ENABLED: true but endpoint unreachable (grafana-alloy:4317)
+# ✓ langgraph-checkpoint: 3.x (compatible)
+# ✓ openai: 1.x (patched)
+```
+
+---
+
+## 最佳实践 ✓/✗
+
+| # | ✓ 推荐做法 | ✗ 反模式 |
+|---|---|---|
+| 1 | ✓ 本地开发用 `LumenTracer` + `lumen cost` 自带成本统计，trace 落本地文件，零额外费用 | ✗ 自己在代码里 `print(f"tokens: {usage.total_tokens}")` 分散、不聚合、不可查询 |
+| 2 | ✓ checkpoint store 开发期用文件（`LumenCheckpointer("./checkpoints")`，3μs 写入，零配置），生产切 PostgreSQL（同一 API） | ✗ 永远用 SQLite (`SqliteSaver`)，生产环境并发写入冲突，崩溃恢复不可靠 |
+| 3 | ✓ `lumen deploy` 将 agent 打包推送到 Kova engine，统一生命周期管理，可监控 | ✗ 手工 `docker build && docker push`，镜像 tag 随意，无版本追踪，Kova 侧不可见 |
+| 4 | ✓ 首次上线或修改配置后跑 `lumen doctor`，提前发现依赖版本冲突 / 目录不可写 / OTel 连通失败 | ✗ 出了问题再排查，尤其 `langgraph-checkpoint` 接口漂移导致的 `TypeError` 难定位 |
+| 5 | ✓ 用 `lumen mcp manage` 集中注册和启停本地 MCP server，配置统一存 `lumen.toml` | ✗ 各项目目录各自散落 `mcp_config.json`，版本不一，端口冲突无人知晓 |
+| 6 | ✓ 开启 `LUMEN_OTLP_ENABLED=true` 接 Lurus Grafana（`grafana.lurus.cn` Tempo），生产 agent 有全链路 trace | ✗ 没有任何监控，成本飙升 / 失败率上升只能靠人工发现 |
+| 7 | ✓ 生产环境设 `sampling_rate = 0.3`（`lumen.toml`），减少存储压力；关键 agent 设 `1.0` | ✗ 全量采样不分场景，高频 agent 磁盘迅速耗尽（参见 R5 根盘 90% 教训） |
+| 8 | ✓ `BudgetTracker` 设 `kill_on_budget_exceeded = true`（测试环境），阻止失控 agent 烧光预算 | ✗ 无预算上限，agent 进入死循环或 tool call 失控时无任何止损机制 |
+
+---
+
+## 跨产品集成场景
+
+### 场景 ① — Lumen + Kova（开发到生产的全流程）
+
+Lumen 是 Kova 生态的**开发者入口**，两者形成 dev → prod 闭环：
+
+1. **本地开发阶段**：开发者用 `pip install lumen-ai` + `LumenCheckpointer` + `LumenTracer` 在本地迭代 agent，所有状态落文件，`lumen replay` 本地调试。
+2. **测试验证阶段**：`lumen cost` 统计 token 消耗，`lumen doctor` 体检，确认 agent 行为符合预期。
+3. **部署阶段**：`lumen deploy` 将 agent 配置（`lumen.toml` + agent 代码）打包，通过 Kova HTTP API 推送到 Kova engine（`kova.lurus.cn`）托管执行。
+4. **生产监控阶段**：Kova engine 内部调用 `LumenCheckpointer`（指向生产 PG `lurus-pg-rw.database.svc:5432`）持久化 checkpoint，同时通过 OTLP 推送 span 到 Grafana Tempo；运维在 `grafana.lurus.cn` 按 `lumen.agent_name` 筛选查看。
+
+关键数据流：
+```
+本地 ./checkpoints/*.json  ──lumen deploy──>  Kova engine
+                                                  │
+                                         LumenCheckpointer
+                                                  │
+                                         lurus-pg / lumen schema
+```
+
+⚠ 当前状态：`lumen deploy` 命令骨架已在 roadmap，Kova engine 深度集成在 Phase 2（P3）。
+
+### 场景 ② — Lumen + LangGraph（一行替换 checkpointer）
+
+LangGraph 默认提供 `MemorySaver`（进程内，重启丢失）、`SqliteSaver`（单机文件 DB）、`PostgresSaver`（需建表，配置复杂）三种 checkpointer。Lumen 提供第四选项，适配开发与生产两种场景：
+
+| Checkpointer | 写延迟 | 外部依赖 | 持久化 | 推荐场景 |
+|---|---|---|---|---|
+| `MemorySaver` | ~1μs | 无 | ✗ | 单元测试 |
+| `SqliteSaver` | ~100μs | sqlite3 | ✓ | 简单本地开发 |
+| `LumenCheckpointer` (文件) | ~3μs | 无 | ✓ | 本地开发 / CI |
+| `LumenCheckpointer` (PG) | ~1ms | PostgreSQL | ✓ | 生产 |
+| `PostgresSaver` | ~1ms | PostgreSQL | ✓ | 生产（无 Lumen trace） |
+
+迁移步骤（两行代码）：
+
+```python
+# 替换前
+from langgraph.checkpoint.sqlite import SqliteSaver
+memory = SqliteSaver.from_conn_string("ckpts.db")
+
+# 替换后（开发环境）
+from lumen.integrations.langgraph import LumenCheckpointer
+memory = LumenCheckpointer("./checkpoints")
+
+# 替换后（生产环境，指向 lurus PG）
+memory = LumenCheckpointer(
+    backend="postgres",
+    dsn="postgresql://lurus:***@lurus-pg-rw.database.svc:5432/lurus?options=-csearch_path=lumen"
+)
+```
+
+迁移后立即获得：checkpoint 原子写盘、`lumen traces` 可查、`lumen replay` 可回放、`lumen cost` 可统计。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维告警 / 开发遇到问题]) --> Q1{问题类型?}
+
+    Q1 --> A1[lumen init 失败]
+    Q1 --> A2[checkpointer 写失败]
+    Q1 --> A3[replay 数据不一致]
+    Q1 --> A4[OTel 连不上 Grafana]
+    Q1 --> A5[mcp server 启动失败]
+    Q1 --> A6[成本数字为 0 / 偏低]
+    Q1 --> A7[checkpoint 无法恢复]
+
+    A1 --> B1{原因?}
+    B1 --> B1A[目录无写权限] --> C1A[chmod 755 ./traces ./checkpoints\n或改 trace_dir 到可写目录]
+    B1 --> B1B[lumen-cli 未安装] --> C1B[pip install lumen-ai\n或 cargo install lumen-cli]
+    B1 --> B1C[lumen.toml 格式错误] --> C1C[lumen doctor 输出 parse error\n检查 TOML 语法]
+
+    A2 --> B2{磁盘空间?}
+    B2 -- df -h /data 不足 --> C2A[清理旧 trace 文件\nfind ./traces -mtime +30 -delete]
+    B2 -- 空间足够 --> C2B[检查 .tmp 残留文件\n说明上次进程异常退出\nrm ./checkpoints/*.tmp]
+
+    A3 --> B3{原因?}
+    B3 --> B3A[replay 版本 ≠ 执行版本] --> C3A[lumen replay 显示的是原始 trace 快照\n不重新执行 LLM，属正常行为]
+    B3 --> B3B[trace 文件被截断] --> C3B[python -c 'import json;json.load(open(f))'\n损坏则 rm 后重新执行]
+    B3 --> B3C[tool_name 全是 unknown_tool] --> C3C[升级 langchain-core>=0.3.20\n或检查 on_tool_end kwargs 传递]
+
+    A4 --> B4{配置检查}
+    B4 --> B4A[LUMEN_OTLP_ENABLED=false\n或未设] --> C4A[设置环境变量或 lumen.toml\nexport.otlp_enabled=true]
+    B4 --> B4B[OTel 实现未完成] --> C4B[⚠ Phase 1：OTLP 导出代码未实现\n临时用 lumen cost --format json\n手动 push 到 Loki]
+    B4 --> B4C[grafana-alloy 不可达] --> C4C[curl -v grafana-alloy:4317\n检查 K8s service 与 network policy]
+
+    A5 --> B5{mcp server 状态}
+    B5 --> B5A[端口冲突] --> C5A[lumen mcp list 查看已注册 server\n修改 port 配置后 lumen mcp restart]
+    B5 --> B5B[二进制不存在] --> C5B[lumen mcp manage --check\n按提示安装对应 MCP server]
+    B5 --> B5C[配置文件损坏] --> C5C[~/.lumen/mcp.toml 格式检查\nlumen doctor 会报出 parse error]
+
+    A6 --> B6[见 应急 Runbook\n成本报告异常 章节]
+
+    A7 --> B7{checkpoint 文件状态}
+    B7 --> B7A[文件不存在] --> C7A[thread_id 首次运行，正常\n检查 checkpoint_dir 路径是否一致]
+    B7 --> B7B[JSON 损坏] --> C7B[备份后 rm ./checkpoints/tid.json\n丢失该 thread 状态，重新执行]
+    B7 --> B7C[async 接口报错] --> C7C[LumenCheckpointer 无 async 实现\n用同步 graph.invoke 替代 ainvoke]
+
+    style C1A fill:#d4edda
+    style C1B fill:#d4edda
+    style C1C fill:#d4edda
+    style C2A fill:#d4edda
+    style C2B fill:#d4edda
+    style C3A fill:#fff3cd
+    style C3B fill:#d4edda
+    style C3C fill:#d4edda
+    style C4B fill:#f8d7da
+    style C4C fill:#d4edda
+    style C5A fill:#d4edda
+    style C5B fill:#d4edda
+    style C5C fill:#d4edda
+    style C7A fill:#fff3cd
+    style C7B fill:#d4edda
+    style C7C fill:#f8d7da
+```
+
+appended 291 lines, 4 mermaid charts to lumen.md

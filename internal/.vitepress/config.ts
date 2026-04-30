@@ -25,6 +25,16 @@ export default defineConfig({
     nav: [
       { text: '驾驶舱', link: '/' },
       {
+        text: '横向视角',
+        items: [
+          { text: '索引', link: '/cross/' },
+          { text: '能力矩阵', link: '/cross/capability-matrix' },
+          { text: '用户旅程', link: '/cross/user-journeys' },
+          { text: '集成配方', link: '/cross/integration-recipes' },
+          { text: '决策路由', link: '/cross/decision-router' },
+        ]
+      },
+      {
         text: '产品手册',
         items: [
           { text: 'Platform 组', items: [
@@ -116,6 +126,16 @@ export default defineConfig({
             { text: 'MCP Servers (×3)', link: '/products/mcp' },
           ]
         },
+      ],
+
+      '/cross/': [
+        { text: '横向视角', items: [
+          { text: '索引', link: '/cross/' },
+          { text: '能力矩阵', link: '/cross/capability-matrix' },
+          { text: '用户旅程', link: '/cross/user-journeys' },
+          { text: '集成配方', link: '/cross/integration-recipes' },
+          { text: '决策路由', link: '/cross/decision-router' },
+        ]}
       ],
 
       '/ops/': [

@@ -526,3 +526,359 @@ ssh root@100.122.83.20 "sudo -u kova-test /data/kova-test/scripts/upgrade-all-te
 - 本地 WAL 文件不可拷到 R6（debug vs release + hmac key 不同）
 - R6 WAL 不可拖回本地复现 bug（同上）
 - bug 复现只能：本地重跑相同输入，或 R6 logs + metrics 推断
+
+---
+
+## 多视角速览
+
+**用户视角**
+
+长任务（如"帮我调研 20 篇论文并生成报告"）不再因网络抖动、服务重启而从头开始。Kova 在每个关键节点写 checkpoint，断电也能续跑——用户只需等待，无需重试、无需担心中途数据丢失。
+
+**开发者视角**
+
+Kova 以 Rust library crate 为核心，`cargo add kova` 即集成，无需另起服务。多语言 SDK 覆盖 Python（PyO3）、gRPC、REST、MCP stdio，选最顺手的接入方式即可。业务逻辑用三个原语描述：
+
+- **Tool**：单个能力单元（web 搜索、数据库查询、发邮件），定义输入 schema + 执行函数。
+- **Step**：一次 LLM call + Tool call 的组合，Kova 自动将结果写 WAL checkpoint。
+- **Workflow**：多 Step 的有向无环图（支持 Saga 补偿），失败时按 LIFO 顺序回滚。
+
+**运维视角**
+
+生产环境容器化部署在 R1（`43.226.46.164`），状态持久化进 PostgreSQL（`pg` feature）或本地 WAL 文件系统。Checkpointer 默认使用 `LumenCheckpointer`——对接 `2c-cli-lumen`，提供统一的检查点读写接口与 trace 可见性。关键变量：`KOVA_WAL_DIR`（必须绝对路径）、`KOVA_WORKER_CONCURRENCY`（默认 CPU 核数）。健康检查走 `GET /ready`，SIGTERM 触发 30 s graceful drain。
+
+**决策者视角**
+
+相比 LangGraph + 自建状态机方案：Kova 是**全栈托管**——WAL 持久化、并发门控、Saga 补偿、多 Transport（REST/gRPC/MCP/A2A）、安全沙箱（kova-tirith）开箱即用，无需团队自行维护状态机框架、设计幂等写入、处理崩溃恢复边界。技术债在框架层消化，产品团队只写业务 Tool。
+
+---
+
+## 决策树：我该用 Kova 还是 LangGraph 还是直接 LLM
+
+```mermaid
+graph TD
+    A[需要 AI Agent 执行任务] --> B{是否需要中断后恢复\n断电/重启续跑?}
+    B -- 否 --> C{单次 LLM 调用\n可完成?}
+    C -- 是 --> D[✓ 直接调用 LLM\nnewapi.lurus.cn 即可]
+    C -- 否 --> E{步骤数 > 5\n或需要分支逻辑?}
+    E -- 否 --> F[⚠ 直接 LLM chain\n简单 prompt 工程]
+    E -- 是 --> G{需要持久化审计日志\n或合规追踪?}
+    G -- 否 --> H[LangGraph\n轻量 Python 编排]
+    G -- 是 --> I[✓ Kova\nWAL 审计 + OTel trace]
+    B -- 是 --> J{是否需要多 agent\n并行协作 / Swarm?}
+    J -- 否 --> K{Tool 调用是否需要\n安全沙箱隔离?}
+    K -- 否 --> L[✓ Kova DurableAgentLoop\n单 agent 模式]
+    K -- 是 --> M[✓ Kova + kova-tirith\nMIT↔AGPL 边界隔离]
+    J -- 是 --> N{是否有严格 SLA\n需要 p50 < 5ms?}
+    N -- 是 --> O[✓ Kova SwarmOrchestrator\nDAG pipeline 并行波次]
+    N -- 否 --> P[✓ Kova 或 LangGraph\n按团队熟悉度选]
+```
+
+---
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant U as 用户 / Forge
+    participant R as kova-rest (Axum)
+    participant W as Worker
+    participant A as DurableAgentLoop
+    participant LLM as LLM (newapi)
+    participant T as ToolRegistry
+    participant MX as kova-memory (MemX)
+    participant WAL as WalWriter
+    participant PG as PostgreSQL
+
+    U->>+R: POST /agents/:id/run {prompt}
+    R->>W: enqueue(payload)
+    W->>WAL: append(Enqueue)
+    WAL->>PG: fsync / WAL 文件
+    R-->>U: 202 Accepted + task_id
+
+    W->>+A: resume_agent_loop(agent_id, checkpoint=None)
+    A->>MX: memory_search(query=prompt)
+    MX-->>A: 历史相关记忆片段
+
+    A->>LLM: chat(system+memory, user=prompt)
+    LLM-->>A: tool_call: web_search(query)
+    A->>WAL: append(AgentDirective step=1)
+
+    A->>+T: execute_tool(web_search, args)
+    T-->>-A: search results
+
+    A->>WAL: append(DirectiveResult step=1)
+    Note over WAL: ⚡ 进程在此崩溃
+
+    W->>WAL: 重启 → read_all_segments()
+    WAL-->>W: replay → 重建 BTreeMap
+    Note over W: Running→Waiting (at-least-once)
+
+    W->>A: resume_agent_loop(agent_id, checkpoint=step=1)
+    A->>LLM: chat(+tool_result)
+    LLM-->>A: assistant: summary text
+
+    A->>MX: memory_add(key=task_id, value=summary)
+    MX-->>A: OK
+    A->>WAL: append(DirectiveResult step=2 FINAL)
+    A-->>-W: Done
+
+    W->>R: task complete
+    R-->>U: SSE: {status: completed, result: summary}
+```
+
+---
+
+## 端到端完整例子
+
+以下展示一个 "research agent" workflow：搜索 → 总结 → 存入 MemX，并演示中断后从 checkpoint 恢复。
+
+### Rust 定义 Workflow
+
+```rust
+// Cargo.toml:
+// kova = { features = ["agent", "swarm", "pure-rust"] }
+// kova-memory = {}
+// tokio = { features = ["full"] }
+
+use kova::{
+    KovaEngine, EngineConfig,
+    workflow::{WorkflowRegistry, Step, StepResult},
+    agent::AgentConfig,
+    tools::ToolRegistry,
+};
+use kova_memory::{MemoryProvider, MemorusProvider};
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    // 1. 初始化引擎，WAL 目录必须绝对路径
+    let engine = KovaEngine::new(EngineConfig {
+        wal_dir: "/data/kova-dev/wal".into(),
+        worker_concurrency: 4,
+        agent_timeout_secs: 300,
+        ..Default::default()
+    })
+    .await?;
+
+    // 2. 注册 Tools：每个 Tool 单独一个 Step（最佳实践）
+    let mut tools = ToolRegistry::new();
+
+    // Tool 1: web search — 强 schema 校验
+    tools.register("web_search", json!({
+        "type": "object",
+        "properties": {
+            "query": { "type": "string", "maxLength": 200 }
+        },
+        "required": ["query"],
+        "additionalProperties": false
+    }), |args| async move {
+        let query = args["query"].as_str().unwrap();
+        // 实际调用搜索 API，此处简化
+        Ok(format!("search results for: {query}"))
+    });
+
+    // Tool 2: save to MemX — 持久化前 sanitize
+    let memory = MemorusProvider::new("http://memx.lurus-system.svc:8880").await?;
+    tools.register("save_memory", json!({
+        "type": "object",
+        "properties": {
+            "key":   { "type": "string" },
+            "value": { "type": "string", "maxLength": 8192 }
+        },
+        "required": ["key", "value"]
+    }), move |args| {
+        let mem = memory.clone();
+        async move {
+            let key   = args["key"].as_str().unwrap();
+            // sanitize: strip PII 占位（实际调用 sanitizer crate）
+            let value = args["value"].as_str().unwrap();
+            mem.add(key, value).await?;
+            Ok("saved".to_string())
+        }
+    });
+
+    // 3. 定义 Agent，挂载 tool registry
+    let agent_cfg = AgentConfig {
+        agent_id:    "research-agent-001".into(),
+        model:       "deepseek-chat".into(),
+        max_steps:   10,                   // ✓ 设上限，避免无限循环
+        max_retries: 3,                    // ✓ 失败 step retry 上限 3 次
+        system_prompt: "You are a research assistant. \
+                        Use web_search to find information, \
+                        then save_memory to store the summary.".into(),
+        tools,
+        ..Default::default()
+    };
+
+    // 4. 提交任务（幂等：相同 idempotency_key 15s 内重复提交返回 409）
+    let task_id = engine
+        .submit_agent_task(
+            agent_cfg,
+            "Research the latest developments in Rust async runtimes and summarize",
+            Some("idempotency-key-20260429-001"),
+        )
+        .await?;
+
+    println!("Submitted task: {task_id}");
+
+    // 5. 轮询结果（生产环境用 SSE）
+    loop {
+        let status = engine.query_task_status(task_id).await?;
+        match status.state.as_str() {
+            "completed" => {
+                println!("Done: {}", status.result.unwrap_or_default());
+                break;
+            }
+            "failed" => {
+                eprintln!("Failed: {}", status.error.unwrap_or_default());
+                break;
+            }
+            _ => tokio::time::sleep(std::time::Duration::from_secs(2)).await,
+        }
+    }
+
+    Ok(())
+}
+```
+
+### 模拟中断并从 Checkpoint 恢复
+
+```bash
+# 提交任务后立刻 kill 进程
+kill -9 $(pgrep research-agent)
+
+# 重启服务，Kova 自动从 WAL checkpoint 续跑
+cargo run --features pure-rust,agent
+
+# 查看恢复日志
+# 期望看到: "WAL replay: 1 task recovered (Running→Waiting)"
+# 期望看到: "Resuming agent research-agent-001 from step=1"
+```
+
+### curl 验证（REST 模式）
+
+```bash
+# 提交 research agent 任务
+curl -s -X POST http://localhost:3010/api/v1/agents/research-agent-001/run \
+  -H 'X-API-Key: sk-dev-admin' \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt": "Summarize Rust async ecosystem 2026", "idempotency_key": "test-001"}'
+# → {"task_id": "t-abc123", "status": "accepted"}
+
+# 查看执行历史（因果视图）
+curl -s -H 'X-API-Key: sk-dev-admin' \
+  "http://localhost:3010/api/v1/agents/research-agent-001/history?format=causal&limit=20"
+# → 包含 tool_call: web_search + save_memory 的因果链
+```
+
+---
+
+## 最佳实践 ✓/✗
+
+| # | ✓ 推荐 | ✗ 避免 | 原因 |
+|---|--------|--------|------|
+| 1 | ✓ 每个 tool 调用单独一个 Step，step 粒度细 | ✗ 一个 Step 里串行调用多个 tool | Step 是 checkpoint 单元；粒度粗时崩溃代价高，会重跑整个 Step |
+| 2 | ✓ 使用 `LumenCheckpointer`（持久化到 PG/WAL） | ✗ 用 `InMemoryCheckpointer`（默认内存） | 内存 checkpointer 重启后状态全丢，无法续跑 |
+| 3 | ✓ 长任务设 `max_duration` / `agent_timeout_secs`（如 300s） | ✗ 不设超时，任务无限阻塞 | Worker heartbeat 依赖超时判断任务健康；无超时 Worker slot 永久占用 |
+| 4 | ✓ Tool 输入 schema 用 JSON Schema 强校验，`additionalProperties: false` | ✗ 接受自由 string，运行时解析 | LLM 输出不可信；强 schema 在 ToolRegistry 层拦截非法 args，避免注入 |
+| 5 | ✓ 失败 Step retry 上限设 3（`max_retries: 3`） | ✗ 无限重试（`max_retries: 0` 或不设） | 上游 API 故障时无限重试会耗尽 Worker 并发槽，影响其他任务 |
+| 6 | ✓ 持久化前 sanitize 用户数据（strip PII / 长度截断） | ✗ 将原始用户输入直接落库 / 存 MemX | 合规风险；向量库中泄露用户敏感信息难以追溯 |
+| 7 | ✓ `KOVA_WAL_DIR` 设绝对路径（如 `/data/wal`） | ✗ 用默认相对路径 `"wal"` | 容器 CWD 不固定，相对路径导致 WAL visibility endpoint 永远返回 501 |
+| 8 | ✓ Workflow 使用 DAG（`DagPipeline`）并行独立步骤 | ✗ 串行执行可并行的步骤 | DAG 按 wave 并行，每 wave 完成后 checkpoint；串行浪费吞吐且崩溃恢复点更少 |
+
+---
+
+## 跨产品集成场景
+
+### ① Kova + MemX：长期记忆 Agent
+
+将 `kova-memory` 的 `MemorusProvider` 对接 `2b-svc-memorus`（Python REST），实现跨对话的长期记忆。
+
+架构要点：
+- Agent 每次执行前，`augment` 钩子自动向 `memx` 搜索相关历史，注入 system prompt
+- 对话结束后，`reflect` 钩子通过 ACE Reflector 提取结构化知识存回 `memx`
+- 记忆存储在 `memx` 的向量数据库（Qdrant），而非 Kova WAL
+
+```
+用户对话 → kova agent → [augment] memx.search() → LLM 有历史上下文
+                     → [执行] tool calls + steps
+                     → [reflect] memx.add(extracted knowledge)
+                     → 下次对话自动继承记忆
+```
+
+适合场景：个人助理 Agent、客服机器人、代码助手（需记住用户偏好与项目上下文）。
+
+接入方式：`kova-memory` crate + `MEMX_BASE_URL=http://memx.lurus-system.svc:8880`，无需额外部署。
+
+### ② Kova + NewAPI：多模型混合调度
+
+利用 Kova 的 `kova-llm` 层（`LlmDriver` trait）在同一 Workflow 内混用不同模型，通过 `newapi.lurus.cn` 统一代理计费。
+
+架构要点：
+- Step 1（搜索意图分析）：DeepSeek-Chat（低成本，快速）
+- Step 2（深度推理 / 代码生成）：GPT-4o / Claude-Sonnet（高精度，按需）
+- Step 3（摘要输出）：DeepSeek-Chat（低成本）
+- 所有调用走 `newapi.lurus.cn/v1`，统一 quota 计量、rate limit、日志审计
+
+```rust
+// 同一 workflow 内按 step 指定不同模型
+let step1 = Step::new("intent")
+    .with_model("deepseek-chat")
+    .with_tool("classify_intent");
+
+let step2 = Step::new("reason")
+    .with_model("gpt-4o")           // 高精度步骤换模型
+    .with_tool("deep_analyze");
+
+let step3 = Step::new("summarize")
+    .with_model("deepseek-chat")    // 输出步骤回低成本
+    .with_tool("format_output");
+```
+
+适合场景：需要控制成本与质量平衡的生产 Agent（如 Forge 中的复杂工作流）。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维问题入口]) --> Q1{Workflow 卡超过 30 分钟\n无进展?}
+
+    Q1 -- 是 --> D1[查 kova top TUI\n或 GET /api/v1/status]
+    D1 --> D1A{队列深度 ≥ 80%?}
+    D1A -- 是 --> F1[调高 KOVA_WORKER_CONCURRENCY\ndocker compose up -d 热更新]
+    D1A -- 否 --> D1B{LLM 调用超时\n日志含 timeout?}
+    D1B -- 是 --> F2[检查 newapi.lurus.cn 监控\n⚠ 上游限速或宕机]
+    D1B -- 否 --> F3[查 agent heartbeat\n可能 KOVA_AGENT_TIMEOUT_SECS 太短]
+
+    Q1 -- 否 --> Q2{Checkpoint 丢失\n重启后任务从头跑?}
+    Q2 -- 是 --> D2{KOVA_WAL_DIR\n是绝对路径?}
+    D2 -- 否 --> F4[改为绝对路径 /data/wal\n重建 compose 配置]
+    D2 -- 是 --> D2B{KOVA_TRACE_DB\n是否相对路径?}
+    D2B -- 是 --> F5[设 KOVA_TRACE_DB=/data/wal/traces.db\n否则 trace 不持久化]
+    D2B -- 否 --> F6[检查 PG event store\nkova pg feature 是否启用]
+
+    Q2 -- 否 --> Q3{Tool 调用超时\n日志含 tool timeout?}
+    Q3 -- 是 --> D3{是否设了 tool\n执行超时上限?}
+    D3 -- 否 --> F7[在 ToolRegistry 注册时\n加 timeout: Duration]
+    D3 -- 是 --> F8[检查外部 API 响应时间\n考虑降级返回 cached result]
+
+    Q3 -- 否 --> Q4{PostgreSQL deadlock\n日志含 deadlock detected?}
+    Q4 -- 是 --> D4[查 pg_locks 视图\n确认 kova pg feature 的\nevent store 写入顺序]
+    D4 --> F9[调整 pg event store\n写入 batch size\n或关 pg feature 降级 WAL]
+
+    Q4 -- 否 --> Q5{OOM kill 后\n恢复失败?}
+    Q5 -- 是 --> D5{WAL segment\n是否有 CRC 错误?}
+    D5 -- 是 --> F10[rename 损坏 segment 为 .bak\n重启服务从其余 segment 恢复]
+    D5 -- 否 --> D5B{kova-memory\n向量缓存是否过大?}
+    D5B -- 是 --> F11[设 MemorusProvider\nLRU cache 上限\n或重启清空内存缓存]
+    D5B -- 否 --> F12[检查 CompletionHandle\n是否有任务永不 complete\n→ slot 泄漏]
+
+    Q5 -- 否 --> Q6{其他问题}
+    Q6 --> F13[查 docs.lurus.cn/kova\n或 #kova-ops Slack 频道]
+```
+
+---
+
+appended 252 lines, 4 mermaid charts to kova.md

@@ -501,3 +501,332 @@ ssh root@100.98.57.55 "kubectl exec -i -n database lurus-pg-1 -- \
 # 数据恢复：MinIO pg-backups-v2 中的 WAL 备份
 # 联系 marvin 处理 PITR
 ```
+
+---
+
+## 多视角速览
+
+### 用户视角（员工日常运维）
+
+员工无需登录任何后台控制台，直接在 **Switch 桌面客户端** 或 **Claude Desktop** 的 chat 界面用自然语言操作：
+
+- "把用户 alice@lurus.cn 的 MFA 重置" → zitadel-mcp 调 Zitadel Admin API 完成
+- "看一下 lurus-platform 命名空间里的 pod 状态" → k8s-mcp 通过 SSH 执行 kubectl 返回
+- "帮我查 account 10086 的钱包余额和最近 5 条流水" → platform-mcp 调 `/internal/v1/*` 返回
+
+整个流程无需记忆 kubectl 命令、API 路径或 JWT 换取步骤。聊天上下文让 agent 可以跨工具组合：先查账户、再生成充值链接、再确认订单状态——一次对话完成。
+
+### 开发者视角（MCP server 实现）
+
+三个服务均为 **Go 1.23 编译的单二进制**，通过 **stdio 传输 JSON-RPC** 与 MCP host 通信：
+
+- 协议：`2024-11-05`，支持 `initialize / tools/list / tools/call / ping`
+- 每行一个 JSON-RPC 消息（`bufio.Scanner`，frame 上限 1 MiB）
+- `stdout` 严格保留给协议响应；日志、调试信息全部写 `stderr`
+- Tool 注册在 `main.go` 启动时完成，运行时不可热更新
+- 共享 `internal/mcp/mcp.go` 实现协议层，各子系统只实现 tool handler
+- 新增工具：实现 handler → 在 `main.go` 的 `tools` slice 追加 `Tool{Name, Description, InputSchema, Handler}` → 重新编译
+
+源码路径：`2l-svc-zitadel-mcp/` · `2l-svc-k8s-mcp/` · `2l-svc-platform-mcp/`
+
+### 运维视角（进程管理与部署）
+
+三个 MCP server 均以 **stdio 模式**运行（无监听端口），由 MCP host（Claude Code / Switch）在需要时 spawn，不需要 systemd service 或 k8s pod：
+
+- 部署目标：开发者**本机**（Windows/macOS/Linux）
+- 网络访问：通过 **Tailscale** 内网（`100.98.57.55` / `auth.lurus.cn` / `identity.lurus.cn`），不暴露公网
+- 进程生命周期：host 启动时 spawn，host 关闭时随之终止；异常退出 host 会自动 respawn
+- SSE 模式：协议支持但当前三个服务**未启用**；若需多用户共享单实例，可在二进制前加 SSE proxy（如 `mcp-proxy`），但会引入额外鉴权层——暂无此需求
+- 日志：`stderr` 输出，Claude Code 转存至 `~/.claude/logs/mcp-<name>.log`
+- 更新流程：本地 `go build -o <binary> .` → 替换旧二进制 → 重启 Claude Code
+
+### 决策者视角（战略价值）
+
+| 维度 | 传统方式 | MCP 工具链之后 |
+|------|---------|---------------|
+| 执行门槛 | 需要熟悉 kubectl / psql / Zitadel Admin UI | 自然语言描述意图，agent 自动选工具 |
+| Bus Factor | 运维知识集中在 1-2 人 | chat 历史 + tool 定义即文档，可复现 |
+| 审计 | 分散在各系统日志，难关联 | 每次 tool call 有 MCP 层 stderr 日志，可聚合 |
+| 误操作风险 | 手工命令无 guardrail | 白名单编译进二进制，写工具需显式参数，可加二次确认 |
+| 新人上手 | 需数周熟悉各系统 | 描述需求，chat 引导，工具说明即时可查 |
+
+把内部运维从"记忆密集型"转为"意图驱动型"，同时审计链路随 tool call 日志自然形成。
+
+---
+
+## 决策树：用哪个 MCP server
+
+```mermaid
+graph TD
+    START([运维需求]) --> Q1{涉及用户身份 / IAM？\n如重置 MFA、分配角色、签发 PAT}
+    Q1 -- 是 --> ZITADEL[使用 zitadel-mcp\n2l-svc-zitadel-mcp]
+    Q1 -- 否 --> Q2{涉及 K8s 集群 / 数据库？\n如查 pod、重启 deployment、执行 SQL}
+    Q2 -- 是 --> Q3{是否只读操作？\n如 logs / describe / SELECT}
+    Q3 -- 只读 --> K8S_RO[k8s-mcp\nK8S_MCP_READONLY=1\n2l-svc-k8s-mcp]
+    Q3 -- 需要写操作 --> K8S_RW[k8s-mcp\n默认模式\n白名单约束]
+    Q2 -- 否 --> Q4{涉及平台业务数据？\n如账户 / 钱包 / 订阅 / 订单}
+    Q4 -- 是 --> Q5{是否需要生成支付链接？}
+    Q5 -- 是 --> PLAT_RW[platform-mcp\nPLATFORM_MCP_READONLY=0\n2l-svc-platform-mcp]
+    Q5 -- 仅查询 --> PLAT_RO[platform-mcp\nPLATFORM_MCP_READONLY=1\n只读模式]
+    Q4 -- 否 --> MANUAL[⚠ 手工操作\n当前 MCP 工具链未覆盖]
+    Q1 -- 是 --> AUDIT{⚠ 高危操作？\n如 grant_iam_role IAM_OWNER}
+    AUDIT -- 是 --> CONFIRM[先 dry-run 预览\n二次确认后执行\n见最佳实践]
+    AUDIT -- 否 --> ZITADEL
+```
+
+选择要点：
+- 三个 server 可同时挂载，agent 根据 tool 名称自动路由，无需手工切换
+- 高危操作（IAM 权限授予 / 生产 DB 写入）应在 chat 中明确要求 agent 先输出操作摘要再执行
+- 只读场景建议开启 `*_READONLY=1`，防止 agent 误触写工具
+
+---
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant E as 员工
+    participant SW as Switch / Claude Desktop\n(MCP Host)
+    participant ZM as zitadel-mcp\n(stdio)
+    participant KM as k8s-mcp\n(stdio)
+    participant PM as platform-mcp\n(stdio)
+    participant ZA as Zitadel Admin API\nauth.lurus.cn
+    participant K3S as K3s Master\n100.98.57.55 (SSH)
+    participant PL as Platform Internal API\nidentity.lurus.cn
+
+    E->>SW: "用户 bob@lurus.cn 充值失败，帮我查一下账户和最近订单"
+    SW->>PM: tools/call account_lookup\n{"email":"bob@lurus.cn"}
+    PM->>PL: GET /internal/v1/accounts/by-email/bob%40lurus.cn
+    PL-->>PM: {account_id, profile, ...}
+    PM-->>SW: account_id = "acc_xxx"
+
+    SW->>PM: tools/call wallet_transactions\n{"account_id":"acc_xxx","page_size":5}
+    PM->>PL: POST /internal/v1/accounts/acc_xxx/wallet/transactions
+    PL-->>PM: [{order_no, status, amount}, ...]
+    PM-->>SW: 最近 5 条流水
+
+    SW->>PM: tools/call checkout_status\n{"order_no":"ORD_yyy"}
+    PM->>PL: GET /internal/v1/checkout/ORD_yyy/status
+    PL-->>PM: {status:"failed", reason:"payment_timeout"}
+    PM-->>SW: 订单状态 failed
+
+    SW-->>E: 账户 acc_xxx，最近订单 ORD_yyy 支付超时失败\n建议重新生成充值链接
+
+    E->>SW: "帮他重新生成一个 100 元的充值链接"
+    SW->>PM: tools/call checkout_create\n{"account_id":"acc_xxx","amount_cny":100,"payment_method":"alipay_qr"}
+    PM->>PL: POST /internal/v1/checkout/create
+    PL-->>PM: {order_no:"ORD_zzz", pay_url:"https://..."}
+    PM-->>SW: 新充值链接生成
+    SW-->>E: 充值链接：https://... （有效期 15 分钟）
+
+    Note over E,SW: 同一对话中若需查 IAM 或重启服务\n直接追加指令，MCP host 路由到对应 server
+```
+
+---
+
+## 端到端完整例子
+
+场景：员工发现用户 X 无法登录，怀疑 MFA 绑定异常，需要重置其 MFA 并验证操作成功。
+
+### 第一步：安装 Switch 并挂载 zitadel-mcp
+
+```bash
+# 1. 构建 zitadel-mcp（开发机上执行）
+cd 2l-svc-zitadel-mcp
+go build -o ~/bin/zitadel-mcp .
+
+# 2. 确保 SA JSON 已就绪（一次性 bootstrap）
+# 参考 2l-svc-platform/docs/zitadel-bootstrap.md
+ls -la /etc/lurus/zitadel-admin-sa.json   # 应输出 -rw------- (600)
+```
+
+### 第二步：配置 mcp.json
+
+编辑 `~/.claude/mcp.json`（Switch 同路径）：
+
+```json
+{
+  "mcpServers": {
+    "zitadel": {
+      "command": "/Users/you/bin/zitadel-mcp",
+      "env": {
+        "ZITADEL_ISSUER": "https://auth.lurus.cn",
+        "ZITADEL_SA_JSON": "/etc/lurus/zitadel-admin-sa.json"
+      }
+    }
+  }
+}
+```
+
+重启 Switch / Claude Desktop，确认 MCP 连接成功（Switch 状态栏显示 `zitadel ✓`）。
+
+### 第三步：chat 操作
+
+```
+员工：把用户 X（user_id: usr_01J9XXXX）的 MFA 重置
+
+Agent：我将调用 zitadel-mcp 的 remove_user_mfa 工具来重置该用户的 MFA。
+       操作摘要：
+       - 目标：usr_01J9XXXX
+       - 操作：删除所有已注册的 MFA 因素（TOTP / WebAuthn）
+       - 影响：用户下次登录需重新绑定 MFA
+       确认执行？
+
+员工：确认
+
+Agent：[调用 tools/call remove_user_mfa {"user_id":"usr_01J9XXXX"}]
+       ✓ 操作成功，userId=usr_01J9XXXX 的 MFA 已清除。
+       用户下次登录时会被要求重新设置 MFA。
+```
+
+### 底层 Go MCP tool 定义片段
+
+以下是 zitadel-mcp `main.go` 中 tool 注册方式（示意，以实际源码为准）：
+
+```go
+// 2l-svc-zitadel-mcp/main.go
+tools := []mcp.Tool{
+    {
+        Name:        "whoami",
+        Description: "Verify service account JWT is valid and return identity info",
+        InputSchema: mcp.Schema{Type: "object", Properties: map[string]mcp.Property{}},
+        Handler:     handleWhoami(ts, client),
+    },
+    {
+        Name:        "create_machine_user",
+        Description: "Create a Zitadel machine user (service account)",
+        InputSchema: mcp.Schema{
+            Type:     "object",
+            Required: []string{"name"},
+            Properties: map[string]mcp.Property{
+                "name":        {Type: "string", Description: "Machine user login name"},
+                "description": {Type: "string", Description: "Optional description"},
+            },
+        },
+        Handler: handleCreateMachineUser(ts, client),
+    },
+    {
+        Name:        "grant_iam_role",
+        Description: "Grant IAM-level role to a user (Admin API). Common roles: IAM_LOGIN_USER, IAM_OWNER",
+        InputSchema: mcp.Schema{
+            Type:     "object",
+            Required: []string{"user_id", "roles"},
+            Properties: map[string]mcp.Property{
+                "user_id": {Type: "string"},
+                "roles":   {Type: "array", Items: &mcp.Property{Type: "string"}},
+            },
+        },
+        Handler: handleGrantIAMRole(ts, client),
+    },
+    // ... create_pat, save_pat_to_secret
+}
+mcp.ServeStdio(tools)
+```
+
+`mcp.ServeStdio` 启动 `bufio.Scanner` 读 stdin，每行 dispatch 到对应 handler，结果写 stdout。
+
+---
+
+## 最佳实践
+
+| # | 实践 | 说明 |
+|---|------|------|
+| 1 | ✓ 高危操作走二次确认 | `grant_iam_role` / `rollout_restart` 执行前 agent 应输出操作摘要，员工明确"确认"后再调 tool。当前 zitadel-mcp Roadmap 中有 dry-run 确认机制，v0.1 需在 chat prompt 中手工约束。 |
+| 2 | ✗ 不要直接执行无摘要的写操作 | agent 直接无提示执行写工具，员工无法在 chat 记录中还原"谁批准了什么操作"，审计链路断裂。 |
+| 3 | ✓ 每个 tool call 写审计日志 | 三个 server 均将 tool 名称、参数摘要、执行结果输出到 `stderr`。运维机器上收集 `~/.claude/logs/mcp-*.log` 即可形成操作日志。建议定期归档。 |
+| 4 | ✗ 不要静默吞掉 tool call 结果 | agent 收到 `"isError":true` 的响应应立即停止后续关联操作并告知员工，不要继续用错误数据执行下一步。 |
+| 5 | ✓ MCP server 只暴露给受信内网（Tailscale） | zitadel-mcp / k8s-mcp 的目标均为 Tailscale 内网地址（`100.98.57.55` / `auth.lurus.cn`）；二进制本身不开端口。确保 Tailscale 在线，不要把 MCP server 的 SA 凭证或 INTERNAL_API_KEY 暴露在公网可达位置。 |
+| 6 | ✗ 不要在公网或共享环境中运行 MCP server | stdio 模式天然绑定本机进程，但若误用 SSE 模式并暴露端口到公网，任何可连接该端口的客户端均可执行所有 tool，包括写操作。 |
+| 7 | ✓ 只读场景启用 READONLY 开关 | 客服查询场景、新员工上手阶段，设置 `K8S_MCP_READONLY=1` 和 `PLATFORM_MCP_READONLY=1`，彻底排除误触写工具的可能。 |
+| 8 | ✗ 不要一个 server 开放全权限 | 写工具与读工具混在一起且无 READONLY 开关时，agent 的任何误判都可能触发写操作。只读 vs 写操作应当在配置层面分离。 |
+| 9 | ✓ tool schema 严格校验参数 | 每个 tool 的 `InputSchema` 应声明 `required` 字段并限定类型（string / number / array），避免 agent 传入 null 或类型错误的参数导致后端 500。 |
+| 10 | ✗ 不要接受自由格式参数 | `{"sql": "<任意内容>"}` 这类 schema 把所有校验压到后端，MCP 层完全无法 guardrail，且对 pg_query 这类工具会放大误用风险。 |
+| 11 | ✓ chat 历史不存敏感 token | `INTERNAL_API_KEY` / SA JSON 私钥 / PAT token 不应出现在 chat 消息中。MCP server 从 env 变量读取，tool 返回结果中的 token 值应在 chat 中 mask 或仅显示前几位。 |
+| 12 | ✗ 不要在 chat 中粘贴完整 token | chat 历史可能被上传到 AI 服务商（取决于 host 配置），敏感凭证一旦进入 chat 即难以追回。 |
+
+---
+
+## 跨产品集成场景
+
+### 场景一：Switch + 三个 MCP server——运维全栈 chat
+
+Switch 桌面客户端同时挂载 `zitadel` / `k8s` / `platform` 三个 MCP server，形成**单一入口运维工作台**：
+
+```
+运维工程师 chat："部署 platform-core v2.3 镜像，完成后验证 billing 接口正常"
+
+Agent 自动编排：
+① k8s-mcp: deployment_image(lurus-platform/platform-core) → 确认当前镜像 tag
+② k8s-mcp: rollout_restart(namespace=lurus-platform, deployment=platform-core)
+③ k8s-mcp: rollout_status(namespace=lurus-platform, deployment=platform-core)
+④ platform-mcp: payment_methods() → 验证 /internal/v1/payment-methods 可达
+⑤ platform-mcp: currency_info() → 验证 LUC↔LUT 汇率接口正常
+→ 输出：部署完成，服务响应正常，所有支付方式熔断器状态 OK
+```
+
+整个流程跨越 IAM / K8s / 业务三个层面，无需切换工具，agent 根据 tool 名称自动路由到对应 server。
+
+依赖前提：
+- `~/.claude/mcp.json` 中三个 server 均已配置
+- 本机 Tailscale 在线，可达 `100.98.57.55` 和 `identity.lurus.cn`
+- k8s-mcp 白名单包含 `lurus-platform/platform-core`（当前已包含）
+
+### 场景二：Lutu APP / admin 后台——紧急用户操作 fallback
+
+当 `2l-bs-admin`（Elixir/Phoenix 管理后台）因版本问题无法处理某类 IAM 操作，或 Lutu APP 客服需要紧急处理用户 MFA 锁定时，**zitadel-mcp 作为 fallback 通道**：
+
+```
+客服 chat（通过 Claude Desktop）："用户手机丢失，TOTP 无法使用，需要临时关闭 MFA 让他重新登录"
+
+Agent：
+① zitadel-mcp: whoami() → 验证 SA 凭证有效
+② zitadel-mcp: create_pat(user_id=usr_xxx, expiration_days=1) → 生成临时 1 天 PAT
+   (若 admin 后台有 disable_mfa 工具则优先使用)
+③ 告知客服：已为用户生成临时登录令牌，有效期 24h，请通过安全渠道发送给用户
+```
+
+⚠ 此场景绕过了 admin 后台的审批流程，仅在紧急情况（admin 后台不可用 / 正式工单 pending）下使用，操作后需在 Slack #ops-incidents 频道补记操作记录。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([MCP 工具链故障]) --> S1{哪个 server 报错？}
+
+    S1 -- zitadel-mcp --> Z1{错误类型}
+    Z1 -- "HTTP 401 / clock skew" --> Z2[检查本机时钟\nw32tm /resync\n或 ntpdate pool.ntp.org]
+    Z2 --> Z3{SA JSON 有效？\ncat /etc/lurus/zitadel-admin-sa.json\n检查 userId / key 字段}
+    Z3 -- 无效 --> Z4[重新从 Zitadel 下载 SA JSON\n见 zitadel-bootstrap.md\nchmod 600]
+    Z3 -- 有效 --> Z5[重启 Claude Desktop\nMCP server 自动 respawn\nToken cache 重置]
+
+    Z1 -- "binary not found / spawn 失败" --> Z6[检查 mcp.json command 路径\n确认 zitadel-mcp 二进制存在且可执行\nls -la ~/bin/zitadel-mcp]
+
+    S1 -- k8s-mcp --> K1{错误类型}
+    K1 -- "exit status 255 / SSH 超时" --> K2[测试 Tailscale 连通性\ntailscale status\nssh root@100.98.57.55 echo ok]
+    K2 -- 不通 --> K3[重连 Tailscale\n或检查 100.98.57.55 K3s master 状态]
+    K2 -- 通 --> K4[检查 SSH key\nssh-add -l\n若无私钥: ssh-add ~/.ssh/id_rsa]
+
+    K1 -- "tool not whitelisted" --> K5[目标 namespace/deployment\n未在 main.go allowlist 中\n需 rebuild: go build -o k8s-mcp .\n更新白名单后重新分发二进制]
+
+    K1 -- "tool call 超时 60s 卡住" --> K6[强制终止卡住进程\nps aux grep k8s-mcp\nkill -9 PID\nClaude Desktop 会自动 respawn]
+
+    S1 -- platform-mcp --> P1{错误类型}
+    P1 -- "HTTP 401 / 403" --> P2[检查 INTERNAL_API_KEY 是否正确\nssh root@100.98.57.55\nkubectl get secret platform-core-secrets -n lurus-platform\n-o jsonpath={.data.INTERNAL_API_KEY} | base64 -d]
+    P2 --> P3[更新 mcp.json 中的 INTERNAL_API_KEY\n重启 Claude Desktop]
+
+    P1 -- "tool 不存在 / readonly 模式" --> P4[检查 PLATFORM_MCP_READONLY 设置\nREADONLY=1 时写工具不注册]
+
+    S1 -- 所有 server --> ALL1{stdio 死锁\nchat 无响应 > 30s}
+    ALL1 --> ALL2[ps aux grep -E zitadel-mcp k8s-mcp platform-mcp\nkill -9 对应 PID\nClaude Desktop 重启后自动 respawn]
+
+    ALL1 --> ALL3{误操作写工具已执行}
+    ALL3 -- rollout_restart 错误目标 --> ALL4[ssh root@100.98.57.55\nkubectl rollout undo deployment/<name> -n <ns>]
+    ALL3 -- checkout_create 错误订单 --> ALL5[platform-mcp checkout_status 查订单\n若 pending 可联系支付方取消\n若已支付走退款流程联系 marvin]
+    ALL3 -- pg_query 写误操作 --> ALL6[立即检查影响行数\n数据恢复依赖 MinIO WAL 备份\n联系 marvin 处理 PITR]
+```
+
+---
+
+appended 253 lines, 4 mermaid charts to mcp.md

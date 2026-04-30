@@ -507,3 +507,370 @@ ssh root@100.98.57.55 "kubectl get pods -n lucrum | grep lucrum-web"
 
 # admin 本身无数据库，下游服务恢复后页面刷新即可正常，无需重启 admin
 ```
+
+## 多视角速览
+
+### 用户视角（运营/员工）
+
+Admin 是运营人员日常处理后台事务的唯一入口。主要使用场景：
+
+- **用户管理**：按 email / ID 搜索账户、查看 VIP 状态、手动调整钱包余额（充值或扣减）、冻结/解冻账号
+- **订单与发票**：按账户过滤查询发票列表、核对支付状态、触发人工退款流程
+- **退款与提现审核**：接收来自 Ticket 系统的退款请求，核查订单详情后调用 platform 退款接口，结果写入审计日志
+- **策略市场审核**：审阅量化策略上架申请，Approve（上线）或 Suspend（下架）
+- **通知模板配置**：维护系统通知的文案与路由规则（channel / priority），无需改代码即可上线新通知类型
+
+登录方式：浏览器访问 `https://admin.lurus.cn`，跳转 Zitadel SSO，需持有 `admin` 角色。
+
+### 开发者视角
+
+Admin 是一个**无数据库、纯聚合**的 Phoenix LiveView 应用，所有业务数据通过 Finch HTTP 客户端透传到下游权威服务：
+
+- **框架**：Elixir 1.17 + OTP 27 + Phoenix 1.7 + LiveView 1.0 + Bandit HTTP 服务器
+- **状态管理**：全部在 LiveView 进程（BEAM Actor）中，页面切换通过 `push_patch` 保持 URL 参数化
+- **认证**：OAuth 2.0 confidential OIDC 客户端（PKCE + client_secret），由 `shared/lurus_phoenix` 提供 `LurusPhoenix.OIDC` 通用库
+- **Postgres 直查**：Admin 自身不直连 Postgres，所有数据经 platform-core `/admin/v1/*` 接口返回；若需临时 DBA 操作，通过 `kubectl exec` 进 platform-core 数据库 Pod 执行 SQL
+- **Zitadel 集成**：userinfo 返回的 `urn:zitadel:iam:org:project:roles` claim 决定角色；`on_mount :default` hook 在每个 LiveView 挂载时校验 `"admin"` role，缺失则 redirect `/login`
+- **扩展点**：新增页面只需实现新的 `Phoenix.LiveView`，注册到 `router.ex` 的 `live_session`，`ApiClient` 添加对应接口封装即可
+
+### 运维视角
+
+| 项 | 值 |
+|---|---|
+| 集群 | R1 `43.226.46.164`，K3s，命名空间 `lurus-admin` |
+| Pod 端口 | 4000（内部），Service 80 口通过 Traefik IngressRoute 映射到 `admin.lurus.cn:443`|
+| 健康探针 | `GET /health` → 200，无鉴权 |
+| 核心依赖 | Zitadel `auth.lurus.cn`（SSO）+ platform-core `:18104`（业务数据）+ Postgres（经 platform-core 间接） |
+| 关键 Secret | `lurus-admin-secret`：`secret-key-base` / `zitadel-client-id` / `zitadel-client-secret` |
+| 资源规格 | requests: 50m CPU / 128Mi；limits: 300m CPU / 256Mi |
+| 常用操作 | `kubectl rollout restart deployment/lurus-admin -n lurus-admin` |
+| 日志入口 | `kubectl logs -n lurus-admin deploy/lurus-admin --tail=100 -f` 或 Loki `{namespace="lurus-admin"}` |
+
+⚠ Admin 无本地状态，下游依赖恢复后页面刷新即可，通常无需重启 Pod。
+
+### 决策者视角
+
+**自建 vs Retool / Forest Admin / Appsmith**
+
+| 维度 | 自建（当前方案） | Retool/Forest |
+|---|---|---|
+| 定制深度 | 完全自由，可实现 QR 扫码、LiveView 实时推送等 | 低代码受限于平台组件 |
+| 数据私有 | 全部数据留在自有集群，符合内部合规要求 | 数据需经第三方 SaaS 转发 |
+| 审计追踪 | 与 platform-core 审计日志深度集成 | 需额外 webhook 桥接 |
+| 运维成本 | 需维护 Elixir 服务 | SaaS 零运维 |
+| 快速迭代 | 改 LiveView 代码即可，无平台限制 | 拖拽低代码更快上线简单 CRUD |
+
+**结论**：选择自建的核心理由是**金融数据不出内网**和**审计合规深度集成**。若未来 Admin 功能稳定、需求变化少，可评估局部迁移到低代码平台降低维护成本。
+
+---
+
+## 决策树：什么操作该走 Admin
+
+```mermaid
+graph TD
+    A[需要执行一个后台操作] --> B{涉及资金或个人数据？}
+    B -- 是 --> C{是否日常高频操作？}
+    B -- 否 --> D{是否需要审计追踪？}
+
+    C -- 是 --> E{是否需要批量处理？}
+    C -- 否 --> F[⚠ 评估是否需要 4-eye 审批\n走 Admin 审核流]
+
+    D -- 是 --> G[走 Admin\n审计日志自动记录]
+    D -- 否 --> H[可考虑直接 API 调用\n或 CLI 工具]
+
+    E -- 是 --> I[Admin 批量操作界面\n或导出后离线处理]
+    E -- 否 --> J[Admin 单条操作界面\n标准 CRUD 流程]
+
+    F --> K{操作不可逆？\n如退款 / 冻结 / 删除}
+    K -- 是 --> L[✓ 必须走 Admin\n+ 二次确认弹窗\n+ 审计日志]
+    K -- 否 --> M[Admin 或内部 API 均可\n优先 Admin 保留记录]
+
+    L --> N{金额 > 阈值 / 批量影响 > N 人？}
+    N -- 是 --> O[✓ 需 4-eye 审批\n第二人在 Admin 确认]
+    N -- 否 --> P[单人操作可行\n但必须留 reason 字段]
+```
+
+**判断规则摘要**：
+- 资金操作（退款/钱包调整/充值）→ 必须走 Admin，必须有 reason，金额超阈值需双人确认
+- 个人数据操作（冻结账号/导出用户数据）→ 必须走 Admin，写审计日志
+- 批量操作（批量发通知/批量审核策略）→ Admin 批量界面，先 dry-run 预览再提交
+- 纯查询（排查 bug 时看某用户状态）→ Admin 查看界面或 Grafana/Loki，不需要写操作
+
+---
+
+## 典型时序图
+
+### 员工 SSO 登录 → 冻结用户 → 审计日志 → NATS 通知
+
+```mermaid
+sequenceDiagram
+    participant E  as 员工浏览器
+    participant AD as admin.lurus.cn\n(AdminWeb LiveView)
+    participant ZT as Zitadel\nauth.lurus.cn
+    participant PC as platform-core\n:18104
+    participant NT as notification\n:18900
+    participant NS as NATS\nLLM_EVENTS / IDENTITY_EVENTS
+
+    E->>AD: GET https://admin.lurus.cn/users/123
+    AD->>AD: on_mount :default\n→ session 无 current_user
+    AD-->>E: redirect /login
+    E->>AD: GET /auth/login
+    AD->>AD: generate PKCE verifier+challenge\ngenerate state (HMAC signed)
+    AD-->>E: 302 → Zitadel /oauth/v2/authorize
+    E->>ZT: 员工输入账号密码
+    ZT-->>E: 302 → /auth/callback?code=...&state=...
+    E->>AD: GET /auth/callback
+    AD->>ZT: POST /oauth/v2/token (code + verifier + client_secret)
+    ZT-->>AD: {access_token, refresh_token, id_token}
+    AD->>ZT: GET /oidc/v1/userinfo
+    ZT-->>AD: {sub, email, roles: {"admin": {}}}
+    AD->>AD: extract_roles → ["admin"] ✓\nput_session current_user + access_token
+    AD-->>E: 302 → /users/123
+
+    E->>AD: LiveView mount /users/123
+    AD->>PC: GET /admin/v1/accounts/123\nAuthorization: Bearer <zitadel_access_token>
+    PC-->>AD: {account, wallet, status:"active", ...}
+    AD-->>E: 渲染用户详情页
+
+    E->>AD: phx-click="freeze_account"\n二次确认弹窗 → confirm
+    AD->>PC: POST /internal/v1/users/freeze\n{user_id: "123", actor: "employee@lurus.cn", reason: "违规申诉"}
+    PC->>PC: 更新 users.status = "frozen"\n写 audit_logs {actor, action, before, after, ts}
+    PC->>NS: publish IDENTITY_EVENTS\n{event: "user.frozen", user_id: "123"}
+    NS->>NT: consume IDENTITY_EVENTS
+    NT->>NT: 匹配通知模板 user.frozen/email
+    NT-->>E: 邮件通知发送至用户
+    PC-->>AD: 200 {status: "frozen"}
+    AD->>AD: send(:load_account) → 重新拉取账户状态
+    AD-->>E: LiveView diff 更新状态标签 → "已冻结"
+```
+
+---
+
+## 端到端完整例子
+
+### 处理客户退款：从 Ticket 到审计归档
+
+**场景**：用户 user_id=`u-8891` 通过客服 Ticket 申请退款，订单 `inv-20260428-0042`，金额 ¥299，理由：误购。
+
+#### 第一步：接单查订单
+
+员工登录 `https://admin.lurus.cn`，导航到 **发票管理** (`/subscriptions?account_id=u-8891`)。
+
+```elixir
+# SubscriptionsLive.handle_params/3 — URL 参数驱动搜索
+def handle_params(%{"account_id" => account_id} = params, _uri, socket) do
+  socket =
+    socket
+    |> assign(:account_id, account_id)
+    |> assign(:loading, true)
+  {:noreply, push_patch(socket, to: ~p"/subscriptions?#{params}")}
+end
+
+def handle_info(:load_invoices, socket) do
+  case ApiClient.identity_get(
+    "/admin/v1/invoices?account_id=#{socket.assigns.account_id}&page=1&per_page=20",
+    socket.assigns.access_token
+  ) do
+    {:ok, %{"invoices" => invoices, "total" => total}} ->
+      {:noreply, assign(socket, invoices: invoices, total: total, loading: false)}
+    {:error, reason} ->
+      {:noreply, assign(socket, error: reason, loading: false)}
+  end
+end
+```
+
+找到目标发票，确认状态为 `paid`，金额 299.00，支付方式 `alipay`。
+
+#### 第二步：调 platform 退款接口
+
+员工点击发票行 → **申请退款** 按钮，填写退款原因。Admin 调用：
+
+```elixir
+# UserDetailLive.handle_event/3 — 退款提交
+def handle_event("submit_refund", %{"invoice_id" => inv_id, "reason" => reason}, socket) do
+  # 二次确认已在前端弹窗完成，此处直接调用
+  case ApiClient.identity_post(
+    "/admin/v1/invoices/#{inv_id}/refund",
+    socket.assigns.access_token,
+    %{reason: reason, actor: socket.assigns.current_user.email}
+  ) do
+    {:ok, _resp} ->
+      socket =
+        socket
+        |> put_flash(:info, "退款已提交，platform-core 正在处理")
+        |> assign(:show_refund_modal, false)
+      send(self(), :reload_invoice)
+      {:noreply, socket}
+
+    {:error, %{status: 422, body: body}} ->
+      {:noreply, put_flash(socket, :error, "退款失败：#{body["message"]}")}
+
+    {:error, _} ->
+      {:noreply, put_flash(socket, :error, "网络错误，请稍后重试")}
+  end
+end
+```
+
+#### 第三步：platform-core 写审计日志
+
+platform-core 收到退款请求后（内部逻辑，供参考）：
+
+```go
+// platform-core internal — app/refund_usecase.go (伪代码示意)
+func (u *RefundUseCase) Execute(ctx context.Context, req RefundRequest) error {
+    invoice, err := u.invoiceRepo.GetByID(ctx, req.InvoiceID)
+    if err != nil { return fmt.Errorf("get invoice: %w", err) }
+
+    if invoice.Status != "paid" {
+        return ErrInvoiceNotRefundable
+    }
+
+    // 执行退款（调支付渠道 / 调整钱包）
+    if err := u.paymentProvider.Refund(ctx, invoice.PaymentRef, invoice.Amount); err != nil {
+        return fmt.Errorf("payment refund: %w", err)
+    }
+
+    // 写审计日志（actor + before/after 完整记录）
+    u.auditRepo.Write(ctx, AuditLog{
+        Actor:     req.Actor,           // "employee@lurus.cn"
+        Action:    "invoice.refund",
+        TargetID:  req.InvoiceID,
+        Before:    map[string]any{"status": "paid"},
+        After:     map[string]any{"status": "refunded"},
+        Reason:    req.Reason,
+        Timestamp: time.Now().UTC(),
+    })
+
+    // 发布 NATS 事件 → notification 服务发邮件给用户
+    u.nats.Publish("IDENTITY_EVENTS", RefundEvent{
+        UserID:    invoice.AccountID,
+        InvoiceID: invoice.ID,
+        Amount:    invoice.Amount,
+    })
+
+    return nil
+}
+```
+
+#### 第四步：通知用户
+
+notification 服务消费 `IDENTITY_EVENTS`，匹配模板 `invoice.refunded/email`，发送退款到账通知邮件。
+
+#### 第五步：验证归档
+
+员工刷新发票列表，状态由 `paid` 变为 `refunded`。如需核查审计记录（目前 TODO，待 platform-core 提供 `/admin/v1/audit` 端点），将在 **审计日志** 页面可查询 actor / before / after 完整记录。
+
+---
+
+## 最佳实践 ✓/✗
+
+| 场景 | ✓ 正确做法 | ✗ 错误做法 |
+|---|---|---|
+| 写操作鉴权 | ✓ 所有写操作（退款/冻结/钱包调整）必须经 SSO 登录 + 界面二次确认弹窗 | ✗ 直接调内部 API 绕过 Admin 界面，无二次确认 |
+| 审计日志 | ✓ 每条审计记录必须含 `actor`（操作人 email）+ `before`（操作前状态）+ `after`（操作后状态）+ `reason` | ✗ 只记录 op type（如 `"refund"`）而不记录前后状态变化 |
+| 高危操作审批 | ✓ 退款金额超阈值 / 批量冻结 > 5 人，需第二名有 admin 角色的员工在 Admin 界面确认（4-eye） | ✗ 单人决策直接提交，无复核 |
+| 角色权限管理 | ✓ 角色（admin / auditor / ops）在 Zitadel Project Roles 中配置，`require_role` plug 从 userinfo claims 读取 | ✗ 角色逻辑写死在代码 if/else 判断中 |
+| 高危操作预演 | ✓ 批量操作（批量退款/批量通知）先走 `dry_run=true` 模式，预览影响范围再确认提交 | ✗ 直接 commit 批量操作，出错无法完整回滚 |
+| 数据导出 | ✓ 导出用户数据时脱敏处理（手机号中间 4 位替换 `****`，身份证仅留首尾各 2 位） | ✗ 原始数据直接 CSV 下载，含完整个人敏感信息 |
+| API 错误处理 | ✓ LiveView 捕获下游 `{:error, _}` 后通过 `put_flash(:error, msg)` 在界面展示友好提示，继续保持 socket 可用 | ✗ 让下游报错冒泡导致 LiveView 进程 crash，用户看到白屏 |
+| Token 有效期 | ✓ 监控 access_token 剩余有效期，在 API 返回 401 时尝试用 refresh_token 静默刷新后重试 | ✗ Token 过期后仍继续调用 API，用户所有操作返回"Failed to load"直到手动重新登录 |
+
+---
+
+## 跨产品集成场景
+
+### ① Admin + Platform：用户与钱包后台管理
+
+Admin 是 platform-core `/admin/v1/*` 接口的**唯一 Web 消费者**。典型集成路径：
+
+```
+员工浏览器
+  → admin.lurus.cn (Phoenix LiveView)
+  → Bearer Zitadel token
+  → platform-core.lurus-platform.svc:18104
+      /admin/v1/accounts         — 用户列表与搜索
+      /admin/v1/accounts/:id     — 账户详情（含 wallet / vip / subscriptions）
+      /admin/v1/accounts/:id/wallet/adjust  — 余额调整
+      /internal/v1/users/freeze  — 账号冻结/解冻
+      /admin/v1/invoices         — 发票查询
+      /admin/v1/invoices/:id/refund  — 退款触发
+      /admin/v1/finance          — 财务报表
+```
+
+**注意**：Admin 传递的是员工的 Zitadel access_token，platform-core 在 admin 路由上校验 token 含 `admin` claim。内部服务调用（如 notification 触发）使用 `INTERNAL_API_KEY`，不经过 Admin 层。
+
+### ② Admin + zitadel-mcp：Chat 界面改用户的 Fallback 通道
+
+当运营人员通过 AI Chat 工具（接入 `2l-svc-zitadel-mcp`）执行用户管理操作时，如果 MCP tool 调用失败（Zitadel API 超时、权限不足等），fallback 策略是：
+
+```
+AI Chat 工具
+  → zitadel-mcp (MCP server, 调 Zitadel Admin API)
+  → [失败] → fallback 提示员工
+  → 员工手动登录 admin.lurus.cn
+  → Admin LiveView 界面执行相同操作
+  → 写审计日志
+```
+
+**适用场景**：
+- 批量角色授予（zitadel-mcp 支持批量，Admin 只能单条）
+- 紧急改密/锁号（zitadel-mcp 直接操作 Zitadel，Admin 经 platform-core 中转）
+- Chat MCP 失败的降级路径（保证任何情况下都有 Web 界面兜底）
+
+**⚠ 两个通道写同一数据**：zitadel-mcp 直接操作 Zitadel 用户数据，Admin 经 platform-core 操作 platform DB。确保两者操作的是同一 `user_id`（Zitadel sub），避免数据不一致。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维告警 / 员工反馈]) --> Q1{问题类型}
+
+    Q1 -- SSO 登录失败 --> S1{具体表现}
+    S1 -- 死循环跳转 --> S1A[查 callback 日志\ngrep oidc|state|role]
+    S1A --> S1B{日志关键词}
+    S1B -- invalid_state --> S1C[⚠ PHX_HOST 与访问域名不一致\n或 session cookie 跨域丢失\n→ 确认 https://admin.lurus.cn 访问]
+    S1B -- admin role required --> S1D[⚠ Zitadel 未授 admin 角色\n→ auth.lurus.cn 控制台授权]
+    S1B -- unauthorized_client --> S1E[⚠ client_secret 不匹配\n→ 更新 lurus-admin-secret 重启 Pod]
+
+    Q1 -- LiveView 断流 / 转圈 --> L1[GET /health 检查 Pod 存活]
+    L1 --> L2{/health 返回}
+    L2 -- 200 --> L3[检查 Traefik IngressRoute\nWebSocket upgrade 是否透传]
+    L2 -- 非200 / 超时 --> L4[kubectl describe pod\n查 CrashLoopBackOff 原因]
+    L3 --> L5[多副本？\n检查 SECRET_KEY_BASE 是否所有 Pod 一致]
+    L4 --> L6{日志关键词}
+    L6 -- SECRET_KEY_BASE missing --> L7[kubectl get secret lurus-admin-secret\n补充缺失 key]
+    L6 -- RELEASE_TMP eacces --> L8[检查 emptyDir volume mount /tmp\n补回 manifest 后 redeploy]
+
+    Q1 -- Postgres 慢查 / 页面超时 --> P1[admin 无直连 PG\n→ 实为 platform-core 慢]
+    P1 --> P2[kubectl top pod -n lurus-platform\nkubectl logs deploy/platform-core --tail=100]
+    P2 --> P3{原因}
+    P3 -- 全表扫描 --> P4[⚠ 通知 platform 团队加索引\n临时：减少 admin 查询频率]
+    P3 -- 连接池耗尽 --> P5[检查 platform-core DB 连接池配置\n临时重启 platform-core]
+
+    Q1 -- 审计日志未写 --> A1[确认 platform-core 返回 200]
+    A1 --> A2{platform 日志}
+    A2 -- auditRepo.Write 报错 --> A3[⚠ audit_logs 表结构不匹配或 PG 写失败\n→ 查 PG 磁盘空间 / 表权限]
+    A2 -- 无相关日志 --> A4[⚠ Admin 未传 actor 字段\n→ 检查 ApiClient 调用是否含 actor]
+
+    Q1 -- 误操作需回滚 --> R1{操作类型}
+    R1 -- 钱包调整 --> R2[Admin 界面反向调整\namount 取负值，reason 注明"撤销操作"]
+    R1 -- 发票退款 --> R3[⚠ 退款不可逆\n联系支付渠道人工处理\n在审计日志记录补救操作]
+    R1 -- 账号冻结 --> R4[Admin 界面执行 unfreeze\nplatform-core 自动发 NATS 解冻通知]
+    R1 -- 策略误审 --> R5[Admin /strategies 界面\n重新 PATCH status 为正确状态]
+```
+
+**快速索引**：
+
+| 症状 | 入口命令 |
+|---|---|
+| SSO 死循环 | `kubectl logs -n lurus-admin deploy/lurus-admin --tail=100 \| grep -i 'oidc\|role\|state'` |
+| LiveView 断流 | `curl -I https://admin.lurus.cn/health` + `kubectl get pods -n lurus-admin` |
+| Postgres 慢查 | `kubectl top pod -n lurus-platform` + `kubectl logs deploy/platform-core --tail=100` |
+| 审计未写 | `kubectl logs deploy/platform-core -n lurus-platform --tail=100 \| grep -i audit` |
+| 误操作回滚 | 依操作类型见上方流程图，原则：可逆操作界面反向操作；不可逆（退款）联系渠道人工处理 |
+
+---
+
+appended 263 lines, 4 mermaid charts to admin.md

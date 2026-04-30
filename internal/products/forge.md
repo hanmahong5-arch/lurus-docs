@@ -445,3 +445,256 @@ FROM forge.product_nodes
 WHERE product_id = '<product-uuid>'
 ORDER BY created_at DESC;
 ```
+
+---
+
+## 多视角速览
+
+**用户视角**
+Forge 提供可视化拖拽式 agent 工作流编排界面（Canvas），无需写代码即可把 LLM 调用、条件分支、记忆读写、队列等能力组合成完整流程。Session 模块允许以自然语言对话来定义产品需求，PM Agent 自动提炼并写入 Ontology 知识图谱，非工程师可独立完成从"描述需求"到"运行 agent"的全链路。
+
+**开发者视角**
+仓库为 TypeScript + Python 的混合 monorepo（Turbo 编排，pnpm 管理），前端两个独立 Next.js 应用（web :3000 / canvas :3001），后端 FastAPI + Socket.io（:8000），Kova REST 客户端（:3002）。Ontology 数据存 PostgreSQL `forge` schema，节点层级 0–7 对应 Product Vision → Implementation Note。Canvas 执行引擎（`FlowExecutor`）使用 Kahn 拓扑排序驱动组件图，每个组件通过 `KovaClient` 与 kova-rest 通信完成实际 agent 执行。
+
+**运维视角**
+当前为内部 beta（<5 人内测），部署于 R6（STAGE，`43.226.38.244`），namespace `lurus-forge`。镜像 tag 目前为 `latest`（待修正为 `main-<sha7>` sha 钉），ArgoCD 管理，kova-rest **尚未部署到 K8s**（Canvas 中 Kova 组件降级返回占位值）。⚠ 未达商业交付标准，不上 R1。关键监控缺口：无专用审计日志、flow 执行无全局超时、Socket.io 状态推送尚未实现。
+
+**决策者视角**
+Forge 的核心价值是把 agent 开发民主化——让 PM、运营等非工程师角色也能通过可视化拖拽构建和迭代 AI 工作流，同时沉淀产品知识为结构化 Ontology，避免需求在对话中消散。短期定位是内部 R&D 活体 Demo（展示 `api.lurus.cn` LLM 路由能力），中期路线是向企业客户开放为低代码 agent 平台。当前阶段优先验证核心循环（Session → Ontology → Canvas → 执行），范围外的功能（Zitadel SSO 全量/Redis/NATS）刻意推迟。
+
+---
+
+## 决策树：什么场景用 Forge
+
+```mermaid
+graph TD
+    A[有 agent 工作流需求] --> B{操作者是非工程师?}
+    B -- 是 --> C{需要可视化编排?}
+    B -- 否 --> D{需要快速原型验证?}
+    D -- 是 --> C
+    D -- 否 --> Z1[直接写 Kova workflow 代码]
+    C -- 是 --> E{需要复用 Ontology 业务概念?}
+    C -- 否 --> Z2[用 Session 自然语言定义需求后导出]
+    E -- 是 --> F{需要 Session 历史回溯?}
+    E -- 否 --> G[Canvas 单次 flow 编排]
+    F -- 是 --> H[✓ 完整使用 Forge：Session + Ontology + Canvas]
+    F -- 否 --> I{workflow 超过 20 个节点?}
+    I -- 是 --> J[⚠ 拆 sub-agent / 多图分治，避免单图过大]
+    I -- 否 --> K[Canvas flow + Ontology 节点引用]
+    G --> L[适合一次性自动化任务]
+    H --> M[适合 PM 驱动的持续演进产品]
+```
+
+---
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant PM as PM（非工程师）
+    participant UI as Forge Canvas UI
+    participant BE as forge-backend
+    participant K as kova-rest
+    participant DB as PostgreSQL
+    participant ONT as Ontology Engine
+
+    PM->>UI: 拖拽节点（LlmGateway / KovaDurableAgent / TextTemplate）
+    UI->>UI: React Flow 构建 graph_data（节点 + 边 JSON）
+    PM->>UI: 连线并配置各节点 prompt / 参数
+    UI->>BE: POST /api/flows（保存 graph_data）
+    BE->>DB: INSERT flows
+    BE-->>UI: flow_id
+
+    PM->>UI: 点击「执行」
+    UI->>BE: POST /api/flows/{flow_id}/execute
+    BE->>DB: INSERT flow_executions（status=pending）
+    BE->>BE: FlowExecutor：Kahn 拓扑排序
+    loop 按拓扑顺序执行每个节点
+        BE->>K: POST /api/v1/agents/run（KovaDurableAgent）
+        K-->>BE: 执行结果
+        BE->>BE: 输出沿边传递到下游节点输入
+    end
+    BE->>DB: UPDATE flow_executions（status=completed）
+    BE-->>UI: Socket.io event：execution_done
+
+    UI-->>PM: 展示执行结果（节点着色 + 输出预览）
+    PM->>UI: 触发「写入 Ontology」
+    UI->>BE: POST /api/agents/pm/analyze（携带执行输出）
+    BE->>ONT: apply_ontology_ops（CREATE_NODE / UPDATE_NODE）
+    ONT->>DB: UPSERT product_nodes
+    BE-->>UI: ops_applied
+    UI-->>PM: OntologyPanel 实时刷新知识图谱
+```
+
+---
+
+## 端到端完整例子
+
+### 场景：PM 用 Forge 构建「客户反馈分析」workflow
+
+**背景**：PM 小李需要每天把客服系统导出的反馈文本自动分类、提取关键痛点、写入产品 Ontology，以便下次 sprint 规划时直接引用结构化洞察。
+
+**步骤一：Session 定义需求（约 5 分钟）**
+
+小李在 Forge Session 页面新建 Session，标题"客户反馈自动分析"，输入：
+
+> "我想把每天导出的 CSV 反馈，自动按 Bug / 需求 / 体验 分类，提取 top 5 痛点，结果写进产品节点。"
+
+PM Agent 分析对话，提取 Ontology 操作，生成节点：
+- level 1（Epic）：客户反馈自动化处理
+- level 2（Feature）：CSV 解析、三类分类、痛点提取、Ontology 写入
+
+**步骤二：Canvas 拖拽编排（约 15 分钟）**
+
+切换到 Canvas，拖入以下节点并连线：
+
+```
+[TextTemplate: 加载 CSV 行]
+       ↓
+[LlmGateway: 分类（prompt: 按 Bug/需求/体验 分类，返回 JSON）]
+       ↓
+[Conditional: type == "Bug"?]
+    ↓是                ↓否
+[KovaDurableAgent:  [TextConcat: 合并非 Bug 条目]
+ 生成 Bug 痛点摘要]
+       ↓
+[TextExtract: 提取 top 5（regex JSON path）]
+       ↓
+[KovaMemory: 写入 MemX 知识库（产品 ID: lucrum）]
+```
+
+**节点配置 JSON 样例**（`graph_data` 片段）：
+
+```json
+{
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "LlmGateway",
+      "data": {
+        "model": "claude-sonnet-4-5",
+        "system": "你是产品分析助手，严格按 JSON schema 输出。",
+        "user_template": "反馈内容：{{input.text}}\n请分类为 Bug / 需求 / 体验 之一，返回 {\"type\": \"...\", \"summary\": \"...\"}",
+        "output_schema": {"type": "string", "summary": "string"}
+      }
+    },
+    {
+      "id": "n2",
+      "type": "Conditional",
+      "data": {
+        "condition": "input.type == 'Bug'"
+      }
+    },
+    {
+      "id": "n3",
+      "type": "KovaDurableAgent",
+      "data": {
+        "task": "从以下反馈列表中提取 top 5 用户痛点，按严重程度排序",
+        "max_iterations": 10
+      }
+    },
+    {
+      "id": "n4",
+      "type": "KovaMemory",
+      "data": {
+        "operation": "write",
+        "namespace": "lucrum-feedback",
+        "key_template": "pain-points-{{date}}"
+      }
+    }
+  ],
+  "edges": [
+    {"source": "n1", "target": "n2"},
+    {"source": "n2", "target": "n3", "label": "true"},
+    {"source": "n3", "target": "n4"}
+  ]
+}
+```
+
+**步骤三：接入 MemX**
+
+`KovaMemory` 节点配置 `FORGE_KOVA_REST_URL` 指向 kova-rest，kova-rest 内部调用 `2b-svc-memorus` 的 `/memory/add` 接口，命名空间 `lucrum-feedback`，后续 sprint 规划时 PM 可以直接问 MemX："上周 top 痛点是什么？"
+
+**步骤四：上线（beta 阶段灰度）**
+
+- 将该 flow 加入灰度名单（当前手动在 `flow_executions` 表设 `allowed_users` 字段），仅对小李和 1 名工程师审核者开放
+- 验证输出 JSON schema 符合预期后，扩展到产品组 3 人
+- 截图描述：Canvas 画布左侧节点面板展示 10 种组件类型（含 KovaDurableAgent 标 β），中央画布显示上述 5 节点连线图，右侧为选中 LlmGateway 节点的配置面板（model 下拉 + prompt 编辑器），底部执行状态栏显示"上次执行：completed，耗时 8.3s，节点 5/5 通过"
+
+---
+
+## 最佳实践 ✓/✗
+
+| # | ✓ 推荐 | ✗ 反模式 |
+|---|--------|----------|
+| 1 | ✓ Ontology 节点抽象到业务概念（Epic / Feature / User Story），让非工程师也能读懂知识图谱 | ✗ 把实现细节（函数名、表名、变量）直接写进 level 0–2 节点，导致 Ontology 只有工程师能用 |
+| 2 | ✓ Session 必须能回放：所有对话写入 `session_messages`，PM Agent 操作写入 `product_conflicts`，保留完整决策链 | ✗ 跑完 Session 就关闭或删除消息，下次规划无历史可查 |
+| 3 | ✓ 复杂 workflow（>20 节点）拆为多个 sub-agent flow，通过 KovaQueue 或 KovaDurableAgent 串联 | ✗ 单图塞百节点，FlowExecutor 拓扑排序耗时增加，调试困难，单点失败影响全图 |
+| 4 | ✓ Dependency Guardian 明确锁定外部 API 版本（kova-rest `>=0.2.0`，LLM model 固定 slug），并在 CI 中校验版本协商结果 | ✗ 直接拉 `latest` 镜像或不指定 model slug，kova 升级后组件行为静默变化 |
+| 5 | ✓ 每个节点声明明确的 `output_schema`（JSON schema），下游节点校验输入，失败快速抛出 `ComponentError` | ✗ 节点输出自由文本，下游用正则硬解析，模型输出格式稍变即报错且难定位 |
+| 6 | ✓ beta 阶段通过灰度名单（invite code / `allowed_users`）控制访问，逐步扩大验证 | ✗ 全员开放注册（当前 `POST /api/auth/register` 无验证），无法控制数据规模和反馈质量 |
+| 7 | ✓ Flow 执行设全局超时（`asyncio.wait_for`），超时后将 `flow_executions.status` 标为 `timeout` 并推 Socket.io 事件 | ✗ 依赖 stale 清理机制（30 分钟重启才触发），导致执行卡死期间前端无反馈 |
+| 8 | ✓ OntologyOp 结构通过共享 JSON Schema 生成 Python + TypeScript 类型（单一来源） | ✗ Python 和 TypeScript 各自维护一份类型定义，字段变更需手动同步两处 |
+
+---
+
+## 跨产品集成场景
+
+### ① Forge + Kova：可视化编译 → 持久执行
+
+Forge Canvas 是 Kova 的可视化前端。用户在 Canvas 拖拽编排的 `graph_data` 经过 `FlowExecutor` 解析后，将各节点调用转译为对 kova-rest 的 HTTP 请求序列（`POST /api/v1/agents/run`、`/memory/read`、`/queue/push` 等）。
+
+关键链路：
+- `forge-backend` 持有 `KovaClient`（`kova/client.py`），启动时与 kova-rest 进行版本协商（要求 `>=0.2.0`）
+- `KovaDurableAgent` 组件对应 kova 的 WAL-backed 持久 agent，支持 crash 重启；Forge 侧记录 `flow_executions` 状态，kova 侧记录 agent WAL，两者通过 `execution_id` 关联
+- 若 kova-rest 不可用，`KovaClient` 降级返回占位值（`[kova-rest unavailable]`），flow 可继续执行但 Kova 节点无实际效果——**生产上线前必须先将 kova-rest 部署到 `lurus-forge` namespace**
+
+集成待办：kova-rest K8s deployment（`deploy/k8s/kova-rest.yaml`）+ `FORGE_KOVA_REST_URL` 注入 forge-backend secret。
+
+### ② Forge + MemX：agent 知识库持久化
+
+`KovaMemory` 节点通过 kova-rest 间接调用 `2b-svc-memorus`（MemX）的记忆 API（`/memory/add`、`/memory/search`），实现：
+- **写入**：Flow 执行输出（痛点摘要、分析结论）持久化到 MemX，按命名空间隔离（如 `lucrum-feedback`、`tally-ops`）
+- **读取**：后续 Session 中 PM Agent 可查询 MemX，让历史分析结论参与新一轮 Ontology 提炼，形成知识积累飞轮
+
+⚠ 当前 MemX 集成状态：`2026-Q1` 决策将 Memorus 集成推迟（Route C 范围外）。`KovaMemory` 组件代码已就位，但 kova-rest 侧 MemX provider 需在 kova-rest 部署后验证端到端链路。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维告警 / 用户反馈]) --> Q1{问题类型?}
+
+    Q1 --> A1[Canvas flow 编译/执行失败]
+    Q1 --> A2[Session 消息 / Ontology 丢失]
+    Q1 --> A3[Ontology 节点不一致]
+    Q1 --> A4[Dependency Guardian 误报]
+    Q1 --> A5[多用户协作冲突]
+    Q1 --> A6[其他：502 / 500 / WS 断连]
+
+    A1 --> B1{kova-rest 可达?}
+    B1 -- 否 --> C1[检查 FORGE_KOVA_REST_URL\n本地 docker compose restart kova-rest\nK8s 环境部署 kova-rest deployment]
+    B1 -- 是 --> C2{版本协商日志?}
+    C2 -- KovaVersionMismatchError --> C3[升级 kova-rest 到 >=0.2.0\n或降级 KovaClient 兼容版本]
+    C2 -- ComponentError --> C4[检查节点 output_schema\n确认上游输出格式符合下游输入约束]
+    C2 -- flow 卡 running > 30min --> C5[重启 forge-backend\n触发 stale 清理\n或手动 UPDATE flow_executions SET status='failed']
+
+    A2 --> B2{DB 可达?}
+    B2 -- 否 --> D1[检查 FORGE_DATABASE_URL\nkubectl exec pg connectivity test\n联系 DBA 确认 lurus-pg-rw 状态]
+    B2 -- 是 --> D2{alembic 版本正确?}
+    D2 -- 否 --> D3[kubectl exec forge-backend\nalembic upgrade head]
+    D2 -- 是 --> D4[查 session_messages / product_nodes\n确认写入时间戳\n排查 Socket.io 连接是否中断导致前端未刷新]
+
+    A3 --> E1{是 OntologyOp 字段名问题?}
+    E1 -- 是 --> E2[对齐 agents/pm.py 与前端 lib/types\n两处 OntologyOp 定义必须同步\n长期方案：JSON Schema 共享生成]
+    E1 -- 否 --> E3{PMAgent LLM 输出 JSON 格式错误?}
+    E3 -- 是 --> E4[检查 GatewayClient 返回\n确认 model slug 未漂移\n加 output_schema 强约束]
+
+    A4 --> F1[检查 kova-rest 版本协商日志\n`kova-rest version X.Y.Z — compatible`\n若误报确认 FORGE_KOVA_REST_URL 指向正确实例\n排除网络抖动导致的临时 503]
+
+    A5 --> G1[当前无乐观锁 / 协作锁\n多用户同时编辑同一 flow graph_data 最后写入覆盖前者\n临时方案：通知用户分时操作\n长期方案：flow 编辑加版本 CAS 校验]
+
+    A6 --> H1[参见 十二 应急 Runbook\n502 → 查 web/backend pod\n500 → 查 backend 日志 + Secret 完整性\nWS 断连 → 确认 Traefik IngressRoute /ws 路由 + sticky session]
+```

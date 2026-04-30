@@ -112,6 +112,15 @@ function tone(metric: 'risk' | 'bus' | 'load' | 'stale'): 'good' | 'warn' | 'bad
     <h2 class="internal-dashboard__section">🔗 产品依赖图谱</h2>
     <DependencyGraph />
 
+    <h2 class="internal-dashboard__section">🧭 横向视角（跨产品）</h2>
+    <div class="quick-links">
+      <a href="/cross/" class="quick-link quick-link--cross">索引 · 14 产品全图</a>
+      <a href="/cross/capability-matrix" class="quick-link quick-link--cross">能力矩阵</a>
+      <a href="/cross/user-journeys" class="quick-link quick-link--cross">用户旅程（4 类用户）</a>
+      <a href="/cross/integration-recipes" class="quick-link quick-link--cross">集成配方（8 个）</a>
+      <a href="/cross/decision-router" class="quick-link quick-link--cross">决策路由</a>
+    </div>
+
     <h2 class="internal-dashboard__section">📚 快速通道</h2>
     <div class="quick-links">
       <a href="/ops/" class="quick-link">运维 SOP</a>
@@ -152,5 +161,11 @@ function tone(metric: 'risk' | 'bus' | 'load' | 'stale'): 'good' | 'warn' | 'bad
 .quick-link:hover {
   transform: translateY(-2px);
   border-color: #C67B5C;
+}
+.quick-link--cross {
+  border-left: 3px solid #82A0BC;
+}
+.quick-link--cross:hover {
+  border-color: #82A0BC;
 }
 </style>

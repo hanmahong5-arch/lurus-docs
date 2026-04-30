@@ -771,3 +771,382 @@ curl -s http://kova-rest.lurus-kova.svc:3002/health
 
 *文档版本：1.0 | 创建：2026-04-28 | 状态：planning（PRD/Architecture 已完成，代码骨架已跑通）*
 *下次审阅触发条件：Epic 2 (RLS 多租户) 完成后，或任何多租户安全相关变更后*
+
+---
+
+## 多视角速览
+
+### 用户视角
+
+中小商户的进销存日常操作可以高度自动化：拍张单据照片，AI 自动识别商品、数量、金额并生成入库/出货单；月底盘点时 AI 自动比对账面库存与实盘差异，标记异常 SKU；账期到期前自动提醒应收/应付。五金店老板不需要学习复杂操作，开门就用，关门看日报。跨境贸易商可以用自然语言查询"本月哪批货利润最低"，一键获得分析结果。
+
+### 开发者视角
+
+后端 Go 1.25 + Gin，域名 `tally.lurus.cn`，命名空间 `lurus-tally`，端口 18200。前端 Next.js 14 App Router，BFF 层代理所有 `/api/v1/*` 请求到 Go 后端。数据层：PostgreSQL schema `tally`（RLS 多租户）、Redis DB 5（缓存/分布式锁）、NATS stream `PSI_EVENTS`（异步事件）。Tally 不重建账户/计费/LLM/记忆能力，全部通过 `INTERNAL_API_KEY` 调用 `2l-svc-platform :18104`（计费/订阅）、Hub（LLM 推理）、`2b-svc-memorus :8880`（客户偏好 RAG）。OCR 走 Hub 路由到多模态模型，结果经 LLM 二次校正后才写入单据。
+
+### 运维视角
+
+R1（100.98.57.55）生产环境，命名空间 `lurus-tally`。关键依赖：PostgreSQL `lurus-pg-rw.database.svc:5432` schema `tally`、Redis DB 5、NATS stream `PSI_EVENTS`、Platform :18104、Memorus :8880、notification :18900。健康检查：`/healthz`（liveness）、`/readyz`（readiness，含 DB ping）。监控告警覆盖：OCR 识别准确率、NATS 消费延迟、月报生成耗时、跨租户 RLS 审计。Stage 在 R6（43.226.38.244），毕业标准见 §9.2。
+
+### 决策者视角
+
+Tally 定位于替代金蝶/管家婆的 AI 时代进销存：传统软件需要人工录入，Tally 用 AI 自动开单；传统软件按功能点卖 license，Tally 按订阅+AI 用量计费，零售商 ¥99/年起，跨境贸易商 ¥500–5000/月。AI 优势体现在三个层面：① 拍照自动建档，降低录入门槛；② 每日补货建议，减少库存积压；③ 自然语言查账，替代复杂报表。多端覆盖：Web SaaS（PC + 响应式手机浏览器）V1，PWA 离线 V2，不做独立 App。
+
+---
+
+## 决策树：哪些客户适合 Tally
+
+```mermaid
+graph TD
+    A[潜在客户] --> B{是否中小商户\n年营收 ＜ 5000 万}
+    B -- 否 --> Z1[⚠ 建议金蝶/用友\nTally 不覆盖大型企业]
+    B -- 是 --> C{是否需要 AI\n自动开单/对账}
+    C -- 否/暂时不需要 --> Z2[⚠ 可先用免费版试用\n引导体验 AI 功能]
+    C -- 是 --> D{是否有多个门店\n或仓库}
+    D -- 是 --> E{是否需要跨门店\n统一库存管理}
+    E -- 是 --> F[✓ Tally hybrid Profile\n多门店库存 + AI 统一调拨]
+    E -- 否 --> G[✓ Tally retail Profile\n每店独立，数据汇总看板]
+    D -- 否 --> H{是否有跨境\n或外贸业务}
+    H -- 是 --> I{是否需要\n多币种/HS Code}
+    I -- 是 --> J[✓ Tally cross_border Profile\n多币种 + 报关辅助 + 补货 Agent]
+    I -- 否 --> K[✓ Tally cross_border 简化版\n可 V1 用 retail 模式先跑]
+    H -- 否 --> L{是否需要\n电子发票对接}
+    L -- 是 --> M[⚠ V2 支持\n金税四期 ISV 待选型\n可 V1 先用手工录入]
+    L -- 否 --> N[✓ Tally retail Profile\n五金/百货/本地零售标准场景]
+```
+
+---
+
+## 典型时序图
+
+商户拍照单据 → AI 解析 → 生成入库单 → 平台计费 → 事件通知：
+
+```mermaid
+sequenceDiagram
+    participant 商户 as 商户（浏览器）
+    participant BFF as Next.js BFF /api/v1
+    participant BE as tally-backend :18200
+    participant HUB as Hub LLM 网关
+    participant PG as PostgreSQL schema:tally
+    participant PLT as platform :18104
+    participant NATS as NATS PSI_EVENTS
+    participant NOTIF as notification :18900
+
+    商户->>BFF: POST /api/v1/receipts/ocr\n{ image: base64 }
+    BFF->>BE: 转发 + JWT Bearer
+
+    BE->>HUB: POST /v1/chat/completions\nmodel: vision, prompt: OCR 提取结构
+    HUB-->>BE: { items:[{name,qty,unit,price}], supplier, date }
+
+    BE->>HUB: POST /v1/chat/completions\nmodel: text, prompt: 校正+模糊匹配商品库
+    HUB-->>BE: { matched_skus:[{sku_id,confidence}], corrected_items }
+
+    BE-->>BFF: 200 { draft_receipt, ocr_result, confidence }
+    BFF-->>商户: 展示识别结果，高亮低置信字段供人工确认
+
+    商户->>BFF: POST /api/v1/receipts/:id/confirm
+    BFF->>BE: 转发
+
+    BE->>PG: BEGIN TX\nSET LOCAL app.tenant_id=<tid>\nINSERT bill_head (type=purchase,status=confirmed)\nINSERT bill_item × N\nUPDATE stock_snapshot (on_hand + qty)\nINSERT audit_log\nCOMMIT
+
+    BE->>PLT: POST /internal/v1/billing/record-usage\n{ tenant_id, feature:ocr_confirm, qty:1 }
+    PLT-->>BE: 200 { wallet_balance_after }
+
+    BE->>NATS: 发布 psi.stock.changed\n{ tenant_id, sku_ids, warehouse_id }
+
+    NATS-->>BE: tally-worker 消费\n检查安全库存阈值
+
+    alt 任意 SKU 库存超安全上限
+        BE->>NOTIF: POST /internal/v1/notify\n{ tenant_id, type:stock_overflow, sku_ids }
+        NOTIF-->>商户: WebSocket 推送 / 邮件提醒
+    end
+
+    BE-->>BFF: 200 { receipt_id, stock_updated: true }
+    BFF-->>商户: 入库完成，库存已更新
+```
+
+---
+
+## 端到端完整例子
+
+### 场景：新商户从开通到 AI 月度异常预警全流程
+
+**第一步：开通 Tally 订阅**
+
+商户在 `tally.lurus.cn` 注册，Zitadel OIDC 完成身份验证后，系统自动调用 Platform 创建租户并激活免费试用：
+
+```go
+// tally-backend: internal/app/billing/activate.go
+func (s *Service) ActivateTrial(ctx context.Context, tenantID uuid.UUID) error {
+    req := &platform.SubscribeRequest{
+        TenantID:  tenantID.String(),
+        PlanID:    "tally-trial-30d",
+        Source:    "tally-signup",
+    }
+    resp, err := s.platformClient.Subscribe(ctx, req)
+    if err != nil {
+        return fmt.Errorf("activate trial: %w", err)
+    }
+    // store subscription_id for later billing checks
+    return s.repo.SaveSubscription(ctx, tenantID, resp.SubscriptionID)
+}
+```
+
+**第二步：录入商品目录**
+
+商户通过前端 `⌘K` 快速创建商品，或批量导入 CSV：
+
+```typescript
+// tally-web: components/product/quick-create-dialog.tsx
+export function QuickCreateDialog() {
+  const { profile } = useProfile()
+  const form = useForm<ProductFormValues>({
+    defaultValues: {
+      measurementStrategy: profile.type === 'retail' ? 'individual' : 'individual',
+      currency: profile.type === 'cross_border' ? 'USD' : 'CNY',
+    },
+  })
+
+  async function onSubmit(values: ProductFormValues) {
+    const res = await fetch('/api/v1/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: values.name,
+        sku_code: values.skuCode,
+        measurement_strategy: values.measurementStrategy,
+        // unit: 五金店常见散装螺丝用 weight 策略
+        alt_units: values.altUnits,
+        cost_price: values.costPrice,   // Decimal string, e.g. "12.5000"
+        sell_price: values.sellPrice,
+      }),
+    })
+    if (!res.ok) throw new Error(await res.text())
+  }
+  // ...
+}
+```
+
+真实数据样例（五金店螺丝）：
+
+```json
+{
+  "sku_id": "01HZ3K8WQXP4T6RVNMC5BDEF",
+  "name": "不锈钢内六角螺丝 M4×20",
+  "sku_code": "SS-M4-20",
+  "measurement_strategy": "weight",
+  "base_unit": "克",
+  "alt_units": [
+    {"unit": "百粒", "ratio": "1530.0000"},
+    {"unit": "千克", "ratio": "1000.0000"}
+  ],
+  "cost_price": "0.0580",
+  "sell_price": "0.0820",
+  "stock_snapshot": {
+    "on_hand": "45600.000",
+    "available": "45600.000",
+    "reserved": "0.000",
+    "unit": "克"
+  }
+}
+```
+
+**第三步：AI 拍照入库**
+
+商户拍摄供货商送货单照片，POST 到 `/api/v1/receipts/ocr`。Hub 路由到 vision 模型提取结构化数据，Go 后端二次校正后返回可编辑草稿。商户确认后触发库存更新（见上方时序图）。
+
+**第四步：销售开单**
+
+```bash
+# 真实 API 调用示例
+curl -X POST https://tally.lurus.cn/api/v1/sales-orders \
+  -H "Authorization: Bearer <zitadel_access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customer_id": "01HZ3KPARTNER001",
+    "items": [
+      {
+        "sku_id": "01HZ3K8WQXP4T6RVNMC5BDEF",
+        "qty": "15300.000",
+        "unit": "克",
+        "unit_price": "0.0820",
+        "amount": "1254.6000"
+      }
+    ],
+    "payment_term_days": 30,
+    "currency": "CNY"
+  }'
+
+# 响应
+{
+  "order_id": "01HZ3KSALES20001",
+  "status": "draft",
+  "total_amount": "1254.6000",
+  "tax_amount": "163.0980",
+  "receivable_due": "2026-05-29"
+}
+```
+
+**第五步：月底盘点（异步 workflow）**
+
+盘点由 Kova Agent 异步执行，不阻塞主线程：
+
+```go
+// tally-backend: internal/app/stocktake/service.go
+func (s *Service) StartStocktake(ctx context.Context, tenantID uuid.UUID, warehouseID uuid.UUID) (*Stocktake, error) {
+    // 1. 冻结仓库：将 on_hand 全量 → frozen，禁止新出库
+    if err := s.calculator.FreezeWarehouse(ctx, tenantID, warehouseID); err != nil {
+        return nil, fmt.Errorf("freeze warehouse: %w", err)
+    }
+    // 2. 提交 Kova Agent job（异步，不 block）
+    jobID, err := s.kovaClient.TriggerAgent(ctx, &kova.TriggerRequest{
+        AgentID:  "tally-stocktake-diff",
+        TenantID: tenantID.String(),
+        Payload:  map[string]any{"warehouse_id": warehouseID},
+    })
+    if err != nil {
+        return nil, fmt.Errorf("trigger kova stocktake: %w", err)
+    }
+    return s.repo.CreateStocktake(ctx, tenantID, warehouseID, jobID)
+}
+```
+
+**第六步：AI 异常预警（人工复核，不自动调账）**
+
+盘点完成后 NATS 消费 `psi.stocktake.completed`，分析差异 > 阈值的 SKU，推送告警卡片：
+
+```
+⚠ 月度盘点异常预警（2026-04-30）
+━━━━━━━━━━━━━━━━━━━━━━━━
+仓库：主仓
+异常 SKU：3 种
+
+· 不锈钢内六角螺丝 M4×20
+  账面：45,600 克  实盘：43,200 克  差异：-2,400 克 (-5.3%)
+  AI 判断：超出自然损耗范围，建议人工核查近 7 日出库单
+
+· 304 不锈钢圆头螺丝 M6×30
+  账面：28,000 克  实盘：29,500 克  差异：+1,500 克 (+5.4%)
+  AI 判断：可能有未录入入库单，建议核查供应商送货记录
+
+[查看详情] [暂存差异单] [驳回本次盘点]
+
+注意：AI 预警仅供参考，所有差异调整需人工确认后方可生效。
+```
+
+---
+
+## 最佳实践 ✓/✗
+
+| # | ✓ 推荐做法 | ✗ 禁止做法 | 原因 |
+|---|---|---|---|
+| 1 | ✓ 单据图片先走 OCR 提取结构，再用 LLM 校正+匹配商品库 | ✗ 直接让 LLM "看图写入库单" | 纯 LLM 视觉输出不稳定，数字/单位幻觉率高；OCR 先保结构，LLM 再补语义 |
+| 2 | ✓ 所有数量、金额、汇率字段用 `NUMERIC(18,4)` + Go `decimal.Decimal` | ✗ 使用 `float64` / `float32` | 浮点精度问题在进销存场景直接导致账目误差，¥0.01 积累会引起财务纠纷 |
+| 3 | ✓ 多门店各自分配独立 `tenant_id`，用 Platform 的企业账号体系做上级聚合 | ✗ 多门店共享同一 `tenant_id`、用 `store_id` 字段区分 | 共享 tenant 会导致 RLS 策略失效，门店间数据完全可互访，等于无隔离 |
+| 4 | ✓ 月底盘点、月报生成、补货 Agent 全部走异步 Kova workflow，结果通过 NATS `PSI_EVENTS` 回传 | ✗ 在 HTTP 请求处理链中同步执行盘点/月报 | 数据量大时同步执行超时（> 30s），nginx 断连导致状态不一致；异步可重试 |
+| 5 | ✓ AI 异常预警（库存差异/欠款逾期/滞销）统一走"建议+人工复核"流程，操作需人工点确认 | ✗ AI 检测到差异后自动调账或自动写红冲单 | 进销存数据直接关联财务；自动调账出错后追溯困难，且可能触发连锁错误 |
+| 6 | ✓ 客户数据按 `tenant_id` 分租户，敏感字段（手机号/地址/账期）在应用层加密存储 | ✗ 多租户混存同一表且只靠应用层 `WHERE tenant_id=?` 隔离 | 应用层漏洞（如 SQL 注入、参数污染）会直接导致跨租户数据泄漏；RLS 是独立的安全层 |
+| 7 | ✓ 散装商品（螺丝/粮食/布匹）启用 `measurement_strategy=weight`，存储 base_unit 克/毫升，换算在应用层 | ✗ 在数据库存储"斤"/"公斤"混合单位，靠约定换算 | 单位不统一导致库存数字对不上，盘点永远有差异；标准化 base_unit 是唯一正解 |
+| 8 | ✓ 跨租户查询（如平台级统计）走独立 DBA 账户，不走普通应用账户 | ✗ 用 `SET app.tenant_id` 为空或超级用户身份绕过 RLS 做跨租户统计 | 超级用户绕过 RLS 的查询不受策略保护，一旦 SQL 有误可能全表泄漏 |
+
+---
+
+## 跨产品集成场景
+
+### ① Tally + Platform（订阅/计费）
+
+Tally 所有涉及钱的操作均通过 Platform `2l-svc-platform :18104` 的内部 API 完成，使用 `INTERNAL_API_KEY` Bearer 鉴权，不自持计费逻辑。
+
+**典型集成点**：
+
+| 场景 | Tally 调用 | Platform 端点 |
+|---|---|---|
+| 新商户开通试用 | 注册后自动 | `POST /internal/v1/subscriptions` |
+| 试用到期升级付费 | 前端跳转付费页 | `GET /internal/v1/checkout-url` |
+| AI 功能按量扣费 | OCR 确认/LLM 查询后 | `POST /internal/v1/billing/record-usage` |
+| 查询剩余 AI 配额 | 渲染 AI 功能按钮前 | `GET /internal/v1/entitlements/{tenantId}` |
+| 订阅过期降级 | Platform webhook 推送 | Tally 监听 `IDENTITY_EVENTS` 中 `subscription.expired` |
+
+**注意事项**：
+- Tally 不存储支付凭证，仅存储 Platform 返回的 `subscription_id`
+- AI 调用计量在 Hub 层已有一份，Platform 层再记一份用于对账；两者以 Platform 为准
+- 订阅变更事件通过 NATS `IDENTITY_EVENTS` 推送给 tally-worker，不做轮询
+
+### ② Tally + MemX（商家偏好/常用商品记忆）
+
+Memorus (`2b-svc-memorus :8880`) 为 Tally 提供两类 RAG 记忆能力：
+
+**零售场景 — 熟客购买偏好**：
+
+```
+触发时机：每次出货单确认（psi.bill.shipped）
+写入内容：customer_id + product_list + qty_list + date + store_id
+检索时机：AI Drawer 用户输入"老张上次买什么"
+检索方式：POST /v1/memories/search { user_id: customer_id, query: "上次购买记录" }
+返回：最近 10 次购买，前 3 条高置信命中，展示商品名+数量+日期
+```
+
+**跨境场景 — B2B 采购偏好**：
+
+```
+触发时机：采购单确认（psi.purchase.confirmed）
+写入内容：supplier_id + product_category + qty_range + price_range + lead_time + date
+检索时机：Kova 补货 Agent 生成建议时，召回该供应商历史采购模式
+检索方式：POST /v1/memories/search { user_id: supplier_id, query: "历史采购规律" }
+返回：供应商供货稳定性评估 + 建议采购周期
+```
+
+**集成约束**：
+- Memorus 写入用 `MEMORUS_API_KEY`，同一租户的客户 ID 作为 `user_id` 命名空间
+- MemX 数据不跨租户共享，Tally 在写入时携带 `metadata.tenant_id` 标记
+- 检索失败时降级：返回空列表 + 提示"暂无历史记录"，不影响主流程
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维告警触发]) --> TYPE{告警类型}
+
+    TYPE --> OCR[OCR 准确率掉]
+    OCR --> OCR1{准确率 < 85%?}
+    OCR1 -- 是 --> OCR2[查 Hub 路由日志\n确认 vision 模型版本]
+    OCR2 --> OCR3{模型被降级?}
+    OCR3 -- 是 --> OCR4[✓ 修改 Hub 路由配置\n恢复指定模型]
+    OCR3 -- 否 --> OCR5[查近期单据图片质量\n通知前端加图片质量校验]
+
+    TYPE --> CONFLICT[多门店数据冲突]
+    CONFLICT --> CF1[查 sync_conflict 表\n未解冲突数量]
+    CF1 --> CF2{冲突 > 10 条?}
+    CF2 -- 是 --> CF3[⚠ 边缘审核已被阻塞\n通知租户管理员处理]
+    CF2 --> CF4[检查 edge_timestamp 时区\n确认边缘节点 NTP 同步]
+
+    TYPE --> REPORT[月报生成超时]
+    REPORT --> RP1[查 Kova job 状态\nPOST /agents/monthly-report/status]
+    RP1 --> RP2{job 超 10 分钟未完成?}
+    RP2 -- 是 --> RP3[查 PostgreSQL 慢查询\ncheck pg_stat_activity]
+    RP3 --> RP4[确认盘点数据量\n>10 万行 SKU 需分批处理]
+    RP2 -- 否 --> RP5[等待完成，\nNATS PSI_EVENTS 推通知]
+
+    TYPE --> LEAK[跨租户数据疑似泄漏]
+    LEAK --> LK1[立即执行 §12.2 紧急处置]
+    LK1 --> LK2[查 pg_policies 确认 RLS 状态]
+    LK2 --> LK3{rowsecurity=false?}
+    LK3 -- 是 --> LK4[⚠ 紧急补 RLS policy\n通知 marvin]
+    LK3 -- 否 --> LK5[查 pg_stat_activity\n找无 tenant_id 的活跃连接]
+    LK5 --> LK6[pg_terminate_backend\n终止可疑连接]
+
+    TYPE --> NATS[NATS PSI_EVENTS 滞后]
+    NATS --> NT1[查 nats consumer info\nPSI_EVENTS tally-worker]
+    NT1 --> NT2{pending 消息 > 1000?}
+    NT2 -- 是 --> NT3[查 tally-worker 日志\n是否有消费错误循环]
+    NT3 --> NT4{错误循环?}
+    NT4 -- 是 --> NT5[检查 DLQ，修复后\nkubectl rollout restart tally-worker]
+    NT4 -- 否 --> NT6[临时扩容 tally-worker replicas\n观察消费速度]
+    NT2 -- 否 --> NT7[属正常波动，\n继续观察]
+```
+
+---
+
+appended 251 lines, 4 mermaid charts to tally.md

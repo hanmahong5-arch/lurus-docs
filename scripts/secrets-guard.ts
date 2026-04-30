@@ -31,8 +31,16 @@ const RULES: Array<{ name: string; pattern: RegExp; allow?: RegExp }> = [
   { name: 'github-pat', pattern: /ghp_[A-Za-z0-9]{36,}/ },
   { name: 'github-fine-grained', pattern: /github_pat_[A-Za-z0-9_]{50,}/ },
   { name: 'slack-token', pattern: /xox[baprs]-[A-Za-z0-9-]{10,}/ },
-  { name: 'openai-key', pattern: /sk-[A-Za-z0-9]{20,}/ },
-  { name: 'anthropic-key', pattern: /sk-ant-(api|admin)\d{2}-[A-Za-z0-9_-]{20,}/ },
+  {
+    name: 'openai-key',
+    pattern: /sk-[A-Za-z0-9]{20,}/,
+    allow: /(your[-_]?key|placeholder|example|<.*>|x{8,}|\*{4,}|change[-_]?me|EXAMPLE_|REPLACE_|REDACTED|sk-EXAMPLE)/i,
+  },
+  {
+    name: 'anthropic-key',
+    pattern: /sk-ant-(api|admin)\d{2}-[A-Za-z0-9_-]{20,}/,
+    allow: /(your[-_]?key|placeholder|example|<.*>|x{8,}|\*{4,}|change[-_]?me|EXAMPLE_|REPLACE_|REDACTED)/i,
+  },
   { name: 'jwt-token', pattern: /eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/ },
   { name: 'bearer-long', pattern: /[Bb]earer\s+[A-Za-z0-9_-]{40,}/ },
 

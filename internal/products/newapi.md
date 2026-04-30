@@ -535,3 +535,275 @@ ssh root@100.98.57.55 "kubectl exec -n database deploy/pg-primary -- psql -U lur
 # 7. 检查 Redis 连通性
 ssh root@100.98.57.55 "kubectl exec -n lurus-system deploy/redis -- redis-cli ping"
 ```
+
+---
+
+## 多视角速览
+
+**终端用户**：无需改代码，只需把 OpenAI SDK 的 `base_url` 换成 `https://newapi.lurus.cn/v1`，`api_key` 换成平台下发的 `sk-...` token，即可透明访问 50+ 模型，用法与官方 OpenAI SDK 完全一致。
+
+**开发者**：50+ 模型统一接口，支持 `model_mapping` 让调用方无感切换上游；内置 Token 级限流（QPM/TPM）、group 分组、多 key 池轮转、streaming SSE；所有渠道均可配置 failover，单渠道故障自动重试切换不影响业务。
+
+**运维**：部署在 R1（43.226.46.164，`lurus-system` 命名空间，pod:3000）；Redis DB 0 用于渠道缓存与 session，Redis DB 2 用于全局限流（`global-ratelimit` middleware）；VPN 节点 `lurus.cn/vpn=true` 是硬依赖，迁移/扩容必须保留该 nodeSelector。
+
+**决策者**：自托管网关不锁定云厂商，可随时切换或增减上游 provider；计费与上游完全解耦，内部自定义倍率和资金来源（钱包 / 订阅双轨）；敏感 API Key 统一在 newapi 管理，下游产品只持有平台 token，泄露面收窄。
+
+---
+
+## 决策树：什么场景用 Newapi
+
+```mermaid
+graph TD
+    A[需要调用 LLM API] --> B{是否需要混用\n多家模型提供商?}
+    B -- 否 --> C{是否需要\n计费聚合/用量统计?}
+    C -- 否 --> D{是否需要\nIP 限流/Token 限速?}
+    D -- 否 --> E{团队是否能\n安全管理多个\n云厂商 API Key?}
+    E -- 能 --> F[✓ 直连云厂商\n成本最低，延迟最小]
+    E -- 不能 --> G[✓ 走 Newapi\n统一 Key 管理，降低泄露风险]
+    D -- 是 --> G
+    C -- 是 --> G
+    B -- 是 --> G
+    G --> H{是否需要\nfailover 容灾?}
+    H -- 是 --> I[✓ 配置多渠道 + 自动重试]
+    H -- 否 --> J[✓ 单渠道即可]
+    I --> K[newapi.lurus.cn\n统一入口]
+    J --> K
+```
+
+---
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant Client as 客户端（Switch/Lucrum/Kova）
+    participant NA as Newapi :3000
+    participant Redis as Redis DB-0\n渠道缓存/Session
+    participant RLRedis as Redis DB-2\n全局限流
+    participant UP as 上游 Provider\n(OpenAI/Claude/通义)
+    participant PG as PostgreSQL\nschema:newapi
+    participant NATS as NATS LLM_EVENTS\n（规划中，未实现）
+
+    Client->>NA: POST /v1/chat/completions\nAuthorization: Bearer sk-xxx
+    NA->>RLRedis: 检查全局限流（Traefik middleware）
+    RLRedis-->>NA: 通过
+    NA->>NA: TokenAuth 验证 sk-xxx\n注入 UserId/Group/Quota
+    NA->>Redis: 读取渠道缓存\nCacheGetRandomSatisfiedChannel
+    Redis-->>NA: 返回可用渠道列表
+    NA->>NA: 预扣费 PreConsumeBilling\n(WalletFunding / SubscriptionFunding)
+    NA->>PG: 写预扣记录
+    NA->>UP: 转发请求（流式 SSE 或 JSON）
+    UP-->>NA: 响应（streaming chunks）
+    NA-->>Client: 实时转发 SSE chunks
+    NA->>PG: SettleBilling（实际 tokens 结算 delta）
+    NA->>PG: 写请求日志（model/tokens/latency/channel）
+    NA->>Redis: 更新渠道健康状态（response_time）
+    Note over NA,NATS: ⚠ LLM_EVENTS 发布待实现\n当前仅 DB 写入 + 邮件通知
+```
+
+---
+
+## 端到端完整例子
+
+### 前置：设置环境变量
+
+```bash
+export NEWAPI_TOKEN="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+export NEWAPI_BASE="https://newapi.lurus.cn/v1"
+```
+
+### Step 1：管理员配置渠道（后台操作，一次性）
+
+登录 `https://newapi.lurus.cn`（管理员账号）→ 渠道 → 新建渠道：
+- 类型：OpenAI（或 Anthropic / 通义千问）
+- 模型：填入该渠道支持的模型名
+- 模型重定向（可选）：`claude-sonnet-4:claude-sonnet-4-20251101`
+
+### Step 2：管理员生成 Token
+
+后台 → 令牌 → 新建令牌：设置名称、分组（default/vip）、额度上限、模型限制，保存后复制 `sk-...`。
+
+### Step 3：调用 chat completion（curl）
+
+```bash
+# 使用 gpt-4o-mini
+curl -s https://newapi.lurus.cn/v1/chat/completions \
+  -H "Authorization: Bearer $NEWAPI_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "用一句话解释量子纠缠"}],
+    "stream": false
+  }' | python3 -m json.tool
+```
+
+**真实响应 JSON 示例**：
+
+```json
+{
+  "id": "chatcmpl-a1b2c3d4e5f6",
+  "object": "chat.completion",
+  "created": 1745900000,
+  "model": "gpt-4o-mini",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "量子纠缠是指两个粒子无论相距多远，对其中一个的测量会瞬时影响另一个的量子态。"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 18,
+    "completion_tokens": 38,
+    "total_tokens": 56
+  }
+}
+```
+
+### Step 4：切换模型（无需改任何其他配置）
+
+```bash
+# 切换到 Claude Sonnet 4
+curl -s https://newapi.lurus.cn/v1/chat/completions \
+  -H "Authorization: Bearer $NEWAPI_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "claude-sonnet-4", "messages": [{"role": "user", "content": "用一句话解释量子纠缠"}]}'
+
+# 切换到通义千问 Max
+curl -s https://newapi.lurus.cn/v1/chat/completions \
+  -H "Authorization: Bearer $NEWAPI_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "qwen-max", "messages": [{"role": "user", "content": "用一句话解释量子纠缠"}]}'
+```
+
+### Step 5：Python SDK 调用（流式）
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    base_url="https://newapi.lurus.cn/v1",
+)
+
+# 流式输出
+stream = client.chat.completions.create(
+    model="gpt-4o-mini",   # 改成 "claude-sonnet-4" 或 "qwen-max" 即可切换
+    messages=[{"role": "user", "content": "写一首关于 AI 的五言绝句"}],
+    stream=True,
+)
+for chunk in stream:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="", flush=True)
+print()
+```
+
+### Step 6：查看用量
+
+后台 → 日志 → 按日期/用户/模型/渠道筛选，可导出 CSV。
+
+或直接查 DB：
+
+```bash
+ssh root@100.98.57.55 "kubectl exec -n database deploy/pg-primary -- psql -U lurus -d newapi -c \"
+  SELECT model_name, COUNT(*) AS calls,
+         SUM(prompt_tokens) AS prompt_tk,
+         SUM(completion_tokens) AS comp_tk,
+         SUM(quota) AS total_quota
+  FROM logs
+  WHERE created_at > NOW() - INTERVAL '7 days'
+  GROUP BY model_name ORDER BY total_quota DESC LIMIT 20;
+\""
+```
+
+---
+
+## 最佳实践 ✓/✗
+
+| # | ✓ 推荐 | ✗ 避免 |
+|---|--------|--------|
+| 1 | ✓ 用 `model_mapping` 在渠道层做别名（如 `claude-sonnet-4:claude-sonnet-4-20251101`），客户端无感切换上游版本 | ✗ 在代码里硬编码上游 model 全名（如 `claude-sonnet-4-20251101`），上游改名时所有调用方都要改 |
+| 2 | ✓ Token 按 group 分配（产品线/团队维度），搭配 QPM/TPM 限流，独立审计用量 | ✗ 一个 root token 给所有产品线共享，额度耗尽影响全平台，且无法溯源哪个产品超量 |
+| 3 | ✓ 配置多渠道 failover（同模型绑定多个渠道，priority 梯度拉开），上游故障自动重试切换 | ✗ 只配单渠道，上游挂机时直接 5xx 影响终端用户 |
+| 4 | ✓ 开启渠道 `health_check`（自动探活），配合 Prometheus alert（待接入）做主动告警 | ✗ 只看 Prometheus 不设报警规则，渠道静默失败直到用户投诉才发现 |
+| 5 | ✓ 长文本/大模型响应走 streaming（`"stream": true`），避免前端长时间等待 loading | ✗ 所有请求 sync 模式，单次大输出阻塞 30s+ 导致 Traefik 超时或客户端 504 |
+| 6 | ✓ 关注不同上游同名模型的单价差异（`ModelPriceHelper` 按渠道计价），定期审查渠道成本效比，低价高质渠道优先 | ✗ 不算账，所有渠道同等对待；可能把流量压到贵 3-5 倍的渠道上而不自知 |
+| 7 | ✓ 密钥池（多行 key）分散单 key 的 RPM 上限风险，单 key 封禁不影响整个渠道 | ✗ 每个渠道只填一个 key，key 被限速时整个渠道瘫痪 |
+| 8 | ✓ 异步任务（视频/音乐生成）设 `ForcePreConsume=true` 在提交时预扣全额，避免任务跑完无钱结算 | ✗ 异步任务走普通预扣逻辑，任务运行期间用户钱包归零导致无法结算、事后退款逻辑复杂 |
+
+---
+
+## 跨产品集成场景
+
+### 配方一：Switch 桌面端 → Newapi → 多模型透传
+
+Switch（`2c-gui-switch`）是桌面 AI 网关，用户在桌面端发起对话后，Switch 作为本地代理将请求转发至 newapi：
+
+```
+用户桌面 → Switch (localhost:port)
+         → POST https://newapi.lurus.cn/v1/chat/completions
+           Authorization: Bearer <switch-platform-token>
+           model: "gpt-4o" | "claude-sonnet-4" | "qwen-max"
+         → Newapi Distributor 选渠道 → 上游 Provider
+         → 流式响应回 Switch → 桌面 UI 实时渲染
+```
+
+关键点：
+- Switch 持有一个专属平台 token（group: switch），独立限流与用量审计
+- 用户在 Switch UI 切换模型时，只改 `model` 字段，其余不变
+- ✓ Switch 侧不存储任何上游 API Key，泄露面为零
+
+### 配方二：Lucrum 量化策略 → Newapi 行情解读 → MemX 长期记忆
+
+Lucrum（`2c-svc-lucrum`）策略引擎在行情分析阶段调用 newapi 对市场数据做自然语言解读，并将重要结论写入 MemX（`2b-svc-memorus`）形成长期记忆：
+
+```
+Lucrum 策略引擎
+  → POST https://newapi.lurus.cn/v1/chat/completions
+    model: "qwen-max"（低延迟，适合高频触发）
+    messages: [{role: "user", content: "分析以下 K 线数据...${kline_data}"}]
+  → 获取解读结论
+  → POST https://memorus.lurus-system.svc/v1/memory/add
+    {"user_id": "lucrum-strategy-001", "data": "解读结论", "metadata": {"source": "newapi"}}
+  → 下次策略触发时 GET /v1/memory/search?query=... 拉取历史判断做上下文
+```
+
+关键点：
+- Lucrum 使用独立 group token，QPM 限流与交易系统隔离，互不影响
+- 行情解读属于高频小请求，选低延迟低成本模型（`qwen-max` / `gpt-4o-mini`）
+- MemX 存储使结论可跨策略轮次复用，避免重复推理
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([收到告警 / 用户反馈]) --> Q1{所有模型\n都不可用?}
+
+    Q1 -- 否 --> Q2{特定模型\n503 / no channel?}
+    Q2 -- 是 --> A1[查渠道状态\nSELECT status FROM channels\nWHERE models LIKE '%model%']
+    A1 --> A2{status=3\n自动禁用?}
+    A2 -- 是 --> A3[后台手动 enable\n点击「测试」验证]
+    A2 -- 否 --> A4{status=2\n手动禁用?}
+    A4 -- 是 --> A5[确认上游恢复后\n手动 enable]
+    A4 -- 否 --> A6[查上游 API 状态页\n检查 key 是否有效]
+
+    Q1 -- 是 --> B1{返回 429\n限流错误?}
+    B1 -- 是 --> B2[检查 Redis DB-2\n全局限流 key 占用\n或 Token QPM 超限]
+    B2 --> B3[临时提高限流阈值\n或切换更大 group]
+    B1 -- 否 --> C1{日志有\n余额耗尽?}
+    C1 -- 是 --> C2[后台 → 用户管理\n充值钱包或提升订阅计划]
+    C1 -- 否 --> D1{上游 CF challenge\n/ 407 Proxy Auth?}
+    D1 -- 是 --> D2[⚠ 检查 VPN 节点状态\nHTTP_PROXY=http://10.42.1.1:10808\n确认代理进程正常]
+    D1 -- 否 --> E1{Streaming\n中断 / 空响应?}
+    E1 -- 是 --> E2[检查 STREAMING_TIMEOUT=300s\n检查 Traefik IngressRoute timeout\n确认 gzip 未被误开]
+    E2 --> E3[⚠ gzip 与 SSE 不兼容\n严禁在 router 层开启 gzip]
+    E1 -- 否 --> F1{Redis 慢查\n/ 高延迟?}
+    F1 -- 是 --> F2[redis-cli SLOWLOG GET 10\n检查 MEMORY_CACHE_ENABLED\n是否渠道缓存刷新频繁]
+    F2 --> F3[临时增大 SyncFrequency\n或重启 pod 重建缓存]
+    F1 -- 否 --> G1[kubectl logs --tail=500\ngrep 'relay error'\n查看具体错误码]
+```

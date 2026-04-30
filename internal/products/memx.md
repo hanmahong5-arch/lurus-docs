@@ -382,6 +382,234 @@ user_id = device user
 | 2026-03 | ACE v2.0 Team Memory 架构设计完成 | Federation Mode + Git Fallback 双模式，本地记忆和团队记忆充分解耦（0 侵入本地路径） |
 | 2026-04 | Memorus 移入 Platform 产品组 | 记忆能力是平台级基础设施，lucrum/creator/switch 均依赖，统一归 Platform 管理 |
 
+## 多视角速览
+
+**用户**：聊天不再"失忆"——上次说的偏好、踩过的坑，下次对话自动带入，无需重复交代。
+
+**开发者**：两条接入路径——REST `POST /memories` 直写，或挂载 MCP server 让 agent 自主读写；`X-API-Key` 鉴权，OpenAPI spec 在 `2b-svc-memorus/api/openapi.yaml`。
+
+**运维**：部署在 R1 lurus-system 命名空间，端口 8880，单副本（PVC RWO 限制），数据落 SQLite + Qdrant PVC（`/data`，5Gi）；`GET /health` 无认证探活。
+
+**决策者**：复用平台统一 embedding 基础设施（lurus-newapi），无需自建向量数据库；多产品线共享记忆层，TCO 显著低于各自维护独立 vector store。
+
+---
+
+## 决策树：什么时候该写记忆
+
+```mermaid
+graph TD
+    A[产生了一条信息] --> B{是否对未来对话长期有效?}
+    B -- 否 --> Z1[❌ 不写 — 仅用于当前上下文]
+    B -- 是 --> C{是否需要跨会话持久化?}
+    C -- 否 --> Z2[❌ 不写 — 放 session cache 即可]
+    C -- 是 --> D{是事实/偏好/规则 还是临时指令?}
+    D -- 临时指令 --> Z3[❌ 不写 — 当次 prompt 处理]
+    D -- 事实/偏好/规则 --> E{是否存在有效期或过期条件?}
+    E -- 有，且已到期 --> F[⚠ 先 forget 旧记忆，再写新记忆]
+    E -- 未过期 / 无过期 --> G{是否属于用户 or agent 维度?}
+    G -- 无法归属具体 user_id/agent_id --> Z4[❌ 不写 — 全公共池污染风险]
+    G -- 可明确归属 --> H{当前 ACE 模式?}
+    H -- rules 模式 --> I[⚠ 偏好类知识无法捕获，改用 llm/hybrid 或手动 add]
+    H -- llm/hybrid 模式 --> J[✓ POST /memories 写入，带 user_id + agent_id]
+    H -- ACE 关闭 直接 mem0 --> J
+```
+
+---
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant KA as Kova Agent Step
+    participant MX as Memorus REST API<br/>(lurus-system:8880)
+    participant EMB as lurus-newapi<br/>(Embedding)
+    participant QD as Qdrant (PVC)
+    participant KD as Agent Decision
+
+    KA->>MX: GET /memories/search?query=用户风险偏好&user_id=u123&limit=5
+    MX->>EMB: embed("用户风险偏好") → vector[1536d]
+    EMB-->>MX: embedding vector
+    MX->>QD: cosine search, top-k=5
+    QD-->>MX: [{id, score, memory, metadata}...]
+    Note over MX: L1-L3 关键词层已跑<br/>L4 向量层叠加 final_score<br/>= keyword*0.6 + semantic*0.4<br/>× decay_weight × recency_boost
+    MX-->>KA: {results:[{memory:"用户偏好低风险，止损5%",...}]}
+    KA->>KD: 将 top-k memories 注入 prompt context
+    KD-->>KA: 生成带记忆上下文的回复
+```
+
+---
+
+## 端到端完整例子
+
+Python 完整示例，涵盖安装、配置、CRUD 和 ACE 合并机制。
+
+```python
+# 安装
+# pip install requests  # 或 pip install mem0ai httpx
+
+import requests
+import json
+
+BASE_URL = "http://memorus.lurus-system.svc:8880"  # 集群内
+# 集群外测试：BASE_URL = "http://100.98.57.55:30880"（需 NodePort 或 port-forward）
+HEADERS = {"X-API-Key": "your-memorus-api-key", "Content-Type": "application/json"}
+USER_ID = "user-abc123"
+
+# --- 1. 写入记忆 ---
+resp = requests.post(f"{BASE_URL}/memories", headers=HEADERS, json={
+    "content": "用户偏好低风险策略，止损不超过 5%，不碰杠杆产品",
+    "user_id": USER_ID,
+    "metadata": {"source": "lucrum_advisor", "category": "trading_preference"}
+})
+result = resp.json()
+print(json.dumps(result, indent=2, ensure_ascii=False))
+# ACE 关闭时输出（生产默认）:
+# {
+#   "results": [
+#     {"id": "mem_7f3a...", "memory": "用户偏好低风险策略，止损不超过 5%，不碰杠杆产品", "event": "ADD"}
+#   ]
+# }
+#
+# ACE hybrid 模式开启时输出:
+# {
+#   "results": [...],
+#   "ace_ingest": {
+#     "bullets_added": 1,
+#     "bullets_merged": 0,
+#     "raw_fallback": false,
+#     "errors": []
+#   }
+# }
+
+# --- 2. 语义检索 ---
+resp = requests.get(f"{BASE_URL}/memories/search", headers=HEADERS, params={
+    "query": "这个用户能接受多大亏损",
+    "user_id": USER_ID,
+    "limit": 3
+})
+results = resp.json()["results"]
+print(json.dumps(results, indent=2, ensure_ascii=False))
+# [
+#   {
+#     "id": "mem_7f3a...",
+#     "memory": "用户偏好低风险策略，止损不超过 5%，不碰杠杆产品",
+#     "score": 0.87,
+#     "metadata": {"source": "lucrum_advisor", "category": "trading_preference"}
+#   }
+# ]
+
+memory_id = results[0]["id"]
+
+# --- 3. 更新记忆（用户偏好变化） ---
+# ⚠ mem0 update 只改文本，不更新 metadata；ACE Curator 会检测冲突
+# 推荐方式：forget 旧记忆 + add 新记忆（附带 is_correction 标记让 ACE 识别）
+requests.delete(f"{BASE_URL}/memories/{memory_id}", headers=HEADERS)
+
+resp = requests.post(f"{BASE_URL}/memories", headers=HEADERS, json={
+    "content": "用户调整策略：接受中等风险，止损上限提升至 10%，可考虑 1x 杠杆 ETF",
+    "user_id": USER_ID,
+    "metadata": {"source": "lucrum_advisor", "is_correction": True}
+})
+print(resp.json()["results"][0]["event"])  # "ADD"
+
+# --- 4. ACE 合并机制演示（需 ace_enabled=true + reflector_mode=hybrid）---
+# 同一用户连续写入相似内容时，Curator 触发去重：
+# 相似度 >= 0.8 → 合并为一条（keep_best 或 merge_content）
+# 相似度 0.5-0.8 → ConflictDetector 标记矛盾对（默认关闭告警）
+# 查看 KB 状态
+resp = requests.get(f"{BASE_URL}/status", headers=HEADERS, params={"user_id": USER_ID})
+print(json.dumps(resp.json(), indent=2, ensure_ascii=False))
+# {
+#   "total": 1,
+#   "sections": {"trading_preference": 1},
+#   "avg_decay_weight": 1.0,
+#   "user_id": "user-abc123"
+# }
+
+# --- 5. 主动删除（GDPR / TTL 到期）---
+# 先 search 找到要删除的 ID，再 forget
+resp = requests.get(f"{BASE_URL}/memories", headers=HEADERS, params={"user_id": USER_ID})
+for mem in resp.json().get("results", []):
+    requests.delete(f"{BASE_URL}/memories/{mem['id']}", headers=HEADERS)
+print("所有记忆已清除")
+```
+
+---
+
+## 最佳实践
+
+| 分类 | 实践 |
+|---|---|
+| ✓ | 写入 memory 时同时带 `user_id` **和** `agent_id`（双维度索引，检索更精准） |
+| ✗ | 所有记忆写入公共池（不传 user_id），导致跨用户数据污染 |
+| ✓ | 短期上下文（当次会话）走 Redis cache（db=0 api 通道），仅长期知识进 Memorus |
+| ✗ | 每轮对话的中间推理步骤全部打入 Memorus（低价值噪音堆积，检索质量下降） |
+| ✓ | 生产固定 `MEMORUS_EMBEDDING_MODEL=text-embedding-v1`（1536d），不随意更换 |
+| ✗ | 频繁切换 embedding 模型（旧向量与新向量空间不兼容，导致召回精度崩溃） |
+| ✓ | 定期触发 `memorus sweep` 或配置 `sweep_on_session_end=true`，主动清理低权重记忆 |
+| ✗ | 永远不 forget / 不 sweep，任由记忆无限堆积（PVC 写满 + 检索延迟上升） |
+| ✓ | memory provider 注册在 `lurus.yaml capabilities.memory` 中，与 Memorus 端点保持一致 |
+| ✗ | 业务层自己造独立 vector store 或 embedding 服务，与平台 memory 层割裂 |
+| ✓ | 需要 μs 级延迟或无 K8s 网络的场景，切换到 kova-memory（Rust `MemoryProvider` trait，接口兼容） |
+| ✗ | 强求 Memorus REST 在 Rust 进程内嵌入使用（网络跳转 + Python GIL 是不可避免的开销） |
+
+---
+
+## 跨产品集成场景
+
+### ① Kova Agent 持久记忆
+
+Kova 执行长任务时，每个 agent step 完成后将关键发现写入 Memorus（`agent_id=kova_{task_id}`）；下一轮任务启动前，先 `search_memory` 召回历史经验注入 system prompt。
+
+- 接入方式：kova-memory（Rust `MemoryProvider` trait）→ 委托 Memorus REST（有 K8s 时）或进程内 SQLite（无 K8s 时）
+- `user_id`：Zitadel sub；`agent_id`：`kova_{task_type}`
+- 典型写入：工具调用结果、错误修复路径、用户纠正行为（ACE Reflector `error_fix` / `retry_success` 规则自动捕获）
+- ⚠ ACE hybrid 写入延迟 ~21s，建议 Kova step 异步写入（fire-and-forget），不阻塞主流程
+
+### ② Lucrum 用户风险偏好记忆
+
+Lucrum AI advisor 在用户明确表达风险偏好时（如"我只做低风险"、"止损改成 8%"），调用 `POST /memories` 写入偏好记忆。
+
+- `user_id`：Zitadel sub；`metadata.category`：`trading_preference`
+- 后续每次对话：`GET /memories/search?query=风险偏好&user_id=...` 召回，注入 advisor prompt
+- 偏好变更：先 `DELETE` 旧记忆，再写入新记忆（带 `is_correction: true`），ACE Curator 不会残留冲突条目
+- 合规要求：用户注销时调用 `GET /memories?user_id=...` 列举后批量 `DELETE`（GDPR right to erasure）
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维告警 / 异常]) --> Q1{服务是否可达\nGET /health 返回 200?}
+
+    Q1 -- 否 --> Q2{Pod 状态?}
+    Q2 -- CrashLoopBackOff --> A1[查日志: kubectl logs --tail=200\n常见原因: Secret 缺失 / PVC 挂载失败]
+    Q2 -- OOMKilled --> A2[临时扩容 memory limit 至 1Gi\nkubectl set resources ...\n排查: ONNX 首次加载 ~200MB\nhybrid 模式 LLM 缓存]
+    Q2 -- ImagePullBackOff --> A3[确认 GHCR token 有效\n检查 imagePullSecret]
+    Q2 -- Pending --> A4[PVC 未绑定? kubectl describe pvc\nNode 资源不足? kubectl describe node]
+    Q1 -- 是 --> Q3{搜索返回质量差\n相关记忆找不到?}
+
+    Q3 -- 是 --> Q4{ace_search.mode 是否为 degraded?}
+    Q4 -- 是 降级模式 --> A5[L4 向量层跳过\n确认 ONNX 已安装: pip show memorus-onnx\n或 newapi embedding 是否正常]
+    Q4 -- 否 正常模式 --> A6[embedding 模型是否被替换?\nMEMORUS_EMBEDDING_MODEL 与写入时一致?\n不一致则向量空间错位]
+
+    Q3 -- 否 --> Q5{embedding 延迟高\n>500ms / call?}
+    Q5 -- 是 --> A7[确认 lurus-newapi 健康\nkubectl logs -n lurus-system deploy/lurus-newapi\n考虑启用 ONNX 本地嵌入替代远程调用]
+
+    Q5 -- 否 --> Q6{SQLite 写入报错\ndatabase is locked?}
+    Q6 -- 是 --> A8[memorus 是单副本 + RWO PVC\n并发写入可能触发 SQLite 锁\n短期: 重启 Pod 释放锁\n长期: 迁移 SQLite → PostgreSQL]
+
+    Q6 -- 否 --> Q7{PVC 使用率 > 80%?}
+    Q7 -- 是 --> A9[运行 memorus sweep 清理低权重记忆\n清理 /data/qdrant/snapshots/ 旧快照\n长期: patch PVC storage 扩容至 10Gi]
+
+    Q7 -- 否 --> Q8{MCP server 无响应\ntool call timeout?}
+    Q8 -- 是 --> A10[MCP 走 stdio 传输\n确认 mcp_server.py 进程存活\nkubectl exec -- ps aux | grep mcp\n重启 Pod 重建 stdio 连接]
+    Q8 -- 否 --> END([正常 / 未知问题\n升级到人工排查])
+```
+
+---
+
 ## TODO / Roadmap
 
 - [ ] 将部署迁回 ArgoCD GitOps（改 deploy.yaml image tag 格式为 `main-<sha7>`）— 高优

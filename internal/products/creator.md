@@ -382,3 +382,267 @@ build\bin\lurus-creator.exe
 ```
 
 当前无自动更新机制，新版本须手动替换 exe 并通知用户。建议内部分发用企业 IT 推送脚本，避免用户手动操作。
+
+## 多视角速览
+
+**用户视角**
+Creator 是一台桌面内容工厂：粘贴一条视频链接或输入主题，系统自动批量产出 B 站稿件、公众号排版文章、小红书图文和抖音脚本。用户无需分别打开多个 SaaS 工具，一次操作覆盖所有主流平台；审核通过后手动发布，全程本地运行，内容不经过第三方云端存储。
+
+**开发者视角**
+Creator 基于 Wails v2（Go 1.24 后端 + React 18 TypeScript 前端）构建，单进程单 exe，无 Node 运行时依赖。内容处理以 pipeline DSL 描述：每个步骤（source / transform / gen_text / gen_image / gen_audio / review / publish）是可独立重试的原子单元，步骤结果持久化到 SQLite。LLM 调用统一经 `internal/gateway/` 路由至 Newapi（`api.lurus.cn/v1`），支持多 provider fallback；Whisper 转写走云 API（推荐 Groq free tier），TTS 支持 OpenAI / MiniMax / FishAudio / Gemini 四个 provider。扩展新平台只需新增 `platform_xxx.go` 并实现 `PlatformPublisher` 接口。
+
+**运维视角**
+Creator 是纯桌面应用，不运行在 K8s，无 Pod/Service/Ingress 需要维护。运维关注点仅三处：① yt-dlp / ffmpeg 懒下载二进制的版本新鲜度（GitHub releases 自动拉取，版本过旧会触发平台反爬）；② `LURUS_CREATOR_INTERNAL_KEY` 注入（打包脚本中设置，缺失时网关预配静默失败）；③ chromedp 平台选择器随平台改版失效（截图现场 + 手动更新 selector 是唯一修复路径）。所有用户数据在 `%APPDATA%\lurus-creator\`，无需备份基础设施。
+
+**决策者视角**
+Creator 对标市场上的内容创作 SaaS 组合：剪映（视频脚本）+ 即梦（AI 图片）+ 通义听悟（转写）+ 秘塔写作（公众号改写）+ 蚁小二（小红书发布）——用户通常需要同时订阅 3-5 个工具，月费 ¥200-600。Creator 作为 Lurus 平台权益的一部分一次性交付，边际成本仅为平台 API 调用费用（按用量计费）。核心差异化：所有工具链在本地单进程中协同，中间数据不出境，适合对数据安全有要求的企业内容团队。
+
+## 决策树：哪些场景适合用 Creator
+
+```mermaid
+graph TD
+    A[有内容生产需求] --> B{单条还是批量？}
+    B -->|单条偶发| C[直接用 newapi 对话界面]
+    B -->|批量 / 多平台| D{是否需要多媒体？}
+    D -->|纯文字| E[Auto Studio 文本 Recipe]
+    D -->|需要配音 / 视频素材| F{素材来源？}
+    F -->|现有视频链接| G[Content Studio URL 粘贴流水线]
+    F -->|自行录制 / 上传| H[Audio Studio TTS + 视频合成]
+    G --> I{是否需要人工审核？}
+    H --> I
+    E --> I
+    I -->|需要审核节点| J[⚠ 在 Recipe 中插入 review 步骤\n暂停等待人工确认]
+    I -->|无需审核| K{是否需要自动发布到平台？}
+    J --> K
+    K -->|需要自动发布| L[⚠ Publish Hub 存草稿\n用户手动点发布]
+    K -->|只需本地留存| M[✓ 导出 Markdown / 图片即可]
+    L --> N[✓ 多平台并行发布完成]
+    M --> N
+```
+
+## 典型时序图
+
+```mermaid
+sequenceDiagram
+    participant U as 用户
+    participant CS as ContentService
+    participant DL as yt-dlp
+    participant TR as Whisper API
+    participant NA as Newapi (LLM)
+    participant AU as AudioService (TTS)
+    participant FF as ffmpeg
+    participant PH as Publish Hub (chromedp)
+
+    U->>CS: 粘贴 B 站视频链接，选目标平台
+    CS->>DL: FetchMeta(url) — 获取标题/描述/字幕
+    DL-->>CS: VideoMeta + 字幕文本（中文优先）
+
+    alt 无字幕
+        CS->>DL: DownloadAudio → audio.mp3
+        CS->>TR: POST /audio/transcriptions (whisper-large-v3)
+        TR-->>CS: 转写文本 + Segments
+    end
+
+    CS->>NA: BuildPrompt(platform=bilibili, transcript) → /chat/completions
+    NA-->>CS: 解说脚本 Markdown
+
+    CS->>AU: TTS(脚本文本, voice=preset) — OpenAI/MiniMax
+    AU-->>CS: narration.mp3
+
+    CS->>FF: 合成字幕 SRT + 配音 + 原始视频
+    FF-->>CS: output_with_subs.mp4
+
+    CS-->>U: 预览脚本 + 视频就绪通知
+
+    U->>CS: 确认并发布
+    CS->>PH: PublishContent(bilibili, title, body, video)
+    PH->>PH: chromedp 填充标题/正文/上传视频
+    PH-->>CS: PublishResult{DraftSaved: true}
+    CS-->>U: "草稿已保存，请前往平台手动发布"
+```
+
+## 端到端完整例子
+
+**场景：B 站视频解说生成 pipeline（脚本生成 → 配音 → 字幕 → 视频拼接 → 上传草稿）**
+
+假设需要将一条 B 站技术分享视频（BV1xxxx）改编为面向小白的解说视频，同时发布到 B 站（新稿件）和公众号（图文）。
+
+**步骤一：触发 Content Studio**
+
+在 ContentPage 粘贴 `https://www.bilibili.com/video/BV1xxxx`，选择目标平台 `bilibili` + `wechat`，填写额外指令：`目标受众：非技术用户；风格：轻松幽默；视频时长控制在原视频 60%`。
+
+**步骤二：Auto Studio Recipe DSL 配置**
+
+```yaml
+# %APPDATA%\lurus-creator\automation\recipes\bilibili-explainer.yaml
+name: "B站解说视频"
+version: "1.0"
+steps:
+  - id: fetch
+    type: source
+    action: video_url
+    params:
+      url: "{{input.url}}"
+      prefer_subtitle_lang: ["zh-Hans", "zh-Hant", "en"]
+
+  - id: transcribe
+    type: transform
+    action: whisper_transcribe
+    params:
+      model: "whisper-large-v3"
+      provider: "{{settings.whisper_provider}}"
+    depends_on: [fetch]
+    skip_if: "{{steps.fetch.output.has_subtitle}}"
+
+  - id: gen_script_bilibili
+    type: gen_text
+    action: chat_completions
+    params:
+      model: "{{settings.text_model}}"
+      system: "你是专业的 B 站内容创作者，擅长将技术内容改写为通俗易懂的解说脚本。"
+      user: |
+        原视频标题：{{steps.fetch.output.title}}
+        转写内容：{{steps.transcribe.output.text}}
+        要求：{{input.extras}}
+        输出格式：Markdown，含分段标题、每段配音文字（[旁白]标注）
+    depends_on: [transcribe]
+
+  - id: gen_article_wechat
+    type: gen_text
+    action: chat_completions
+    params:
+      model: "{{settings.text_model}}"
+      system: "将解说脚本改写为公众号图文，加摘要和小标题，结尾加互动引导语。"
+      user: "{{steps.gen_script_bilibili.output.content}}"
+    depends_on: [gen_script_bilibili]
+
+  - id: tts_narration
+    type: gen_audio
+    action: tts
+    params:
+      provider: "{{settings.tts_provider}}"
+      text: "{{steps.gen_script_bilibili.output.narration_segments}}"
+      voice: "alloy"
+      output_path: "{{workspace}}/narration.mp3"
+    depends_on: [gen_script_bilibili]
+
+  - id: compose_video
+    type: transform
+    action: ffmpeg_compose
+    params:
+      source_video: "{{steps.fetch.output.audio_path}}"
+      narration: "{{steps.tts_narration.output.path}}"
+      subtitle_srt: "{{steps.transcribe.output.srt_path}}"
+      output: "{{workspace}}/output_final.mp4"
+    depends_on: [tts_narration, transcribe]
+
+  - id: review
+    type: review
+    action: manual_checkpoint
+    message: "请审核脚本和视频预览，确认后继续发布"
+    depends_on: [compose_video, gen_article_wechat]
+
+  - id: publish_bilibili
+    type: publish
+    action: platform_draft
+    params:
+      platform: "bilibili"
+      title: "{{steps.gen_script_bilibili.output.title}}"
+      description: "{{steps.gen_script_bilibili.output.description}}"
+      video_path: "{{workspace}}/output_final.mp4"
+      tags: ["{{input.tags}}"]
+    depends_on: [review]
+
+  - id: publish_wechat
+    type: publish
+    action: platform_draft
+    params:
+      platform: "wechat"
+      title: "{{steps.gen_article_wechat.output.title}}"
+      content: "{{steps.gen_article_wechat.output.content}}"
+    depends_on: [review]
+```
+
+**步骤三：执行与审核**
+
+Recipe 运行到 `review` 步骤时自动暂停，AutoStudioPage 显示脚本预览和视频播放器。运营人员确认内容无误后点击"通过"，pipeline 继续执行 `publish_bilibili` 和 `publish_wechat`。
+
+**步骤四：发布**
+
+两个 publish 步骤通过 chromedp 并行（goroutine）执行：打开已保存登录态的 B 站创作中心和微信公众号后台，自动填充标题/正文/上传视频，保存为草稿。用户收到通知后前往平台手动点击发布。
+
+**预期耗时**：视频 15 分钟，下载约 2 分钟，转写约 1 分钟，LLM 生成约 30 秒，TTS 约 1 分钟，视频合成约 3 分钟，总计约 8 分钟（不含人工审核时间）。
+
+## 最佳实践 ✓/✗
+
+| | 实践 | 说明 |
+|---|---|---|
+| ✓ | **模板复用** | 将调试好的 Recipe DSL 保存为模板，相同类型内容复用同一 pipeline，参数化输入。 |
+| ✗ | **每次重写 prompt** | 每次手写 system prompt 导致风格不一致，且无法 A/B 对比历史效果。 |
+| ✓ | **多模型 A/B 对比选最佳** | 在 gen_text 步骤配置 `models: [model_a, model_b]`，Creator 并行生成两版，人工选优后再进入下一步。 |
+| ✗ | **死磕单一模型** | 不同内容类型有最适合的模型（短平快用 claude-haiku，长文深度用 claude-sonnet），一刀切降低质量。 |
+| ✓ | **审核环节人工把关** | 在 Recipe 中插入 `review` 步骤，特别是涉及品牌声誉、事实准确性、合规性的内容。 |
+| ✗ | **全自动无审核发布** | ⚠ Creator 设计上只存草稿，但若绕过 review 步骤直接 publish，LLM 幻觉内容可能直接到达草稿箱，增加失误风险。 |
+| ✓ | **素材本地缓存** | yt-dlp 下载的音视频文件缓存在 `%APPDATA%\lurus-creator\`，同一 URL 二次处理直接复用，节省带宽和时间。 |
+| ✗ | **每次重新下载** | 频繁重新下载同一视频会触发平台速率限制，且浪费时间。 |
+| ✓ | **发布前 dry-run** | 在 Publish Hub 使用"预览模式"（不提交表单）验证 chromedp selector 是否仍然有效，再批量执行真实发布。 |
+| ✗ | **直接 publish 不测试** | 平台随时可能改版 DOM，不测试直接发布会导致静默失败，草稿未保存但 UI 显示成功。 |
+| ✓ | **跨平台二次裁剪** | 为各平台配置差异化的 prompt（B 站偏专业、小红书偏生活感、公众号偏深度），利用 Recipe 的多步骤并行 gen_text 实现。 |
+| ✗ | **一份内容直接通投** | 同一段文字在不同平台风格格格不入，降低用户互动率，且部分平台（如小红书）会降权检测到的复制内容。 |
+
+## 跨产品集成场景
+
+**① Creator + Newapi（多模型生成对比）**
+
+Creator 的 `internal/gateway/resolver.go` 统一路由所有 LLM 调用至 Newapi（`api.lurus.cn/v1`）。Newapi 支持多模型聚合，Creator 可在单次 Recipe 运行中对同一脚本需求并行调用 `claude-3-5-sonnet`、`gemini-2.0-flash`、`gpt-4o`，将三版结果返回 AutoStudioPage 供人工对比选优。配置方式：在 Recipe 的 `gen_text` 步骤中设置 `ab_models: ["claude-3-5-sonnet", "gemini-2.0-flash"]`，Creator 启动两个并行 goroutine，结果并排展示在 UI 中，用户选择后 pipeline 继续。这样既充分利用 Newapi 的多模型路由能力，又避免盲目指定单一模型。
+
+**② Creator + MemX（用户语气/风格记忆）**
+
+Creator 计划集成 `2b-svc-memorus`（MemX），在内容生成步骤前向 MemX 查询当前账号的历史风格偏好（常用词汇、句式长度、语气倾向、已发布内容摘要）。通过 `POST /v1/memory/search` 检索相关记忆片段，注入到 system prompt 的 `user_style` 字段，使生成内容在跨时间、跨会话的情况下保持一致的个人风格。写入端：每次用户"通过"审核的内容片段作为正向样本通过 `POST /v1/memory/add` 更新风格记忆，用户"拒绝"的片段可选择性作为负向样本。该集成尚在规划阶段（TODO roadmap P2），当前版本无 MemX 调用。
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维问题入口]) --> Q1{问题类型？}
+
+    Q1 -->|视频合成失败| V1[检查 ffmpeg 是否存在\n%APPDATA%\\lurus-creator\\bin\\ffmpeg.exe]
+    V1 --> V2{ffmpeg 存在？}
+    V2 -->|否| V3[删除 bin 目录下旧版\n重启 Creator 触发懒下载]
+    V2 -->|是| V4[检查 compose_video 步骤日志\n确认输入文件路径是否存在]
+    V4 --> V5{输入文件缺失？}
+    V5 -->|是| V6[重新触发 transcribe/tts 步骤\n或手动放置文件到 workspace 路径]
+    V5 -->|否| V7[查看 ffmpeg stderr\n常见：编解码器不支持 → 更新 ffmpeg]
+
+    Q1 -->|TTS 配额耗尽| T1[检查 Settings 中 TTS provider 余额]
+    T1 --> T2{哪个 provider 超配额？}
+    T2 -->|OpenAI| T3[切换到 MiniMax 或 FishAudio]
+    T2 -->|MiniMax / FishAudio| T4[临时切回 OpenAI 或\n直接切换到 Groq Whisper 跳过 TTS]
+    T3 --> T5[在 Settings > Provider > TTS 修改优先级]
+    T4 --> T5
+
+    Q1 -->|平台 API 发布失效| P1[查看 publisher\\screenshots\\ 最新截图]
+    P1 --> P2{截图显示？}
+    P2 -->|session 过期登录弹窗| P3[Publish Hub 点击账号\n重新登录扫码刷新 chromedp profile]
+    P2 -->|编辑器 DOM 结构变化| P4[更新 platform_xxx.go 中\nJS selector 并重新构建 exe]
+    P2 -->|验证码 / 风控弹窗| P5[该账号停用自动发布 48h\n手动发布；检查 AutomationControlled flag]
+
+    Q1 -->|素材缺失| M1[检查 workspace 路径是否存在\n确认步骤执行顺序正确]
+    M1 --> M2{SQLite 中步骤状态？}
+    M2 -->|上游步骤 failed| M3[手动重试上游步骤\n或检查网络 / 磁盘空间]
+    M2 -->|上游步骤 success 但文件不在| M4[可能磁盘清理删除了临时文件\n重新执行整条 pipeline]
+
+    Q1 -->|审核超时 pipeline 阻塞| R1[AutoStudioPage 找到对应 Recipe Run]
+    R1 --> R2[手动点击 review 步骤\n选择 Approve 或 Reject]
+    R2 --> R3{用户已无法操作？}
+    R3 -->|是| R4[SQLite 中将 recipe_run 对应步骤\nstatus 改为 failed\n解锁 pipeline]
+    R3 -->|否| R5[正常 Approve/Reject 继续]
+
+    Q1 -->|yt-dlp 下载失败| Y1[检查 yt-dlp 版本\n运行 yt-dlp.exe --version]
+    Y1 --> Y2{版本 >2025-01？}
+    Y2 -->|否| Y3[删除旧版，重启 Creator 自动下载最新版]
+    Y2 -->|是| Y4{错误含 Sign in？}
+    Y4 -->|是| Y5[Chrome 登录目标平台\nyt-dlp 自动读取 cookies]
+    Y4 -->|否| Y6[检查代理/网络设置\n确认目标 URL 在当前网络可达]
+```
+

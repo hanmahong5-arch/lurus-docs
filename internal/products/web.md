@@ -504,3 +504,361 @@ git -C 2c-bs-www-next log --oneline deploy/k8s/deployment.yaml | head -5
 ssh root@100.98.57.55 "kubectl rollout undo deployment/webgame -n lurus-webgame"
 # 注意: rollout undo 回到上一个 rs，但若 imagePullPolicy:Always + :latest 已更新，可能拉到新镜像
 ```
+
+---
+
+## 多视角速览
+
+**用户视角**
+访问 `www.lurus.cn` 获取品牌认知：产品介绍、定价、下载桌面工具、跳转注册/登录。访问 `webgame.lurus.cn` 直接进入蛇形对战游戏，零注册即可匿名参与，账号登录可保存分数排名。两个站点均为 HTTPS，移动端自适应。
+
+**开发者视角**
+www 使用 Next.js 16 App Router，渲染策略以 SSG 为主（`export const dynamic = 'force-static'`），动态内容（定价、模型列表）通过 ISR（`revalidate: 3600`）保持更新。构建产物为 standalone 输出，容器内只有 Node.js 运行时和必要资源，镜像约 80MB。webgame 使用 Elixir/Phoenix LiveView，服务端维护完整游戏状态机，客户端只做 Canvas 渲染，所有游戏逻辑（物理/碰撞/升级/道具）运行在 BEAM 进程中，保证公平性与一致性。本地开发：www 用 `bun run dev`，webgame 用 `mix phx.server`。
+
+**运维视角**
+`www.lurus.cn` 流量路径：DNS A → 阿里云 `123.57.143.63`（ICP 备案 IP）→ cloud-ali-4 nginx stream proxy（TCP pass-through）→ R1 Traefik NodePort `:30443` → lurus-www Pod（cloud-ali-4 K3s agent 节点，namespace `lurus-www`）。出口带宽硬上限 **3Mbps**，需重点监控。`webgame.lurus.cn` 流量路径：DNS A → 三丰云 `43.226.46.164` → R1 Traefik → lurus-webgame Pod（R1 master，namespace `lurus-webgame`），WebSocket 长连接直走三丰云 50Mbps 入口，无 ICP 路径。两条路径 TLS 均由 R1 Traefik 终止，证书 `lurus-cn-wildcard-tls`。
+
+**决策者视角**
+www 必须走阿里云 ICP 备案入口（工信部规定，域名 `.cn` + 中国境内服务必须备案），代价是 3Mbps 出口带宽瓶颈和额外跳转延迟（~20ms）。webgame 无 ICP 约束（游戏服务不强制主域备案路径），走三丰云 50Mbps 大带宽入口，低延迟支撑 50ms tick 游戏同步。多 IDC 架构（阿里云 + 三丰云）实现入口容灾：若三丰云故障，webgame 域名可临时迁至阿里云备用节点；若阿里云备案入口故障，www 紧急场景可临时绕至三丰云（存在 ICP 合规风险，仅限短时应急）。
+
+---
+
+## 决策树：哪个站放什么内容
+
+```mermaid
+graph TD
+    A[新增内容/功能] --> B{需要 ICP 备案合规？}
+    B -->|是，面向公众 .cn 域名| C{是否动态交互 / 实时？}
+    B -->|否，内部或子域| D{是否技术文档？}
+
+    C -->|否，静态营销 / SEO | E[放 www.lurus.cn\nNext.js SSG/ISR]
+    C -->|是，游戏 / 实时协作| F[放 webgame.lurus.cn\nPhoenix LiveView]
+
+    D -->|是| G[放 docs.lurus.cn\nVitePress 静态站]
+    D -->|否| H{是否特定产品功能？}
+
+    H -->|Lucrum 量化| I[放 lucrum.lurus.cn\nGo+Next.js]
+    H -->|平台账户 / 计费| J[放 auth.lurus.cn / api.lurus.cn\nZitadel + Platform]
+    H -->|Admin 后台| K[放 admin.lurus.cn\nElixir/Phoenix Admin]
+    H -->|其他新产品| L[申请新子域\n遵循 lurus.yaml 注册]
+
+    E --> M{内容是否需要登录？}
+    M -->|是| N[✓ 跳转 auth.lurus.cn OIDC\n回调到 www]
+    M -->|否| O[✓ 纯静态，无后端依赖]
+```
+
+---
+
+## 典型时序图
+
+### 用户访问 www.lurus.cn 完整链路
+
+```mermaid
+sequenceDiagram
+    participant U as 用户浏览器
+    participant DNS as DNS 解析
+    participant ALI as 阿里云 cloud-ali-4<br/>123.57.143.63:443
+    participant NX as nginx stream proxy<br/>(TCP pass-through)
+    participant TF as R1 Traefik<br/>43.226.46.164:30443
+    participant POD as lurus-www Pod<br/>Next.js 16 :3000
+
+    U->>DNS: 查询 www.lurus.cn
+    DNS-->>U: A 123.57.143.63（ICP 备案 IP）
+    U->>ALI: TCP CONNECT :443 + TLS ClientHello<br/>SNI=www.lurus.cn
+    Note over ALI: nginx stream 按 SNI 不解密<br/>直接 TCP 转发
+    ALI->>NX: 内部转发
+    NX->>TF: TCP → 43.226.46.164:30443
+    Note over TF: Traefik 终止 TLS<br/>wildcard cert lurus-cn-wildcard-tls
+    TF->>POD: HTTP/1.1 Host:www.lurus.cn → :3000
+    POD-->>TF: Next.js standalone HTML + 静态资源
+    TF-->>NX: TLS 加密响应
+    NX-->>ALI: TCP 透传
+    ALI-->>U: HTTPS 响应（3Mbps 出口上限）
+
+    Note over U,POD: 跨子域跳转场景
+    U->>U: 点击"查看文档"链接
+    Note over U: target="_blank" rel="noopener noreferrer"<br/>新 tab 打开 docs.lurus.cn
+    U->>TF: 直接访问 docs.lurus.cn<br/>走三丰云 43.226.46.164（无需经阿里云）
+```
+
+### 用户注册登录跨子域跳转
+
+```mermaid
+sequenceDiagram
+    participant U as 用户浏览器
+    participant WWW as www.lurus.cn<br/>Next.js
+    participant AUTH as auth.lurus.cn<br/>Zitadel OIDC
+    participant PLAT as api.lurus.cn<br/>Platform
+
+    U->>WWW: GET /pricing → 点击"免费注册"
+    WWW-->>U: 302 redirect<br/>https://auth.lurus.cn/oauth/v2/authorize<br/>?client_id=www&redirect_uri=...&scope=openid+profile
+    U->>AUTH: OIDC 授权请求
+    AUTH-->>U: 登录/注册表单
+    U->>AUTH: 提交凭证
+    AUTH-->>U: 302 → https://www.lurus.cn/auth/callback?code=xxx
+    U->>WWW: GET /auth/callback?code=xxx
+    WWW->>AUTH: POST /oauth/v2/token（code exchange）
+    AUTH-->>WWW: access_token + id_token
+    WWW->>PLAT: GET /v1/user/me（Bearer access_token）
+    PLAT-->>WWW: 用户账户信息
+    WWW-->>U: 已登录态页面（Set-Cookie: session）
+```
+
+---
+
+## 端到端完整例子
+
+**场景**：在 Next.js 网站新增一个 `/ai-assistant` 落地页，介绍 MemX 产品，包含 sitemap 注册和 CDN 缓存策略。
+
+### 1. 本地开发
+
+```bash
+# 进入 www 目录
+cd 2c-bs-www-next
+
+# 安装依赖（首次）
+bun install
+
+# 创建新路由
+mkdir -p src/app/ai-assistant
+```
+
+新建 `src/app/ai-assistant/page.tsx`：
+
+```tsx
+// Static generation — no server-side data needed
+export const dynamic = 'force-static';
+export const revalidate = false;
+
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'AI Assistant — Lurus MemX',
+  description: 'Persistent AI memory engine for enterprise workflows.',
+  openGraph: {
+    title: 'AI Assistant — Lurus MemX',
+    url: 'https://www.lurus.cn/ai-assistant',
+  },
+};
+
+export default function AiAssistantPage() {
+  return (
+    <main className="container mx-auto px-4 py-24">
+      <h1 className="text-4xl font-bold text-gradient-gold">AI 记忆引擎</h1>
+      <p className="mt-6 text-lg text-gray-300">
+        MemX 为企业工作流提供持久化 AI 记忆，跨会话保留上下文。
+      </p>
+      {/* 跨子域跳转：必须加 noopener noreferrer */}
+      <a
+        href="https://docs.lurus.cn/memx/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-8 inline-block pill"
+      >
+        查看技术文档 →
+      </a>
+    </main>
+  );
+}
+```
+
+### 2. next.config.ts 片段（已有，确认配置）
+
+```ts
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const config: NextConfig = {
+  output: 'standalone',           // 容器化部署必须
+  experimental: {
+    viewTransition: true,         // CSS View Transitions
+  },
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 86400,       // 图片 CDN 缓存 1 天
+  },
+  // 重定向：lurus.cn → www.lurus.cn（IngressRoute 层也有，双重保险）
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'lurus.cn' }],
+        destination: 'https://www.lurus.cn/:path*',
+        permanent: true,
+      },
+    ];
+  },
+};
+
+export default config;
+```
+
+### 3. sitemap 片段
+
+新建 `src/app/sitemap.ts`（如不存在）：
+
+```ts
+import type { MetadataRoute } from 'next';
+
+const BASE = 'https://www.lurus.cn';
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  return [
+    { url: BASE, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+    { url: `${BASE}/platform`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${BASE}/lucrum`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/ai-assistant`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE}/pricing`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9 },
+  ];
+}
+```
+
+### 4. 本地验证
+
+```bash
+bun run dev
+# 访问 http://localhost:3000/ai-assistant 确认页面正常
+
+bun run build
+# 确认 standalone 构建无报错
+# 检查 .next/server/app/ai-assistant/page.html 已生成（SSG 验证）
+```
+
+### 5. Push → CI 构建 → ArgoCD 部署
+
+```bash
+git add src/app/ai-assistant/ src/app/sitemap.ts
+git commit -m "feat(www): add /ai-assistant landing page for MemX"
+git push origin main
+```
+
+**CI 执行流**（GitHub Actions `.github/workflows/deploy.yml`）：
+
+```
+[check job]  bun run lint && bun run build          # typecheck + lint + 生产构建
+[docker job] docker build --platform linux/amd64 \
+               -t ghcr.io/hanmahong5-arch/2c-bs-www-next:main-a3f8c12 .
+             docker push ghcr.io/hanmahong5-arch/2c-bs-www-next:main-a3f8c12
+[deploy job] sed -i "s|image: .*|image: ghcr.io/.../2c-bs-www-next:main-a3f8c12|" \
+               deploy/k8s/deployment.yaml
+             git commit -m "deploy(www): update image to main-a3f8c12 [skip ci]"
+             git push
+```
+
+**实际 CI log 片段**（正常部署）：
+
+```
+✓ Linting and checking validity of types... (12s)
+✓ Creating an optimized production build... (38s)
+✓ Route (app): /ai-assistant  Size: 4.2 kB  First Load JS: 112 kB  ○ (Static)
+✓ docker build completed: sha256:a3f8c12...
+✓ pushed ghcr.io/hanmahong5-arch/2c-bs-www-next:main-a3f8c12
+✓ committed deploy manifest update
+```
+
+**ArgoCD 自动同步**（约 3 分钟内）：
+
+```bash
+# 观察 ArgoCD 同步状态
+ssh root@100.98.57.55 "kubectl get applications -n argocd | grep www"
+# lurus-www   Synced   Healthy   main-a3f8c12
+
+# 确认 Pod 已更新（Recreate 策略：旧 Pod 先删，新 Pod 启动）
+ssh root@100.98.57.55 "kubectl get pods -n lurus-www"
+# NAME                         READY   STATUS    RESTARTS   AGE
+# lurus-www-7d9f8b4c6-xk2p9   1/1     Running   0          47s
+
+# 验证新页面可访问
+curl -s -o /dev/null -w "%{http_code}" https://www.lurus.cn/ai-assistant
+# 200
+```
+
+---
+
+## 最佳实践 ✓/✗
+
+| 类别 | ✓ 推荐做法 | ✗ 禁止/避免 |
+|---|---|---|
+| 渲染策略 | ✓ 营销页面用 `force-static` SSG，动态数据（模型价格）用 ISR `revalidate: 3600` | ✗ 所有页面全走 SSR（`dynamic = 'force-dynamic'`），在 3Mbps 入口每次请求都耗计算资源 |
+| 图片资源 | ✓ 使用 `next/image` 自动 WebP/AVIF 压缩 + `minimumCacheTTL: 86400`，减少重复拉取带宽消耗 | ✗ 使用原始 `<img src>` 直链高分辨率图，在 3Mbps 出口严重拖慢首屏 |
+| ICP 合规 | ✓ 备案文案（ICP 备案号 + 公安备案号）常驻 Footer，随每次构建一同部署 | ✗ 移除或"暂时隐藏" Footer 备案信息——阿里云巡检和工信部核验会直接下线域名 |
+| 游戏状态 | ✓ 游戏状态机（物理/碰撞/升级/道具）全部跑在 Phoenix GameServer GenServer 服务端 | ✗ 将碰撞检测或分数计算放到客户端 JS——不同客户端帧率导致结果不一致，且易被作弊 |
+| 跨子域跳转 | ✓ 所有跨子域外链（docs.lurus.cn / api.lurus.cn / auth.lurus.cn）统一加 `target="_blank" rel="noopener noreferrer"` | ✗ 裸链接跳转无 `noopener`——允许目标页通过 `window.opener` 访问来源页，存在跨域信息泄漏 |
+| 带宽监控 | ✓ 在阿里云云监控设置 3Mbps 带宽利用率告警（阈值 80%），触发时评估 CDN 分流方案 | ✗ 不配告警，等到用户反馈"网站加载慢"才发现带宽已跑满 |
+| LiveView WebSocket | ✓ LiveView 断线重连优先使用服务端返回的 `my_id` 覆盖客户端状态，保证 playerId 一致性 | ✗ 重连时客户端自行生成新 ID——导致玩家分身，同一玩家在 GameServer 中注册两个 slot |
+| 容器安全 | ✓ rootfs 设为 `readOnly: true`，`RELEASE_TMP=/tmp` 指向 `emptyDir` volume | ✗ 容器以 root 身份运行且 rootfs 可写——增加容器逃逸风险 |
+
+---
+
+## 跨产品集成场景
+
+### ① www + Platform：注册 / 登录跳转 Zitadel
+
+用户在 `www.lurus.cn/pricing` 点击"免费注册"，前端构造 OIDC Authorization Code 请求跳转至 `auth.lurus.cn`（Zitadel），登录/注册完成后携带 code 回调到 `www.lurus.cn/auth/callback`。www 后端用 code 换取 `access_token`，再调用 Platform 内部接口 `GET /v1/user/me`（Bearer token）获取账户信息。全链路无跨域 cookie 共享，所有鉴权通过 OIDC 标准 code flow 完成。
+
+**关键配置约束**：
+- `auth.lurus.cn` 的 OIDC client 须将 `https://www.lurus.cn/auth/callback` 加入 `redirect_uris` 白名单
+- www 不存储用户密码，session cookie `SameSite=Lax; Secure; HttpOnly`
+- webgame 匿名模式不走此流程；账号绑定是可选项（`ZITADEL_CLIENT_ID` 已配置但 OIDC 登录非强制）
+
+### ② www + Docs：产品页跳转 docs.lurus.cn
+
+`www.lurus.cn` 各产品落地页（`/platform`、`/lucrum`、`/kova` 等）底部均有"查看技术文档"链接，目标为 `docs.lurus.cn` 对应章节（如 `https://docs.lurus.cn/memx/`、`https://docs.lurus.cn/lucrum/`）。
+
+**规范**：
+- 所有跨站链接使用 `<a target="_blank" rel="noopener noreferrer">`，在新 tab 打开，不破坏用户在 www 的浏览上下文
+- docs.lurus.cn 走三丰云 50Mbps 入口（非阿里云 ICP 路径），用户访问文档无带宽瓶颈
+- www 不内嵌 docs iframe（避免跨域 CSP 问题），始终以外链形式跳转
+- docs 更新（VitePress rebuild + ArgoCD sync）对 www 无任何依赖，两站独立部署
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维告警触发]) --> Q1{告警类型}
+
+    Q1 -->|SSL 证书错误 / HTTPS 握手失败| SSL[排查 SSL 失效]
+    SSL --> SSL1[检查 R1 Traefik 证书\nkubectl describe cert lurus-cn-wildcard-tls -n kube-system]
+    SSL1 --> SSL2{cert-manager 自动续期？}
+    SSL2 -->|是，证书 Ready| SSL3[检查 nginx stream 透传是否正常\nnginx -t && systemctl status nginx]
+    SSL2 -->|否，证书 NotReady| SSL4[⚠ cert-manager 日志排查\nLet's Encrypt rate limit / DNS challenge 失败]
+
+    Q1 -->|www.lurus.cn 返回 307 跳 icp.pppf.com.cn| ICP[ICP 备案被拦截]
+    ICP --> ICP1[登录阿里云控制台\n核查备案状态]
+    ICP1 --> ICP2{备案是否到期？}
+    ICP2 -->|是| ICP3[⚠ 立即续期\n预计恢复 1-3 工作日]
+    ICP2 -->|否| ICP4[检查网站首页是否有备案号\n阿里云可能主动核验]
+
+    Q1 -->|跨子域 Cookie 串了 / 登录态异常| COOKIE[跨域 Cookie 问题]
+    COOKIE --> COOKIE1[确认各服务 cookie domain 配置\nwww: SameSite=Lax; Secure\nwebgame: SameSite=Lax; Secure; Domain=webgame.lurus.cn]
+    COOKIE1 --> COOKIE2[检查 www 与 webgame 是否误设\nDomain=.lurus.cn 导致共享]
+    COOKIE2 --> COOKIE3{是否共享 session？}
+    COOKIE3 -->|是（误配）| COOKIE4[✓ 各服务 cookie name 加服务前缀\n或显式限定 domain 到各自子域]
+    COOKIE3 -->|否| COOKIE5[排查前端代码是否有 document.cookie 跨域写入]
+
+    Q1 -->|阿里云出口带宽打满 / www 加载极慢| BW[带宽瓶颈]
+    BW --> BW1[阿里云云监控查看出口带宽曲线\n确认是否持续 ≥3Mbps]
+    BW1 --> BW2{持续还是瞬时？}
+    BW2 -->|瞬时峰值| BW3[检查是否有大资源请求\nnext/image 未命中缓存 / 未压缩 JS bundle]
+    BW2 -->|持续满载| BW4[⚠ 评估接入 CDN\n或将静态资源迁移到 MinIO + CDN 分发]
+
+    Q1 -->|K3s agent 节点 cloud-ali-4 掉线| AGENT[K3s agent 失联]
+    AGENT --> AGENT1[检查 R1 节点状态\nkubectl get node cloud-ali-4-2c2g]
+    AGENT1 --> AGENT2{节点 Ready？}
+    AGENT2 -->|NotReady| AGENT3[登录阿里云控制台\n重启 cloud-ali-4-2c2g ECS 实例]
+    AGENT3 --> AGENT4[ECS 重启后 K3s agent 自动重连\n观察节点状态恢复]
+    AGENT2 -->|Ready 但 Pod 异常| AGENT5[kubectl describe pod -n lurus-www\n排查 imagePullError / OOMKilled]
+
+    Q1 -->|webgame.lurus.cn WebSocket 断连| WS[WebSocket 长连接问题]
+    WS --> WS1[确认 Traefik IngressRoute 已启用 WebSocket\nrouter.middlewares 无超时中断配置]
+    WS1 --> WS2[检查 webgame Pod 日志\nkubectl logs -n lurus-webgame deploy/webgame --tail=200]
+    WS2 --> WS3{BEAM 进程是否正常？}
+    WS3 -->|正常，Phoenix 端无报错| WS4[检查客户端网络 / 浏览器 WebSocket 超时]
+    WS3 -->|GameServer 崩溃| WS5[kubectl rollout restart deployment/webgame -n lurus-webgame\n⚠ 游戏状态清零，玩家重连]
+```
+
+---
+
+appended 251 lines, 4 mermaid charts to web.md

@@ -527,3 +527,364 @@ ssh root@100.98.57.55 "kubectl logs -n lurus-platform deploy/platform-core --tai
 | Contract anti-drift 测试 | `test/contract/` |
 | BMAD PRD | `./_bmad-output/planning-artifacts/prd.md` |
 | Sprint Status | `./_bmad-output/implementation-artifacts/sprint-status.yaml` |
+
+---
+
+## 多视角速览
+
+### 用户视角
+
+路途是用户触达 Lurus 全栈的唯一移动入口。安装一个 App，即可完成：账户注册与登录（Zitadel SSO / 手机号）、钱包充值与余额查看、AI 对话（接入全部模型，含 deepseek / qwen / gemini）、Lucrum 实时行情与 AI 顾问、Creator 内容浏览。无需多 App 切换，数据在单一会话下打通——对话用量直接扣减钱包余额，行情变动触发 App 内通知，VIP 权益全局生效。
+
+### 开发者视角
+
+技术栈：**Flutter 3.35+ / Dart 3.9+**，状态管理用 `Provider + ChangeNotifier`（15 个 ChangeNotifier，以 `AuthProvider` 为根节点，`AuthAwareMixin` 保证登出时自动清空），路由用 `go_router`，HTTP 用 `Dio + RetryInterceptor`。
+
+认证路径：`flutter_appauth` 实现 **OIDC PKCE**，对接 `auth.lurus.cn`（Zitadel），token 写入 `flutter_secure_storage`，后续请求由 `AuthInterceptor` 自动注入 Bearer 并处理 refresh。gRPC 接入通过 `platform-core.lurus-platform.svc:18105`（内部）或 `identity.lurus.cn`（外部），使用生成的 Dart gRPC stub。
+
+关键依赖版本：`flutter_appauth ^8.0.1`、`flutter_secure_storage ^9.2.4`、`sqflite ^2.4.1`、`sentry_flutter ^9.19.0`、`go_router ^14.8.1`。构建产物走 `flutter build apk --release --split-per-abi --obfuscate`，arm64 约 24 MB。
+
+### 运维视角
+
+Lutu 是**纯移动端客户端**，无服务端组件，运维关注点在发布管道与后端依赖健康：
+
+- **构建**：GitHub Actions 触发，push 走 analyze + test + debug APK，`v*` tag 触发 Release APK（arm64/armeabi-v7a/x86_64），符号文件上传至 Sentry。
+- **发布**：Android → Google Play（需先完成 KB-4 签名配置）；iOS → App Store（需先完成 Apple Developer 证书 + provisioning profile）。长期方案接入 **fastlane** 自动化双端发布流程（`fastlane supply` for Play / `fastlane deliver` for App Store）。
+- **监控**：崩溃接 **Sentry**（`--dart-define=SENTRY_DSN=...` 注入，空值 no-op），contract 测试每夜对 R6 stage 后端跑 anti-drift 检测。
+- **后端依赖**：Platform (`identity.lurus.cn`)、LLM Gateway (`test-router.lurus.cn`)、Lucrum (`lucrum.lurus.cn`)、Zitadel (`auth.lurus.cn`)。任一 503 会导致对应功能模块降级，Health 检查见§12.2。
+
+### 决策者视角
+
+**单移动栈 vs 之前 Flutter + React Native 双栈**
+
+历史上存在两条独立移动端代码库：`2c-app-lutu`（Flutter，账户/计费）和已废弃的 `lucrum-app`（Expo React Native，量化行情）。双栈造成以下问题：两套 UI 语言（Dart / JavaScript）维护成本加倍、技术 bus factor 极高（各栈只有 1 名熟悉开发者）、无法共享登录态与钱包余额、iOS / Android 发布需维护两套证书与签名流程。
+
+**ADR-0007 决策**：废弃 `lucrum-app`，将其所有功能（行情列表、K 线图、AI 顾问 SSE、策略市场）全量移植进 `2c-app-lutu`，以 Flutter 作为唯一移动栈。收益：bus factor 从 2 降为 1 支撑、再升为 2 人熟悉同一栈；一次登录打通全部功能；单一构建产物覆盖所有 Phase 1–3 场景。代价：Dart 学习曲线（原 RN 开发者需转型）。
+
+---
+
+## 决策树：什么功能该入 Lutu
+
+```mermaid
+graph TD
+    A[新功能需求] --> B{所有用户都会用到吗？}
+    B -- 否 --> C{是企业 demo 专属场景？}
+    C -- 是 --> D[加到 Lutu enterprise-demo build flavor\n通过 build-time define 控制]
+    C -- 否 --> E{仅影响某个子产品？\n如仅 Lucrum / 仅 Creator}
+    E -- 是 --> F[在对应 Tab 模块内实现\n不作为全局入口]
+    E -- 否 --> G[暂缓，需进一步明确目标用户]
+    B -- 是 --> H{需要离线访问或离线降级？}
+    H -- 是 --> I[必须实现本地缓存\nsqflite 或 local_cache 5min 层\n不可全程依赖网络]
+    H -- 否 --> J{涉及账户 / 钱包 / 计费？}
+    J -- 是 --> K[接 platform-core REST\nidentity.lurus.cn /v1/...\n或 gRPC :18105]
+    J -- 否 --> L{涉及实时行情或 AI 顾问？}
+    L -- 是 --> M[接 lucrum.lurus.cn\nREST + SSE\nMarketProvider / AdvisorProvider]
+    L -- 否 --> N{需要推送通知？}
+    N -- 是 --> O[Phase 1: WS wss://identity.lurus.cn/.../ws\nPhase 2+: platform/notification → FCM]
+    N -- 否 --> P[评估放入 Discover Tab\n或 Profile 设置区]
+```
+
+---
+
+## 典型时序图
+
+### 场景 A：OIDC PKCE 登录 → 查询钱包余额
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant App as Lutu Flutter App
+    participant AppAuth as flutter_appauth
+    participant Zitadel as auth.lurus.cn
+    participant TokenStore as flutter_secure_storage
+    participant Platform as identity.lurus.cn
+
+    User->>App: 点击「企业 SSO 登录」
+    App->>AppAuth: authorizeAndExchangeCode(\n  clientId, redirectUrl,\n  scopes: [openid, profile, email])
+    AppAuth->>Zitadel: GET /oauth/v2/authorize\n?code_challenge=S256&code_challenge_method=S256
+    Zitadel-->>User: 浏览器登录页
+    User->>Zitadel: 输入凭证
+    Zitadel-->>AppAuth: 302 cn.lurus.lutu://callback?code=xxx
+    AppAuth->>Zitadel: POST /oauth/v2/token\n{code, code_verifier, grant_type=authorization_code}
+    Zitadel-->>AppAuth: {access_token, refresh_token, id_token}
+    AppAuth-->>App: AuthorizationTokenResponse
+    App->>TokenStore: saveTokens(accessToken, refreshToken)
+    App->>Platform: GET /api/v1/wallet\nAuthorization: Bearer <access_token>
+    Platform-->>App: {balance: 128.50, currency: "CNY", ...}
+    App-->>User: 首页显示钱包余额 ¥128.50
+```
+
+### 场景 B：Lucrum 行情订阅
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant App as Lutu Flutter App
+    participant MP as MarketProvider
+    participant LA as lucrum_api.dart
+    participant Lucrum as lucrum.lurus.cn
+
+    User->>App: 切换到 Lucrum Tab
+    App->>MP: 触发 fetchMarketList()
+    MP->>LA: LucrumApi.getMarketList()
+    LA->>Lucrum: GET /api/v1/market/list\nAuthorization: Bearer <access_token>
+    Lucrum-->>LA: [{symbol, price, change, ...}, ...]
+    LA-->>MP: List<MarketItem>
+    MP-->>App: notifyListeners()
+    App-->>User: 显示行情列表
+
+    User->>App: 点击某支股票
+    App->>LA: LucrumApi.subscribeAdvisor(symbol, onToken)
+    LA->>Lucrum: POST /api/v1/advisor/analyze\n{symbol, context}\nAccept: text/event-stream
+    loop SSE delta
+        Lucrum-->>LA: data: {"delta": "..."}
+        LA-->>App: onToken(delta)
+        App-->>User: 实时渲染 AI 顾问分析
+    end
+```
+
+---
+
+## 端到端完整例子
+
+**场景**：Lutu 冷启动 → OIDC 登录 → 查 Lucrum 行情 → 下模拟订单 → 查看钱包余额扣减
+
+### 1. OIDC 登录（Flutter Dart）
+
+```dart
+// lib/services/auth_service.dart（简化）
+import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:lutu/constants.dart';
+import 'package:lutu/services/token_store.dart';
+
+class AuthService {
+  final FlutterAppAuth _appAuth = const FlutterAppAuth();
+  final TokenStore _tokenStore;
+
+  AuthService(this._tokenStore);
+
+  Future<void> loginWithOidc() async {
+    final result = await _appAuth.authorizeAndExchangeCode(
+      AuthorizationTokenRequest(
+        OidcConfig.clientId,                  // 'cn.lurus.lutu' native app client
+        OidcConfig.redirectUrl,               // 'cn.lurus.lutu://callback'
+        issuer: OidcConfig.issuer,            // 'https://auth.lurus.cn'
+        scopes: ['openid', 'profile', 'email', 'offline_access'],
+        promptValues: ['login'],
+      ),
+    );
+    if (result == null) throw AppError.auth('OIDC flow cancelled');
+    await _tokenStore.saveTokens(
+      accessToken: result.accessToken!,
+      refreshToken: result.refreshToken!,
+      idToken: result.idToken,
+      expiresAt: result.accessTokenExpirationDateTime,
+    );
+  }
+}
+```
+
+### 2. 查询 Lucrum 行情（REST）
+
+```dart
+// lib/services/lucrum_api.dart（简化）
+import 'package:dio/dio.dart';
+import 'package:lutu/models/market_item.dart';
+
+class LucrumApi {
+  final Dio _dio;  // 已注入 AuthInterceptor，自动 Bearer
+
+  LucrumApi(this._dio);
+
+  Future<List<MarketItem>> getMarketList() async {
+    final resp = await _dio.get(
+      'https://lucrum.lurus.cn/api/v1/market/list',
+    );
+    return (resp.data['items'] as List)
+        .map((e) => MarketItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// 下模拟订单（不涉及真实资金）
+  Future<SimOrder> placeSimOrder({
+    required String symbol,
+    required String direction, // 'buy' | 'sell'
+    required double quantity,
+  }) async {
+    final resp = await _dio.post(
+      'https://lucrum.lurus.cn/api/v1/sim/order',
+      data: {
+        'symbol': symbol,
+        'direction': direction,
+        'quantity': quantity,
+        'type': 'market',
+      },
+    );
+    return SimOrder.fromJson(resp.data as Map<String, dynamic>);
+  }
+}
+```
+
+### 3. 查询钱包余额（platform-core REST）
+
+```dart
+// lib/services/platform_api.dart（简化）
+import 'package:dio/dio.dart';
+import 'package:lutu/models/wallet.dart';
+
+class PlatformApi {
+  final Dio _dio;
+
+  PlatformApi(this._dio);
+
+  /// platform-core REST: identity.lurus.cn /api/v1/wallet
+  Future<Wallet> getWallet() async {
+    final resp = await _dio.get('https://identity.lurus.cn/api/v1/wallet');
+    return Wallet.fromJson(resp.data as Map<String, dynamic>);
+  }
+}
+```
+
+### 4. gRPC 接入示例（platform-core :18105 内部，对外走 HTTPS）
+
+```dart
+// 对外（App 直接用），通过 REST；内部 gRPC 用于服务间
+// 如需在调试环境直接使用 gRPC（如集成测试），示例如下：
+import 'package:grpc/grpc.dart';
+import 'package:lurus_proto/identity/v1/identity.pbgrpc.dart';
+
+Future<AccountInfo> fetchAccountGrpc(String accessToken) async {
+  final channel = ClientChannel(
+    'identity.lurus.cn',
+    port: 443,
+    options: const ChannelOptions(
+      credentials: ChannelCredentials.secure(),
+    ),
+  );
+  final stub = IdentityServiceClient(
+    channel,
+    options: CallOptions(
+      metadata: {'authorization': 'Bearer $accessToken'},
+    ),
+  );
+  try {
+    return await stub.getAccount(GetAccountRequest());
+  } finally {
+    await channel.shutdown();
+  }
+}
+```
+
+### 5. 典型输出
+
+```
+# flutter run --release (arm64 物理设备)
+
+I/flutter: [Bootstrap] Starting parallel prefetch...
+I/flutter: [Bootstrap] wallet OK  (128ms)
+I/flutter: [Bootstrap] subscription OK  (134ms)
+I/flutter: [Bootstrap] notifications OK  (156ms)
+I/flutter: [Bootstrap] checkin OK  (201ms)
+I/flutter: [Bootstrap] All prefetch completed in 201ms
+
+# 查询行情（MarketProvider）
+I/flutter: [LucrumApi] GET /api/v1/market/list → 200, 42 items, 89ms
+
+# 下模拟订单
+I/flutter: [LucrumApi] POST /api/v1/sim/order {symbol: BTC-USD, direction: buy, qty: 0.01}
+I/flutter: [LucrumApi] → 201 {orderId: "sim-20260429-0001", filled: 0.01, price: 94321.50}
+
+# 钱包余额刷新（下单后 WalletProvider.fetchWallet()）
+I/flutter: [PlatformApi] GET /api/v1/wallet → 200
+I/flutter: [WalletProvider] balance: 128.50 → 127.96 CNY (sim deduct 0.54)
+```
+
+---
+
+## 最佳实践 ✓/✗
+
+| # | ✓ 推荐做法 | ✗ 反模式 |
+|---|-----------|---------|
+| 1 | ✓ OIDC token 存入 `flutter_secure_storage`（Android Keystore / iOS Keychain 加密） | ✗ 存入 `SharedPreferences` 明文，任何有 root / backup 权限的进程可读取 |
+| 2 | ✓ 离线时读 `LocalCache`（5 min 内存层）或 `sqflite` 持久层，并显示 `OfflineBadge` | ✗ 所有数据全程依赖网络，断网即白屏，用户体验崩溃 |
+| 3 | ✓ 渐进升级：`force_update_min_build` 阈值控制，低于阈值才强制跳 Store，否则只弹可关闭横幅 | ✗ 每次启动强制弹更新弹窗；或完全不做版本检测，旧 API 契约 break 时用户闪退 |
+| 4 | ✓ 用不同 build flavor（`internal` / `staging` / `prod`），通过 `--dart-define=APP_ENV=...` 区分，各 flavor 指向不同后端 | ✗ 同一 binary 内通过运行时开关切环境，容易因误操作导致 internal 用户访问 prod 数据 |
+| 5 | ✓ 推送走 `platform/notification → FCM`（Phase 2+），platform-core 统一管理 FCM token 生命周期 | ✗ 在 App 内自建 WebSocket 长连推送后台消息（OS 会杀掉后台 socket，Android Doze / iOS Background App Refresh 均限制） |
+| 6 | ✓ 崩溃全部接 Sentry（`--dart-define=SENTRY_DSN=...`），自动采集 Dart 异常 + Flutter framework 错误，含符号化 stack trace | ✗ 只靠 `adb logcat` 或用户截图反馈崩溃，生产问题定位周期以天计 |
+| 7 | ✓ Contract 测试（`flutter test --tags contract`）每夜对 R6 stage 后端跑，保障 API 契约不 drift | ✗ 只做单元测试，后端 API 悄悄改字段导致生产 JSON 解析异常 |
+| 8 | ✓ `AuthInterceptor` 统一处理 token refresh，业务层不感知 token 过期 | ✗ 每个 Provider 各自处理 401，刷新逻辑散落各处，容易产生并发重复 refresh |
+
+---
+
+## 跨产品集成场景
+
+### 场景一：Lutu + Platform（账户/钱包）
+
+Lutu 通过 `PlatformApi`（`lib/services/platform_api.dart`）对接 `identity.lurus.cn`，覆盖以下核心流程：
+
+- **账户**：`GET /api/v1/account/me` — 获取用户基本信息（uid / display_name / vip_tier / avatar）
+- **钱包**：`GET /api/v1/wallet` — 余额、LB 积分、历史交易；`POST /api/v1/wallet/topup` — 充值（跳转支付页或内购）
+- **订阅**：`GET /api/v1/subscription` — 当前套餐与到期时间；`POST /api/v1/subscription/purchase` — 购买/续费
+- **通知**：`GET /api/v1/notifications` — 未读列表；`WebSocket wss://identity.lurus.cn/api/v1/notifications/ws?token=<access_token>` — 实时推送
+
+所有请求由 `AuthInterceptor` 注入 Bearer JWT，`RetryInterceptor` 指数退避重试（最多 3 次，含 jitter）。`BootstrapService` 在登录后并发预取上述 4 个接口，Home 页无感加载。
+
+### 场景二：Lutu + Lucrum（吸收的移动端）
+
+`lucrum-app`（Expo React Native）已通过 ADR-0007 废弃并入，功能映射关系：
+
+| 原 lucrum-app 功能 | 映射到 Lutu 模块 | 实现文件 |
+|-------------------|-----------------|---------| 
+| 行情列表 | `screens/lucrum/market_screen.dart` | `LucrumApi.getMarketList()` |
+| K 线图 | `screens/lucrum/kline_screen.dart` | `fl_chart` KLineChart widget |
+| AI 顾问 SSE | `screens/lucrum/advisor_screen.dart` | `LucrumApi.subscribeAdvisor()` → SSE |
+| 策略市场 | `screens/lucrum/strategy_market_screen.dart` | `StrategyProvider` |
+| 登录（独立账户体系）| 统一 Zitadel OIDC / 手机号 | `AuthService` |
+
+⚠ **当前阻断**：`lucrum.lurus.cn` IngressRoute + TLS 证书尚未完成（KB-1），Lucrum Tab 暂显示 mock 数据，`LucrumApi` 已实现但后端不可达。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    START([运维问题入口]) --> Q1{问题类型}
+
+    Q1 --> IOS[iOS 审核被拒]
+    Q1 --> ANDROID[Android 64位崩溃]
+    Q1 --> PUSH[推送收不到]
+    Q1 --> OAUTH[OAuth 回调失败]
+    Q1 --> CRASH[升级后闪退]
+
+    IOS --> IOS1{拒绝原因}
+    IOS1 -- 缺隐私说明 --> IOS2[在 Info.plist 补全\nNSPhotoLibraryUsageDescription\nNSCameraUsageDescription 等\n提交 App Privacy Nutrition Label]
+    IOS1 -- 加密声明 --> IOS3[勾选 Uses Encryption=YES\n+ 填 ERN 豁免（标准 HTTPS 算法）]
+    IOS1 -- 内购合规 --> IOS4[Phase 3 前必须接 StoreKit\n不得绕过 IAP 引导外部支付]
+
+    ANDROID --> ANDROID1{崩溃堆栈}
+    ANDROID1 -- UnsatisfiedLinkError --> ANDROID2[检查 .so ABI 覆盖\n必须包含 arm64-v8a\n使用 --split-per-abi 分包或 fat APK]
+    ANDROID1 -- 64位 JNI 问题 --> ANDROID3[flutter_secure_storage / sqflite\n升级到最新版，清 build 重编]
+    ANDROID1 -- Proguard 混淆 --> ANDROID4[检查 -keep rules\njson_serializable 生成类需加白名单]
+
+    PUSH --> PUSH1{推送路径}
+    PUSH1 -- Phase 1 前台WS --> PUSH2[检查 WsClient 连接状态\nadb logcat grep WS\nToken 过期会导致 WS 连接被踢]
+    PUSH1 -- Phase 2+ FCM --> PUSH3[检查 FCM token 上报\nGET /api/v1/account/me 看 push_token 字段\n查 platform-core notification 模块日志]
+    PUSH3 --> PUSH4{FCM 返回码}
+    PUSH4 -- registration-token-not-registered --> PUSH5[App 重装导致 token 变更\n下次启动自动上报新 token\n平台侧清除旧 token]
+    PUSH4 -- SENDER_ID_MISMATCH --> PUSH6[google-services.json 与\nFirebase 控制台项目不匹配\n重新下载 json 重新构建]
+
+    OAUTH --> OAUTH1{错误码}
+    OAUTH1 -- invalid_client --> OAUTH2[Zitadel 控制台检查\nclientId 是否存在\nNative App 类型是否正确]
+    OAUTH1 -- redirect_uri_mismatch --> OAUTH3[Zitadel 控制台对应 App\n添加 cn.lurus.lutu://callback\nInfo.plist CFBundleURLTypes 也要配]
+    OAUTH1 -- 回调无法唤起App --> OAUTH4[Android: AndroidManifest.xml\nintent-filter scheme 检查\niOS: Info.plist CFBundleURLSchemes]
+
+    CRASH --> CRASH1{闪退时机}
+    CRASH1 -- 升级后立即闪退 --> CRASH2[sqflite schema 版本未迁移\n检查 local_db.dart onUpgrade\n清除 App 数据临时验证]
+    CRASH1 -- 启动时白屏 --> CRASH3[flutter clean && pub get\nMissingPluginException 常见于\nnative plugin 未重建]
+    CRASH1 -- 特定操作崩溃 --> CRASH4[查 Sentry Issues\n按 build number 过滤\n下载符号文件 symbolicate]
+```
+
+---
+
+appended 360 lines, 5 mermaid charts to lutu.md

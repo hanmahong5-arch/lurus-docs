@@ -492,3 +492,271 @@ dir "C:\Program Files\lurus-switch\*.new"
 # 4. 检查 checksum 校验失败原因（网络截断导致文件不完整）
 # 重新触发更新：Settings → 检查更新
 ```
+
+---
+
+## 多视角速览
+
+### 用户视角
+
+本地只需安装一个 Switch 桌面 GUI，不必分别管理 Claude Code、Codex、Gemini CLI 各自的 API Key 和配置。所有模型请求统一走本地网关（`:19090`），Switch 负责注入认证 token、路由到合适模型、记录每笔用量。换模型只需在 Switch 切换路由规则，无需改动 CLI 工具自身配置。
+
+### 开发者视角
+
+技术栈：Go 1.25 + Wails v2.11（后端）+ React 18 + TypeScript + Bun（前端）。本地数据全部落 SQLite（`modernc.org/sqlite`，CGO-free）或 JSONL。上游是 newapi（`api.lurus.cn`），通过 `internal/gateway` 反代并写计量。MCP 配置生成器（`internal/generator/`）把 preset 写入工具配置文件，工具重启后生效。无服务端组件，单 exe 跨平台发行。
+
+### 运维视角
+
+Switch 是纯桌面端应用，不部署到 K8s，无 Pod、无 Ingress、无 PVC。运维关注点：
+- 用户自行安装并配置 newapi token（来自 `api.lurus.cn` 用户中心）
+- 自动更新走 GitHub Releases，无需人工推送
+- 本地 SQLite 不超过单机磁盘容量（metering + agent 数据，通常 MB 级）
+- 出问题时引导用户备份 `%APPDATA%\lurus-switch\` 后清空重启即可恢复
+
+### 决策者视角
+
+Switch 整合了 ChatGPT 桌面客户端、Aider、Claude Code CLI、Codex CLI 等多个工具的功能入口，用一个 GUI 统一管理。同时内置 MCP Server 配置能力，让非工程师也能通过对话界面使用 zitadel-mcp（管理用户）、k8s-mcp（排查 pod）等运维工具。成本监控和配额管理集成在同一界面，避免多工具账单分散。
+
+---
+
+## 决策树：什么场景需要 Switch
+
+```mermaid
+graph TD
+    A[是否需要在多个 LLM 模型之间切换?] -->|是| B[Switch 路由规则 + newapi 中转]
+    A -->|否, 单模型固定使用| Z1[直接用 CLI 工具 + 手配 token 即可]
+
+    B --> C[是否需要 MCP server 集成?]
+    C -->|是| D[Switch MCP Preset 管理\n写入 ~/.claude/settings.json]
+    C -->|否| E[仅使用 Switch 路由 + 计量]
+
+    D --> F[是否团队共享 MCP 配置?]
+    F -->|是| G[✓ MCP preset JSON 存 git repo\n团队统一 pull 后在 Switch 导入]
+    F -->|否, 个人使用| H[Switch 本地 mcp-presets/ 即可]
+
+    G --> I[是否有本地隐私敏感数据?]
+    H --> I
+
+    I -->|是, 代码/文档不出本机| J[✓ Switch incognito 模式\n不持久化对话到 SQLite]
+    I -->|否, 数据可上云| K[普通模式 + 云端配额同步]
+
+    J --> L[决策完毕: Switch 满足需求]
+    K --> L
+    E --> L
+    Z1 --> Z2[结束: 不需要 Switch]
+```
+
+---
+
+## 典型时序图
+
+### 时序 1：Switch 桌面端 → newapi → 多 LLM
+
+```mermaid
+sequenceDiagram
+    participant User as 用户 (Claude Code / Codex)
+    participant GW as Switch 本地网关<br/>(:19090)
+    participant NA as Lurus newapi<br/>(api.lurus.cn)
+    participant LLM1 as 主模型<br/>(claude-3-7-sonnet)
+    participant LLM2 as 备用模型<br/>(gpt-4o / gemini-2.5)
+
+    User->>GW: POST /v1/chat/completions<br/>model: "claude-3-7-sonnet"
+    Note over GW: rectifier.go 规范化请求体<br/>baseurl.go 注入上游 URL<br/>auth.go 校验 App Token
+    GW->>NA: 代理转发 + Bearer UserToken
+    NA->>LLM1: 路由到对应上游
+    LLM1-->>NA: 流式响应 + usage{}
+    NA-->>GW: 透传响应
+    Note over GW: 解析 usage → metering.Record<br/>写入本地 SQLite
+    GW-->>User: 原样透传响应
+
+    alt 主模型超时 / 429 限速
+        GW->>NA: fallback 切换备用 upstream
+        NA->>LLM2: 路由到备用模型
+        LLM2-->>NA: 响应
+        NA-->>GW: 透传
+        GW-->>User: 透传 (用户无感知切换)
+    end
+```
+
+### 时序 2：Switch → MCP Server → Tool 调用
+
+```mermaid
+sequenceDiagram
+    participant User as 用户 (前端 / Claude Code)
+    participant SW as Switch 主进程
+    participant Gen as generator.claude_generator
+    participant Cfg as ~/.claude/settings.json
+    participant Tool as Claude Code
+    participant MCP as MCP Server 子进程<br/>(zitadel-mcp / k8s-mcp)
+
+    User->>SW: 选择 MCP Preset "zitadel-mcp"\n点击"应用到 Claude"
+    SW->>Gen: GenerateConfig(preset)
+    Gen->>Cfg: 写入 mcpServers.zitadel-mcp\n{command, args, env}
+    SW-->>User: ✓ 配置已写入，请重启 Claude Code
+
+    User->>Tool: 重启 Claude Code
+    Tool->>MCP: stdio 启动 zitadel-mcp 子进程
+    MCP-->>Tool: 返回 tools list\n(list-users, create-user, reset-password…)
+
+    User->>Tool: "帮我禁用用户 alice@lurus.cn"
+    Tool->>MCP: call tool: disable-user\n{email: "alice@lurus.cn"}
+    MCP->>MCP: 调用 Zitadel Admin API\n(bearer ZITADEL_PAT)
+    MCP-->>Tool: 执行结果: success
+    Tool-->>User: "已禁用 alice@lurus.cn"
+```
+
+---
+
+## 端到端完整例子
+
+以下演示从零开始配置 Switch，接入 k8s-mcp，通过对话排查 K3s pod 状态。
+
+### 第 1 步：安装 Switch
+
+从 GitHub Releases 下载对应平台安装包（`lurus-switch-windows-amd64.exe` / macOS / Linux），直接运行。首次启动自动创建 `%APPDATA%\lurus-switch\` 数据目录并初始化 SQLite。
+
+### 第 2 步：配置 newapi token
+
+打开 Switch → **Settings → Proxy & Relay**，填入：
+
+```json
+{
+  "APIEndpoint": "https://api.lurus.cn",
+  "UserToken": "sk-lrs-xxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+> token 来自 `api.lurus.cn` 用户中心 → API Keys → 新建 Group Token（建议按项目隔离，不用 root token）。
+
+保存后 Switch 自动刷新 `GET /api/v2/user/info`，系统托盘显示配额百分比。
+
+### 第 3 步：添加 k8s-mcp 为 MCP Server
+
+打开 Switch → **Tool Config → MCP Management → 新建 Preset**，填写：
+
+```json
+{
+  "id": "user-k8smcp01",
+  "name": "k8s-mcp (Lurus R1)",
+  "transport": "stdio",
+  "command": "/usr/local/bin/lurus-k8s-mcp",
+  "args": ["--kubeconfig", "/root/.kube/config"],
+  "env": {
+    "K8S_MCP_AUTH_TOKEN": "your-internal-token",
+    "K8S_MCP_SSH_HOST": "100.98.57.55"
+  }
+}
+```
+
+点击 **应用到 Claude** → Switch 将上述配置写入 `~/.claude/settings.json` 的 `mcpServers` 字段。
+
+### 第 4 步：重启 Claude Code，验证工具可用
+
+```bash
+claude
+# 在对话中输入：
+# /mcp   →  应看到 k8s-mcp 工具列表
+# 或直接问："帮我查一下 lurus-platform namespace 下所有 pod 状态"
+```
+
+Claude Code 会调用 k8s-mcp 的 `kubectl-get-pods` 工具，返回真实 pod 列表。
+
+### 第 5 步：查看历史与成本
+
+打开 Switch → **Billing / Insights**，可查看：
+- 今日 token 用量（按模型分类）
+- 调用次数与平均延迟
+- 429 限速事件数
+- 剩余配额
+
+---
+
+## 最佳实践
+
+| | 实践 | 说明 |
+|---|---|---|
+| ✓ | 团队共享 MCP 配置走 git repo | 将 `mcp-presets/*.json` 提交到团队 repo，成员 pull 后在 Switch 导入，保证配置一致 |
+| ✗ | 各人手配 MCP preset | 容易参数漂移，排查问题时配置不一致 |
+| ✓ | 敏感对话开 incognito 模式 | 代码审查、合同分析等不应持久化到本地 SQLite，用完即弃 |
+| ✗ | 所有对话全部存 SQLite | 本地数据积累，存在合规风险；SQLite 增大也影响启动性能 |
+| ✓ | 使用 Group Token 并限流 | 在 newapi 后台按项目/团队创建 Group Token，设置 RPM/TPM 上限，防止单点超支 |
+| ✗ | 直接用 root token 配置所有工具 | root token 泄露影响全账户；无法按项目追踪成本 |
+| ✓ | MCP Server 配合 zitadel auth 鉴权 | zitadel-mcp / k8s-mcp 均支持 bearer token 校验，不要暴露无鉴权的 MCP endpoint |
+| ✗ | MCP Server 直接公网无鉴权暴露 | 任何人可调用 admin 操作，极高安全风险 |
+| ✓ | 定期查看 Switch Insights 的成本监控 | 关注 DailySummary / ModelSummary，及时发现异常调用量 |
+| ✗ | 不看账单，月底才发现超支 | token 成本无感知累积，难以追溯到具体工具或任务 |
+| ✓ | 模型切换走 routing rule（newapi 渠道配置）| 在 newapi 后台配置模型路由优先级，Switch fallback 自动生效，无需逐工具改配置 |
+| ✗ | 每次手动改工具配置文件切换模型 | 多工具不同步，配置快照管理混乱 |
+
+---
+
+## 跨产品集成场景
+
+### 场景 ①：Switch + zitadel-mcp — 运维直接通过对话管理用户
+
+**背景**：运营同学需要临时禁用某个企业账户，但没有 Zitadel 后台权限，且走工单流程慢。
+
+**接入方式**：
+1. 工程师在 Switch 中配置 `zitadel-mcp` preset（见"端到端完整例子"），将 `ZITADEL_PAT`（Personal Access Token，具有 Organization Admin 权限）写入 env。
+2. 运营同学在自己机器上通过 Switch 导入同一 preset（从 git repo pull），应用到 Claude Code。
+3. 运营打开 Claude Code，直接输入：`"帮我把 alice@example.com 的账户状态改为 inactive"`。
+4. Claude Code 通过 zitadel-mcp 调用 Zitadel Admin API，返回操作结果。
+
+**安全边界**：`ZITADEL_PAT` 权限最小化（仅 org 级别，不授 instance admin）；Switch env 字段在本地加密存储，不明文出现在 `settings.json`。
+
+### 场景 ②：Switch + k8s-mcp — 开发者通过对话排查 K3s pod
+
+**背景**：后端开发遇到服务异常，需要查 pod 日志、检查 resource limit，但不熟悉 kubectl 命令。
+
+**接入方式**：
+1. 在 Switch 中配置 `k8s-mcp` preset，SSH 目标指向 `root@100.98.57.55`（R1 master），内置 kubectl + psql 操作能力。
+2. Claude Code 接入后，开发者可直接问："lurus-platform namespace 下 platform-core pod 最近 100 行日志是什么？"
+3. k8s-mcp 通过 SSH 执行 `kubectl logs`，返回真实日志内容。
+4. 进一步追问："pod 的 CPU/Memory limit 是多少？目前用了多少？"—— k8s-mcp 调用 `kubectl top pod` 和 `kubectl describe pod` 返回资源使用情况。
+
+**注意**：k8s-mcp 操作直接影响生产集群，`ZITADEL_PAT` / `K8S_MCP_AUTH_TOKEN` 等敏感 env 不要提交到公共 repo；团队内部 git repo 配合 `.gitignore` 或 secret 管理工具存储。
+
+---
+
+## 运维常见问题
+
+```mermaid
+flowchart TD
+    Start([用户报告 Switch 异常]) --> Q1{问题类型?}
+
+    Q1 -->|连不上 newapi| A1[检查 proxy.json\nAPIEndpoint 和 UserToken 是否正确]
+    A1 --> A2{curl api.lurus.cn/api/v2/user/info 返回?}
+    A2 -->|401 Unauthorized| A3[⚠ token 过期或无效\n重新从用户中心获取 token\n更新 Switch Proxy Settings]
+    A2 -->|网络超时| A4[检查本机网络 / VPN\n确认 api.lurus.cn 可达]
+    A2 -->|200 OK 但 quota=0| A5[⚠ 配额耗尽\n前往 Billing 页充值或等次日重置]
+
+    Q1 -->|MCP server 启动失败| B1[Switch → Tool Config → MCP\n查看 preset command 路径是否存在]
+    B1 --> B2{binary 是否可执行?}
+    B2 -->|路径不存在| B3[重新安装 MCP server binary\n或修正 preset command 字段]
+    B2 -->|存在但报错| B4[查看 Claude Code 日志\n~/.claude/logs/ 下最新日志]
+    B4 --> B5[检查 env 字段中的 token/key 是否有效]
+
+    Q1 -->|SQLite 满 / 性能慢| C1[查看 %APPDATA%\lurus-switch\ 目录大小]
+    C1 --> C2{主要占用?}
+    C2 -->|switch.db 过大| C3[清理旧 Agent 数据\n或删除 switch.db 重建]
+    C2 -->|metering SQLite 过大| C4[归档旧计量数据\n删除 metering/ 下旧文件]
+    C2 -->|analytics.jsonl 过大| C5[手动轮转 analytics.jsonl\nmv 旧文件到 .bak]
+
+    Q1 -->|模型切换失败| D1[Switch → Relay 页\n检查各 relay endpoint 健康状态]
+    D1 --> D2{健康检查 latency?}
+    D2 -->|全部超时| D3[网络问题 → 检查代理设置\n或联系平台确认 newapi 服务状态]
+    D2 -->|部分失败| D4[切换到健康的 relay endpoint\n禁用失败的 endpoint]
+
+    Q1 -->|token 过期 / 登录失效| E1[Switch → Settings → Auth\n重新触发 OIDC PKCE 登录]
+    E1 --> E2{登录成功?}
+    E2 -->|是| E3[✓ auth.enc 更新\nbillingClient 自动重载]
+    E2 -->|否, 浏览器无法打开| E4[手动配置 UserToken\nSettings → Proxy → 粘贴 Bearer token]
+
+    Q1 -->|自动更新失败| F1[查看 exe 目录下\n.update.bat 或 .new 残留]
+    F1 --> F2{有残留文件?}
+    F2 -->|有 .new 文件| F3[手动 rename .new → .exe 后重启]
+    F2 -->|有 .bat 残留| F4[删除 .bat 残留\n重启 Switch 重新触发更新]
+    F2 -->|无残留| F5[手动下载最新 Release\nhttps://github.com/lurus-dev/lurus-switch/releases]
+```
+
+appended 258 lines, 4 mermaid charts to switch.md
