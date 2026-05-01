@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" font-family="'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif">
+  <defs>
+    <filter id="s6" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="400" rx="16" fill="#FCFCFD"/>
+  <text x="400" y="36" text-anchor="middle" font-size="18" font-weight="600" fill="#2D3436">MCP 生态：连接一切外部系统</text>
+
+  <!-- Claude Code center -->
+  <g filter="url(#s6)">
+    <rect x="300" y="155" width="200" height="70" rx="14" fill="#6C5CE7"/>
+    <text x="400" y="188" text-anchor="middle" font-size="15" font-weight="700" fill="#FFF">Claude Code</text>
+    <text x="400" y="210" text-anchor="middle" font-size="11" fill="#D5D0F5">MCP Client</text>
+  </g>
+
+  <!-- Left: Data sources -->
+  <g filter="url(#s6)">
+    <rect x="40" y="70" width="160" height="42" rx="8" fill="#FFF" stroke="#DDD" stroke-width="1"/>
+    <text x="120" y="96" text-anchor="middle" font-size="12" fill="#333">&#x1F4E6; GitHub / GitLab</text>
+  </g>
+  <g filter="url(#s6)">
+    <rect x="40" y="130" width="160" height="42" rx="8" fill="#FFF" stroke="#DDD" stroke-width="1"/>
+    <text x="120" y="156" text-anchor="middle" font-size="12" fill="#333">&#x1F4C4; Google Docs</text>
+  </g>
+  <g filter="url(#s6)">
+    <rect x="40" y="190" width="160" height="42" rx="8" fill="#FFF" stroke="#DDD" stroke-width="1"/>
+    <text x="120" y="216" text-anchor="middle" font-size="12" fill="#333">&#x1F4AC; Slack</text>
+  </g>
+  <g filter="url(#s6)">
+    <rect x="40" y="250" width="160" height="42" rx="8" fill="#FFF" stroke="#DDD" stroke-width="1"/>
+    <text x="120" y="276" text-anchor="middle" font-size="12" fill="#333">&#x1F5C3; 数据库</text>
+  </g>
+  <g filter="url(#s6)">
+    <rect x="40" y="310" width="160" height="42" rx="8" fill="#FFF" stroke="#DDD" stroke-width="1"/>
+    <text x="120" y="336" text-anchor="middle" font-size="12" fill="#333">&#x1F310; 自建 API</text>
+  </g>
+
+  <!-- Right: Capabilities -->
+  <g filter="url(#s6)">
+    <rect x="600" y="80" width="160" height="42" rx="8" fill="#F0FFF4" stroke="#00B894" stroke-width="1"/>
+    <text x="680" y="106" text-anchor="middle" font-size="12" fill="#333">&#x1F50D; 读外部数据</text>
+  </g>
+  <g filter="url(#s6)">
+    <rect x="600" y="145" width="160" height="42" rx="8" fill="#F0FFF4" stroke="#00B894" stroke-width="1"/>
+    <text x="680" y="171" text-anchor="middle" font-size="12" fill="#333">&#x270F; 写外部系统</text>
+  </g>
+  <g filter="url(#s6)">
+    <rect x="600" y="210" width="160" height="42" rx="8" fill="#F0FFF4" stroke="#00B894" stroke-width="1"/>
+    <text x="680" y="236" text-anchor="middle" font-size="12" fill="#333">&#x1F50C; 调用工具</text>
+  </g>
+  <g filter="url(#s6)">
+    <rect x="600" y="275" width="160" height="42" rx="8" fill="#F0FFF4" stroke="#00B894" stroke-width="1"/>
+    <text x="680" y="301" text-anchor="middle" font-size="12" fill="#333">&#x1F512; OAuth / Key 鉴权</text>
+  </g>
+
+  <!-- Connection lines left -->
+  <g stroke="#CCC" stroke-width="1.2" fill="none">
+    <line x1="200" y1="91" x2="300" y2="175"/>
+    <line x1="200" y1="151" x2="300" y2="180"/>
+    <line x1="200" y1="211" x2="300" y2="190"/>
+    <line x1="200" y1="271" x2="300" y2="200"/>
+    <line x1="200" y1="331" x2="300" y2="210"/>
+  </g>
+
+  <!-- Connection lines right -->
+  <g stroke="#A8E6CF" stroke-width="1.2" fill="none">
+    <line x1="500" y1="175" x2="600" y2="101"/>
+    <line x1="500" y1="185" x2="600" y2="166"/>
+    <line x1="500" y1="195" x2="600" y2="231"/>
+    <line x1="500" y1="205" x2="600" y2="296"/>
+  </g>
+
+  <!-- Protocol badge -->
+  <rect x="270" y="240" width="260" height="26" rx="13" fill="#F0F0F0"/>
+  <text x="400" y="258" text-anchor="middle" font-size="11" fill="#636E72">传输协议: stdio &#x2022; HTTP/SSE &#x2022; SDK-native</text>
+</svg>

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 340" font-family="'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif">
+  <defs>
+    <filter id="s8" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arr8" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#6C5CE7"/>
+    </marker>
+    <linearGradient id="timeline" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#DFE6E9"/>
+      <stop offset="100%" style="stop-color:#6C5CE7"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="340" rx="16" fill="#FCFCFD"/>
+  <text x="400" y="36" text-anchor="middle" font-size="18" font-weight="600" fill="#2D3436">AI 编程工具演进</text>
+
+  <!-- Timeline arrow -->
+  <line x1="60" y1="160" x2="740" y2="160" stroke="url(#timeline)" stroke-width="3" marker-end="url(#arr8)"/>
+
+  <!-- Era 1: Autocomplete -->
+  <g filter="url(#s8)">
+    <rect x="60" y="80" width="150" height="56" rx="10" fill="#DFE6E9"/>
+    <text x="135" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#636E72">补全时代</text>
+    <text x="135" y="124" text-anchor="middle" font-size="11" fill="#999">Tab 接受一行代码</text>
+  </g>
+  <line x1="135" y1="136" x2="135" y2="156" stroke="#B2BEC3" stroke-width="1.5"/>
+  <circle cx="135" cy="160" r="6" fill="#B2BEC3"/>
+  <text x="135" y="190" text-anchor="middle" font-size="11" fill="#999">2021</text>
+  <text x="135" y="206" text-anchor="middle" font-size="10" fill="#BBB">Copilot</text>
+
+  <!-- Era 2: Chat -->
+  <g filter="url(#s8)">
+    <rect x="260" y="80" width="150" height="56" rx="10" fill="#A29BFE"/>
+    <text x="335" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#FFF">对话时代</text>
+    <text x="335" y="124" text-anchor="middle" font-size="11" fill="#E0DCFF">问答生成代码片段</text>
+  </g>
+  <line x1="335" y1="136" x2="335" y2="156" stroke="#A29BFE" stroke-width="1.5"/>
+  <circle cx="335" cy="160" r="6" fill="#A29BFE"/>
+  <text x="335" y="190" text-anchor="middle" font-size="11" fill="#999">2023</text>
+  <text x="335" y="206" text-anchor="middle" font-size="10" fill="#BBB">ChatGPT / Cursor</text>
+
+  <!-- Era 3: Agent -->
+  <g filter="url(#s8)">
+    <rect x="460" y="68" width="160" height="68" rx="10" fill="#6C5CE7"/>
+    <text x="540" y="96" text-anchor="middle" font-size="14" font-weight="700" fill="#FFF">Agent 时代</text>
+    <text x="540" y="116" text-anchor="middle" font-size="11" fill="#D5D0F5">自主循环</text>
+    <text x="540" y="130" text-anchor="middle" font-size="11" fill="#D5D0F5">读 → 改 → 测 → 交付</text>
+  </g>
+  <line x1="540" y1="136" x2="540" y2="156" stroke="#6C5CE7" stroke-width="2"/>
+  <circle cx="540" cy="160" r="8" fill="#6C5CE7"/>
+  <text x="540" y="190" text-anchor="middle" font-size="11" font-weight="600" fill="#6C5CE7">2025</text>
+  <text x="540" y="206" text-anchor="middle" font-size="10" fill="#6C5CE7">Claude Code</text>
+
+  <!-- Era 4: Future -->
+  <g filter="url(#s8)">
+    <rect x="650" y="80" width="110" height="56" rx="10" fill="#FFF" stroke="#6C5CE7" stroke-width="1.5" stroke-dasharray="4,3"/>
+    <text x="705" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#6C5CE7">?</text>
+    <text x="705" y="124" text-anchor="middle" font-size="11" fill="#999">多 Agent 协作</text>
+  </g>
+  <line x1="705" y1="136" x2="705" y2="156" stroke="#CCC" stroke-width="1.5" stroke-dasharray="3,3"/>
+  <circle cx="705" cy="160" r="6" fill="#FFF" stroke="#6C5CE7" stroke-width="1.5"/>
+  <text x="705" y="190" text-anchor="middle" font-size="11" fill="#CCC">→</text>
+
+  <!-- Bottom insight labels -->
+  <g font-size="11" fill="#636E72">
+    <rect x="80" y="234" width="180" height="30" rx="6" fill="#F8F7FF"/>
+    <text x="170" y="254" text-anchor="middle">人：写代码</text>
+
+    <rect x="300" y="234" width="180" height="30" rx="6" fill="#F0EEFF"/>
+    <text x="390" y="254" text-anchor="middle">人：问问题 + 复制粘贴</text>
+
+    <rect x="520" y="234" width="200" height="30" rx="6" fill="#E8E5FF"/>
+    <text x="620" y="254" text-anchor="middle" font-weight="600" fill="#6C5CE7">人：决策 + 审核</text>
+  </g>
+
+  <!-- Key shift annotation -->
+  <rect x="210" y="284" width="380" height="36" rx="18" fill="#FFF3E0" stroke="#FDCB6E" stroke-width="1"/>
+  <text x="400" y="307" text-anchor="middle" font-size="12" font-weight="500" fill="#E17055">核心转变：从「我来写」到「我来判断该不该这么写」</text>
+</svg>

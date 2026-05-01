@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif">
+  <defs>
+    <filter id="s2" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#A29BFE"/>
+    </marker>
+  </defs>
+
+  <rect width="800" height="360" rx="16" fill="#FCFCFD"/>
+  <text x="400" y="36" text-anchor="middle" font-size="18" font-weight="600" fill="#2D3436">Agent 工作循环</text>
+
+  <!-- Step boxes -->
+  <g filter="url(#s2)">
+    <rect x="50" y="80" width="120" height="72" rx="12" fill="#6C5CE7"/>
+    <text x="110" y="112" text-anchor="middle" font-size="22">&#x1F4D6;</text>
+    <text x="110" y="136" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">读代码</text>
+  </g>
+
+  <g filter="url(#s2)">
+    <rect x="218" y="80" width="120" height="72" rx="12" fill="#0984E3"/>
+    <text x="278" y="112" text-anchor="middle" font-size="22">&#x1F9E0;</text>
+    <text x="278" y="136" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">推理规划</text>
+  </g>
+
+  <g filter="url(#s2)">
+    <rect x="386" y="80" width="120" height="72" rx="12" fill="#00B894"/>
+    <text x="446" y="112" text-anchor="middle" font-size="22">&#x270F;</text>
+    <text x="446" y="136" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">编辑文件</text>
+  </g>
+
+  <g filter="url(#s2)">
+    <rect x="554" y="80" width="120" height="72" rx="12" fill="#FDCB6E"/>
+    <text x="614" y="112" text-anchor="middle" font-size="22">&#x25B6;</text>
+    <text x="614" y="136" text-anchor="middle" font-size="13" font-weight="600" fill="#333">执行命令</text>
+  </g>
+
+  <g filter="url(#s2)">
+    <rect x="554" y="220" width="120" height="72" rx="12" fill="#E17055"/>
+    <text x="614" y="252" text-anchor="middle" font-size="22">&#x2705;</text>
+    <text x="614" y="276" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">验证结果</text>
+  </g>
+
+  <g filter="url(#s2)">
+    <rect x="386" y="220" width="120" height="72" rx="12" fill="#636E72"/>
+    <text x="446" y="252" text-anchor="middle" font-size="22">&#x1F504;</text>
+    <text x="446" y="276" text-anchor="middle" font-size="13" font-weight="600" fill="#FFF">迭代修复</text>
+  </g>
+
+  <!-- Arrows -->
+  <g fill="none" stroke="#A29BFE" stroke-width="2" marker-end="url(#arrowhead)">
+    <line x1="170" y1="116" x2="216" y2="116"/>
+    <line x1="338" y1="116" x2="384" y2="116"/>
+    <line x1="506" y1="116" x2="552" y2="116"/>
+    <line x1="614" y1="152" x2="614" y2="218"/>
+    <line x1="554" y1="256" x2="508" y2="256"/>
+  </g>
+
+  <!-- Loop-back arrow -->
+  <path d="M386 256 L110 256 L110 154" fill="none" stroke="#A29BFE" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="6,4"/>
+
+  <!-- Label on loop -->
+  <rect x="180" y="238" width="100" height="22" rx="11" fill="#FFF3E0"/>
+  <text x="230" y="254" text-anchor="middle" font-size="11" font-weight="500" fill="#E17055">测试未通过？</text>
+
+  <!-- Output label -->
+  <g filter="url(#s2)">
+    <rect x="180" y="300" width="180" height="40" rx="20" fill="#DFE6E9"/>
+    <text x="270" y="325" text-anchor="middle" font-size="12" font-weight="500" fill="#2D3436">&#x1F389; 提交 / PR / 部署</text>
+  </g>
+  <path d="M446 292 L300 300" fill="none" stroke="#B2BEC3" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Pass label -->
+  <rect x="440" y="296" width="70" height="20" rx="10" fill="#E8F5E9"/>
+  <text x="475" y="310" text-anchor="middle" font-size="10" font-weight="500" fill="#00B894">通过</text>
+</svg>

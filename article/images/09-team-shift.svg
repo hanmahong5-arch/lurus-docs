@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif">
+  <defs>
+    <filter id="s9" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="360" rx="16" fill="#FCFCFD"/>
+  <text x="400" y="36" text-anchor="middle" font-size="18" font-weight="600" fill="#2D3436">团队结构变化</text>
+
+  <!-- Before -->
+  <text x="200" y="68" text-anchor="middle" font-size="14" font-weight="600" fill="#636E72">Before</text>
+
+  <g filter="url(#s9)">
+    <rect x="60" y="84" width="280" height="240" rx="14" fill="#FFF" stroke="#DFE6E9" stroke-width="1.5"/>
+
+    <!-- People icons row 1 -->
+    <g font-size="28" text-anchor="middle">
+      <text x="120" y="128">&#x1F468;&#x200D;&#x1F4BB;</text>
+      <text x="200" y="128">&#x1F469;&#x200D;&#x1F4BB;</text>
+      <text x="280" y="128">&#x1F468;&#x200D;&#x1F4BB;</text>
+    </g>
+    <g font-size="28" text-anchor="middle">
+      <text x="120" y="174">&#x1F469;&#x200D;&#x1F4BB;</text>
+      <text x="200" y="174">&#x1F468;&#x200D;&#x1F4BB;</text>
+      <text x="280" y="174">&#x1F469;&#x200D;&#x1F4BB;</text>
+    </g>
+    <g font-size="28" text-anchor="middle">
+      <text x="120" y="220">&#x1F468;&#x200D;&#x1F4BB;</text>
+      <text x="200" y="220">&#x1F469;&#x200D;&#x1F4BB;</text>
+      <text x="280" y="220">&#x1F9D1;&#x200D;&#x1F4BC;</text>
+    </g>
+
+    <line x1="80" y1="240" x2="320" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+    <text x="200" y="262" text-anchor="middle" font-size="13" fill="#636E72">8 开发 + 1 PM</text>
+    <text x="200" y="282" text-anchor="middle" font-size="12" fill="#999">各写各的，周会对齐</text>
+    <text x="200" y="300" text-anchor="middle" font-size="12" fill="#999">Sprint 产出：3-5 个功能</text>
+  </g>
+
+  <!-- Arrow -->
+  <g>
+    <line x1="360" y1="200" x2="430" y2="200" stroke="#6C5CE7" stroke-width="2" marker-end="url(#arr8)"/>
+    <defs>
+      <marker id="arr8" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#6C5CE7"/>
+      </marker>
+    </defs>
+  </g>
+
+  <!-- After -->
+  <text x="600" y="68" text-anchor="middle" font-size="14" font-weight="600" fill="#6C5CE7">After</text>
+
+  <g filter="url(#s9)">
+    <rect x="460" y="84" width="280" height="240" rx="14" fill="#FFF" stroke="#6C5CE7" stroke-width="1.5"/>
+
+    <!-- People + AI -->
+    <g font-size="28" text-anchor="middle">
+      <text x="540" y="128">&#x1F468;&#x200D;&#x1F4BB;</text>
+      <text x="620" y="128">&#x1F469;&#x200D;&#x1F4BB;</text>
+      <text x="680" y="128">&#x1F9D1;&#x200D;&#x1F4BC;</text>
+    </g>
+
+    <!-- AI agents -->
+    <g font-size="22" text-anchor="middle">
+      <text x="520" y="182">&#x1F916;</text>
+      <text x="570" y="182">&#x1F916;</text>
+      <text x="620" y="182">&#x1F916;</text>
+      <text x="670" y="182">&#x1F916;</text>
+    </g>
+    <g font-size="22" text-anchor="middle">
+      <text x="520" y="218">&#x1F916;</text>
+      <text x="570" y="218">&#x1F916;</text>
+      <text x="620" y="218">&#x1F916;</text>
+      <text x="670" y="218">&#x1F916;</text>
+    </g>
+
+    <line x1="480" y1="240" x2="720" y2="240" stroke="#F0F0F0" stroke-width="1"/>
+    <text x="600" y="262" text-anchor="middle" font-size="13" fill="#6C5CE7">2 开发 + 1 PM + N Agent</text>
+    <text x="600" y="282" text-anchor="middle" font-size="12" fill="#999">人做架构决策，Agent 并行执行</text>
+    <text x="600" y="300" text-anchor="middle" font-size="12" fill="#999">Sprint 产出：10-15 个功能</text>
+  </g>
+</svg>

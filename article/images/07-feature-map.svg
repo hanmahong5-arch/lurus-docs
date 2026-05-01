@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" font-family="'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif">
+  <defs>
+    <filter id="s7" x="-4%" y="-4%" width="108%" height="108%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect width="800" height="520" rx="16" fill="#FCFCFD"/>
+  <text x="400" y="36" text-anchor="middle" font-size="18" font-weight="600" fill="#2D3436">功能全景</text>
+
+  <!-- Category: Core -->
+  <g filter="url(#s7)">
+    <rect x="40" y="60" width="230" height="200" rx="14" fill="#FFF" stroke="#6C5CE7" stroke-width="1.5"/>
+    <rect x="40" y="60" width="230" height="36" rx="14" fill="#6C5CE7"/>
+    <rect x="40" y="82" width="230" height="14" fill="#6C5CE7"/>
+    <text x="155" y="84" text-anchor="middle" font-size="13" font-weight="700" fill="#FFF">&#x1F680; 核心引擎</text>
+    <text x="60" y="120" font-size="12" fill="#333">&#x2022; 跨文件智能编辑</text>
+    <text x="60" y="142" font-size="12" fill="#333">&#x2022; 终端命令执行</text>
+    <text x="60" y="164" font-size="12" fill="#333">&#x2022; Git 全流程操作</text>
+    <text x="60" y="186" font-size="12" fill="#333">&#x2022; 自动测试 + 迭代修复</text>
+    <text x="60" y="208" font-size="12" fill="#333">&#x2022; Plan Mode 审批</text>
+    <text x="60" y="230" font-size="12" fill="#333">&#x2022; Extended Thinking</text>
+    <text x="60" y="248" font-size="12" fill="#333">&#x2022; 上下文自动压缩</text>
+  </g>
+
+  <!-- Category: Extensibility -->
+  <g filter="url(#s7)">
+    <rect x="290" y="60" width="220" height="200" rx="14" fill="#FFF" stroke="#0984E3" stroke-width="1.5"/>
+    <rect x="290" y="60" width="220" height="36" rx="14" fill="#0984E3"/>
+    <rect x="290" y="82" width="220" height="14" fill="#0984E3"/>
+    <text x="400" y="84" text-anchor="middle" font-size="13" font-weight="700" fill="#FFF">&#x1F9E9; 扩展机制</text>
+    <text x="310" y="120" font-size="12" fill="#333">&#x2022; MCP 服务器</text>
+    <text x="310" y="142" font-size="12" fill="#333">&#x2022; Hooks 自动化</text>
+    <text x="310" y="164" font-size="12" fill="#333">&#x2022; Skills 自定义命令</text>
+    <text x="310" y="186" font-size="12" fill="#333">&#x2022; Agent SDK (TS/Py)</text>
+    <text x="310" y="208" font-size="12" fill="#333">&#x2022; 权限控制体系</text>
+    <text x="310" y="230" font-size="12" fill="#333">&#x2022; 受保护路径</text>
+    <text x="310" y="248" font-size="12" fill="#333">&#x2022; 企业托管策略</text>
+  </g>
+
+  <!-- Category: Collaboration -->
+  <g filter="url(#s7)">
+    <rect x="530" y="60" width="230" height="200" rx="14" fill="#FFF" stroke="#00B894" stroke-width="1.5"/>
+    <rect x="530" y="60" width="230" height="36" rx="14" fill="#00B894"/>
+    <rect x="530" y="82" width="230" height="14" fill="#00B894"/>
+    <text x="645" y="84" text-anchor="middle" font-size="13" font-weight="700" fill="#FFF">&#x1F91D; 协作与部署</text>
+    <text x="550" y="120" font-size="12" fill="#333">&#x2022; 并行 Agent + Worktree</text>
+    <text x="550" y="142" font-size="12" fill="#333">&#x2022; CI/CD 自动 Review</text>
+    <text x="550" y="164" font-size="12" fill="#333">&#x2022; Slack 集成</text>
+    <text x="550" y="186" font-size="12" fill="#333">&#x2022; Dispatch 跨端派发</text>
+    <text x="550" y="208" font-size="12" fill="#333">&#x2022; Remote Control</text>
+    <text x="550" y="230" font-size="12" fill="#333">&#x2022; Scheduled Tasks</text>
+    <text x="550" y="248" font-size="12" fill="#333">&#x2022; Computer Use</text>
+  </g>
+
+  <!-- Category: Memory & Intelligence -->
+  <g filter="url(#s7)">
+    <rect x="40" y="290" width="340" height="200" rx="14" fill="#FFF" stroke="#E17055" stroke-width="1.5"/>
+    <rect x="40" y="290" width="340" height="36" rx="14" fill="#E17055"/>
+    <rect x="40" y="312" width="340" height="14" fill="#E17055"/>
+    <text x="210" y="314" text-anchor="middle" font-size="13" font-weight="700" fill="#FFF">&#x1F9E0; 记忆与智能</text>
+    <g font-size="12" fill="#333">
+      <text x="60" y="350">&#x2022; CLAUDE.md 多级继承（全局→团队→项目→目录）</text>
+      <text x="60" y="372">&#x2022; Auto Memory 自动学习偏好</text>
+      <text x="60" y="394">&#x2022; /memory 查看与编辑</text>
+      <text x="60" y="416">&#x2022; 代码智能索引（跳转、符号、类型）</text>
+      <text x="60" y="438">&#x2022; Focus Mode 精简视图</text>
+      <text x="60" y="460">&#x2022; 成本追踪 /cost</text>
+      <text x="60" y="482">&#x2022; 限速可视化</text>
+    </g>
+  </g>
+
+  <!-- Recent badge -->
+  <g filter="url(#s7)">
+    <rect x="410" y="290" width="350" height="200" rx="14" fill="#FFF" stroke="#FDCB6E" stroke-width="1.5"/>
+    <rect x="410" y="290" width="350" height="36" rx="14" fill="#FDCB6E"/>
+    <rect x="410" y="312" width="350" height="14" fill="#FDCB6E"/>
+    <text x="585" y="314" text-anchor="middle" font-size="13" font-weight="700" fill="#333">&#x2728; 近期新增</text>
+    <g font-size="12" fill="#333">
+      <text x="430" y="350">&#x2022; Computer Use — 控制鼠标键盘测试原生应用</text>
+      <text x="430" y="372">&#x2022; Remote Control — 手机扫码远程操控</text>
+      <text x="430" y="394">&#x2022; Scheduled Tasks — 定时 PR review 等</text>
+      <text x="430" y="416">&#x2022; Dispatch — Slack/手机一键派活</text>
+      <text x="430" y="438">&#x2022; Monitor Tool — 实时流式查看进程</text>
+      <text x="430" y="460">&#x2022; 子进程沙箱 — PID 隔离</text>
+      <text x="430" y="482">&#x2022; OS CA 证书 — 企业代理开箱即用</text>
+    </g>
+  </g>
+</svg>

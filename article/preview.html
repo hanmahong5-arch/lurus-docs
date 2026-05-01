@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code 功能全景 - 公众号预览</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    background: #F5F5F5;
+    color: #333;
+    line-height: 1.8;
+  }
+  .phone-frame {
+    max-width: 420px;
+    margin: 40px auto;
+    background: #FFF;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    overflow: hidden;
+  }
+  .phone-header {
+    background: #2D3436;
+    color: #FFF;
+    padding: 12px 20px;
+    font-size: 13px;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .content {
+    padding: 24px 20px 40px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .subtitle {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2D3436;
+    margin: 32px 0 12px;
+    padding-left: 12px;
+    border-left: 4px solid #6C5CE7;
+  }
+  p {
+    font-size: 15px;
+    color: #555;
+    margin: 10px 0;
+  }
+  .lead {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+  }
+  .scene-text {
+    font-size: 15px;
+    color: #555;
+    line-height: 2;
+  }
+  .img-wrap {
+    margin: 16px -20px;
+    padding: 0;
+    background: #FAFAFA;
+    border-top: 1px solid #F0F0F0;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .img-wrap img {
+    width: 100%;
+    display: block;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 12px 0;
+  }
+  th {
+    background: #F8F7FF;
+    color: #6C5CE7;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 2px solid #6C5CE7;
+  }
+  td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #F0F0F0;
+    color: #555;
+  }
+  td:first-child {
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+  }
+  .code-block {
+    background: #2D3436;
+    color: #DFE6E9;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 12px 0;
+    overflow-x: auto;
+  }
+  .code-inline {
+    background: #F0EEFF;
+    color: #6C5CE7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+  }
+  .tag {
+    display: inline-block;
+    background: #F0EEFF;
+    color: #6C5CE7;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 2px 4px 2px 0;
+  }
+  .divider {
+    height: 1px;
+    background: #F0F0F0;
+    margin: 28px 0;
+  }
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: #BBB;
+    padding: 20px 0;
+    border-top: 1px solid #F0F0F0;
+    margin-top: 32px;
+  }
+  ul {
+    padding-left: 18px;
+    margin: 8px 0;
+  }
+  li {
+    font-size: 14px;
+    color: #555;
+    margin: 4px 0;
+  }
+  .highlight-box {
+    background: #F8F7FF;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    border: 1px solid #E8E5FF;
+  }
+  .highlight-box p {
+    font-size: 14px;
+    margin: 4px 0;
+  }
+  /* Interactive / empathy elements */
+  .interact {
+    background: #FFF9E6;
+    border-left: 3px solid #FDCB6E;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #7D6608;
+    line-height: 1.7;
+  }
+  .interact strong {
+    color: #E17055;
+  }
+  .insight {
+    background: #F0F7FF;
+    border-left: 3px solid #0984E3;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 14px;
+    color: #2D3436;
+    line-height: 1.7;
+  }
+  .bold-text {
+    font-weight: 600;
+    color: #333;
+  }
+  .scene-box {
+    background: #FAFAFA;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 16px 0;
+    border: 1px solid #EDEDED;
+  }
+  .trend-num {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    background: #6C5CE7;
+    color: #FFF;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .trend-item {
+    margin: 16px 0;
+  }
+  .trend-item .trend-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #2D3436;
+    margin-bottom: 4px;
+  }
+  .trend-item .trend-body {
+    font-size: 14px;
+    color: #636E72;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="phone-header">公众号文章预览</div>
+  <div class="content">
+
+    <h1>Claude Code 功能全景</h1>
+    <p class="subtitle">一个跑在终端里的 AI 工程师。读代码、改代码、跑测试、提 PR，一条龙。</p>
+
+    <!-- Scene -->
+    <h2>先说一个场景</h2>
+
+    <div class="scene-box">
+      <p class="scene-text">周五下午四点。产品经理在群里发了一张图："这个页面的筛选逻辑改一下，加三个维度，下周一用。"</p>
+      <p class="scene-text">你点开代码，涉及 6 个文件。前端过滤逻辑、后端接口、数据库查询、单元测试、API 文档、还有一个该死的 migration。</p>
+      <p class="scene-text">以前你会叹口气，开始一个个文件改。</p>
+      <p class="scene-text">现在你打开终端，把需求丢给它。它读完相关代码，问了你两个边界问题，然后开始自己改。跑测试，有两个没过，自己修。十五分钟后给你一个 PR。</p>
+      <p class="scene-text">你 review 了一下，合并。下班。</p>
+    </div>
+
+    <div class="interact">
+      <strong>你有过类似的时刻吗？</strong><br>或者你还在那个叹气的阶段？评论区聊聊。
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Evolution -->
+    <h2>从补全到 Agent：走到哪了</h2>
+
+    <div class="img-wrap">
+      <img src="./images/08-evolution.svg" alt="AI 编程工具演进">
+    </div>
+
+    <p>2021，Copilot 教大家按 Tab。</p>
+    <p>2023，ChatGPT 和 Cursor 教大家把代码贴进去问。</p>
+    <p>2025，Agent 开始自己跑循环了。</p>
+
+    <p>三个阶段，人的角色在变：写代码 → 复制粘贴 → 做决策和审核。</p>
+
+    <div class="insight">
+      你会发现，时间越来越多花在"要不要这样做"上，而不是"这行代码怎么写"上。
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Platforms -->
+    <h2>去哪儿用</h2>
+
+    <div class="img-wrap">
+      <img src="./images/01-platforms.svg" alt="全平台接入">
+    </div>
+
+    <p>七个入口，同一套配置。</p>
+
+    <table>
+      <tr><th>入口</th><th>一句话</th></tr>
+      <tr><td>Terminal CLI</td><td>功能最全，脚本自动化首选</td></tr>
+      <tr><td>VS Code / JetBrains</td><td>内联 diff，选中代码直接对话</td></tr>
+      <tr><td>桌面应用</td><td>多会话并排，可视化操作</td></tr>
+      <tr><td>Web 版</td><td>浏览器打开就用，手机也行</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions 里自动 review</td></tr>
+      <tr><td>Slack</td><td>群里 @Claude，派任务收 PR</td></tr>
+      <tr><td>Agent SDK</td><td>TS / Python，嵌入你自己的产品</td></tr>
+    </table>
+
+    <div class="highlight-box">
+      <p>CLAUDE.md、MCP、Skills 全平台同步。终端设好的，桌面和 Web 立刻生效。</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Agent Loop -->
+    <h2>怎么干活</h2>
+
+    <div class="img-wrap">
+      <img src="./images/02-agent-loop.svg" alt="Agent 工作循环">
+    </div>
+
+    <p>六步循环。测试不过就自己修，直到绿灯。</p>
+    <p>跨文件编辑、终端命令、Git 全流程——都在循环里。</p>
+    <p>复杂改动开 <span class="code-inline">Plan Mode</span>，先出方案你审批，再动手。</p>
+
+    <div class="divider"></div>
+
+    <!-- MCP -->
+    <h2>MCP：看到代码之外的世界</h2>
+
+    <div class="img-wrap">
+      <img src="./images/06-mcp-ecosystem.svg" alt="MCP 生态">
+    </div>
+
+    <p class="lead">Model Context Protocol——标准化的外部系统连接协议。</p>
+
+    <p>官方开箱即用：</p>
+    <div style="margin: 8px 0;">
+      <span class="tag">GitHub</span>
+      <span class="tag">GitLab</span>
+      <span class="tag">Google Docs</span>
+      <span class="tag">Slack</span>
+      <span class="tag">Jira</span>
+    </div>
+
+    <p>自建也行。写个 MCP Server，把内部 API、数据库、文档系统全接进来。</p>
+
+    <div class="insight">
+      MCP 可能是今年最值得关注的协议之一。它在做的事情类似于 HTTP 之于网页：给 AI 和外部世界之间定义一种通用语言。现在已经有几百个社区 MCP Server。如果你在做基础设施或平台，值得早布局。
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Hooks -->
+    <h2>Hooks：给动作装触发器</h2>
+
+    <div class="img-wrap">
+      <img src="./images/04-hooks-flow.svg" alt="Hooks 工作流">
+    </div>
+
+    <p>在执行动作的前后插入自定义逻辑。</p>
+
+    <div style="margin: 8px 0;">
+      <span class="tag">Shell</span>
+      <span class="tag">Prompt</span>
+      <span class="tag">Agent</span>
+      <span class="tag">HTTP</span>
+    </div>
+
+    <ul>
+      <li>编辑文件 → 自动 Prettier</li>
+      <li>提交代码 → 自动 lint</li>
+      <li>碰 <span class="code-inline">.env</span> → 直接拦截</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <!-- Skills -->
+    <h2>Skills：团队命令库</h2>
+
+    <p>把重复操作封装成斜杠命令，团队共享。</p>
+
+    <div class="code-block">
+/review-pr     → Code Review<br>
+/deploy-stg    → 部署测试环境<br>
+/security      → 安全扫描
+    </div>
+
+    <p>创建：<span class="code-inline">claude /skills add &lt;name&gt;</span></p>
+    <p>新人来了，跑一遍 Skills 列表就知道团队怎么干活。</p>
+
+    <div class="divider"></div>
+
+    <!-- Parallel Agents -->
+    <h2>并行 Agent：一个人当一个团队</h2>
+
+    <div class="img-wrap">
+      <img src="./images/05-parallel-agents.svg" alt="并行 Agent">
+    </div>
+
+    <p>基于 Git Worktree 的分支隔离。Lead Agent 拆任务，Worker 各干各的，干完自动合并。</p>
+
+    <div class="divider"></div>
+
+    <!-- Memory -->
+    <h2>记忆系统：越用越懂你</h2>
+
+    <div class="img-wrap">
+      <img src="./images/03-memory-tree.svg" alt="双层记忆系统">
+    </div>
+
+    <p><strong>CLAUDE.md</strong>（显式）——全局 → 团队 → 项目 → 目录，四级继承。</p>
+    <p><strong>Auto Memory</strong>（隐式）——从对话中自动提取。跨会话保留，<span class="code-inline">/memory</span> 随时查看。</p>
+
+    <div class="interact">
+      一个体感：用了一周之后，你会明显觉得它"更懂了"。不用再重复说"我们项目用 Bun"、"测试要跑 race detector"。<strong>它记住了。</strong>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Feature Map -->
+    <h2>功能全景</h2>
+
+    <div class="img-wrap">
+      <img src="./images/07-feature-map.svg" alt="功能全景图">
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- New features -->
+    <h2>近期新功能</h2>
+
+    <table>
+      <tr><th>功能</th><th>说明</th></tr>
+      <tr><td>Computer Use</td><td>控制鼠标键盘，测试桌面应用</td></tr>
+      <tr><td>Remote Control</td><td>扫码远程操控，手机指挥 AI</td></tr>
+      <tr><td>Scheduled Tasks</td><td>定时任务，每天自动 review</td></tr>
+      <tr><td>Dispatch</td><td>Slack / 手机派活，桌面端执行</td></tr>
+      <tr><td>Focus Mode</td><td>Ctrl+O，精简视图</td></tr>
+      <tr><td>Monitor Tool</td><td>实时查看后台进程</td></tr>
+      <tr><td>子进程沙箱</td><td>PID 级别隔离</td></tr>
+      <tr><td>限速可视化</td><td>触发限制和恢复时间一目了然</td></tr>
+    </table>
+
+    <div class="divider"></div>
+
+    <!-- Quick Reference -->
+    <h2>速查</h2>
+
+    <div class="code-block">
+/cost&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;token 用量和费用<br>
+/compact&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;压缩历史，释放上下文<br>
+/memory&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;查看和编辑记忆<br>
+Ctrl+O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Focus Mode
+    </div>
+
+    <p>管道组合：</p>
+    <div class="code-block">
+tail -f app.log | claude "分析异常"<br>
+cat schema.sql &nbsp;| claude "写迁移脚本"
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Team Impact -->
+    <h2>对团队意味着什么</h2>
+
+    <div class="img-wrap">
+      <img src="./images/09-team-shift.svg" alt="团队结构变化">
+    </div>
+
+    <p>这张图画得有点绝对，但方向是对的。</p>
+
+    <p>以前一个功能需要 3 个人写一周。现在 1 个人配几个 Agent 可能两天搞定。人数没变产出翻了。或者反过来——产出没变，团队从 8 缩到 3。</p>
+
+    <p class="bold-text">但更真实的变化在角色上。</p>
+
+    <p>资深工程师的时间从"写代码"转向"定方向、审代码、做架构判断"。这本来就是他们最该花时间的地方，只是以前被大量实现细节占满了。</p>
+
+    <p>初级工程师呢？学习曲线变平了——有 AI 结对上手快很多。但如果只会"照着需求写代码"，可替代性确实在增加。</p>
+
+    <div class="interact">
+      <strong>你的团队属于哪种状态？</strong><br>已经在用 Agent 了，还是在观望？评论区说说。
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Trends -->
+    <h2>三个趋势判断</h2>
+
+    <div class="trend-item">
+      <p class="trend-title"><span class="trend-num">1</span>Agent 的天花板是上下文，不是智力</p>
+      <p class="trend-body">模型已经够聪明了。瓶颈是：能看到多少信息、记住多少东西、连接多少系统。MCP、记忆系统、并行 Agent——全是在解这个问题。</p>
+    </div>
+
+    <div class="trend-item">
+      <p class="trend-title"><span class="trend-num">2</span>"提示词工程师"会消失，"AI 系统工程师"会出现</p>
+      <p class="trend-body">写 prompt 是过渡态。真正有壁垒的是：设计 Agent 工作流、编排多 Agent 协作、管理 AI 产出质量。这是系统工程。</p>
+    </div>
+
+    <div class="trend-item">
+      <p class="trend-title"><span class="trend-num">3</span>开发者工具赛道正在重新洗牌</p>
+      <p class="trend-body">IDE、CI/CD、项目管理、代码审查——原本各自独立的品类正在被 Agent 打穿。工具链的边界在模糊。</p>
+    </div>
+
+    <div class="interact">
+      <strong>你押注哪个方向？</strong>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Closing -->
+    <h2>写在最后</h2>
+
+    <p>工具在变，但有些东西没变。</p>
+
+    <p>好的工程判断力、对产品的理解、在复杂系统里做取舍的能力——这些 Agent 做不了。它能帮你把想法落地得更快，但"想什么"还是你的事。</p>
+
+    <p>如果你已经在用，欢迎评论区聊聊你的工作流是怎么搭的。</p>
+
+    <p>如果还没用过，找一个周五下午，拿一个改了很久没改完的需求试一次。</p>
+
+    <p style="color: #999; font-size: 14px; margin-top: 20px;">你会有感觉的。</p>
+
+    <div class="footer">
+      图片均为 SVG 矢量图，公众号发布时导出 PNG 即可
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
