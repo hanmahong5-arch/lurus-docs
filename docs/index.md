@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Lurus — AI 基础设施与产品平台
-description: 从执行引擎到量化交易，从智能记忆到内容创作 — 覆盖 AI 全栈的产品矩阵。
+title: LurusTech Docs — AI 基础设施与产品平台
+description: LurusTech 平台文档 — API Reference · Quickstart · Integration Guide
 ---
 
 <div class="vp-doc lurus-home">

@@ -1,0 +1,103 @@
+/**
+ * LurusTech brand-spec overrides — applied on top of style.css
+ * Tokens: paper #F5F2E8 / ink #14130F / accent #FF5D1F
+ * Fonts: Inter Tight (sans), JetBrains Mono (mono), Noto Sans SC (CJK)
+ */
+
+/* ─── Google Fonts ───────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500&display=swap');
+
+/* ─── Light mode ─────────────────────────────────────────── */
+:root {
+  /* Brand accent */
+  --vp-c-brand-1: #FF5D1F;
+  --vp-c-brand-2: #FF8050;
+  --vp-c-brand-3: #FFA080;
+  --vp-c-brand-soft: rgba(255, 93, 31, 0.14);
+
+  /* Backgrounds — warm paper tones */
+  --vp-c-bg: #F5F2E8;
+  --vp-c-bg-soft: #E8E4D6;
+  --vp-c-bg-mute: #D6D2C2;
+
+  /* Text — deep ink */
+  --vp-c-text-1: #14130F;
+  --vp-c-text-2: rgba(20, 19, 15, 0.78);
+
+  /* Dividers */
+  --vp-c-divider: #D6D2C2;
+
+  /* Typography */
+  --vp-font-family-base: 'Inter Tight', 'Noto Sans SC', system-ui, sans-serif;
+  --vp-font-family-mono: 'JetBrains Mono', monospace;
+
+  /* Button */
+  --vp-button-brand-bg: #FF5D1F;
+  --vp-button-brand-hover-bg: #FF8050;
+  --vp-button-brand-active-bg: #E04A10;
+  --vp-button-brand-text: #FFFFFF;
+  --vp-button-brand-hover-text: #FFFFFF;
+  --vp-button-brand-active-text: #FFFFFF;
+
+  /* Home hero */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(135deg, #FF5D1F 0%, #FF9060 50%, #FF5D1F 100%);
+  --vp-home-hero-image-background-image: radial-gradient(ellipse, rgba(255, 93, 31, 0.28) 0%, transparent 70%);
+  --vp-home-hero-image-filter: blur(44px);
+
+  /* Nav */
+  --vp-nav-bg-color: rgba(245, 242, 232, 0.92);
+
+  /* Sidebar */
+  --vp-sidebar-bg-color: #EDE9DA;
+
+  /* Lurus custom shorthands (keep compat with components) */
+  --lurus-brand: #FF5D1F;
+  --lurus-cream: #F5F2E8;
+  --lurus-ink: #14130F;
+}
+
+/* ─── Dark mode ──────────────────────────────────────────── */
+.dark {
+  --vp-c-brand-1: #FF7A45;
+  --vp-c-brand-2: #FF9060;
+  --vp-c-brand-3: #FFB080;
+  --vp-c-brand-soft: rgba(255, 93, 31, 0.18);
+
+  --vp-c-bg: #14130F;
+  --vp-c-bg-soft: #0A0908;
+  --vp-c-bg-mute: #25221C;
+
+  --vp-c-text-1: #F0EDE4;
+  --vp-c-text-2: rgba(240, 237, 228, 0.78);
+
+  --vp-c-divider: #25221C;
+
+  --vp-button-brand-bg: #FF7A45;
+  --vp-button-brand-hover-bg: #FF9060;
+  --vp-button-brand-active-bg: #FF5D1F;
+  --vp-button-brand-text: #14130F;
+  --vp-button-brand-hover-text: #14130F;
+  --vp-button-brand-active-text: #14130F;
+
+  --vp-home-hero-name-background: linear-gradient(135deg, #FF7A45 0%, #FFB080 50%, #FF7A45 100%);
+  --vp-home-hero-image-background-image: radial-gradient(ellipse, rgba(255, 93, 31, 0.22) 0%, transparent 70%);
+
+  --vp-nav-bg-color: rgba(20, 19, 15, 0.92);
+  --vp-sidebar-bg-color: #1A1814;
+
+  --lurus-brand: #FF7A45;
+}
+
+/* ─── Font application ───────────────────────────────────── */
+body {
+  font-family: var(--vp-font-family-base);
+}
+code, pre, kbd {
+  font-family: var(--vp-font-family-mono);
+}
+
+/* ─── Feature card hover: use new accent shadow ──────────── */
+.VPFeature:hover {
+  box-shadow: 0 12px 32px rgba(255, 93, 31, 0.16);
+}

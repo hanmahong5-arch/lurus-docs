@@ -34,6 +34,7 @@ import RelatedProducts from './components/landing/RelatedProducts.vue'
 import NextSteps from './components/landing/NextSteps.vue'
 import MetricStats from './components/landing/MetricStats.vue'
 import './style.css'
+import './custom.css'
 
 export default {
   extends: DefaultTheme,

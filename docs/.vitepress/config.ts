@@ -3,8 +3,8 @@ import llmstxt from 'vitepress-plugin-llms'
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 
 export default defineConfig({
-  title: 'Lurus',
-  description: 'Lurus AI 基础设施与产品平台 — LLM 网关、Agent 执行引擎、智能记忆、量化交易、桌面工具',
+  title: 'LurusTech Docs',
+  description: 'LurusTech 平台文档 — API Reference · Quickstart · Integration Guide',
   lang: 'zh-CN',
 
   cleanUrls: true,
@@ -14,6 +14,9 @@ export default defineConfig({
   },
 
   head: [
+    ['link', { rel: 'preconnect', href: 'https://fonts.googleapis.com' }],
+    ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
+    ['link', { href: 'https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500&display=swap', rel: 'stylesheet' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     // Self-hosted variable fonts — served from /public/fonts/ when present,
     // otherwise the system stack in tokens/_typography.css takes over.
