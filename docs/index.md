@@ -8,7 +8,30 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 <Hero />
 
-## <Icon name="rocket" :size="22" /> 我是新手 — 3 分钟发起第一次 AI 调用
+<nav class="persona-jump" aria-label="按角色快速跳转">
+  <a href="#newbie" class="persona-jump__chip">
+    <span class="persona-jump__icon"><Icon name="rocket" :size="14" /></span>
+    <span class="persona-jump__label">新手</span>
+    <span class="persona-jump__hint">3 分钟上手</span>
+  </a>
+  <a href="#player" class="persona-jump__chip">
+    <span class="persona-jump__icon"><Icon name="gamepad-2" :size="14" /></span>
+    <span class="persona-jump__label">玩家</span>
+    <span class="persona-jump__hint">现成工具</span>
+  </a>
+  <a href="#decider" class="persona-jump__chip">
+    <span class="persona-jump__icon"><Icon name="briefcase" :size="14" /></span>
+    <span class="persona-jump__label">决策者</span>
+    <span class="persona-jump__hint">企业评估</span>
+  </a>
+  <a href="#dev" class="persona-jump__chip">
+    <span class="persona-jump__icon"><Icon name="code" :size="14" /></span>
+    <span class="persona-jump__label">开发者</span>
+    <span class="persona-jump__hint">构建系统</span>
+  </a>
+</nav>
+
+## <Icon name="rocket" :size="22" /> 我是新手 — 3 分钟发起第一次 AI 调用 {#newbie}
 
 面对 50+ 大模型不知从何选择？跟着下面三步，从注册到跑通第一次调用。
 
@@ -34,7 +57,7 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 ---
 
-## <Icon name="gamepad-2" :size="22" /> 我是玩家 — 想要现成的 AI 工具
+## <Icon name="gamepad-2" :size="22" /> 我是玩家 — 想要现成的 AI 工具 {#player}
 
 跳过配置和代码，直接下载开箱即用的桌面工具 / 交易平台 / 移动 App。
 
@@ -75,7 +98,7 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 ---
 
-## <Icon name="briefcase" :size="22" /> 我是决策者 — 评估企业采购
+## <Icon name="briefcase" :size="22" /> 我是决策者 — 评估企业采购 {#decider}
 
 一张表看清 TCO、合规、私有化、SLA。支持企业 SSO 联邦与国密 SM4-GCM。
 
@@ -120,7 +143,7 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 ---
 
-## <Icon name="code" :size="22" /> 我是开发者 — 构建 AI 系统
+## <Icon name="code" :size="22" /> 我是开发者 — 构建 AI 系统 {#dev}
 
 Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向上搭你的 AI 栈。
 
@@ -210,6 +233,61 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
 
 ## 为什么选择 Lurus？
 
+四项核心差异 — 把企业 AI 栈一次搭好，不是再多一个工具。
+
+<div class="diff-grid">
+  <article class="diff-card diff-card--brand">
+    <header class="diff-card__head">
+      <span class="diff-card__icon"><Icon name="layers" :size="20" /></span>
+      <h3 class="diff-card__title">全栈自研</h3>
+    </header>
+    <p class="diff-card__lede">Rust 执行引擎到 Flutter 移动端，12 个产品共享账户 / 计费 / 记忆 / LLM 网关。</p>
+    <ul class="diff-card__points">
+      <li>核心技术自主可控，无供应商锁定</li>
+      <li>越用越值，工具栈不再碎片化</li>
+    </ul>
+  </article>
+
+  <article class="diff-card diff-card--accent-kova">
+    <header class="diff-card__head">
+      <span class="diff-card__icon"><Icon name="zap" :size="20" /></span>
+      <h3 class="diff-card__title">引擎级性能</h3>
+    </header>
+    <p class="diff-card__lede">Kova 调度 <strong>3μs</strong>（Criterion 基准）·  API 网关 p95 <strong>&lt; 50ms</strong>。</p>
+    <ul class="diff-card__points">
+      <li>不是 Temporal / LangGraph 的简单封装</li>
+      <li>MemX 零 LLM 成本蒸馏 · Lucrum Decimal.js 全精度</li>
+    </ul>
+  </article>
+
+  <article class="diff-card diff-card--accent-platform">
+    <header class="diff-card__head">
+      <span class="diff-card__icon"><Icon name="shield-check" :size="20" /></span>
+      <h3 class="diff-card__title">数据主权</h3>
+    </header>
+    <p class="diff-card__lede">私有化部署，数据不出企业边界，国密 SM4-GCM 全程加密。</p>
+    <ul class="diff-card__points">
+      <li>统一 SSO / Passkey / MFA · 接企业 IdP 联邦</li>
+      <li>OpenAI SDK 兼容，PAT/JWT 标准认证，导出无锁定</li>
+    </ul>
+  </article>
+
+  <article class="diff-card diff-card--accent-memx">
+    <header class="diff-card__head">
+      <span class="diff-card__icon"><Icon name="receipt" :size="20" /></span>
+      <h3 class="diff-card__title">TCO 透明</h3>
+    </header>
+    <p class="diff-card__lede">鹿贝单位统一计费，按量扣费 + 免费额度，一张账单看清全部用量。</p>
+    <ul class="diff-card__points">
+      <li>无多家账单对账成本</li>
+      <li>开放迁出，供应商锁定零退出成本</li>
+    </ul>
+  </article>
+</div>
+
+<details class="diff-table">
+  <summary>展开完整对照表（8 个维度 × 自建对比）</summary>
+
 | 维度 | Lurus 的优势 | 对照自建 |
 |------|-------------|---------|
 | **全栈自研** | 从 Rust 执行引擎到 Flutter 移动端，核心技术完全自主可控 | 多供应商拼装，版本锁定风险 |
@@ -221,13 +299,43 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
 | **TCO 透明** | 鹿贝单位统一计费，按量扣费 + 免费额度 | 多家账单对账复杂 |
 | **开放可迁出** | OpenAI SDK 兼容，PAT/JWT 标准认证，导出无锁定 | 供应商锁定退出成本高 |
 
+</details>
+
 ---
+
+## 准备好了？
+
+<div class="finalcta">
+  <div class="finalcta__text">
+    <h3>用 5 行代码替换掉你现在的 LLM 客户端</h3>
+    <p>注册即送免费额度 · 兼容 OpenAI SDK · 50+ 模型一个 Key 全打通。</p>
+  </div>
+  <div class="finalcta__actions">
+    <a href="/guide/quickstart" class="finalcta__btn finalcta__btn--primary">3 分钟上手 →</a>
+    <a href="https://api.lurus.cn" target="_blank" rel="noopener noreferrer" class="finalcta__btn finalcta__btn--alt">前往控制台 ↗</a>
+    <a href="mailto:business@lurus.cn" class="finalcta__btn finalcta__btn--ghost">企业咨询</a>
+  </div>
+</div>
 
 ## 联系我们
 
-- <Icon name="life-buoy" :size="14" /> **技术支持**: support@lurus.cn
-- <Icon name="briefcase" :size="14" /> **商务合作**: business@lurus.cn
-- <Icon name="github" :size="14" /> **GitHub**: [github.com/hanmahong5-arch](https://github.com/hanmahong5-arch)
+<div class="contact-grid">
+  <a href="mailto:support@lurus.cn" class="contact-card">
+    <span class="contact-card__icon"><Icon name="life-buoy" :size="22" /></span>
+    <span class="contact-card__name">技术支持</span>
+    <span class="contact-card__addr">support@lurus.cn</span>
+  </a>
+  <a href="mailto:business@lurus.cn" class="contact-card contact-card--accent">
+    <span class="contact-card__icon"><Icon name="briefcase" :size="22" /></span>
+    <span class="contact-card__name">商务合作</span>
+    <span class="contact-card__addr">business@lurus.cn</span>
+  </a>
+  <a href="https://github.com/hanmahong5-arch" target="_blank" rel="noopener noreferrer" class="contact-card">
+    <span class="contact-card__icon"><Icon name="github" :size="22" /></span>
+    <span class="contact-card__name">GitHub</span>
+    <span class="contact-card__addr">hanmahong5-arch ↗</span>
+  </a>
+</div>
 
 </div>
 
@@ -261,5 +369,319 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
 }
 @media (max-width: 640px) {
   .lurus-home { padding: 16px; }
+}
+
+/* ============================================================
+ * Persona jump chips — sits under Hero, anchors into 4 personas
+ * ============================================================ */
+.persona-jump {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: -12px 0 8px;
+  padding: 10px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--lurus-radius-pill);
+  align-items: center;
+  justify-content: center;
+}
+.persona-jump__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--lurus-radius-pill);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--vp-c-text-2) !important;
+  text-decoration: none !important;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  transition: transform var(--lurus-dur-fast) var(--lurus-ease-out),
+              border-color var(--lurus-dur-fast),
+              color var(--lurus-dur-fast);
+}
+.persona-jump__chip:hover {
+  transform: var(--lurus-hover-rise);
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1) !important;
+}
+.persona-jump__icon {
+  display: inline-flex;
+  color: var(--vp-c-brand-1);
+}
+.persona-jump__hint {
+  color: var(--vp-c-text-3);
+  font-weight: 400;
+  font-size: 0.74rem;
+}
+.persona-jump__chip:hover .persona-jump__hint { color: inherit; opacity: 0.85; }
+@media (max-width: 640px) {
+  .persona-jump { border-radius: var(--lurus-radius-lg); }
+  .persona-jump__hint { display: none; }
+}
+
+/* ============================================================
+ * Differentiators — 4 cards replacing the 8-row why-Lurus table
+ * ============================================================ */
+.diff-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 18px 0 14px;
+}
+.diff-card {
+  --accent: var(--vp-c-brand-1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px 22px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--lurus-radius-lg);
+  background: var(--vp-c-bg-soft);
+  overflow: hidden;
+  transition: transform var(--lurus-dur-base) var(--lurus-ease-out),
+              border-color var(--lurus-dur-base),
+              box-shadow var(--lurus-dur-base);
+}
+.diff-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent);
+}
+.diff-card:hover {
+  transform: var(--lurus-hover-rise);
+  border-color: var(--accent);
+  box-shadow: var(--lurus-shadow-3);
+}
+.diff-card--brand            { --accent: var(--vp-c-brand-1); }
+.diff-card--accent-kova      { --accent: var(--lurus-color-kova); }
+.diff-card--accent-platform  { --accent: var(--lurus-color-platform); }
+.diff-card--accent-memx      { --accent: var(--lurus-color-memx); }
+.diff-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.diff-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--lurus-radius-md);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.diff-card__title {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--vp-c-text-1);
+  border: none !important;
+  padding: 0 !important;
+}
+.diff-card__lede {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--vp-c-text-1);
+}
+.diff-card__lede strong {
+  color: var(--accent);
+  font-feature-settings: 'tnum';
+}
+.diff-card__points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.diff-card__points li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 0.82rem;
+  color: var(--vp-c-text-2);
+  line-height: 1.5;
+}
+.diff-card__points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.65;
+}
+
+.diff-table {
+  margin: 12px 0 8px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--lurus-radius-md);
+  background: var(--vp-c-bg-soft);
+  overflow: hidden;
+}
+.diff-table > summary {
+  cursor: pointer;
+  padding: 12px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+  user-select: none;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background var(--lurus-dur-fast);
+}
+.diff-table > summary::-webkit-details-marker { display: none; }
+.diff-table > summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform var(--lurus-dur-fast);
+  color: var(--vp-c-brand-1);
+}
+.diff-table[open] > summary::before { transform: rotate(90deg); }
+.diff-table > summary:hover { background: var(--vp-c-bg-mute); }
+.diff-table table { margin: 0 18px 18px; }
+
+/* ============================================================
+ * Final CTA — bottom strip "ready?"
+ * ============================================================ */
+.finalcta {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: center;
+  margin: 24px 0 16px;
+  padding: 28px 32px;
+  border-radius: var(--lurus-radius-xl);
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--vp-c-brand-1) 14%, transparent), transparent 60%),
+    radial-gradient(120% 140% at 100% 100%, color-mix(in srgb, var(--lurus-color-kova) 12%, transparent), transparent 55%),
+    var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+}
+.finalcta__text h3 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--vp-c-text-1);
+  border: none !important;
+  padding: 0 !important;
+}
+.finalcta__text p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+  line-height: 1.5;
+}
+.finalcta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.finalcta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: var(--lurus-radius-pill);
+  text-decoration: none !important;
+  transition: transform var(--lurus-dur-fast),
+              filter var(--lurus-dur-fast),
+              border-color var(--lurus-dur-fast),
+              color var(--lurus-dur-fast);
+}
+.finalcta__btn:hover { transform: var(--lurus-hover-rise); }
+.finalcta__btn--primary {
+  background: var(--vp-c-brand-1);
+  color: #fff !important;
+}
+.finalcta__btn--primary:hover { filter: brightness(1.08); }
+.finalcta__btn--alt {
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1) !important;
+  border: 1px solid var(--vp-c-divider);
+}
+.finalcta__btn--alt:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1) !important;
+}
+.finalcta__btn--ghost {
+  color: var(--vp-c-text-2) !important;
+}
+.finalcta__btn--ghost:hover { color: var(--vp-c-brand-1) !important; }
+
+@media (max-width: 720px) {
+  .finalcta {
+    grid-template-columns: 1fr;
+    padding: 22px 20px;
+  }
+  .finalcta__actions { justify-content: flex-start; }
+}
+
+/* ============================================================
+ * Contact card grid
+ * ============================================================ */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0 8px;
+}
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: var(--lurus-radius-lg);
+  border: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+  text-decoration: none !important;
+  color: var(--vp-c-text-1) !important;
+  transition: transform var(--lurus-dur-base),
+              border-color var(--lurus-dur-base),
+              box-shadow var(--lurus-dur-base);
+}
+.contact-card:hover {
+  transform: var(--lurus-hover-rise);
+  border-color: var(--vp-c-brand-1);
+  box-shadow: var(--lurus-shadow-2);
+}
+.contact-card--accent { border-color: color-mix(in srgb, var(--vp-c-brand-1) 30%, var(--vp-c-divider)); }
+.contact-card__icon {
+  color: var(--vp-c-brand-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--lurus-radius-md);
+  background: color-mix(in srgb, var(--vp-c-brand-1) 12%, transparent);
+}
+.contact-card__name {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.contact-card__addr {
+  font-size: 0.82rem;
+  color: var(--vp-c-text-3);
+  font-family: var(--lurus-font-mono);
 }
 </style>
