@@ -127,7 +127,7 @@ function reviewedHint(iso: string): string {
       </div>
       <div class="ops-banner__body">
         <strong class="ops-banner__title">Lurus 员工内部知识库</strong>
-        <span class="ops-banner__copy">含未公开运维细节、决策档案、Bus Factor 数据。请勿外传，禁止截图发到公开聊天群。</span>
+        <span class="ops-banner__copy">运维细节 · 决策档案 · 单点风险数据。看了请关掉，不要截图。</span>
       </div>
       <div class="ops-banner__chip" :title="'打开时刻：' + nowLabel">
         <span class="ops-banner__dot" />
@@ -184,7 +184,7 @@ function reviewedHint(iso: string): string {
       <header class="section-header">
         <span class="section-header__eyebrow">FOCUS</span>
         <h2 class="section-header__title">今日焦点</h2>
-        <span class="section-header__hint">Bus=1 且有风险信号的产品 · 优先 P0/P1</span>
+        <span class="section-header__hint">单点 + 风险叠加的产品 · 今天先看这些</span>
       </header>
       <ul class="focus-list">
         <li v-for="p in focusProducts" :key="p.id" class="focus-item">
@@ -209,7 +209,7 @@ function reviewedHint(iso: string): string {
     <header class="section-header">
       <span class="section-header__eyebrow">KPI</span>
       <h2 class="section-header__title">一屏概况</h2>
-      <span class="section-header__hint">{{ totalProducts }} 条产品线 · {{ serverCount }} 节点</span>
+      <span class="section-header__hint">{{ totalProducts }} 条产品线 · {{ serverCount }} 节点 · 一眼看出哪里在烧</span>
     </header>
     <div class="lurus-grid lurus-grid--kpi">
       <KPITile label="产品总数" :value="totalProducts" hint="全产品线" />
@@ -252,7 +252,7 @@ function reviewedHint(iso: string): string {
     <header class="section-header">
       <span class="section-header__eyebrow">PRODUCTS</span>
       <h2 class="section-header__title">产品状态阵</h2>
-      <span class="section-header__hint">按产品组分组 · 颜色 = 部门 · 圆点 = 状态</span>
+      <span class="section-header__hint">颜色 = 组别 · 圆点 = 状态 · 一眼定位谁在哪一格</span>
     </header>
     <ProductStatusGrid />
 
@@ -260,7 +260,7 @@ function reviewedHint(iso: string): string {
     <header class="section-header">
       <span class="section-header__eyebrow">INFRA</span>
       <h2 class="section-header__title">服务器拓扑 + 容量</h2>
-      <span class="section-header__hint">PROD R1 · STAGE R6 · 边缘 + agents</span>
+      <span class="section-header__hint">R1 是 PROD · R6 是 STAGE · 写错地方就翻车</span>
     </header>
     <ServerTopology />
 
@@ -268,7 +268,7 @@ function reviewedHint(iso: string): string {
     <header class="section-header">
       <span class="section-header__eyebrow">DEPENDENCY</span>
       <h2 class="section-header__title">产品依赖图谱</h2>
-      <span class="section-header__hint">Mermaid 自动生成 · capabilities 段为真源</span>
+      <span class="section-header__hint">改 lurus.yaml 的 capabilities，图自动重画</span>
     </header>
     <DependencyGraph />
 
@@ -276,28 +276,28 @@ function reviewedHint(iso: string): string {
     <header class="section-header">
       <span class="section-header__eyebrow">CROSS</span>
       <h2 class="section-header__title">横向视角</h2>
-      <span class="section-header__hint">站在用户/产品组之上的 4 类视角</span>
+      <span class="section-header__hint">不是产品手册，是产品组之上的判断地图</span>
     </header>
     <div class="quick-grid">
       <a href="/cross/" class="quick-card quick-card--primary">
         <span class="quick-card__title">索引</span>
-        <span class="quick-card__hint">14 产品全图</span>
+        <span class="quick-card__hint">14 个产品 · 1 屏全见</span>
       </a>
       <a href="/cross/capability-matrix" class="quick-card">
         <span class="quick-card__title">能力矩阵</span>
-        <span class="quick-card__hint">谁提供了什么 capability</span>
+        <span class="quick-card__hint">capability × 提供者</span>
       </a>
       <a href="/cross/user-journeys" class="quick-card">
         <span class="quick-card__title">用户旅程</span>
-        <span class="quick-card__hint">4 类用户 × 跨产品路径</span>
+        <span class="quick-card__hint">用户 × 产品的所有路径</span>
       </a>
       <a href="/cross/integration-recipes" class="quick-card">
         <span class="quick-card__title">集成配方</span>
-        <span class="quick-card__hint">8 个端到端示例</span>
+        <span class="quick-card__hint">8 条照搬就能跑</span>
       </a>
       <a href="/cross/decision-router" class="quick-card">
         <span class="quick-card__title">决策路由</span>
-        <span class="quick-card__hint">遇到 X 该用谁</span>
+        <span class="quick-card__hint">遇到 X 时该按哪个键</span>
       </a>
     </div>
 
@@ -305,7 +305,7 @@ function reviewedHint(iso: string): string {
     <header class="section-header">
       <span class="section-header__eyebrow">REFERENCE</span>
       <h2 class="section-header__title">运维 · 决策 · 复盘</h2>
-      <span class="section-header__hint">流程性文档 · 按需查阅</span>
+      <span class="section-header__hint">出事再翻 · 平时不必背</span>
     </header>
     <div class="quick-strip">
       <a href="/ops/" class="quick-strip__item">运维 SOP</a>

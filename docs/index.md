@@ -31,9 +31,9 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
   </a>
 </nav>
 
-## <Icon name="rocket" :size="22" /> 我是新手 — 3 分钟发起第一次 AI 调用 {#newbie}
+## <Icon name="rocket" :size="22" /> 我是新手 — 3 分钟跑通第一次调用 {#newbie}
 
-面对 50+ 大模型不知从何选择？跟着下面三步，从注册到跑通第一次调用。
+选错模型，比写错代码贵 10 倍。先用我们的网关跑一次，再决定迁不迁。
 
 <div class="action-grid">
   <ActionCard
@@ -59,7 +59,7 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 ## <Icon name="gamepad-2" :size="22" /> 我是玩家 — 想要现成的 AI 工具 {#player}
 
-跳过配置和代码，直接下载开箱即用的桌面工具 / 交易平台 / 移动 App。
+代码已经替你写好了。下载就跑，不写一行配置。
 
 <div class="action-grid">
   <ActionCard
@@ -100,7 +100,7 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 ## <Icon name="briefcase" :size="22" /> 我是决策者 — 评估企业采购 {#decider}
 
-一张表看清 TCO、合规、私有化、SLA。支持企业 SSO 联邦与国密 SM4-GCM。
+不是工具采购，是基础设施替换。先看 TCO 与合规边界，再看功能。
 
 <div class="action-grid">
   <ActionCard
@@ -145,7 +145,7 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 ## <Icon name="code" :size="22" /> 我是开发者 — 构建 AI 系统 {#dev}
 
-Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向上搭你的 AI 栈。
+LLM 应用的四个底层组件：执行 · 记忆 · 网关 · CLI。各自能用，组合更强。
 
 <div class="action-grid">
   <ActionCard
@@ -233,7 +233,7 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
 
 ## 为什么选择 Lurus？
 
-四项核心差异 — 把企业 AI 栈一次搭好，不是再多一个工具。
+四个判断点 — 不是又一个工具，是一次基础设施替换。
 
 <div class="diff-grid">
   <article class="diff-card diff-card--brand">
@@ -241,10 +241,10 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
       <span class="diff-card__icon"><Icon name="layers" :size="20" /></span>
       <h3 class="diff-card__title">全栈自研</h3>
     </header>
-    <p class="diff-card__lede">Rust 执行引擎到 Flutter 移动端，12 个产品共享账户 / 计费 / 记忆 / LLM 网关。</p>
+    <p class="diff-card__lede">Rust 执行引擎到 Flutter 移动端，全部自研。账户 / 计费 / 记忆 / 网关共用。</p>
     <ul class="diff-card__points">
-      <li>核心技术自主可控，无供应商锁定</li>
-      <li>越用越值，工具栈不再碎片化</li>
+      <li>出问题不用等三家厂商互相推诿</li>
+      <li>越用越值——记忆、计费、模型在一个池里复利</li>
     </ul>
   </article>
 
@@ -253,10 +253,10 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
       <span class="diff-card__icon"><Icon name="zap" :size="20" /></span>
       <h3 class="diff-card__title">引擎级性能</h3>
     </header>
-    <p class="diff-card__lede">Kova 调度 <strong>3μs</strong>（Criterion 基准）·  API 网关 p95 <strong>&lt; 50ms</strong>。</p>
+    <p class="diff-card__lede">Kova 调度 <strong>3μs</strong>（Criterion）· 网关 p95 <strong>&lt; 50ms</strong>。</p>
     <ul class="diff-card__points">
-      <li>不是 Temporal / LangGraph 的简单封装</li>
-      <li>MemX 零 LLM 成本蒸馏 · Lucrum Decimal.js 全精度</li>
+      <li>我们写了执行引擎，不是又包了 Temporal 一层</li>
+      <li>MemX 不调 LLM 也能蒸馏 · Lucrum 全精度无浮点漂移</li>
     </ul>
   </article>
 
@@ -265,10 +265,10 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
       <span class="diff-card__icon"><Icon name="shield-check" :size="20" /></span>
       <h3 class="diff-card__title">数据主权</h3>
     </header>
-    <p class="diff-card__lede">私有化部署，数据不出企业边界，国密 SM4-GCM 全程加密。</p>
+    <p class="diff-card__lede">一次部署，不向任何云厂商纳税。国密 SM4-GCM 全程加密。</p>
     <ul class="diff-card__points">
-      <li>统一 SSO / Passkey / MFA · 接企业 IdP 联邦</li>
-      <li>OpenAI SDK 兼容，PAT/JWT 标准认证，导出无锁定</li>
+      <li>一套 SSO / Passkey / MFA，接你已有的 IdP</li>
+      <li>兼容 OpenAI SDK · 想走随时拿数据走</li>
     </ul>
   </article>
 
@@ -277,10 +277,10 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
       <span class="diff-card__icon"><Icon name="receipt" :size="20" /></span>
       <h3 class="diff-card__title">TCO 透明</h3>
     </header>
-    <p class="diff-card__lede">鹿贝单位统一计费，按量扣费 + 免费额度，一张账单看清全部用量。</p>
+    <p class="diff-card__lede">鹿贝单位统一计费 — 50+ 模型，一份对账单。</p>
     <ul class="diff-card__points">
-      <li>无多家账单对账成本</li>
-      <li>开放迁出，供应商锁定零退出成本</li>
+      <li>对账时间从一天到 5 分钟</li>
+      <li>随时迁出，零退出成本</li>
     </ul>
   </article>
 </div>
@@ -307,8 +307,8 @@ Agent 持久化、记忆引擎、可观测性、LLM 统一网关 — 自底向�
 
 <div class="finalcta">
   <div class="finalcta__text">
-    <h3>用 5 行代码替换掉你现在的 LLM 客户端</h3>
-    <p>注册即送免费额度 · 兼容 OpenAI SDK · 50+ 模型一个 Key 全打通。</p>
+    <h3>5 行代码切换网关，兼容 OpenAI SDK</h3>
+    <p>改一个 base_url，原有调用全部接通。一个 Key 接 50+ 模型，注册即送免费额度。</p>
   </div>
   <div class="finalcta__actions">
     <a href="/guide/quickstart" class="finalcta__btn finalcta__btn--primary">3 分钟上手 →</a>

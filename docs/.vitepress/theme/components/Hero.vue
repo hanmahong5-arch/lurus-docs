@@ -39,8 +39,8 @@ onBeforeUnmount(() => root.value?.removeEventListener('mousemove', onMove))
         <span class="lurus-hero__name">Lurus</span>
         <h1 class="lurus-hero__title">AI 基础设施与产品平台</h1>
         <p class="lurus-hero__tagline">
-          从执行引擎到量化交易，从智能记忆到内容创作 —
-          <span class="lurus-hero__accent">覆盖 AI 全栈的产品矩阵</span>
+          不是又一层 SaaS。<span class="lurus-hero__accent">执行、记忆、网关、计费</span>各自能用，组合更强 —
+          像组合螺丝刀一样组合智能。
         </p>
         <div class="lurus-hero__actions">
           <a href="/guide/quickstart" class="lurus-hero__btn lurus-hero__btn--primary">3 分钟上手</a>
