@@ -353,12 +353,19 @@ LLM 应用的四个底层组件：执行 · 记忆 · 网关 · CLI。各自能�
 .lurus-home h2 {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: var(--lurus-fs-xl);
   font-weight: 700;
-  margin-top: 36px;
-  padding-bottom: 8px;
-  border-bottom: 2px solid var(--vp-c-brand-soft);
+  margin-top: 44px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background:
+    linear-gradient(to right,
+      var(--vp-c-brand-1),
+      color-mix(in srgb, var(--vp-c-brand-1) 35%, transparent) 60%,
+      transparent 100%)
+    bottom left / 36% 1px no-repeat;
+  scroll-margin-top: 88px;
 }
 .lurus-home h2 .lurus-icon { color: var(--vp-c-brand-1); }
 .lurus-home hr {
@@ -378,11 +385,10 @@ LLM 应用的四个底层组件：执行 · 记忆 · 网关 · CLI。各自能�
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin: -12px 0 8px;
-  padding: 10px;
-  background: var(--vp-c-bg-soft);
-  border: 1px solid var(--vp-c-divider);
-  border-radius: var(--lurus-radius-pill);
+  margin: -8px 0 4px;
+  padding: 6px 4px;
+  background: transparent;
+  border: none;
   align-items: center;
   justify-content: center;
 }
@@ -418,9 +424,11 @@ LLM 应用的四个底层组件：执行 · 记忆 · 网关 · CLI。各自能�
 }
 .persona-jump__chip:hover .persona-jump__hint { color: inherit; opacity: 0.85; }
 @media (max-width: 640px) {
-  .persona-jump { border-radius: var(--lurus-radius-lg); }
   .persona-jump__hint { display: none; }
 }
+
+/* anchored personas: leave room for VitePress sticky nav (~64px) + breathing space */
+#newbie, #player, #decider, #dev { scroll-margin-top: 88px; }
 
 /* ============================================================
  * Differentiators — 4 cards replacing the 8-row why-Lurus table

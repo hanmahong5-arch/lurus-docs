@@ -329,9 +329,9 @@ function reviewedHint(iso: string): string {
   margin: 16px 0 20px;
   padding: 14px 18px 14px 22px;
   background: linear-gradient(90deg,
-    color-mix(in srgb, #b91c1c 8%, var(--vp-c-bg-soft)),
+    color-mix(in srgb, #b91c1c 4%, var(--vp-c-bg-soft)),
     var(--vp-c-bg-soft));
-  border: 1px solid color-mix(in srgb, #b91c1c 25%, var(--vp-c-divider));
+  border: 1px solid color-mix(in srgb, #b91c1c 14%, var(--vp-c-divider));
   border-radius: 10px;
   overflow: hidden;
 }
@@ -343,9 +343,9 @@ function reviewedHint(iso: string): string {
 }
 .dark .ops-banner {
   background: linear-gradient(90deg,
-    color-mix(in srgb, #ef4444 18%, var(--vp-c-bg-soft)),
+    color-mix(in srgb, #ef4444 10%, var(--vp-c-bg-soft)),
     var(--vp-c-bg-soft));
-  border-color: color-mix(in srgb, #ef4444 35%, var(--vp-c-divider));
+  border-color: color-mix(in srgb, #ef4444 22%, var(--vp-c-divider));
 }
 .dark .ops-banner__stripe { background: #ef4444; }
 .ops-banner__icon {
@@ -558,11 +558,14 @@ function reviewedHint(iso: string): string {
   background: var(--vp-c-bg-soft);
   text-decoration: none !important;
   color: var(--vp-c-text-1) !important;
-  transition: transform 200ms ease, border-color 200ms ease;
+  transition: transform 200ms ease, border-color 200ms ease,
+              box-shadow 200ms ease, background 200ms ease;
 }
 .focus-item__link:hover {
   transform: translateX(2px);
   border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 4%, var(--vp-c-bg-soft));
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 .focus-item__dot {
   width: 9px;
