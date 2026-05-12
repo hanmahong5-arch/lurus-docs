@@ -236,6 +236,7 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: '简介', link: '/forge/' },
+            { text: '快速入门 (Beta)', link: '/forge/getting-started' },
             { text: 'Ontology', link: '/forge/ontology' },
             { text: 'Session 工作流', link: '/forge/sessions' },
             { text: '路线图', link: '/forge/roadmap' },
