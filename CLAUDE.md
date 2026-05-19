@@ -61,3 +61,6 @@ bun run deploy      # sync + build (Docker push by CI)
 | Epics | `./_bmad-output/planning-artifacts/epics.md` |
 | Architecture | `./_bmad-output/planning-artifacts/architecture.md` |
 | Sprint Status | `./_bmad-output/implementation-artifacts/sprint-status.yaml` |
+
+---
+_BMAD artifacts last review: 2026-05-18 — governance: `lurus/doc/audit/2026-05-18-bmad-output-stale.md`._
