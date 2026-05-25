@@ -1,0 +1,48 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lurus-internal-docs-route
+  namespace: lurus-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`internal.lurus.cn`) && PathPrefix(`/oauth2/`)
+      services:
+        - name: oauth2-proxy-internal
+          port: 4180
+    - kind: Rule
+      match: Host(`internal.lurus.cn`)
+      middlewares:
+        - name: lurus-internal-forwardauth
+      services:
+        - name: r6-internal-docs
+          port: 8881
+  tls:
+    secretName: lurus-cn-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lurus-internal-fallback
+  namespace: lurus-system
+  annotations:
+    description: |
+      Break-glass route. Host `internal-fallback.lurus.cn` is INTENTIONALLY
+      not registered in DNS. Reach it via /etc/hosts override:
+        43.226.46.164 internal-fallback.lurus.cn
+      Auth is BasicAuth (the original path).
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`internal-fallback.lurus.cn`)
+      middlewares:
+        - name: lurus-internal-basicauth
+      services:
+        - name: r6-internal-docs
+          port: 8881
+  tls:
+    secretName: lurus-cn-wildcard-tls

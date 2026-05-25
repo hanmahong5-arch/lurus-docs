@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-proxy-internal
+  namespace: lurus-system
+  labels:
+    app: oauth2-proxy-internal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth2-proxy-internal
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy-internal
+    spec:
+      containers:
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.6.0
+          args:
+            - --provider=oidc
+            - --provider-display-name=Lurus Identity
+            - --oidc-issuer-url=https://auth.lurus.cn
+            - --redirect-url=https://internal.lurus.cn/oauth2/callback
+            - --http-address=0.0.0.0:4180
+            - --reverse-proxy=true
+            - --upstream=static://200
+            - --skip-provider-button=true
+            - --email-domain=*
+            - --cookie-name=_lurus_internal_proxy
+            - --cookie-domain=.lurus.cn
+            - --cookie-secure=true
+            - --cookie-samesite=lax
+            - --cookie-expire=720h
+            - --cookie-refresh=58m
+            - --whitelist-domain=.lurus.cn
+            - --scope=openid profile email
+            - --set-xauthrequest=true
+            - --set-authorization-header=true
+            - --pass-access-token=true
+            - --pass-authorization-header=true
+            - --pass-user-headers=true
+            - --silence-ping-logging=true
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy-internal
+                  key: client-id
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy-internal
+                  key: client-secret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy-internal
+                  key: cookie-secret
+          ports:
+            - containerPort: 4180
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 4180
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 4180
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oauth2-proxy-internal
+  namespace: lurus-system
+spec:
+  selector:
+    app: oauth2-proxy-internal
+  ports:
+    - name: http
+      port: 4180
+      targetPort: 4180
