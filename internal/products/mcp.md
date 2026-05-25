@@ -830,3 +830,29 @@ flowchart TD
 ---
 
 appended 253 lines, 4 mermaid charts to mcp.md
+
+---
+
+## Cross-channel write conflict (legacy admin reference)
+
+> Originally from internal/products/admin.md before sunset 2026-05-10.
+
+### ② Admin + zitadel-mcp：Chat 界面改用户的 Fallback 通道
+
+当运营人员通过 AI Chat 工具（接入 `2l-svc-zitadel-mcp`）执行用户管理操作时，如果 MCP tool 调用失败（Zitadel API 超时、权限不足等），fallback 策略是：
+
+```
+AI Chat 工具
+  → zitadel-mcp (MCP server, 调 Zitadel Admin API)
+  → [失败] → fallback 提示员工
+  → 员工手动登录 admin.lurus.cn
+  → Admin LiveView 界面执行相同操作
+  → 写审计日志
+```
+
+**适用场景**：
+- 批量角色授予（zitadel-mcp 支持批量，Admin 只能单条）
+- 紧急改密/锁号（zitadel-mcp 直接操作 Zitadel，Admin 经 platform-core 中转）
+- Chat MCP 失败的降级路径（保证任何情况下都有 Web 界面兜底）
+
+**⚠ 两个通道写同一数据**：zitadel-mcp 直接操作 Zitadel 用户数据，Admin 经 platform-core 操作 platform DB。确保两者操作的是同一 `user_id`（Zitadel sub），避免数据不一致。

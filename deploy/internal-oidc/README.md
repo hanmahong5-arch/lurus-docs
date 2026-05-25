@@ -34,7 +34,7 @@ Break-glass：`internal-fallback.lurus.cn`（不挂 DNS，仅 /etc/hosts 覆盖�
 打开 https://auth.lurus.cn/ui/console，登录账号：
 
 - 用户名：`admin@lurus.cn`
-- 密码：`Lurus@ops`
+- 密码：`<see ~/重要信息.md or 1Password vault>`
 
 (首次登录可能要你改密码，改完再回来)
 
@@ -89,7 +89,7 @@ curl -sk -I https://internal.lurus.cn/
 # break-glass 仍是 BasicAuth
 curl -sk -H 'Host: internal-fallback.lurus.cn' \
   --resolve internal-fallback.lurus.cn:443:43.226.46.164 \
-  -u 'lurus:Lurus@ops' https://internal-fallback.lurus.cn/
+  -u 'lurus:<see ~/重要信息.md or 1Password vault>' https://internal-fallback.lurus.cn/
 ```
 
 ## 回滚

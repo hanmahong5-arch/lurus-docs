@@ -79,7 +79,7 @@ API Gateway 根据模型名称自动匹配可用渠道，支持优先级排序�
 import InternalContent from '../.vitepress/theme/components/InternalContent.vue'
 </script>
 
-<InternalContent slug="architecture-full" />
+> 详细架构图位于 governance repo: [lurus.yaml](https://github.com/LurusTech/lurus/blob/main/lurus.yaml) + [doc/architecture.md](https://github.com/LurusTech/lurus/blob/main/doc/architecture.md)。本站不再内嵌全图,避免维护双源真源。
 
 ---
 
