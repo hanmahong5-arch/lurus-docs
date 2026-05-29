@@ -32,7 +32,7 @@ deploy/
 ```bash
 bun install
 bun run dev         # http://localhost:5173
-bun run sync        # ../lurus-api/docs/openapi/relay.json → docs/api/overview.md
+bun run sync        # ../2b-svc-newapi/docs/openapi/relay.json → docs/api/overview.md
 bun run build       # → docs/.vitepress/dist/
 bun run preview
 bun run deploy      # sync + build (Docker push by CI)
@@ -41,7 +41,7 @@ bun run deploy      # sync + build (Docker push by CI)
 ## Content Notes
 
 - **模型目录**: 编辑 `data/models.yaml` → `bun run sync` → rebuild。
-- **API endpoints**: 由 `scripts/sync.ts` 从 `lurus-api/docs/openapi/relay.json` 生成；
+- **API endpoints**: 由 `scripts/sync.ts` 从 `2b-svc-newapi/docs/openapi/relay.json` 生成；
   `docs/api/overview.md` 中 `<!-- sync:endpoints:start/end -->` 标记区下次 sync 会覆盖。
   带 `未实现` tag 的 endpoint 被跳过。
 

@@ -3,7 +3,7 @@
  * sync.ts - Sync documentation from machine-readable sources.
  *
  * Sources:
- *   ../lurus-api/docs/openapi/relay.json  →  docs/api/overview.md       (endpoint region)
+ *   ../2b-svc-newapi/docs/openapi/relay.json  →  docs/api/overview.md   (endpoint region)
  *
  * Usage: bun scripts/sync.ts
  */
@@ -62,7 +62,7 @@ interface OpenAPISpec {
 }
 
 function syncEndpoints(): boolean {
-  const specPath = resolve(ROOT, '..', 'lurus-api', 'docs', 'openapi', 'relay.json')
+  const specPath = resolve(ROOT, '..', '2b-svc-newapi', 'docs', 'openapi', 'relay.json')
   const docPath = resolve(DOCS, 'api', 'overview.md')
 
   let spec: OpenAPISpec
