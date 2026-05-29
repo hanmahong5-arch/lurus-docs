@@ -36,6 +36,7 @@ Authorization: Bearer sk-your-api-key
 **OpenAI格式(Responses)**
 
 <ApiEndpoint method="POST" path="/v1/responses" description="创建响应 (OpenAI Responses API)" />
+<ApiEndpoint method="POST" path="/v1/responses/compact" description="压缩对话 (OpenAI Responses API)" />
 
 **图片生成**
 
