@@ -78,4 +78,4 @@ API Key 无法找回，请创建一个新的 Key。
 
 ### Q: 额度用完了怎么办？
 
-联系管理员充值或升级套餐。
+无需联系管理员，可自助充值或升级套餐：先在 [计费详解](/platform/billing) 查看各订阅档位（Free / Basic / Pro），再到 [Lurus 控制台](https://api.lurus.cn) 充值额度或升级套餐。
