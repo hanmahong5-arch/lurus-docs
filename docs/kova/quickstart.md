@@ -5,14 +5,10 @@ description: 5 分钟启动第一个 Kova Agent，从安装到运行的完整指
 
 # 快速开始
 
-本指南帮助你在 5 分钟内启动第一个 Kova Agent。
+5 分钟启动第一个 Kova Agent。
 
 ::: info 前置条件
-- Docker 或 Rust 1.93+（任选一种安装方式）
-- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）
-- 8 GB 以上内存（推荐）
-- 基本终端/命令行知识
-- 预计时间: 5 分钟
+Docker 或 Rust 1.93+（任选）· Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）· 8 GB+ 内存（推荐）· 基本终端知识。预计 5 分钟。
 :::
 
 ## 安装
@@ -94,56 +90,21 @@ sync_mode = "normal"  # "normal" | "full" (每次写入 fsync)
 
 ### 通过 REST API
 
-Kova 启动后，通过 REST API 创建和管理 Agent：
+启动后通过 REST API 创建和管理 Agent（完整端点见 [API 参考](/kova/api)）：
 
 ```bash
-# 创建一个简单的 Agent
+# 创建 Agent（响应含 id="agt_a1b2c3d4", status="idle"）
 curl -X POST http://localhost:8080/api/v1/agents \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "researcher",
-    "system_prompt": "你是一个专业的技术研究员。用户给你一个主题，你需要深入分析并给出结构化的研究报告。",
-    "model": "deepseek-chat",
-    "tools": ["web_search", "file_write"]
-  }'
-```
+  -d '{ "name": "researcher", "system_prompt": "你是一个专业的技术研究员，深入分析主题并给出结构化研究报告。", "model": "deepseek-chat", "tools": ["web_search", "file_write"] }'
 
-**响应**：
-```json
-{
-  "id": "agt_a1b2c3d4",
-  "name": "researcher",
-  "status": "idle",
-  "created_at": "2026-03-17T10:00:00Z"
-}
-```
-
-### 发送任务
-
-```bash
-# 给 Agent 发送任务
+# 发送任务（响应含 task_id="tsk_e5f6g7h8", status="running"）
 curl -X POST http://localhost:8080/api/v1/agents/agt_a1b2c3d4/tasks \
   -H "Content-Type: application/json" \
-  -d '{
-    "message": "研究 Rust 在 AI 基础设施中的应用趋势，输出一份 500 字的报告"
-  }'
-```
+  -d '{ "message": "研究 Rust 在 AI 基础设施中的应用趋势，输出一份 500 字的报告" }'
 
-**响应**：
-```json
-{
-  "task_id": "tsk_e5f6g7h8",
-  "status": "running",
-  "agent_id": "agt_a1b2c3d4"
-}
-```
-
-### 查看执行状态
-
-```bash
 # 查看任务状态
 curl http://localhost:8080/api/v1/tasks/tsk_e5f6g7h8
-
 # 流式查看执行过程（WebSocket）
 wscat -c ws://localhost:8080/api/v1/tasks/tsk_e5f6g7h8/stream
 ```
@@ -169,39 +130,20 @@ kova agent logs researcher --tail 50
 
 ## 创建工作流
 
-工作流将多个步骤串联成有序的执行管道：
+工作流将多个步骤串联成有序的执行管道（步骤间通过模板变量传值，示例见下）：
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/workflows \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "content-pipeline",
-    "steps": [
-      {
-        "name": "research",
-        "agent": "researcher",
-        "prompt": "研究主题：{{input.topic}}"
-      },
-      {
-        "name": "write",
-        "agent": "writer",
-        "prompt": "基于以下研究报告，撰写一篇博客文章：\n{{steps.research.output}}"
-      },
-      {
-        "name": "review",
-        "agent": "editor",
-        "prompt": "审校以下文章，修正错误并优化表达：\n{{steps.write.output}}"
-      }
-    ]
-  }'
-```
+  -d '{ "name": "content-pipeline", "steps": [
+    { "name": "research", "agent": "researcher", "prompt": "研究主题：{{input.topic}}" },
+    { "name": "write", "agent": "writer", "prompt": "基于研究报告撰写博客：\n{{steps.research.output}}" },
+    { "name": "review", "agent": "editor", "prompt": "审校并优化：\n{{steps.write.output}}" }
+  ] }'
 
-触发工作流：
-
-```bash
+# 触发
 curl -X POST http://localhost:8080/api/v1/workflows/content-pipeline/run \
-  -H "Content-Type: application/json" \
-  -d '{"input": {"topic": "边缘计算与 AI 推理"}}'
+  -H "Content-Type: application/json" -d '{"input": {"topic": "边缘计算与 AI 推理"}}'
 ```
 
 ---

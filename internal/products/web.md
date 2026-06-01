@@ -5,11 +5,13 @@ group: web
 priority: P2
 status: live
 owner: marvin (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2c-bs-www-next + 2c-bs-www-phoenix
 ---
 
 # Web 内部手册
+
+> ⚫ **2026-05-28 状态更新**：www.lurus.cn 在线（live）；webgame（Phoenix 游戏）2026-05-28 已 sunset（auth 死约 1 月 + 0 流量）。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 
@@ -77,6 +79,11 @@ flowchart TB
 ---
 
 # Part 1: WWW（Next.js 16）
+
+::: tip 运维速记
+**出口带宽上限**：阿里云 cloud-ali-4 出口 **3Mbps**（硬上限，无 CDN 时大 bundle 易拖慢首屏）。
+**流量路径**：DNS A `123.57.143.63` → 阿里云 nginx stream（TCP pass-through）→ R1 Traefik NodePort `:30443` → lurus-www Pod（`cloud-ali-4` K3s agent，namespace `lurus-www`）。
+:::
 
 ## 技术栈
 

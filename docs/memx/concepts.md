@@ -5,13 +5,11 @@ description: MemX ACE 引擎的四大核心模块：智能蒸馏、语义去重�
 
 # 核心概念
 
-MemX 的 ACE（Adaptive Context Engine）引擎由四大核心模块组成，每个模块独立运作、协同配合，实现知识的完整生命周期管理。
+MemX 的 ACE（Adaptive Context Engine）引擎由四大核心模块组成，独立运作、协同配合，实现知识的完整生命周期管理。
 
 ## <Term t="Reflector">Reflector</Term> — 知识蒸馏引擎
 
-Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
-
-传统 AI 记忆系统依赖 LLM 调用来从对话中提取知识点，每次消耗 2-5K tokens。Reflector 支持三种运行模式，默认使用 **hybrid** 混合模式，通过规则预筛选大幅减少 LLM 调用，仅对有价值的候选项调用 LLM 精炼，相比全量 LLM 方案减少 90%+ 的调用开销。
+Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。传统 AI 记忆系统每次靠 LLM 从对话提取知识，消耗 2-5K tokens。Reflector 默认 **hybrid** 模式：规则预筛选 + 仅对有价值候选项调 LLM 精炼，相比全量 LLM 减少 90%+ 调用开销。
 
 ### 三种运行模式
 
@@ -21,21 +19,10 @@ Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
 | `hybrid`（默认） | 规则预筛选 + LLM 精炼，取平均分数 | 仅对候选项调用，减少 90%+ |
 | `llm` | 完全依赖 LLM 提取知识 | 每次 2-5K tokens |
 
-**hybrid 工作流程**：
-
-```
-原始对话 → PatternDetector (规则检测) → 候选知识项
-                                           ↓
-                              LLM 评估 + 蒸馏 (仅对候选项)
-                                           ↓
-                              取规则分数与 LLM 分数的平均值
-                                           ↓
-                        KnowledgeScorer → PrivacySanitizer → BulletDistiller
-                            评分分类          隐私脱敏           压缩精炼
-```
+**hybrid 工作流程**：原始对话 → PatternDetector（规则检测）→ 候选知识项 → LLM 评估+蒸馏（仅候选项）→ 取规则分数与 LLM 分数的平均值 → KnowledgeScorer（评分分类）→ PrivacySanitizer（隐私脱敏）→ BulletDistiller（压缩精炼）。
 
 ::: tip
-默认混合模式 + 自动降级：LLM 不可用时自动切换到纯规则模式，零调用零成本。
+默认混合模式 + 自动降级：LLM 不可用时自动切换纯规则模式，零调用零成本。
 :::
 
 ### 五种检测规则
@@ -50,58 +37,28 @@ Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
 
 ### 知识分类体系
 
-每条被提取的知识自动归入 **Section**（主题）和 **KnowledgeType**（类型）两个维度：
+每条知识自动归入 **Section**（主题）和 **KnowledgeType**（类型）两维度：
 
-**8 种 Section**:
-`COMMANDS` · `DEBUGGING` · `ARCHITECTURE` · `WORKFLOW` · `TOOLS` · `PATTERNS` · `PREFERENCES` · `GENERAL`
-
-**5 种 KnowledgeType**:
-`METHOD`（方法论） · `TRICK`（技巧） · `PITFALL`（踩坑） · `PREFERENCE`（偏好） · `KNOWLEDGE`（事实）
+- **8 种 Section**：`COMMANDS` · `DEBUGGING` · `ARCHITECTURE` · `WORKFLOW` · `TOOLS` · `PATTERNS` · `PREFERENCES` · `GENERAL`
+- **5 种 KnowledgeType**：`METHOD`（方法论）· `TRICK`（技巧）· `PITFALL`（踩坑）· `PREFERENCE`（偏好）· `KNOWLEDGE`（事实）
 
 ### Instructivity Score
 
-每条知识获得 0-100 的**教学价值评分**。分数由以下因素综合计算：
-
-- 模式匹配的置信度
-- 知识的具体性和可操作性
-- 是否包含明确的因果关系
-
-低于 `min_score`（默认 30）的候选项被丢弃，避免噪音污染知识库。
+每条知识获 0-100 **教学价值评分**，由模式匹配置信度 + 具体性/可操作性 + 是否含明确因果关系综合计算。低于 `min_score`（默认 30）的候选项被丢弃。
 
 ## <Term t="Curator">Curator</Term> — 语义去重引擎
 
-随着知识积累，不可避免会出现重复和矛盾。Curator 在每次写入时自动处理：
+Curator 在每次写入时自动处理重复和矛盾。
 
 ### 三级去重策略
 
-```
-新知识写入
-    │
-    ▼
-计算与现有知识的余弦相似度
-    │
-    ├── ≥ 0.8  → 自动合并（keep_best 或 merge_content）
-    │
-    ├── 0.5~0.8 → 标记潜在冲突，等待确认
-    │
-    └── < 0.5  → 视为独立知识，正常写入
-```
+新知识写入 → 计算与现有知识的余弦相似度：**≥ 0.8** 自动合并（keep_best 或 merge_content）；**0.5~0.8** 标记潜在冲突等待确认；**< 0.5** 视为独立知识正常写入。
 
-**合并策略**:
-- `keep_best`（默认）: 保留 instructivity_score 更高的版本
-- `merge_content`: 合并两条知识的内容，生成更完整的版本
+**合并策略**：`keep_best`（默认，保留 instructivity_score 更高的版本）/ `merge_content`（合并两条内容，生成更完整版本）。
 
 ### 冲突检测
 
-主动扫描知识库中的矛盾记忆，例如：
-
-```
-冲突: "Redis 连接池设置 10 即可" vs "Redis 连接池至少 50 才稳定"
-原因: 相似度 0.72，但结论相反
-建议: 确认当前最佳实践，删除过时版本
-```
-
-通过 CLI 可以随时检测：`memx conflicts`
+主动扫描矛盾记忆（例：相似度 0.72 但结论相反 — "Redis 连接池设 10 即可" vs "至少 50 才稳定"，建议确认最佳实践删过时版本）。CLI 随时检测：`memx conflicts`。
 
 ## <Term t="Decay">Decay</Term> — 时间衰减引擎
 
@@ -134,18 +91,11 @@ final       = clamp(boosted, 0.0, 1.0)
 
 ### 三层保护机制
 
-```
-recall_count ≥ 15  →  永久记忆（weight 固定为 1.0）
-age ≤ 7 天          →  保护期（weight 固定为 1.0）
-weight < 0.02       →  归档候选（可清理）
-```
+- `recall_count ≥ 15` → 永久记忆（weight 固定 1.0）
+- `age ≤ 7 天` → 保护期（weight 固定 1.0）
+- `weight < 0.02` → 归档候选（可清理）
 
-**直觉理解**: 就像人的记忆一样——
-
-- 刚学到的东西（7 天内）记得很清楚
-- 经常回忆的知识越来越牢固
-- 被反复使用 15 次以上的知识成为"肌肉记忆"
-- 长时间不用的知识逐渐模糊，最终遗忘
+直觉：刚学的（7 天内）记得清楚；常回忆的越来越牢；用 15 次以上成"肌肉记忆"；久不用逐渐遗忘。
 
 ### 检索时的衰减影响
 
@@ -160,7 +110,7 @@ Final Score = Blended Search Score × DecayWeight × RecencyBoost × ScopeBoost
 
 ## Generator — 混合检索引擎
 
-突破纯<Term t="Vector Search">向量搜索</Term>的局限，四层搜索覆盖从精确匹配到语义理解的完整频谱。
+突破纯<Term t="Vector Search">向量搜索</Term>局限，四层搜索覆盖精确匹配到语义理解的完整频谱。
 
 ### 四层搜索架构
 
@@ -190,46 +140,17 @@ Final       = Blended × DecayWeight × RecencyBoost × ScopeBoost
 
 ### 优雅降级
 
-当 L4 向量搜索不可用时（如嵌入模型加载失败），自动降级为纯关键词模式：
-
-```
-keyword_weight = 1.0, semantic_weight = 0.0
-```
-
-系统在任何单一搜索层故障时都不会中断服务。
+L4 向量搜索不可用时（嵌入模型加载失败）自动降级纯关键词模式（`keyword_weight=1.0, semantic_weight=0.0`）。任何单一搜索层故障都不中断服务。
 
 ## Token 预算管理
 
-检索结果受双重约束：
+检索结果双重约束：`max_results`（最大返回条数，默认 5）+ `token_budget`（最大 Token 预算，默认 2000）。
 
-- `max_results`: 最大返回条数（默认 5）
-- `token_budget`: 最大 Token 预算（默认 2000）
-
-### CJK 感知
-
-MemX 对中日韩文字使用更精确的 Token 估算：
-
-| 字符类型 | 估算比例 |
-|---------|---------|
-| CJK 字符 | 1.5 字符 / token |
-| 拉丁字符 | 4.0 字符 / token |
-
-这确保中文内容不会因为错误的 Token 估算而被过度裁剪。
+**CJK 感知**（确保中文不因错误 Token 估算被过度裁剪）：CJK 字符 1.5 字符/token；拉丁字符 4.0 字符/token。
 
 ## 层级作用域
 
-知识按层级组织，实现精准的访问控制：
-
-```
-global                    ← 所有项目可见
-├── project:my-backend    ← 仅该项目可见
-│   └── workspace:feat-auth  ← 仅该工作区可见
-└── project:my-frontend
-```
-
-- 检索时，匹配当前 scope 的知识获得 1.3x 评分加成
-- 上层 scope 的知识对下层可见（global 对所有项目可见）
-- 下层 scope 的知识对上层不可见
+知识按层级组织实现访问控制：`global`（所有项目可见）→ `project:my-backend`（仅该项目）→ `workspace:feat-auth`（仅该工作区）。匹配当前 scope 的知识获 1.3x 评分加成；上层 scope 对下层可见（global 对所有项目），下层对上层不可见。
 
 ---
 

@@ -5,18 +5,7 @@ description: 用树状结构管理产品的用户故事、架构、技术栈与�
 
 # Ontology 本体论 <StatusBadge status="beta" />
 
-Ontology 是 Forge 的第一核心数据模型。用树状结构刻画一个产品的全部"知识"，让 AI Agent 与人类能在同一份可视结构上协作。
-
-## 为什么需要 Ontology
-
-传统需求管理痛点：
-
-- 用户故事散落在 Jira / 飞书 / 聊天记录
-- 架构决策与代码实现分离
-- 技术栈调整无人记录为什么
-- 设计规范每个人手里一份
-
-Ontology 把这些合并为一棵**可追溯、可回溯、Agent 可写入**的知识树。
+Ontology 是 Forge 的第一核心数据模型，用树状结构刻画产品全部"知识"，让 AI Agent 与人类在同一份可视结构上协作。它把散落的用户故事（Jira/飞书/聊天）、分离的架构与实现、无记录的技术栈调整、各执一份的设计规范，合并为一棵**可追溯、可回溯、Agent 可写入**的知识树。
 
 ## 节点类型
 
@@ -49,16 +38,11 @@ Ontology 把这些合并为一棵**可追溯、可回溯、Agent 可写入**的�
 
 ## Agent 自动写入
 
-当 PM Agent 在 [Session](/forge/sessions) 中生成一个用户故事，节点自动被创建到 Ontology；Architect Agent 做架构决策时，写入 `Architecture` 子树并关联到对应 Story。
+PM Agent 在 [Session](/forge/sessions) 中生成用户故事时节点自动建入 Ontology；Architect Agent 做架构决策时写入 `Architecture` 子树并关联对应 Story。
 
 ## 可视化
 
-Forge Web 前端用可折叠树 + 节点卡片展示，每个节点带：
-
-- 创建者（人/Agent）
-- 关联的 Session
-- 历次修订
-- 状态（草案 / 评审中 / 已定案）
+Forge Web 前端用可折叠树 + 节点卡片展示，每节点带：创建者（人/Agent）、关联 Session、历次修订、状态（草案/评审中/已定案）。
 
 ## 导出
 

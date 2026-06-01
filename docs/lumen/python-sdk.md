@@ -55,7 +55,7 @@ graph = workflow.compile(checkpointer=LumenCheckpointer())
 
 ## CostTracker
 
-聚合查询：
+跨 Agent 成本聚合查询：
 
 ```python
 from lumen_ai import CostTracker
@@ -75,26 +75,18 @@ CostTracker.set_budget(daily_rmb=50.0, on_exceed=my_handler)
 
 ## 自定义 Backend
 
-默认数据写入 `~/.lumen/`。要发送到远端：
-
-```python
-LumenTracer(backend="https://lumen.lurus.cn/ingest")
-```
-
-或自定义后端：
+默认数据写入 `~/.lumen/`。发送远端：`LumenTracer(backend="https://lumen.lurus.cn/ingest")`。或自定义：
 
 ```python
 from lumen_ai.backend import Backend
-
 class MyBackend(Backend):
     def send(self, event): ...
-
 LumenTracer(backend=MyBackend())
 ```
 
 ## Async 支持
 
-SDK 所有 I/O 都是异步友好的：
+SDK 所有 I/O 异步友好：
 
 ```python
 import asyncio

@@ -3,13 +3,15 @@ title: Lurus Switch
 id: switch
 group: desktop
 priority: P2
-status: live
+status: dev
 owner: marvin (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2c-gui-switch
 ---
 
 # Lurus Switch 内部手册
+
+> 🔴 **2026-05-28 状态更新**：building，CI 自 2026-03-21 全红；未交付。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 

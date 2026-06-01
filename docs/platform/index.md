@@ -13,42 +13,15 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
 
 ## 统一账号
 
-### 注册与登录
+访问任意 Lurus 产品（[api.lurus.cn](https://api.lurus.cn)、[lucrum.lurus.cn](https://lucrum.lurus.cn) 等）即可注册/登录。**登录方式**：邮箱+密码、GitHub（OAuth）、Google（OAuth）。
 
-访问任意 Lurus 产品（如 [api.lurus.cn](https://api.lurus.cn)、[lucrum.lurus.cn](https://lucrum.lurus.cn)），即可注册或登录 Lurus 账号。
+注册成功获得：统一用户身份（跨所有产品）、初始 5 鹿贝、免费配额（可立即试用 Lurus API）、自动开通 `username@lurus.cn` 邮箱（基于 Stalwart）。
 
-**支持的登录方式**:
+**账号管理**（登录 [identity.lurus.cn](https://identity.lurus.cn) → 账号设置）：个人信息、登录历史、第三方绑定、安全设置（改密码、两步验证）。
 
-| 方式 | 说明 |
-|------|------|
-| 邮箱 + 密码 | 标准注册方式 |
-| GitHub | OAuth 第三方登录 |
-| Google | OAuth 第三方登录 |
+**一次登录，全站通行**：基于 OIDC 标准，登录任意产品即在所有产品间建立会话；支持 Passkey/WebAuthn 无密码、TOTP/硬件密钥 MFA、GitHub/Google 社交登录，企业可对接 Azure AD/飞书/Okta SSO。终端用户一份账号通吃 API/Lucrum/Switch/Creator/Lutu；开发者用 OIDC SDK 接入自有应用，后端用 Service User + JWT Profile；企业组织管理（成员/权限/审计）经 [auth.lurus.cn](https://auth.lurus.cn)（Zitadel 控制台）或联系商务开通。
 
-注册成功后，你会获得：
-- 统一的用户身份（跨所有 Lurus 产品）
-- 初始鹿贝奖励（5 鹿贝）
-- 免费配额（可立即试用 Lurus API）
-- 注册即自动开通 `username@lurus.cn` 邮箱（基于 Stalwart）
-
-### 账号管理
-
-在 [admin.lurus.cn](https://admin.lurus.cn) 管理你的账号：
-
-- 修改个人信息
-- 查看登录历史
-- 管理第三方登录绑定
-- 安全设置（密码修改、两步验证）
-
-### 一次登录，全站通行
-
-Lurus 的统一身份体系基于 OIDC 标准协议构建，登录任意产品即在所有产品间建立会话。支持 Passkey / WebAuthn 无密码登录、TOTP / 硬件密钥多因素认证、GitHub / Google 社交登录，企业客户可对接自家 Azure AD / 飞书 / Okta 等 SSO。
-
-- **终端用户**：一份账号通吃 API、Lucrum、Switch、Creator、Lutu 等全部产品
-- **开发者**：用 OIDC SDK 一键接入自有应用；后端服务使用 Service User + JWT Profile 安全调用
-- **企业管理员**：在 admin 控制台批量管理成员、分配项目权限、查看审计日志
-
-→ 详细文档：[统一身份认证](/platform/auth/) · [OIDC / OAuth2 集成](/platform/auth/oidc) · [API 认证](/platform/auth/api-auth)
+→ 详见 [统一身份认证](/platform/auth/) · [OIDC / OAuth2 集成](/platform/auth/oidc) · [API 认证](/platform/auth/api-auth)
 
 ---
 
@@ -66,7 +39,7 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 | **Pro 年付** | Pro 年付优惠 | 稳定用户 |
 | **Enterprise** | 企业定制 + SLA | 团队 / 企业 |
 
-具体定价以 [admin.lurus.cn](https://admin.lurus.cn) 控制台为准。
+具体定价以 [identity.lurus.cn](https://identity.lurus.cn) 控制台（订阅管理页）为准。
 
 ### 按量计费
 
@@ -93,72 +66,41 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 
 ### 使用鹿贝
 
-鹿贝可用于：
-- 支付超出订阅配额的 API 调用费
-- 订阅 Lucrum 付费策略
-- 购买高级功能或扩展包
+可用于：支付超订阅配额的 API 调用费、订阅 Lucrum 付费策略、购买高级功能/扩展包。
 
 ### VIP 等级
 
-累计消费鹿贝解锁多级 VIP 优惠（Standard / Silver / Gold / Platinum / Diamond），折扣自动应用于所有鹿贝消费场景。
-
-具体等级阈值与折扣详见 [admin.lurus.cn](https://admin.lurus.cn) 控制台 VIP 页。
+累计消费鹿贝解锁多级 VIP（Standard / Silver / Gold / Platinum / Diamond），折扣自动应用于所有鹿贝消费。阈值与折扣详见 [identity.lurus.cn](https://identity.lurus.cn) 账号中心 VIP 页。
 
 ---
 
 ## 支付方式
 
-| 方式 | 支持的场景 | 说明 |
+所有支付经安全 Webhook 异步确认，避免网络波动重复扣费。
+
+| 方式 | 场景 | 说明 |
 |------|----------|------|
 | **Stripe** | 订阅 + 充值 | 信用卡/借记卡（Visa、Mastercard） |
 | **Creem** | 充值 | 加密货币支付 |
-| **Epay** | 充值 | 支付宝/微信支付（通过第三方） |
-
-所有支付通过安全的 Webhook 异步确认，确保不会因网络波动导致重复扣费。
+| **Epay** | 充值 | 支付宝/微信支付（第三方） |
 
 ---
 
 ## 推荐计划
 
-邀请好友使用 Lurus 产品，双方都能获得奖励。
-
-### 如何邀请
-
-1. 登录 [admin.lurus.cn](https://admin.lurus.cn) → 「推荐」
-2. 复制你的专属推荐链接（含推荐码）
-3. 分享给好友
-
-### 奖励规则
-
-- 好友通过你的链接注册后，双方各获得鹿贝奖励
-- 好友首次付费订阅时，你额外获得订阅金额一定比例的返利
-- 无邀请上限
+[identity.lurus.cn](https://identity.lurus.cn) 复制专属推荐链接（含推荐码）分享好友。奖励：好友经链接注册双方各得鹿贝；好友首次付费订阅你额外得订阅金额一定比例返利；无邀请上限。
 
 ---
 
 ## 通知服务
 
-Lurus Platform 内置多渠道通知系统：
-
-| 渠道 | 通知类型 |
-|------|---------|
-| **站内消息** | 账号变更、安全警告、系统公告 |
-| **邮件** | 付款确认、配额告警、订阅到期 |
-| **WebSocket** | 实时推送（API 调用异常、余额不足） |
-
-在账号设置中可以自定义通知偏好——选择每种通知通过哪些渠道接收。
+多渠道通知（账号设置可自定义每类通知的接收渠道）：**站内消息**（账号变更/安全警告/系统公告）、**邮件**（付款确认/配额告警/订阅到期）、**WebSocket**（实时推送 API 异常/余额不足）。
 
 ---
 
 ## 数据安全
 
-| 措施 | 说明 |
-|------|------|
-| **身份认证** | 基于 <Term t="OIDC">OIDC</Term> 标准的企业级认证系统 |
-| **传输加密** | 全站 HTTPS（TLS 1.3） |
-| **密码安全** | bcrypt 加密存储，不存储明文 |
-| **支付安全** | PCI DSS 合规的第三方支付网关 |
-| **数据隔离** | 用户数据严格隔离，不共享 |
+身份认证基于 <Term t="OIDC">OIDC</Term> 标准企业级系统；传输全站 HTTPS（TLS 1.3）；密码 bcrypt 加密存储不存明文；支付走 PCI DSS 合规第三方网关；用户数据严格隔离不共享。
 
 ---
 

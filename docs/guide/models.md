@@ -49,25 +49,11 @@ Lurus API 支持主流 AI 供应商的各类模型，本页面由 `data/models.y
 
 ## 切换模型
 
-所有模型共享相同的 API 格式，只需更换 `model` 字段：
-
-```python
-# 使用 DeepSeek
-response = client.chat.completions.create(
-    model="deepseek-chat",
-    messages=[{"role": "user", "content": "Hello"}]
-)
-
-# 切换到 Gemini，代码完全相同
-response = client.chat.completions.create(
-    model="gemini-3-pro-preview",
-    messages=[{"role": "user", "content": "Hello"}]
-)
-```
+所有模型共享相同 API 格式，只需更换 `model` 字段（其余代码不变）：`client.chat.completions.create(model="deepseek-chat", ...)` → `model="gemini-3-pro-preview"`。
 
 ## 注意事项
 
-1. **模型可用性**：状态标记为 `Beta` 的模型为预览版本，接口可能调整
-2. **配额限制**：不同 API Key 可能有不同的模型访问权限
-3. **价格变动**：定价可能随供应商调整，以控制台显示为准
-4. **上下文限制**：超出模型上下文长度的请求会被截断或返回错误
+- **模型可用性**：`Beta` 状态为预览版，接口可能调整。
+- **配额限制**：不同 API Key 可能有不同模型访问权限。
+- **价格变动**：定价随供应商调整，以控制台显示为准。
+- **上下文限制**：超出上下文长度的请求会被截断或返回错误。

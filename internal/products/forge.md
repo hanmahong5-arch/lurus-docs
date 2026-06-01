@@ -5,7 +5,7 @@ group: kova
 priority: P1
 status: beta
 owner: team (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2b-bs-forge
 ---
 

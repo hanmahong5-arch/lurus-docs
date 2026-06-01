@@ -5,32 +5,26 @@ description: 三行代码把 Lumen 接入 LangGraph / Agent 项目，查看首�
 
 # Lumen 快速开始 <StatusBadge status="dev" />
 
-本文让你在 10 分钟内完成：安装 → 接入 LangGraph → 查看首次 Trace → 触发 Replay → 统计 24h 成本。
+10 分钟完成：安装 → 接入 LangGraph → 查看首次 Trace → 触发 Replay → 统计 24h 成本。
 
 ## 前置条件
 
-- Python 3.9+
-- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）
-- 一个已有的 LangGraph 或 LangChain Agent 项目（没有也可跑本文自带的最小示例）
+Python 3.9+ · Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）· 已有 LangGraph/LangChain Agent 项目（无则用下方最小示例）。
 
-## 安装
+## 安装与三行接入 LangGraph
 
 ```bash
 pip install lumen-ai
 ```
-
-## 三行接入 LangGraph
-
 ```python
 from lumen_ai import LumenTracer, LumenCheckpointer
-
 graph = workflow.compile(
     checkpointer=LumenCheckpointer(),   # 崩溃恢复
     callbacks=[LumenTracer()],           # 执行追踪 + 成本追踪
 )
 ```
 
-就这样。无需修改业务逻辑，所有 LLM 调用、工具调用、状态变更都会被记录到 Lumen 后端。
+无需改业务逻辑，所有 LLM 调用、工具调用、状态变更都记录到 Lumen 后端。
 
 ## 最小运行示例
 
@@ -61,23 +55,16 @@ graph.invoke({"query": "什么是 WAL"})
 
 ## 查看 Trace
 
-启动后访问控制台（默认 `http://localhost:7070`）或 Lurus 控制台的 Lumen 页，即可看到：
-
-- 每次 graph 执行的完整时间线
-- 每个节点的输入 / 输出 / 耗时
-- LLM 调用的 prompt、completion、Token 数
+访问控制台（默认 `http://localhost:7070`）或 Lurus 控制台 Lumen 页：每次 graph 执行完整时间线、每节点输入/输出/耗时、LLM 调用的 prompt/completion/Token 数。
 
 ## 触发 Replay
 
-Replay 允许你从历史执行序列中重放一次，**不消耗 Token**：
+从历史执行序列重放一次，**不消耗 Token**（用于本地复现 bug、验证修复、Prompt A/B）：
 
 ```python
 from lumen_ai import Replay
-
 Replay.from_run_id("run_abc123").play()
 ```
-
-典型用途：本地复现 bug、验证修复、Prompt 微调 A/B。
 
 ## 24 小时成本
 

@@ -1,4 +1,4 @@
-# 能力矩阵 — 14 产品 × 12 能力
+# 能力矩阵 — 15 产品 × 12 能力
 
 横看产品，竖看能力。每个 ✓ 是该产品**现在**就具备的能力；🚧 是规划中；空白是不打算做。
 
@@ -6,39 +6,44 @@
 
 ## 主能力矩阵
 
-| 能力 ↓ / 产品 → | Platform | Newapi | MemX | Kova | Lumen | Forge | Lucrum | Tally | Switch | Creator | Lutu | Web | Admin | MCP |
-|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-| **身份 (OIDC)** | ✓ | | | | | | ✓ | 🚧 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| **计费 / 钱包** | ✓ | | | | | | ✓ | 🚧 | | | ✓ | | ✓ | |
-| **订阅 / 权益** | ✓ | | | | | | ✓ | 🚧 | | | ✓ | | ✓ | |
-| **LLM 调用** | | ✓ | | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | | | ✓ |
-| **持久 Agent** | | | | ✓ | 🚧 | ✓ | | | | | | | | |
-| **长期记忆** | | | ✓ | ✓ | | ✓ | ✓ | 🚧 | | ✓ | | | | |
-| **MCP 协议** | | | ✓ | ✓ | ✓ | | | | ✓ | | | | | ✓ |
-| **桌面 GUI** | | | | | | | | | ✓ | ✓ | | | | |
-| **Web UI** | | ✓ | | | | ✓ | ✓ | ✓ | | | | ✓ | ✓ | |
-| **移动 APP** | | | | | | | 🚧 | | | | ✓ | | | |
-| **后台审计** | ✓ | ✓ | | ✓ | | | ✓ | 🚧 | | | | | ✓ | ✓ |
-| **多租户隔离** | ✓ | ✓ | ✓ | ✓ | | 🚧 | ✓ | ✓ | | | ✓ | | ✓ | |
+| 能力 ↓ / 产品 → | Platform | Newapi | Newhub¹ | MemX | Kova | Lumen | Forge | Lucrum | Tally | Switch | Creator | Lutu | Web | Admin² | MCP |
+|---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+| **身份 (OIDC)** | ✓ | | ✓ | | | | | ✓ | 🚧 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **计费 / 钱包** | ✓ | | ✓ | | | | | ✓ | 🚧 | | | ✓ | | ✓ | |
+| **订阅 / 权益** | ✓ | | | | | | | ✓ | 🚧 | | | ✓ | | ✓ | |
+| **LLM 调用** | | ✓ | ✓ | | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | | | ✓ |
+| **持久 Agent** | | | | | ✓ | 🚧 | ✓ | | | | | | | | |
+| **长期记忆** | | | | ✓ | ✓ | | ✓ | ✓ | 🚧 | | ✓ | | | | |
+| **MCP 协议** | | | | ✓ | ✓ | ✓ | | | | ✓ | | | | | ✓ |
+| **桌面 GUI** | | | | | | | | | | ✓ | ✓ | | | | |
+| **Web UI** | | ✓ | ✓ | | | | ✓ | ✓ | ✓ | | | | ✓ | ✓ | |
+| **移动 APP** | | | | | | | | 🚧 | | | | ✓ | | | |
+| **后台审计** | ✓ | ✓ | ✓ | | ✓ | | | ✓ | 🚧 | | | | | ✓ | ✓ |
+| **多租户隔离** | ✓ | ✓ | ✓ | ✓ | ✓ | | 🚧 | ✓ | ✓ | | | ✓ | | ✓ | |
 
 > ✓ 已具备 · 🚧 规划/dev 中 · 空白 不计划做
+>
+> ¹ **Newhub**：beta/stage（`test-newhub.lurus.cn`），ADR-0009 确定为 newapi 继任者；表中 ✓ 为已具备能力，整体非 prod-GA。
+> ² **Admin**：已退役（ADR-0010）；列保留作历史对照，✓ **不代表当前可用**（`admin.lurus.cn` 实测 404）。
 
 ## 解读
 
 - **平台底座是真的"底座"**：身份/计费/订阅 三项基础能力**只在 Platform 一家**。其余产品都是消费方。
-- **LLM 调用扎堆走 Newapi**：14 个产品里 9 个有 LLM 能力，全部经过 Newapi。Newapi 挂 ⇒ 9 个产品 LLM 全瘫。这是已识别的最大单点。
+- **LLM 调用扎堆走 Newapi**：14 个产品里 9 个有 LLM 能力，全部经过 Newapi。Newapi 挂 ⇒ 9 个产品 LLM 全瘫。这是已识别的最大单点。按 [ADR-0009](/adr/0009-newhub-replaces-newapi)，**newapi 退役中**，网关将切到 newhub（`hub.lurus.cn`）——单点随之迁移，但仍是单点。
+- **Lucrum 现为 stage（公测）**：2026-04-30 从 prod 降级，表中 ✓ 是已具备能力，整体处于公测 / beta，非 prod-GA。
 - **MCP 是新维度**：5 个产品已经支持 MCP（MemX/Kova/Lumen/Switch/MCP servers）。意味着内部"对话即操作"的入口是真在做。
 - **移动是单点**：只有 Lutu。lucrum-app 已被 Lutu 吸收（[ADR-0007](/adr/0007-lutu-absorbs-lucrum-app)）。
+- **Admin / Webgame 已下线**：见 [ADR-0010](/adr/0010-product-retirements)。本表保留两列作历史对照，其 ✓ **不代表当前可用**（`admin.lurus.cn` 实测 404；webgame auth 已死）。
 
 ## 反向：能力 → 提供方一览（lurus.yaml capabilities 摘录）
 
 | 能力 (capability key) | 唯一/主要 provider | 消费方 |
 |---|---|---|
-| `identity` | platform | lucrum, switch, lutu, creator, tally, newapi, admin |
-| `billing` | platform | lucrum, lutu, tally, newapi, admin |
+| `identity` | platform | lucrum, switch, lutu, creator, tally, newapi, newhub, admin |
+| `billing` | platform | lucrum, lutu, tally, newapi, newhub, admin |
 | `subscription` | platform | lucrum, lutu, tally |
 | `notification` | platform/notification | lucrum, lutu, admin, tally |
-| `llm-inference` | newapi | switch, lucrum, lutu, forge, creator, kova, tally |
+| `llm-inference` | newapi → newhub（ADR D1 过渡中） | switch, lucrum, lutu, forge, creator, kova, tally |
 | `memory` | memx | kova, creator, switch, lucrum (规划) |
 | `agent-execution` | kova | forge, lucrum (规划) |
 
@@ -59,6 +64,7 @@ graph LR
   subgraph providers["唯一提供者 (绿)"]
     PF[Platform]
     NA[Newapi]
+    NH[Newhub]
     MX[MemX]
     KV[Kova]
   end
@@ -69,7 +75,7 @@ graph LR
     LU[Lutu]
     CR[Creator]
     TL[Tally]
-    AD[Admin]
+    AD[Admin ⚠️已退役]
     FG[Forge]
   end
 
@@ -78,6 +84,7 @@ graph LR
   PF --> C_SUB
   PF --> C_NOT
   NA --> C_LLM
+  NH --> C_LLM
   MX --> C_MEM
   KV --> C_AGT
 
@@ -89,13 +96,18 @@ graph LR
   C_MEM --> KV & CR & SW
   C_AGT --> FG & LC
 
+  NA -.->|退役中 ADR-0009| NH
+
   classDef cap fill:#eef3f7,stroke:#82A0BC
   classDef prov fill:#eef3ec,stroke:#7C9885,stroke-width:2px
   classDef cons fill:#fbf3e8,stroke:#D4A373
+  classDef retired fill:#f5f5f5,stroke:#aaa,color:#999
 
   class C_ID,C_BIL,C_SUB,C_NOT,C_LLM,C_MEM,C_AGT cap
   class PF,NA,MX,KV prov
-  class LC,SW,LU,CR,TL,AD,FG cons
+  class NH prov
+  class LC,SW,LU,CR,TL,FG cons
+  class AD retired
 ```
 
 ## 缺口检查（员工自检用）

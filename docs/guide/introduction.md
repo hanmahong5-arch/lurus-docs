@@ -32,34 +32,18 @@ api_key="sk-your-lurus-key"
 
 ## 核心能力
 
-### 🔌 统一 API — 一个接口覆盖所有模型
+**🔌 统一 API**：一个接口覆盖所有模型，换 `model` 名即可。
 
 ```python
 from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://api.lurus.cn/v1",
-    api_key="sk-your-api-key"
-)
-
-# GPT-4o、Claude、Gemini、DeepSeek，换个名字就行
-response = client.chat.completions.create(
-    model="deepseek-chat",  # 或 gpt-4o / claude-3-5-sonnet / gemini-3-pro-preview
-    messages=[{"role": "user", "content": "你好"}]
-)
+client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-api-key")
+# model 可填 deepseek-chat / gpt-4o / claude-3-5-sonnet / gemini-3-pro-preview
+response = client.chat.completions.create(model="deepseek-chat", messages=[{"role": "user", "content": "你好"}])
 ```
 
-### 🔀 智能路由与自动故障转移
+**🔀 智能路由与自动故障转移**：多渠道备援（主渠道失败自动切换）、权重负载均衡（按比例分流平衡成本与速度）、优先级策略（先低成本渠道，超限切高成本备用）。
 
-- **多渠道备援**：同一模型配置多个供应商，主渠道失败自动切换
-- **权重负载均衡**：按比例分流到不同渠道，平衡成本与速度
-- **优先级策略**：先用低成本渠道，超限再切换高成本备用
-
-### 💵 精细化成本控制
-
-- 为每个 API Key 设置 Token 配额，超量自动拦截
-- 按天/月查看调用次数、Token 消耗、费用明细
-- 配额告警：剩余不足 20% 时发送通知
+**💵 精细化成本控制**：每个 API Key 设 Token 配额超量拦截；按天/月查调用次数、Token、费用明细；配额剩余不足 20% 告警。
 
 ### 🛡️ 企业级访问管理
 
@@ -87,21 +71,10 @@ response = client.chat.completions.create(
 ## 架构概览
 
 ```
-你的应用 / AI 客户端
-         │
-         ▼
-┌─────────────────────────────────────┐
-│           Lurus API Gateway          │
-│                                     │
-│  认证 → 路由 → 限流 → 计费 → 日志   │
-└─────────────────────────────────────┘
-         │
-   ┌─────┴──────┐──────────┬──────────┐
-   ▼            ▼           ▼          ▼
- OpenAI      Claude      Gemini    DeepSeek …
+你的应用/AI 客户端 → Lurus API Gateway(认证→路由→限流→计费→日志) → OpenAI / Claude / Gemini / DeepSeek …
 ```
 
-请求进来后，网关按配置的渠道优先级路由，某个供应商返回错误时自动重试下一个，你的代码感知不到切换过程。
+网关按配置的渠道优先级路由，某供应商返回错误时自动重试下一个，代码感知不到切换。
 
 ---
 

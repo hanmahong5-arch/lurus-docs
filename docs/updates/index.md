@@ -10,6 +10,32 @@ description: Lurus 产品矩阵最新动态与里程碑
 
 ---
 
+## 2026 年 5 月
+
+### Platform — identity.lurus.cn 账号控制台全量上线 <StatusBadge status="live" />
+
+- 统一账号控制台在 `identity.lurus.cn` 全量上线（R1 生产环境，服务运行正常）
+- 自助页面：账户与安全 [/account](https://identity.lurus.cn/account) · 鹿贝钱包 [/wallet](https://identity.lurus.cn/wallet) · 订阅计划 [/subscriptions](https://identity.lurus.cn/subscriptions) · 充值 [/topup](https://identity.lurus.cn/topup) · 兑换码 [/redeem](https://identity.lurus.cn/redeem)
+
+### 账号入口统一收敛到 identity.lurus.cn <StatusBadge status="live" />
+
+- 所有账号 / 计费 / 订阅的自助操作统一收敛到 `identity.lurus.cn` 控制台；**原 `admin.lurus.cn` 入口已退役**，请改用下列新路径：
+  - 管理账号 / 改密码 / 安全设置 → [identity.lurus.cn/account](https://identity.lurus.cn/account)
+  - 忘记密码 → [identity.lurus.cn/forgot-password](https://identity.lurus.cn/forgot-password)
+  - 钱包余额 / 收支记录 → [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
+  - 订阅 / 变更套餐 / 定价 → [identity.lurus.cn/subscriptions](https://identity.lurus.cn/subscriptions)
+- 企业组织的成员 / 权限 / 审计经 [auth.lurus.cn](https://auth.lurus.cn)（Zitadel）组织控制台管理
+
+### Lucrum — 定价页上线 <StatusBadge status="live" />
+
+- Lucrum 定价页 [lucrum.lurus.cn/pricing](https://lucrum.lurus.cn/pricing) 上线，订阅层级与配额一目了然（产品当前处于公测 / beta 阶段）
+
+### LLM 网关 — 向多租户 Hub 演进 <StatusBadge status="dev" />
+
+- LLM 网关正从 `newapi.lurus.cn` 向多租户 Hub（`hub.lurus.cn`）演进，强化统一计费与租户隔离；**当前调用方式与地址不变**，迁移完成后会提供更细的用量与配额视图
+
+---
+
 ## 2026 年 4 月
 
 ### 文档站 — 全站文档准确性审计 <StatusBadge status="live" />

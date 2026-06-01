@@ -8,10 +8,7 @@ description: 5 分钟内完成首次 Lurus API 调用，支持 Python、Node.js�
 5 分钟内完成首次 API 调用。
 
 ::: info 前置条件
-- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）
-- Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（任选一种）
-- 基本终端/命令行知识
-- 预计时间: 5 分钟
+Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）· Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（任选）· 基本终端知识。预计 5 分钟。
 :::
 
 ## 第一步：获取 API Key
@@ -34,20 +31,14 @@ export LURUS_API_KEY="sk-your-key-here"
 
 :::tabs
 == Python
-**安装 SDK：**
 ```bash
 pip install openai
 ```
-
-**发起请求：**
 ```python
 from openai import OpenAI
 import os
 
-client = OpenAI(
-    base_url="https://api.lurus.cn/v1",
-    api_key=os.environ["LURUS_API_KEY"]
-)
+client = OpenAI(base_url="https://api.lurus.cn/v1", api_key=os.environ["LURUS_API_KEY"])
 
 response = client.chat.completions.create(
     model="deepseek-chat",
@@ -56,22 +47,26 @@ response = client.chat.completions.create(
         {"role": "user", "content": "用一句话介绍什么是人工智能。"}
     ]
 )
-
 print(response.choices[0].message.content)
+# → 人工智能是让计算机模拟人类智能行为（如学习、推理、理解语言）的技术与科学领域。
 ```
 
-**预期输出：**
-```
-人工智能是让计算机模拟人类智能行为（如学习、推理、理解语言）的技术与科学领域。
+== cURL
+```bash
+curl https://api.lurus.cn/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $LURUS_API_KEY" \
+  -d '{ "model": "deepseek-chat", "messages": [
+      {"role": "system", "content": "你是一个有帮助的助手。"},
+      {"role": "user",   "content": "用一句话介绍什么是人工智能。"} ] }'
+# 响应：{ "id":"chatcmpl-abc123", "choices":[{ "message":{"role":"assistant","content":"..."}, "finish_reason":"stop" }],
+#        "usage":{ "prompt_tokens":32, "completion_tokens":22, "total_tokens":54 } }
 ```
 
 == Node.js
-**安装 SDK：**
 ```bash
 npm install openai
 ```
-
-**发起请求：**
 ```javascript
 import OpenAI from 'openai';
 
@@ -89,49 +84,13 @@ const response = await client.chat.completions.create({
 });
 
 console.log(response.choices[0].message.content);
-```
-
-**预期输出：**
-```
-人工智能是让计算机模拟人类智能行为（如学习、推理、理解语言）的技术与科学领域。
-```
-
-== cURL
-```bash
-curl https://api.lurus.cn/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $LURUS_API_KEY" \
-  -d '{
-    "model": "deepseek-chat",
-    "messages": [
-      {"role": "system", "content": "你是一个有帮助的助手。"},
-      {"role": "user",   "content": "用一句话介绍什么是人工智能。"}
-    ]
-  }'
-```
-
-**预期输出：**
-```json
-{
-  "id": "chatcmpl-abc123",
-  "choices": [{
-    "message": {
-      "role": "assistant",
-      "content": "人工智能是让计算机模拟人类智能行为的技术与科学领域。"
-    },
-    "finish_reason": "stop"
-  }],
-  "usage": { "prompt_tokens": 32, "completion_tokens": 22, "total_tokens": 54 }
-}
+// → 人工智能是让计算机模拟人类智能行为（如学习、推理、理解语言）的技术与科学领域。
 ```
 
 == Go
-**安装 SDK：**
 ```bash
 go get github.com/sashabaranov/go-openai
 ```
-
-**发起请求：**
 ```go
 package main
 
@@ -157,6 +116,7 @@ func main() {
         },
     )
     fmt.Println(resp.Choices[0].Message.Content)
+    // → 人工智能是让计算机模拟人类智能行为（如学习、推理、理解语言）的技术与科学领域。
 }
 ```
 :::

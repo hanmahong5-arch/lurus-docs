@@ -3,13 +3,15 @@ title: Lurus Tally
 id: tally
 group: platform
 priority: P0
-status: planning
+status: beta
 owner: marvin (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2b-svc-psi
 ---
 
 # Lurus Tally 内部员工手册
+
+> 🟢 **2026-05-28 状态更新**：stage（R6），Epic 1 done，Billing 待 R6 部署；tally-mcp 仍 alpha。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、已知坑、未公开风险。
 
@@ -769,7 +771,7 @@ curl -s http://kova-rest.lurus-kova.svc:3002/health
 
 ---
 
-*文档版本：1.0 | 创建：2026-04-28 | 状态：planning（PRD/Architecture 已完成，代码骨架已跑通）*
+*文档版本：1.0 | 创建：2026-04-28 | 状态：stage（beta）（PRD/Architecture 已完成，代码骨架已跑通）*
 *下次审阅触发条件：Epic 2 (RLS 多租户) 完成后，或任何多租户安全相关变更后*
 
 ---

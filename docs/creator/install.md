@@ -6,10 +6,7 @@ description: Creator 桌面内容工厂的下载和安装步骤。
 # 安装指南
 
 ::: info 前置条件
-- Windows 10+ / macOS 12+ / Linux（64 位）
-- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)），用于 AI 改写功能
-- 4 GB 以上内存（推荐 8 GB+）
-- 预计时间: 3 分钟
+Windows 10+ / macOS 12+ / Linux（64 位）· Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)，用于 AI 改写）· 4 GB+ 内存（推荐 8 GB+）。预计 3 分钟。
 :::
 
 ## 下载
@@ -27,30 +24,13 @@ description: Creator 桌面内容工厂的下载和安装步骤。
 
 ## Windows 安装
 
-1. 下载 `LurusCreator-windows-amd64.exe`
-2. 双击运行安装程序
-3. 如果弹出「Windows 已保护你的电脑」，点击「更多信息」→「仍要运行」
-4. 按向导完成安装
-5. 从桌面快捷方式启动「Lurus Creator」
-
-### 首次启动配置
-
-1. 设置 Lurus API Key（用于 AI 改写功能）
-   - 在 [api.lurus.cn](https://api.lurus.cn) 获取 Key
-   - 在 Creator 设置页面粘贴
-2. 选择工作目录（视频和文案的存储位置）
-3. 配置完成，可以开始使用
+下载 `LurusCreator-windows-amd64.exe` → 双击运行 →（弹「Windows 已保护你的电脑」则「更多信息」→「仍要运行」）→ 完成向导 → 桌面快捷方式启动。**首次配置**：在 [api.lurus.cn](https://api.lurus.cn) 获取 Key 粘贴到 Creator 设置（用于 AI 改写）→ 选工作目录（视频/文案存储位置）。
 
 ---
 
 ## macOS 安装
 
-1. 下载对应芯片的 `.dmg` 文件
-2. 双击挂载 DMG
-3. 将 **Lurus Creator** 拖入「应用程序」文件夹
-4. 首次打开时，如提示「无法验证开发者」：
-   - 打开「系统设置」→「隐私与安全性」
-   - 找到 Lurus Creator，点击「仍要打开」
+下载对应芯片 `.dmg` → 双击挂载 → 拖 **Lurus Creator** 到「应用程序」→ 首次打开提示「无法验证开发者」则「系统设置 → 隐私与安全性 → 仍要打开」。
 
 ---
 
@@ -99,34 +79,12 @@ Creator 打包了所有必需的工具，无需额外安装：
 
 ## 验证安装
 
-启动 Creator 后，在设置页面：
-
-1. 确认 API Key 状态显示「已连接」
-2. 点击「检查依赖」，所有工具应显示绿色对勾
-3. 尝试输入一个视频 URL 测试下载功能
+设置页面：确认 API Key 状态「已连接」→「检查依赖」所有工具显示绿色对勾 → 输入视频 URL 测试下载。
 
 ---
 
 ## 卸载
 
-### Windows
-控制面板 → 程序 → 卸载程序 → 找到「Lurus Creator」→ 卸载
-
-配置和缓存位于：
-```
-%APPDATA%\LurusCreator\
-```
-
-### macOS
-将应用程序文件夹中的「Lurus Creator」拖入废纸篓。
-
-配置和缓存位于：
-```
-~/Library/Application Support/LurusCreator/
-```
-
-### Linux
-```bash
-rm /opt/lurus-creator  # 或你放置 AppImage 的位置
-rm -rf ~/.config/LurusCreator/
-```
+- **Windows**：控制面板 → 卸载程序 →「Lurus Creator」；配置/缓存在 `%APPDATA%\LurusCreator\`。
+- **macOS**：应用程序「Lurus Creator」拖入废纸篓；配置/缓存在 `~/Library/Application Support/LurusCreator/`。
+- **Linux**：`rm /opt/lurus-creator`（或 AppImage 位置）+ `rm -rf ~/.config/LurusCreator/`。

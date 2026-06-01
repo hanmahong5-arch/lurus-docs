@@ -5,22 +5,20 @@ description: Lurus API 身份认证方式，包括 API Key 格式和请求头配
 
 # 认证
 
-所有 Lurus API 请求都需要进行身份认证。Lurus 支持 **两套互补的认证模式**：
+所有 Lurus API 请求都需认证。支持**两套互补模式**：
 
-1. **API Key**（本页说明）— 最快上手，适合脚本和个人项目
-2. **OIDC / OAuth2 Token** — 基于统一身份体系，适合需要用户登录的应用、企业 SSO、机器对机器认证。详见 [OIDC 集成](/platform/auth/oidc) 与 [API 认证 (PAT/JWT)](/platform/auth/api-auth)。
+1. **API Key**（本页）— 最快上手，适合脚本和个人项目。
+2. **OIDC / OAuth2 Token** — 基于统一身份体系，适合需用户登录的应用、企业 SSO、M2M。详见 [OIDC 集成](/platform/auth/oidc) 与 [API 认证 (PAT/JWT)](/platform/auth/api-auth)。
 
 ## 认证方式
 
-使用 <Term t="Bearer Token">Bearer Token</Term> 认证，在 HTTP Header 中携带 <Term t="API Key">API Key</Term>：
+用 <Term t="Bearer Token">Bearer Token</Term>，在 HTTP Header 携带 <Term t="API Key">API Key</Term>：
 
 ```http
 Authorization: Bearer sk-your-api-key
 ```
 
 ## 请求示例
-
-### cURL
 
 ```bash
 curl https://api.lurus.cn/v1/chat/completions \
@@ -29,34 +27,36 @@ curl https://api.lurus.cn/v1/chat/completions \
   -d '{"model": "deepseek-chat", "messages": [{"role": "user", "content": "Hi"}]}'
 ```
 
-### Python
+::: code-group
 
-```python
+```python [Python]
 from openai import OpenAI
 
 client = OpenAI(
     base_url="https://api.lurus.cn/v1",
-    api_key="sk-your-api-key"  # 在这里设置 API Key
+    api_key="sk-your-api-key",  # 建议改为 os.environ.get("LURUS_API_KEY")
 )
 ```
 
-### Node.js
-
-```javascript
+```javascript [Node.js]
 import OpenAI from 'openai';
 
 const client = new OpenAI({
   baseURL: 'https://api.lurus.cn/v1',
-  apiKey: 'sk-your-api-key'
+  apiKey: 'sk-your-api-key',  // 建议改为 process.env.LURUS_API_KEY
 });
 ```
 
+:::
+
+完整 SDK 列表见 [API 概述 — SDK 支持](/api/overview#sdk-支持)。
+
 ## 环境变量
 
-推荐使用环境变量存储 API Key，避免硬编码：
+推荐用环境变量存储 API Key，避免硬编码：
 
 ```bash
-# .env 文件
+# .env
 LURUS_API_KEY=sk-your-api-key
 ```
 
@@ -64,60 +64,26 @@ LURUS_API_KEY=sk-your-api-key
 import os
 from openai import OpenAI
 
-client = OpenAI(
-    base_url="https://api.lurus.cn/v1",
-    api_key=os.environ.get("LURUS_API_KEY")
-)
+client = OpenAI(base_url="https://api.lurus.cn/v1", api_key=os.environ.get("LURUS_API_KEY"))
 ```
 
 ## 认证错误
 
-### 401 Unauthorized
+- **401 Unauthorized**（`code: invalid_api_key`, `type: authentication_error`）：Key 格式错误 / 已禁用或删除 / Authorization Header 格式不正确。
+- **403 Forbidden**（`code: access_denied`, `type: authorization_error`）：Key 无该模型权限 / 账户已暂停 / 配额已用尽。
 
-```json
-{
-  "error": {
-    "code": "invalid_api_key",
-    "message": "Invalid API key provided",
-    "type": "authentication_error"
-  }
-}
-```
-
-**可能原因**:
-- API Key 格式错误
-- API Key 已被禁用或删除
-- Authorization Header 格式不正确
-
-### 403 Forbidden
-
-```json
-{
-  "error": {
-    "code": "access_denied",
-    "message": "You don't have permission to access this model",
-    "type": "authorization_error"
-  }
-}
-```
-
-**可能原因**:
-- API Key 没有访问该模型的权限
-- 账户已被暂停
-- 配额已用尽
+错误响应 JSON 结构与重试策略见 [错误处理](/api/errors)。
 
 ## 安全最佳实践
 
-1. **使用环境变量**: 不要在代码中硬编码 API Key
-2. **不要公开**: 不要将 Key 提交到 Git 仓库
-3. **限制权限**: 只给 Key 必需的最小权限
-4. **定期轮换**: 定期更换 API Key
-5. **监控日志**: 定期检查 API 调用日志
+1. **用环境变量**，不在代码硬编码 API Key。
+2. **不公开**，不提交到 Git 仓库。
+3. **限制权限**，只给 Key 必需的最小权限。
+4. **定期轮换** API Key。
+5. **监控日志**，定期检查 API 调用日志。
 
 ---
 
 ## 下一步
 
-- [Chat Completions API](/api/chat-completions) — 最常用的对话接口
-- [错误处理](/api/errors) — 错误码和重试策略
-- [API 概述](/api/overview) — 完整端点列表
+- [Chat Completions API](/api/chat-completions) · [错误处理](/api/errors) · [API 概述](/api/overview)

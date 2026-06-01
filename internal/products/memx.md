@@ -3,13 +3,15 @@ title: MemX / Memorus
 id: memx
 group: platform
 priority: P0
-status: live
+status: beta
 owner: Platform Team (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2b-svc-memorus
 ---
 
 # MemX / Memorus 内部手册
+
+> 🔴 **2026-05-28 状态更新**：现处 stage（R6），同事改造中，状态存疑；勿当 prod 强依赖。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 
@@ -23,7 +25,7 @@ Memorus 是 Lurus 平台的 AI 持久记忆引擎，基于 mem0 fork + ACE v2.0�
 |---|---|
 | 仓库 | github.com/hanmahong5-arch/lurus-memorus (private) |
 | 镜像 | ghcr.io/hanmahong5-arch/lurus-memorus:main |
-| 端口 | 8880 |
+| 端口 | 8880（集群内）；NodePort 30880（集群外/dev，**端口待对 live Service 复核**） |
 | 命名空间 | lurus-system |
 | 数据存储 | SQLite + Qdrant (PVC 5Gi, `/data`) |
 | 部署目标 | R1 (生产，lurus-system) |

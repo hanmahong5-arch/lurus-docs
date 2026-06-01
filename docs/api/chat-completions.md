@@ -5,7 +5,7 @@ description: Lurus Chat Completions API 参考，完全兼容 OpenAI 接口格�
 
 # Chat Completions API
 
-最常用的 API，用于与 AI 模型进行对话。完全兼容 OpenAI Chat Completions 接口。
+最常用的对话 API，完全兼容 OpenAI Chat Completions 接口。
 
 ```
 POST https://api.lurus.cn/v1/chat/completions
@@ -73,17 +73,7 @@ response = client.chat.completions.create(
 )
 
 print(response.choices[0].message.content)
-# 消耗情况
-print(f"Token 用量：{response.usage.total_tokens}")
-```
-
-**预期输出：**
-```
-RESTful API 是基于 HTTP 协议、遵循 REST 架构风格设计的 Web 接口。
-它用 URL 表示资源、用 HTTP 方法（GET/POST/PUT/DELETE）表示操作，
-返回 JSON 或 XML 数据，无状态、统一接口，广泛用于前后端分离架构。
-
-Token 用量：87
+print(f"Token 用量：{response.usage.total_tokens}")  # usage.total_tokens
 ```
 
 == cURL
@@ -122,14 +112,6 @@ for chunk in stream:
     if delta.content:
         print(delta.content, end="", flush=True)
 print()  # 换行
-```
-
-**预期输出（逐字打印）：**
-```
-落叶铺满石板路，
-西风卷起金色衣。
-雁阵南飞云影淡，
-丰收气息满山谷。
 ```
 
 == Node.js
@@ -358,12 +340,4 @@ print(chat("他有哪些重要成就？"))  # 模型能记住上文的"秦始皇
 
 ## 错误处理
 
-| HTTP 状态码 | 原因 | 处理方式 |
-|-------------|------|---------|
-| `400` | 请求格式错误 | 检查 JSON 结构和必填参数 |
-| `401` | API Key 无效或过期 | 检查 Key 格式和状态 |
-| `403` | 无权访问此模型 | 联系管理员开通权限 |
-| `429` | 超出速率限制 | 指数退避重试，或降低请求频率 |
-| `500/502` | 上游模型服务异常 | 等待后重试，或切换备用模型 |
-
-详细错误码和重试策略见 [错误处理](/api/errors)。
+常见状态码：`400` 请求格式错误 → 检查 JSON 结构和必填参数；`401` Key 无效/过期；`403` 无权访问此模型 → 联系管理员；`429` 超出速率限制 → 指数退避重试；`500/502` 上游模型异常 → 重试或切换备用模型。完整错误码和重试策略见 [错误处理](/api/errors)。

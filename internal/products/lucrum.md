@@ -3,13 +3,15 @@ title: Lucrum — AI 量化交易平台
 id: lucrum
 group: lucrum
 priority: P1
-status: live
+status: beta
 owner: lucrum-team (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2c-svc-lucrum
 ---
 
 # Lucrum 内部手册
+
+> 🔴 **2026-05-28 状态更新**：2026-04-30 从 prod 降级 stage（audit F7）；促升 blockers：DNS / web Secret / ai-qtrd quota。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 

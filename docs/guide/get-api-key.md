@@ -5,77 +5,35 @@ description: 注册 Lurus 账号并获取 API Key 的完整步骤。
 
 # 获取 API Key
 
-本指南介绍如何注册账号并获取 Lurus API Key。
-
 ::: tip OIDC / OAuth 接入
-若你希望让终端用户以 Lurus 账号直接登录自有应用，或在后端以 Service User + JWT Profile 调用 Lurus API，可改用统一身份认证体系：[OIDC / OAuth2 集成](/platform/auth/oidc) · [API 认证（PAT/JWT）](/platform/auth/api-auth)。API Key 与 OIDC Token 共存，两种认证方式均有效。
+让终端用户以 Lurus 账号登录自有应用，或后端以 Service User + JWT Profile 调用，可改用统一身份认证：[OIDC / OAuth2 集成](/platform/auth/oidc) · [API 认证（PAT/JWT）](/platform/auth/api-auth)。API Key 与 OIDC Token 共存，两种均有效。
 :::
 
-## 注册账号
+## 注册与创建 Key
 
-1. 访问 [Lurus 控制台](https://api.lurus.cn)
-2. 点击「注册」按钮
-3. 填写邮箱和密码
-4. 完成邮箱验证
+1. 访问 [Lurus 控制台](https://api.lurus.cn) →「注册」→ 填邮箱密码 → 完成邮箱验证。
+2. 登录 → 左侧「令牌管理」→「创建新令牌」→ 填令牌名称（便于识别）→ 确认。
 
-## 创建 API Key
-
-1. 登录控制台
-2. 点击左侧菜单「令牌管理」
-3. 点击「创建新令牌」按钮
-4. 填写令牌名称（便于识别用途）
-5. 点击确认创建
-
-::: tip 提示
-创建后请立即复制保存 API Key，它只会显示一次！
+::: tip
+创建后请立即复制保存 API Key，**只显示一次**！
 :::
 
 ## API Key 格式
 
-Lurus API Key 以 `sk-` 开头，由 48 位随机字符组成：
-
-```
-sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-```
+以 `sk-` 开头，48 位随机字符：`sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`。
 
 ## 管理 API Key
 
-### 查看用量
-
-在「令牌管理」页面可以看到每个 Key 的：
-- 已用额度
-- 剩余额度
-- 最近调用时间
-
-### 禁用/删除
-
-- **禁用**: 暂时停止 Key 的使用权限，可以随时恢复
-- **删除**: 永久删除 Key，无法恢复
-
-### 设置模型权限
-
-可以限制 Key 只能访问特定模型：
-1. 点击 Key 旁的「编辑」
-2. 在「可用模型」中选择允许的模型
-3. 保存设置
+- **查看用量**：「令牌管理」页面显示每个 Key 的已用额度、剩余额度、最近调用时间。
+- **禁用 / 删除**：禁用 = 暂停使用权限（可恢复）；删除 = 永久删除（不可恢复）。
+- **设置模型权限**：点 Key 旁「编辑」→「可用模型」选允许的模型 → 保存。
 
 ## 安全建议
 
-1. **不要泄露**: 不要将 Key 提交到公开代码仓库
-2. **定期轮换**: 建议每 90 天更换一次 Key
-3. **最小权限**: 只授予 Key 必需的模型权限
-4. **监控用量**: 定期检查调用日志，发现异常及时处理
+不泄露（不提交公开仓库）；每 90 天轮换一次 Key；最小权限（只授予必需模型）；定期检查调用日志发现异常及时处理。
 
 ## 常见问题
 
-### Q: 忘记了 API Key 怎么办？
-
-API Key 无法找回，请创建一个新的 Key。
-
-### Q: Key 被盗用了怎么办？
-
-立即禁用或删除该 Key，并创建新的 Key。
-
-### Q: 额度用完了怎么办？
-
-无需联系管理员，可自助充值或升级套餐：先在 [计费详解](/platform/billing) 查看各订阅档位（Free / Basic / Pro），再到 [Lurus 控制台](https://api.lurus.cn) 充值额度或升级套餐。
+- **忘记 Key**：无法找回，创建新 Key。
+- **Key 被盗用**：立即禁用或删除该 Key 并创建新 Key。
+- **额度用完**：自助充值或升级套餐——先在 [计费详解](/platform/billing) 看档位（Free / Basic / Pro），再到 [控制台](https://api.lurus.cn) 充值或升级。

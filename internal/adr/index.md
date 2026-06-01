@@ -22,6 +22,8 @@ owner: marvin
 | [0006](./0006-newapi-replaces-lurus-hub) | 移除 lurus-hub，newapi 全量承担 LLM 网关 | ✅ live | 2026-04-23 |
 | [0007](./0007-lutu-absorbs-lucrum-app) | lutu 吸收 lucrum-app（RN）| ✅ live | 2026-03 |
 | [0008](./0008-phoenix-to-nextjs-www) | www 从 Phoenix 转 Next.js，原 Phoenix 转 webgame | ✅ live | 2026-04 |
+| [0009](./0009-newhub-replaces-newapi) | newapi 退役 → 整合并入 newhub，hub.lurus.cn 成唯一网关 | ✅ accepted | 2026-05-27 |
+| [0010](./0010-product-retirements) | 产品退役汇总（admin / webgame / xianyu） | ✅ accepted | 2026-05-28 |
 
 ## 模板（写新 ADR 时复制）
 
