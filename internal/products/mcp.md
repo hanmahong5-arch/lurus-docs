@@ -5,11 +5,13 @@ group: platform
 priority: P2
 status: live
 owner: marvin (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2l-svc-zitadel-mcp, 2l-svc-k8s-mcp, 2l-svc-platform-mcp
 ---
 
 # MCP 工具链 内部手册
+
+> 🟢 **2026-05-28 状态更新**：zita/k8s/platform MCP 在 prod；tally-mcp 仍 alpha（待首发 tag）。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 
@@ -845,8 +847,8 @@ appended 253 lines, 4 mermaid charts to mcp.md
 AI Chat 工具
   → zitadel-mcp (MCP server, 调 Zitadel Admin API)
   → [失败] → fallback 提示员工
-  → 员工手动登录 admin.lurus.cn
-  → Admin LiveView 界面执行相同操作
+  → 员工经 identity.lurus.cn 或 zita CLI 操作（admin.lurus.cn 已 SUNSET 2026-05-10）
+  → Zitadel 控制台 / platform-core /admin SPA 执行相同操作
   → 写审计日志
 ```
 

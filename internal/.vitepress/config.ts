@@ -39,11 +39,12 @@ export default defineConfig({
         items: [
           { text: 'Platform 组', items: [
             { text: 'Lurus Platform', link: '/products/platform' },
-            { text: 'Newapi', link: '/products/newapi' },
+            { text: 'Newapi (退役中)', link: '/products/newapi' },
+            { text: 'Newhub (多租户网关)', link: '/products/newhub' },
             { text: 'MemX / Memorus', link: '/products/memx' },
             { text: 'Tally', link: '/products/tally' },
             { text: '路途 Lutu', link: '/products/lutu' },
-            { text: 'Admin', link: '/products/admin' },
+            { text: 'Admin (已下线)', link: '/products/admin' },
           ]},
           { text: 'Kova 组', items: [
             { text: 'Kova', link: '/products/kova' },
@@ -81,11 +82,12 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: 'Lurus Platform', link: '/products/platform' },
-            { text: 'Newapi (LLM 网关)', link: '/products/newapi' },
+            { text: 'Newapi (LLM 网关·退役中)', link: '/products/newapi' },
+            { text: 'Newhub (多租户 LLM 网关)', link: '/products/newhub' },
             { text: 'MemX / Memorus', link: '/products/memx' },
             { text: 'Tally (进销存)', link: '/products/tally' },
             { text: '路途 Lutu', link: '/products/lutu' },
-            { text: 'Admin (运营后台)', link: '/products/admin' },
+            { text: 'Admin (运营后台·已下线)', link: '/products/admin' },
           ]
         },
         {
@@ -123,7 +125,7 @@ export default defineConfig({
           text: '工具链',
           collapsed: false,
           items: [
-            { text: 'MCP Servers (×3)', link: '/products/mcp' },
+            { text: 'MCP Servers (×4)', link: '/products/mcp' },
           ]
         },
       ],
@@ -146,6 +148,16 @@ export default defineConfig({
       '/adr/': [
         { text: '架构决策', items: [
           { text: '索引', link: '/adr/' },
+          { text: '0001 三层环境', link: '/adr/0001-three-tier-envs' },
+          { text: '0002 Zitadel OIDC', link: '/adr/0002-zitadel-as-oidc' },
+          { text: '0003 CNPG Postgres', link: '/adr/0003-cnpg-postgres' },
+          { text: '0004 Temporal 替代 cron', link: '/adr/0004-temporal-replaces-cron' },
+          { text: '0005 Platform 计费源', link: '/adr/0005-platform-as-billing-source' },
+          { text: '0006 newapi 替代 hub', link: '/adr/0006-newapi-replaces-lurus-hub' },
+          { text: '0007 lutu 吸收 lucrum-app', link: '/adr/0007-lutu-absorbs-lucrum-app' },
+          { text: '0008 Phoenix→Next.js www', link: '/adr/0008-phoenix-to-nextjs-www' },
+          { text: '0009 newhub 替代 newapi', link: '/adr/0009-newhub-replaces-newapi' },
+          { text: '0010 产品退役汇总', link: '/adr/0010-product-retirements' },
         ]}
       ],
       '/postmortems/': [

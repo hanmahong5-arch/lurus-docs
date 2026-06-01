@@ -89,24 +89,11 @@ def distill(state: State) -> State:
 
 ## 加 Kova 崩溃恢复
 
-```python
-from kova.langgraph import KovaCheckpointer
-
-graph = wf.compile(checkpointer=KovaCheckpointer(kova))
-```
-
-崩溃后从 WAL 恢复，不重调 LLM。
+`graph = wf.compile(checkpointer=KovaCheckpointer(kova))`（`from kova.langgraph import KovaCheckpointer`）。崩溃后从 WAL 恢复，不重调 LLM。
 
 ## 完整项目产物
 
-<https://github.com/hanmahong5-arch/lurus-examples/tree/main/memory-agent>
-
-包含：
-
-- 上述代码完整版
-- `docker-compose.yml`（本地起 MemX + Kova）
-- Pytest 覆盖三个节点
-- `.env.example`
+<https://github.com/hanmahong5-arch/lurus-examples/tree/main/memory-agent> — 含代码完整版、`docker-compose.yml`（本地起 MemX + Kova）、Pytest 覆盖三节点、`.env.example`。
 
 ## 下一步
 

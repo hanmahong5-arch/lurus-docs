@@ -28,13 +28,7 @@ description: SaaS / 私有化 / 混合云三种部署形态与合规边界对比
 
 ## SSO 联邦
 
-企业已有 IdP（Okta / Azure AD / 自建 Keycloak），员工用公司账号登录 Lurus 产品：
-
-```
-企业 IdP  ──OIDC──►  Lurus Zitadel  ──►  所有 Lurus 产品
-```
-
-支持协议：OIDC / OAuth 2.0 / SAML 2.0 / SCIM（用户生命周期）。
+企业已有 IdP（Okta / Azure AD / 自建 Keycloak）员工用公司账号登录：`企业 IdP ──OIDC──► Lurus Zitadel ──► 所有 Lurus 产品`。支持协议：OIDC / OAuth 2.0 / SAML 2.0 / SCIM（用户生命周期）。
 
 ## SLA
 

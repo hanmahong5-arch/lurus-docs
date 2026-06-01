@@ -5,11 +5,13 @@ group: platform
 priority: P0
 status: live
 owner: marvin (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2b-svc-newapi
 ---
 
 # Lurus Newapi 内部手册
+
+> 🟡 **2026-05-28 状态更新**：仍是当前生产 LLM 网关（prod）；ADR D1 已决定退役 → 整合并入 newhub（hub.lurus.cn 将成唯一网关），PROD 切流（R-4）尚未执行，调用方式与地址暂不变。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 

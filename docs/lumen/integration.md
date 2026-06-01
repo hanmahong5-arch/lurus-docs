@@ -7,24 +7,19 @@ description: 与 Kova / LangGraph / Lurus API / OpenTelemetry / Grafana / Datado
 
 ## 与 [Kova](/kova/)
 
-Kova 引擎本身提供 WAL 持久化，Lumen 提供上层的 Trace / Replay / Cost 视角。
+Kova 负责 3μs 底层状态快照（WAL 持久化），Lumen 负责语义层 Trace 标注与成本统计。
 
 ```python
 from lumen_ai import LumenCheckpointer
 from kova import KovaClient
 
 kova = KovaClient("kova://prod")
-
-graph.compile(
-    checkpointer=LumenCheckpointer(kova_client=kova),
-)
+graph.compile(checkpointer=LumenCheckpointer(kova_client=kova))
 ```
-
-Kova 负责 3μs 的底层状态快照，Lumen 负责语义层的 Trace 标注与成本统计。
 
 ## 与 [LangGraph](https://langchain-ai.github.io/langgraph/)
 
-直接替换 Saver：
+直接替换 Saver（API 完全兼容 `BaseCheckpointSaver`）：
 
 ```diff
 - from langgraph.checkpoint.sqlite import SqliteSaver
@@ -34,11 +29,9 @@ Kova 负责 3μs 的底层状态快照，Lumen 负责语义层的 Trace 标注�
 + graph = wf.compile(checkpointer=LumenCheckpointer())
 ```
 
-API 完全兼容 `BaseCheckpointSaver`。
-
 ## 与 [Lurus API](/guide/introduction)
 
-通过 Lurus API 调用 LLM 时，Token 计费和耗时都会自动关联到 Lumen Trace：
+经 Lurus API 调 LLM 时，Token 计费和耗时自动关联到 Lumen Trace：
 
 ```python
 from openai import OpenAI
@@ -54,26 +47,11 @@ with tracer.span("classify"):
 
 ## OpenTelemetry
 
-Lumen 可以导出为 OTel Trace：
-
-```python
-from lumen_ai import LumenTracer
-from lumen_ai.otel import to_otlp
-
-tracer = LumenTracer(exporters=[to_otlp("http://otel-collector:4317")])
-```
+导出为 OTel Trace：`LumenTracer(exporters=[to_otlp("http://otel-collector:4317")])`（`from lumen_ai.otel import to_otlp`）。
 
 ## Grafana / Datadog
 
-通过 OTel Collector → Grafana Tempo / Datadog APM：
-
-```
-┌────────────┐   OTLP   ┌──────────────┐   ┌─────────────┐
-│ Lumen SDK  │ ───────→ │ OTel Collect │ → │ Grafana/DDB │
-└────────────┘          └──────────────┘   └─────────────┘
-```
-
-Grafana 仪表盘模板：[Lurus 官方模板库](/updates/)（搜索 "Lumen Dashboard"）。
+链路 `Lumen SDK ──OTLP──→ OTel Collector → Grafana Tempo / Datadog APM`。Grafana 仪表盘模板见 [Lurus 官方模板库](/updates/)（搜 "Lumen Dashboard"）。
 
 ## 下一步
 

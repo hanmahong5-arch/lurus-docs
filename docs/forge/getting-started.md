@@ -13,47 +13,27 @@ description: 5 分钟跑通 Forge 第一个 AI Agent workflow — register → �
 
 ## §1 30 秒认识 Forge
 
-Forge 是一个 AI Agent 工作台。在浏览器里**画 / 跑 / 评估** Agent 工作流，**崩溃自动续跑，不重复花 LLM token**。
-
-- **底层**: [Kova](/kova/) — Rust 写的持久执行引擎，WAL-first 崩溃恢复（不是 checkpoint，是每个 LLM Directive 都落盘）
-- **运行时**: 单二进制 + 单 WAL 文件，无需 Kafka / Redis / Cassandra
-- **LLM**: 国内 [newapi 网关](https://newapi.lurus.cn) 原生支持 (OpenAI 兼容)；可切 OpenAI / Anthropic / DeepSeek / 通义 / GLM
-- **审计**: 每次 workflow 步骤、人工审批都签名落盘，满足 EU AI Act + GB/T 信创要求
-
-下面 5 步带你跑完一遍。
+AI Agent 工作台：浏览器里**画 / 跑 / 评估** Agent 工作流，**崩溃自动续跑，不重复花 LLM token**。底层 [Kova](/kova/)（Rust 持久执行引擎，WAL-first 崩溃恢复——不是 checkpoint，每个 LLM Directive 都落盘）；运行时单二进制 + 单 WAL 文件，无需 Kafka/Redis/Cassandra；LLM 经 [newapi 网关](https://newapi.lurus.cn)（OpenAI 兼容，可切 OpenAI/Anthropic/DeepSeek/通义/GLM）；每次步骤和人工审批签名落盘，满足 EU AI Act + GB/T 信创。
 
 ---
 
 ## §2 跑第一个 workflow
 
 ::: tip 前置条件
-你已收到 Beta 邀请邮件 / 链接，并且已经在 `forge.lurus.cn` 完成注册登录。
+已收到 Beta 邀请并在 `forge.lurus.cn` 完成注册登录。
 :::
 
-1. 登录后，访问 [`/workflows/runs`](https://forge.lurus.cn/workflows/runs)
-2. 点上方 **"启动新 run"** 按钮 → 选择 seed 自动生成的 `classify_then_route_v1` workflow
-3. 输入框填一段中文 —— 比如 `今天上海天气怎么样`
-4. 点 **Start** → 自动跳转 `/workflows/runs/[id]` 详情页
-5. 看 timeline 卡片实时刷新（passthrough → llm_call → branch → leaf 四步）
+[`/workflows/runs`](https://forge.lurus.cn/workflows/runs) →**"启动新 run"**→ 选 seed 的 `classify_then_route_v1` → 输入框填中文（如 `今天上海天气怎么样`）→ **Start** 跳转 `/workflows/runs/[id]` → timeline 卡片实时刷新（passthrough → llm_call → branch → leaf 四步）。**预期** < 30 秒（newapi.lurus.cn 在线时）。
 
-**预期**: 完整跑完 < 30 秒（newapi.lurus.cn 在线时）。
-
-::: warning LLM 慢/失败怎么办
-如果 LLM 那头超时或失败，run 状态会变成 `failed` 并显示具体错误。这是 Kova 的 WAL 崩溃恢复在工作 —— 你后续可以 resume 不重新跑前面的步骤。
+::: warning LLM 慢/失败
+LLM 超时/失败时 run 状态变 `failed` 并显示错误——这是 Kova WAL 崩溃恢复在工作，后续可 resume 不重跑前面步骤。
 :::
 
 ---
 
 ## §3 中间审批节点（HITL）
 
-如果 workflow 含 `await_input` step（比如"高风险操作前请审批"模板）：
-
-1. workflow 跑到该步会暂停，状态变 `AwaitingInput`
-2. 你在 [`/approvals`](https://forge.lurus.cn/approvals) 会看到一行待审，标题是该 step 的 prompt
-3. 点 **"Review"** → 选 Approve / Reject / Edit → 提交
-4. workflow 自动续跑到下一步
-
-**关键点**: 你审批的决策被写进 WAL，**永久可追溯**；workflow 不会因为你刷新页面 / 关闭 tab 而丢状态。
+workflow 含 `await_input` step（如"高风险操作前请审批"模板）时：跑到该步暂停状态变 `AwaitingInput` → [`/approvals`](https://forge.lurus.cn/approvals) 看到一行待审（标题是该 step 的 prompt）→ **"Review"** 选 Approve/Reject/Edit 提交 → 自动续跑。审批决策写进 WAL **永久可追溯**，刷新/关 tab 不丢状态。
 
 ```mermaid
 sequenceDiagram
@@ -82,11 +62,7 @@ sequenceDiagram
 
 ## §4 评分（Eval）一个 run
 
-1. workflow 跑完后，访问 [`/eval`](https://forge.lurus.cn/eval)
-2. 选 **Rubrics** tab → 选 seed 的 `Sample rubric (PII)` 或自建
-3. 选 **Runs** 关联到刚跑完的 workflow_id
-4. 点 **Score** → 后台跑 scorer（PII regex / json-schema / llm-as-judge）
-5. 看每条 criterion 的分数 + 解释
+[`/eval`](https://forge.lurus.cn/eval) → **Rubrics** tab 选 seed 的 `Sample rubric (PII)` 或自建 → **Runs** 关联刚跑完的 workflow_id → **Score** 后台跑 scorer → 看每条 criterion 的分数 + 解释。
 
 **可用的 scorer 类型**:
 

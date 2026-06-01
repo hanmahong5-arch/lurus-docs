@@ -11,7 +11,7 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 
 ::: tip 快速入口
 - 用户自助管理：[auth.lurus.cn](https://auth.lurus.cn) — 修改密码、管理 Passkey、绑定 MFA、查看登录历史
-- 组织/项目管理：[admin.lurus.cn](https://admin.lurus.cn) — 企业客户成员邀请、权限分配、审计
+- 组织/项目管理：[auth.lurus.cn](https://auth.lurus.cn)（Zitadel 组织控制台）— 企业客户成员邀请、权限分配、审计；或联系商务开通企业组织管理
 :::
 
 ---
@@ -59,7 +59,7 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 | **Project** | Organization 下的应用集合，统一管理 roles 和 grants | 每个产品线（Lurus API、Lucrum、Switch、Forge…）对应一个 Project |
 | **Application** | Project 内的具体客户端，持有 `client_id` / `client_secret` | 每个前端、桌面端、服务端分别注册一个 Application |
 | **User** | 可登录账号，分 Human（真人）与 Service User（机器） | 终端用户为 Human；后端服务间调用使用 Service User + JWT Profile |
-| **Grant** | 将 Project Role 授予某 User 的绑定关系 | 控制用户在具体产品内的权限等级；以 admin.lurus.cn 为准 |
+| **Grant** | 将 Project Role 授予某 User 的绑定关系 | 控制用户在具体产品内的权限等级；以 [auth.lurus.cn](https://auth.lurus.cn)（Zitadel）组织设置为准 |
 
 ---
 

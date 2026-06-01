@@ -5,7 +5,7 @@ group: desktop
 priority: P2
 status: beta
 owner: Lurus Team (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2c-gui-creator
 ---
 

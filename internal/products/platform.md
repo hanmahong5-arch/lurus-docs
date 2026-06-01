@@ -5,7 +5,7 @@ group: platform
 priority: P0
 status: live
 owner: marvin (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2l-svc-platform
 ---
 
@@ -37,7 +37,7 @@ Lurus Platform 是全公司唯一的账号、钱包、计费、订阅、通知�
 | 子模块 Notification | `lurus-notification.lurus-platform.svc:18900` |
 | 子模块 Mail | Stalwart SMTP/JMAP + Roundcube webmail |
 | 部署目标 | R1 PROD (43.226.46.164) — 已对外商业交付 |
-| 前端 Apps | `login.lurus.cn` (Zitadel 自定义登录), `admin.lurus.cn` (管理后台) |
+| 前端 Apps | `login.lurus.cn` (Zitadel 自定义登录), ~~admin.lurus.cn~~ (**SUNSET 2026-05-10**，见 [/products/admin](/products/admin)；由 platform-core `/admin` 嵌入 SPA 替代，SPA 尚未完全部署) |
 
 ## 架构图
 
@@ -231,7 +231,7 @@ sequenceDiagram
 | `modules/mail/stalwart/` | Stalwart 部署配置（SMTP/IMAP/JMAP） |
 | `modules/mail/webmail/` | Roundcube/JMAP 前端 + Worker |
 | `apps/login/` | Next.js 15，Zitadel 自定义登录 UI（login.lurus.cn） |
-| `apps/admin/` | Next.js 15 + shadcn/ui，管理后台（admin.lurus.cn） |
+| `apps/admin/` | Next.js 15 + shadcn/ui，管理后台（~~admin.lurus.cn~~ 已 SUNSET；SPA 代码存在但未完整部署，admin 能力经 `/admin/*` 路由由 platform-core go:embed 提供） |
 | `deploy/k8s/base/` | Deployment + Service + IngressRoute + HPA + PDB + ConfigMap + Secrets + RBAC + ServiceMonitor |
 | `deploy/k8s/overlays/` | Kustomize overlays：with-notification / with-mail / full |
 | `migrations/` | SQL migrations（identity + billing schema，按序号执行） |
@@ -497,8 +497,8 @@ ssh root@100.98.57.55 "kubectl exec -n database deploy/postgres -- psql -U postg
 # 4. 余额足够但续费失败 → 查 Temporal workflow 失败原因
 # 登录 Temporal UI: temporal.lurus.cn（如有）或通过 kubectl port-forward
 
-# 5. 紧急人工续期（admin API）
-curl -s -X POST https://admin.lurus.cn/admin/v1/subscriptions/{sub_id}/renew \
+# 5. 紧急人工续期（platform-core admin REST API）
+curl -s -X POST https://identity.lurus.cn/admin/v1/subscriptions/{sub_id}/renew \
   -H "Authorization: Bearer <admin_jwt>"
 ```
 
@@ -595,6 +595,35 @@ graph TD
 
     Q --> P
 ```
+
+### 传输层选择准则
+
+| 场景 | 推荐传输 | 端点 |
+|------|---------|------|
+| 浏览器端用户登录 / OIDC 授权码流 | Zitadel OIDC (`auth.lurus.cn`) | 标准 code flow |
+| 服务间 M2M 调用（身份/计费） | gRPC `:18105` | `IdentityService.*` |
+| 订阅购买 / 管理员操作 | HTTP `:18104` | `/internal/v1/*` |
+
+### 预授权模式（流式/金额不确定）
+
+当调用金额在调用前无法确定时（如 LLM 流式响应、任务执行），使用三步预授权：
+
+1. **WalletPreAuthorize**：冻结最大估算金额（`max_amount_cny`），返回 `pre_auth_id`
+2. **WalletSettlePreAuth**：任务结束后按实际金额结算，解冻差额，附 `idempotency_key`
+3. **WalletReleasePreAuth**：任务取消时全额解冻，不扣款
+
+vs. **WalletDebit**（一次性）：金额确定时直接原子扣款，必须附 `idempotency_key`。
+
+**`idempotency_key` 命名约定**：`{service}:{entity_type}:{entity_id}[:attempt]`
+
+| 场景 | 示例 key |
+|------|----------|
+| lucrum 订阅续费 | `lucrum:sub:renew:<sub_uuid>` |
+| 预授权结算 | `settle:pa-0034` |
+| kova Agent Job 扣款 | `kova:job:<job_uuid>` |
+| 订阅购买 checkout | `sub:checkout:<session_uuid>` |
+
+> 端点签名（GetEntitlements / WalletDebit / WalletCredit）见 `doc/coord/contracts.md:38-85`，本节不重复。
 
 ---
 

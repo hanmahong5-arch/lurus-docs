@@ -10,69 +10,20 @@ MemX 采用管道（Pipeline）架构，写入和检索分别由独立管道编�
 ## 系统总览
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                       MemX Memory API                          │
-│  add() / search() / status() / detect_conflicts() / export()  │
-└────────────┬──────────────────────────────┬────────────────────┘
-             │                              │
-    ┌────────▼─────────┐          ┌────────▼──────────┐
-    │  IngestPipeline  │          │ RetrievalPipeline  │
-    │  (写入管道)       │          │  (检索管道)        │
-    └────────┬─────────┘          └────────┬──────────┘
-             │                              │
-    ┌────────▼─────────┐          ┌────────▼──────────┐
-    │ Privacy Sanitizer │          │ Generator (L1-L4) │
-    │ Reflector         │          │ ScoreMerger       │
-    │ Curator           │          │ TokenBudgetTrimmer│
-    │ mem0.add()        │          │ RecallReinforcer  │
-    └──────────────────┘          └───────────────────┘
-             │                              │
-             └──────────┬───────────────────┘
-                        │
-              ┌─────────▼────────┐
-              │  Decay Engine    │
-              │  (异步衰减计算)   │
-              └─────────┬────────┘
-                        │
-              ┌─────────▼────────┐
-              │  Vector Store    │
-              │  (mem0 Backend)  │
-              └──────────────────┘
+MemX Memory API: add() / search() / status() / detect_conflicts() / export()
+ ├─ IngestPipeline(写入): Privacy Sanitizer → Reflector → Curator → mem0.add()
+ └─ RetrievalPipeline(检索): Generator(L1-L4) → ScoreMerger → TokenBudgetTrimmer → RecallReinforcer
+两管道 → Decay Engine(异步衰减计算) → Vector Store(mem0 Backend)
 ```
 
 ## 写入管道 — IngestPipeline
 
-```
-Raw Input
-    │
-    ▼
-┌─────────────────────┐
-│  Privacy Sanitizer   │  ← 12 条内置敏感信息规则 + 自定义正则
-│  (不可绕过)           │     净化器永不抛异常
-└─────────┬───────────┘
-          ▼
-┌─────────────────────┐
-│  Reflector           │  ← hybrid 模式：规则预筛 + LLM 精炼
-│  ├─ PatternDetector  │     5 种模式检测
-│  ├─ KnowledgeScorer  │     评分 + 分类
-│  ├─ PrivacySanitizer │     候选知识脱敏
-│  └─ BulletDistiller  │     压缩为精炼知识条目
-│                      │     失败时 → 回退到原始 add
-└─────────┬───────────┘
-          ▼
-┌─────────────────────┐
-│  Curator             │  ← 余弦相似度去重
-│  ├─ ≥ 0.8: 合并     │     merge_content / keep_best
-│  ├─ 0.5-0.8: 标记   │     潜在冲突
-│  └─ < 0.5: 通过     │     独立知识
-│                      │     失败时 → 跳过去重，直接写入
-└─────────┬───────────┘
-          ▼
-┌─────────────────────┐
-│  BulletFactory       │  ← 元数据格式转换
-│  mem0.add()          │     持久化到向量数据库
-└─────────────────────┘
-```
+`Raw Input` 依次经过：
+
+1. **Privacy Sanitizer**（不可绕过）— 12 条内置敏感信息规则 + 自定义正则；净化器永不抛异常。
+2. **Reflector** — hybrid 模式（规则预筛 + LLM 精炼）：PatternDetector（5 种模式检测）→ KnowledgeScorer（评分+分类）→ PrivacySanitizer（候选知识脱敏）→ BulletDistiller（压缩为精炼条目）。失败时回退原始 add。
+3. **Curator** — 余弦相似度去重：≥0.8 合并（merge_content/keep_best）、0.5-0.8 标记潜在冲突、<0.5 独立知识通过。失败时跳过去重直接写入。
+4. **BulletFactory** — 元数据格式转换 → `mem0.add()` 持久化到向量数据库。
 
 ### 写入管道的降级路径
 
@@ -87,39 +38,12 @@ Raw Input
 
 ## 检索管道 — RetrievalPipeline
 
-```
-Query
-    │
-    ▼
-┌─────────────────────────┐
-│  Generator Engine        │
-│  ├─ L1: ExactMatcher     │  精确词匹配
-│  ├─ L2: FuzzyMatcher     │  模糊 Token 匹配
-│  ├─ L3: MetadataMatcher  │  元数据 Jaccard 相似度
-│  └─ L4: VectorSearcher   │  向量语义搜索
-│                          │  L4 失败 → 纯关键词模式
-└─────────┬───────────────┘
-          ▼
-┌─────────────────────────┐
-│  ScoreMerger             │  ← 加权融合
-│  NormKW = (L1+L2+L3)/35 │
-│  Blended = KW×0.6+S×0.4 │
-│  Final = B×Decay×Recent  │
-│          ×Scope          │
-└─────────┬───────────────┘
-          ▼
-┌─────────────────────────┐
-│  TokenBudgetTrimmer      │  ← 双重约束
-│  max_results: 5          │     CJK 感知 Token 估算
-│  token_budget: 2000      │
-└─────────┬───────────────┘
-          │
-          ├──→ 返回结果给调用方
-          │
-          └──→ RecallReinforcer（异步）
-               递增被命中记忆的 recall_count
-               不阻塞搜索响应
-```
+`Query` 依次经过：
+
+1. **Generator Engine** — L1 ExactMatcher（精确词）/ L2 FuzzyMatcher（模糊 Token）/ L3 MetadataMatcher（元数据 Jaccard）/ L4 VectorSearcher（向量语义）。L4 失败 → 纯关键词模式。
+2. **ScoreMerger**（加权融合）：`NormKW = (L1+L2+L3)/35`；`Blended = KW×0.6 + S×0.4`；`Final = Blended×Decay×Recency×Scope`。
+3. **TokenBudgetTrimmer**（双重约束）：`max_results=5` + `token_budget=2000`，CJK 感知 Token 估算。
+4. 返回结果给调用方，同时异步 **RecallReinforcer** 递增被命中记忆的 `recall_count`（不阻塞搜索响应）。
 
 ## 数据模型
 
@@ -150,34 +74,11 @@ Query
 
 ## 本地嵌入
 
-MemX 使用 ONNX Runtime 在本地运行嵌入模型，无需外部 API：
-
-| 属性 | 值 |
-|------|-----|
-| 模型 | all-MiniLM-L6-v2 |
-| 维度 | 384 |
-| 运行时 | ONNX Runtime |
-| 存储位置 | `~/.memx/models/` |
-| 首次下载 | 约 90MB |
-| 推理速度 | < 5ms / 条 |
-
-完全离线运行，无隐私泄露风险。
+MemX 用 ONNX Runtime 在本地运行嵌入模型，无需外部 API，完全离线无隐私泄露：模型 all-MiniLM-L6-v2、维度 384、存储 `~/.memx/models/`、首次下载约 90MB、推理 < 5ms/条。
 
 ## 守护进程模式
 
-可选的后台守护进程，支持多 Agent / 多进程共享同一个知识库：
-
-```
-Agent A ──→ ┐
-             │
-Agent B ──→ ├──→ MemX Daemon (IPC Socket) ──→ Vector Store
-             │
-Agent C ──→ ┘
-```
-
-- 通过 IPC Socket 通信，避免数据库连接竞争
-- 空闲超时自动退出（默认 300 秒）
-- 适用于 IDE 插件、多窗口等场景
+可选后台守护进程，多 Agent/多进程（Agent A/B/C）经 **MemX Daemon（IPC Socket）** 共享同一 Vector Store。IPC Socket 通信避免数据库连接竞争；空闲超时自动退出（默认 300 秒）；适用 IDE 插件、多窗口等。
 
 ## 配置参考
 

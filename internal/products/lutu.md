@@ -3,6 +3,7 @@ id: lutu
 group: platform
 priority: P2
 status: dev
+lastReviewed: 2026-05-28
 sourcePath: 2c-app-lutu
 ---
 
@@ -10,6 +11,16 @@ sourcePath: 2c-app-lutu
 
 > 版本 0.2.3+4 · Flutter 3.35+ / Dart 3.9+ · 仅 Android（Windows 手机号降级）
 > 最后更新 2026-04-28
+
+## Dev 速查
+
+| 项 | 值 |
+|---|---|
+| gRPC 后端（内部） | `platform-core.lurus-platform.svc:18105`（Dart gRPC stub，`lurus_proto/identity/v1/identity.pbgrpc.dart`） |
+| 关键 Flutter 依赖版本 | `flutter_appauth ^8.0.1` · `flutter_secure_storage ^9.2.4` · `sqflite ^2.4.1` · `sentry_flutter ^9.19.0` · `go_router ^14.8.1` |
+| Sentry DSN 注入 | `--dart-define=SENTRY_DSN=<dsn>` 编译时传入；空值时完全静默，不产生任何网络请求 |
+| Release APK | `flutter build apk --release --obfuscate --split-per-abi --dart-define=SENTRY_DSN=<dsn>` |
+| 真源端口 | lurus.yaml line 567 (`grpc_port: 18105`) |
 
 ---
 

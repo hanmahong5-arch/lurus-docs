@@ -3,13 +3,15 @@ title: Lumen
 id: lumen
 group: kova
 priority: P1
-status: beta
+status: dev
 owner: marvin (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2c-cli-lumen
 ---
 
 # Lumen 内部手册
+
+> 🟡 **2026-05-28 状态更新**：alpha 阶段（早于 beta）。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 

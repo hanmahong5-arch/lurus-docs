@@ -5,42 +5,29 @@ description: 5 分钟内体验 MemX AI 自适应记忆引擎的核心功能。
 
 # 快速开始
 
-本指南带你在 5 分钟内体验 MemX 的核心功能。
+5 分钟体验 MemX 核心功能。
 
 ::: info 前置条件
-- Python 3.9+（`python --version` 确认）
-- pip 包管理器
-- 一个 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)），hybrid 模式下用于 LLM 精炼
-- 预计时间: 5 分钟
+Python 3.9+ · pip · Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)，hybrid 模式下用于 LLM 精炼）。预计 5 分钟。
 :::
 
 ## 安装
 
-:::tabs
-== GitHub
 ```bash
 pip install git+https://github.com/UU114/memx.git
+# 完整安装：pip install "git+https://github.com/UU114/memx.git#egg=memx[all]"
 ```
-== GitHub (完整安装)
-```bash
-pip install "git+https://github.com/UU114/memx.git#egg=memx[all]"
-```
-:::
 
-::: tip
-MemX 需要 Python 3.9+。首次运行时会自动下载本地嵌入模型（约 90MB），存放在 `~/.memx/models/`。
-:::
+需 Python 3.9+。首次运行自动下载本地嵌入模型（约 90MB）到 `~/.memx/models/`。
 
 ## 第一步：初始化
 
 ```python
 from memx import Memory
-
-# 开启 ACE 引擎（核心功能）
-m = Memory(config={"ace_enabled": True})
+m = Memory(config={"ace_enabled": True})   # 开启 ACE 引擎（核心功能）
 ```
 
-默认配置即可满足大多数场景。ACE 开启后，所有写入和检索都经过智能管道处理。
+ACE 开启后所有写入和检索都经智能管道处理；默认配置即可满足大多数场景。
 
 ## 第二步：写入知识
 
@@ -112,50 +99,27 @@ print(status)
 
 ## CLI 快速体验
 
-MemX 提供完整的命令行工具：
-
 ```bash
-# 查看知识库统计
-memx status
-
-# 搜索知识
-memx search "pytest 调试"
-
-# 手动添加知识
-memx learn "always use -v flag for verbose output"
-
-# 列出指定作用域的知识
-memx list --scope project:my-backend
-
-# 删除指定知识
-memx forget <memory-id>
-
-# 手动触发衰减计算
-memx sweep
-
-# 检测矛盾知识
-memx conflicts
-
-# 导出/导入知识库
-memx export --format json > knowledge.json
-memx import knowledge.json
+memx status                              # 知识库统计
+memx search "pytest 调试"                # 搜索
+memx learn "always use -v flag ..."      # 手动添加
+memx list --scope project:my-backend     # 列出指定作用域
+memx forget <memory-id>                  # 删除
+memx sweep                               # 手动触发衰减计算
+memx conflicts                           # 检测矛盾知识
+memx export --format json > knowledge.json   # 导出
+memx import knowledge.json                   # 导入
 ```
 
 ## 纯 mem0 兼容模式
 
-如果只需要基础记忆功能，可以关闭 ACE 引擎，此时行为与 mem0 完全一致：
+只需基础记忆功能时关闭 ACE，行为与 mem0 100% 一致（ACE 关闭时零开销透传，可从 mem0 无缝迁移再逐步开启）：
 
 ```python
-m = Memory()  # ace_enabled 默认为 False
-
-# 与 mem0 API 100% 兼容
+m = Memory()  # ace_enabled 默认 False
 m.add("some knowledge", user_id="user1")
 results = m.search("query", user_id="user1")
 ```
-
-::: info
-ACE 关闭时零开销透传，可以从 mem0 无缝迁移，逐步开启 ACE 功能。
-:::
 
 ## 下一步
 

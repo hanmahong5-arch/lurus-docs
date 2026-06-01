@@ -9,7 +9,7 @@
 
 export type Group = 'platform' | 'kova' | 'lucrum' | 'desktop' | 'web' | 'tooling'
 export type Priority = 'P0' | 'P1' | 'P2'
-export type Status = 'live' | 'beta' | 'dev' | 'planning'
+export type Status = 'live' | 'beta' | 'dev' | 'planning' | 'sunset'
 export type DeployTarget = 'R1' | 'R6' | 'desktop' | 'mobile' | 'aliyun'
 
 export interface InternalProduct {
@@ -44,17 +44,19 @@ export const products: InternalProduct[] = [
     domain: 'identity.lurus.cn',
     deployTarget: 'R1',
     deps: ['auth'],
-    consumers: ['lucrum', 'switch', 'lutu', 'creator', 'tally', 'newapi', 'admin'],
+    consumers: ['lucrum', 'switch', 'lutu', 'creator', 'tally', 'newapi', 'newhub'],
     busFactor: 1,
     owner: 'marvin',
     riskFlags: ['no-monitor'],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'newapi',
-    name: 'Newapi (LLM 网关)',
+    name: 'Newapi (LLM 网关·退役中)',
     group: 'platform',
     priority: 'P0',
+    // status='live' 对齐 lurus.yaml lifecycle 'prod'（仍在网）。ADR-0009 已宣布前瞻性降级（整合并入 newhub）；
+    // 实际翻转至降级状态须等 lurus.yaml 侧同步，owner 决策 — 此处不静默翻转。
     status: 'live',
     manualPath: '/products/newapi',
     domain: 'newapi.lurus.cn',
@@ -63,30 +65,49 @@ export const products: InternalProduct[] = [
     consumers: ['switch', 'lucrum', 'lutu', 'forge', 'creator'],
     busFactor: 1,
     owner: 'marvin',
-    riskFlags: ['no-monitor'],
-    lastReviewed: '2026-04-28',
+    // ADR D1 (2026-05-27): 退役中 → 整合并入 newhub，hub.lurus.cn 将成唯一 LLM 网关
+    riskFlags: ['no-monitor', 'wip'],
+    lastReviewed: '2026-05-28',
+  },
+  {
+    id: 'newhub',
+    name: 'Newhub (多租户 LLM 网关)',
+    group: 'platform',
+    priority: 'P0',
+    status: 'beta',
+    manualPath: '/products/newhub',
+    domain: 'hub.lurus.cn',
+    deployTarget: 'R6',
+    deps: ['identity', 'billing'],
+    consumers: ['switch'],
+    busFactor: 1,
+    owner: 'marvin',
+    // stage on R6；DNS 待配（现 test-newhub.lurus.cn）；承接 newapi 退役整合 (ADR D1)
+    riskFlags: ['wip', 'no-monitor'],
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'memx',
     name: 'MemX / Memorus',
     group: 'platform',
     priority: 'P0',
-    status: 'live',
+    status: 'beta',
     manualPath: '/products/memx',
     deployTarget: 'R1',
     deps: [],
     consumers: ['lucrum', 'creator', 'switch'],
     busFactor: 1,
     owner: 'marvin',
-    riskFlags: ['no-monitor'],
-    lastReviewed: '2026-04-28',
+    // stage（同事在改，状态存疑，勿动）
+    riskFlags: ['no-monitor', 'wip'],
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'tally',
     name: 'Tally (智能进销存)',
     group: 'platform',
     priority: 'P0',
-    status: 'planning',
+    status: 'beta',
     manualPath: '/products/tally',
     domain: 'tally.lurus.cn',
     deployTarget: 'R6',
@@ -94,8 +115,9 @@ export const products: InternalProduct[] = [
     consumers: [],
     busFactor: 1,
     owner: 'marvin',
-    riskFlags: ['planning', 'wip'],
-    lastReviewed: '2026-04-28',
+    // R6 stage，Epic 1 done，Billing 待 R6 部署（uptime 被低估）
+    riskFlags: ['wip'],
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'lutu',
@@ -110,38 +132,40 @@ export const products: InternalProduct[] = [
     busFactor: 1,
     owner: 'marvin',
     riskFlags: ['wip', 'no-tests'],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'admin',
-    name: 'Admin (运营后台)',
+    name: 'Admin (运营后台·已下线)',
     group: 'platform',
     priority: 'P1',
-    status: 'live',
+    status: 'sunset',
     manualPath: '/products/admin',
-    domain: 'admin.lurus.cn',
+    // SUNSET 2026-05-10：SPA 从未交付，admin.lurus.cn 实测 404；
+    // 由 platform-core /admin/v1 REST + zita CLI/MCP 承接。deps 清空（退役无活跃消费）。
     deployTarget: 'R1',
-    deps: ['identity', 'billing', 'auth'],
+    deps: [],
     consumers: [],
     busFactor: 1,
     owner: 'marvin',
-    riskFlags: ['no-monitor'],
-    lastReviewed: '2026-04-28',
+    riskFlags: [],
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'kova',
     name: 'Kova (Agent 引擎)',
     group: 'kova',
     priority: 'P1',
-    status: 'beta',
+    status: 'dev',
     manualPath: '/products/kova',
-    deployTarget: 'desktop',
+    deployTarget: 'R6', // library crate (cargo add) + kova-rest service on R6 docker-compose
     deps: [],
     consumers: ['forge'],
     busFactor: 1,
     owner: 'marvin',
+    // building：CI 红（GitHub Actions billing，非代码问题）；local 领先
     riskFlags: ['wip'],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'forge',
@@ -157,53 +181,56 @@ export const products: InternalProduct[] = [
     busFactor: 1,
     owner: 'marvin',
     riskFlags: ['wip', 'no-monitor'],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'lumen',
     name: 'Lumen (Observability CLI)',
     group: 'kova',
     priority: 'P1',
-    status: 'beta',
+    status: 'dev',
     manualPath: '/products/lumen',
     deployTarget: 'desktop',
     deps: ['agent-execution'],
     consumers: [],
     busFactor: 1,
     owner: 'marvin',
+    // alpha 阶段（v0.1）
     riskFlags: ['wip'],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'lucrum',
     name: 'Lucrum (AI 量化)',
     group: 'lucrum',
     priority: 'P1',
-    status: 'live',
+    status: 'beta',
     manualPath: '/products/lucrum',
     domain: 'lucrum.lurus.cn',
-    deployTarget: 'R1',
+    deployTarget: 'R6',
     deps: ['identity', 'billing', 'llm-inference', 'memory', 'notification', 'auth'],
     consumers: [],
     busFactor: 1,
     owner: 'marvin',
-    riskFlags: ['no-monitor'],
-    lastReviewed: '2026-04-28',
+    // 2026-04-30 从 prod 降级 stage（audit F7）；promotion blocker: web Secret + ai-qtrd quota（DNS 已修）
+    riskFlags: ['no-monitor', 'wip'],
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'switch',
     name: 'Switch (桌面网关)',
     group: 'desktop',
     priority: 'P2',
-    status: 'live',
+    status: 'dev',
     manualPath: '/products/switch',
     deployTarget: 'desktop',
     deps: ['identity', 'billing', 'llm-inference', 'memory'],
     consumers: [],
     busFactor: 1,
     owner: 'marvin',
-    riskFlags: ['manual-deploy'],
-    lastReviewed: '2026-04-28',
+    // building：CI 自 2026-03-21 全红（30+ 天）；仓库仍活跃（13 commits）
+    riskFlags: ['manual-deploy', 'wip'],
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'creator',
@@ -218,11 +245,11 @@ export const products: InternalProduct[] = [
     busFactor: 1,
     owner: 'marvin',
     riskFlags: ['manual-deploy', 'wip'],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
   },
   {
-    id: 'web',
-    name: 'WWW + Webgame',
+    id: 'www',
+    name: 'WWW (官网)',
     group: 'web',
     priority: 'P2',
     status: 'live',
@@ -234,11 +261,27 @@ export const products: InternalProduct[] = [
     busFactor: 1,
     owner: 'marvin',
     riskFlags: [],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
+  },
+  {
+    id: 'webgame',
+    name: 'Webgame (已下线)',
+    group: 'web',
+    priority: 'P2',
+    status: 'sunset',
+    manualPath: '/products/web',
+    // SUNSET 2026-05-28：auth 死 1 月 + 0 流量。原 webgame.lurus.cn (Phoenix LiveView)
+    deployTarget: 'R1',
+    deps: [],
+    consumers: [],
+    busFactor: 1,
+    owner: 'marvin',
+    riskFlags: [],
+    lastReviewed: '2026-05-28',
   },
   {
     id: 'mcp',
-    name: 'MCP Servers (×3)',
+    name: 'MCP Servers (×4)',
     group: 'tooling',
     priority: 'P2',
     status: 'live',
@@ -248,8 +291,61 @@ export const products: InternalProduct[] = [
     consumers: [],
     busFactor: 1,
     owner: 'marvin',
+    // zitadel-mcp / k8s-mcp / platform-mcp 三件 prod + tally-mcp（alpha，binary 待首发；决策见 lurus.yaml lifecycle_index tally-mcp 注 ADR-0011）
     riskFlags: [],
-    lastReviewed: '2026-04-28',
+    lastReviewed: '2026-05-28',
+  },
+  {
+    id: 'notification',
+    name: 'Notification (通知)',
+    group: 'platform',
+    priority: 'P0',
+    status: 'live',
+    manualPath: '/products/platform',
+    deployTarget: 'R1',
+    deps: [],
+    // 对齐 lurus.yaml capabilities.notification.consumers；manualPath 复用 /products/platform（子模块，无独立手册页 — 有意选择，不建 stub）
+    consumers: ['platform', 'lutu'],
+    busFactor: 1,
+    owner: 'marvin',
+    // platform 子模块（WS/Email/FCM），消费 IDENTITY/LUCRUM/LLM_EVENTS；随 platform 部署
+    riskFlags: ['no-monitor'],
+    lastReviewed: '2026-05-28',
+  },
+  {
+    id: 'dsnb',
+    name: 'DSNB (落地页)',
+    group: 'web',
+    priority: 'P2',
+    status: 'live',
+    // manualPath 直链公网站点（落地页无独立内部手册 — 有意选择，不建 stub 页）
+    manualPath: 'https://dsnb.help',
+    domain: 'dsnb.help',
+    // R6 docker-compose + host nginx（ICP 拦截后曾迁 Vercel，详见 lurus.yaml lurus-dsnb）
+    deployTarget: 'R6',
+    deps: [],
+    consumers: [],
+    busFactor: 1,
+    owner: 'marvin',
+    riskFlags: [],
+    lastReviewed: '2026-05-28',
+  },
+  {
+    id: 'docs',
+    name: 'Docs (文档站)',
+    group: 'web',
+    priority: 'P2',
+    status: 'live',
+    // manualPath 直链公网文档站（本站自身即文档 — 有意选择，不建 stub 页）
+    manualPath: 'https://docs.lurus.cn',
+    domain: 'docs.lurus.cn',
+    deployTarget: 'R1',
+    deps: [],
+    consumers: [],
+    busFactor: 1,
+    owner: 'marvin',
+    riskFlags: [],
+    lastReviewed: '2026-05-28',
   },
 ]
 
@@ -267,6 +363,7 @@ export const statusColors: Record<Status, string> = {
   beta: '#f59e0b',
   dev: '#3b82f6',
   planning: '#a3a3a3',
+  sunset: '#71717a',
 }
 
 export const riskLabels: Record<string, string> = {
@@ -285,7 +382,7 @@ export function byGroup(): Record<Group, InternalProduct[]> {
 }
 
 export function byStatus(): Record<Status, number> {
-  const out = { live: 0, beta: 0, dev: 0, planning: 0 } as Record<Status, number>
+  const out = { live: 0, beta: 0, dev: 0, planning: 0, sunset: 0 } as Record<Status, number>
   for (const p of products) out[p.status]++
   return out
 }
@@ -317,7 +414,8 @@ export function buildDependencyMermaid(): string {
     'billing': ['platform'],
     'auth': ['platform'],
     'notification': ['platform'],
-    'llm-inference': ['newapi'],
+    // ADR-0009 cutover 期 newapi + newhub 并存 — 依赖图须同时指向两者，否则与 newhub 条目矛盾
+    'llm-inference': ['newapi', 'newhub'],
     'memory': ['memx'],
     'agent-execution': ['kova'],
   }

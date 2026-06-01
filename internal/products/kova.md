@@ -3,13 +3,15 @@ title: Kova AI Agent 持久执行引擎
 id: kova
 group: kova
 priority: P1
-status: beta
+status: dev
 owner: Kova Team (+ AI assist)
-lastReviewed: 2026-04-28
+lastReviewed: 2026-05-28
 sourcePath: 2b-svc-kova
 ---
 
 # Kova 内部手册
+
+> 🔴 **2026-05-28 状态更新**：building 阶段，CI 自 2026-03-21 全红（GitHub Actions billing，非代码问题），local 领先；未交付。
 
 > 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
 

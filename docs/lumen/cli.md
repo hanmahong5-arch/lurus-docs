@@ -31,72 +31,34 @@ lumen <command> [options]
 | `deploy` | 推送 Agent 定义到 Kova Cluster |
 | `config` | 查看/修改本地 CLI 配置 |
 
-## `doctor`
-
-`lumen doctor` 检查本地环境是否满足 Lumen 运行所需。
+## 命令详解
 
 ```bash
-$ lumen doctor
-✓ LURUS_API_KEY present
-✓ python3.11 detected
-✓ /var/lumen writable (5.2 GB free)
-✗ port 7070 occupied — close the process or set LUMEN_PORT
-```
+# doctor — 环境自检（退出码 0 全通过 / 1 至少一项失败）
+lumen doctor
+#   ✓ LURUS_API_KEY present  ✓ python3.11 detected  ✓ /var/lumen writable (5.2 GB free)
+#   ✗ port 7070 occupied — close the process or set LUMEN_PORT
 
-退出码：`0` 全通过，`1` 至少一项失败。
-
-## `init`
-
-在项目根生成 `lumen.yaml`：
-
-```bash
+# init — 项目根生成 lumen.yaml（templates: langgraph / bare / multi-agent）
 lumen init --template langgraph
-```
 
-Templates: `langgraph`, `bare`, `multi-agent`。
-
-## `agent`
-
-```bash
-lumen agent list                  # 列出本地 / 远端 Agent
+# agent
+lumen agent list                  # 列出本地/远端 Agent
 lumen agent trace <run-id>        # 打印 trace 树
 lumen agent replay <run-id>       # 不消耗 Token 重放
 lumen agent export <run-id>       # 导出 JSON / HAR / OTel
-```
 
-## `mcp`
+# mcp — 启动 MCP 服务端，暴露 Trace/Replay/Cost 为工具
+lumen mcp serve --port 3333       # 或 --manifest ./my-tools.yaml
+# Claude Code / Codex 的 mcp_servers 指向 http://127.0.0.1:3333 即可调用
 
-启动一个 MCP 服务端，把 Lumen 的 Trace/Replay/Cost 能力暴露为工具：
+# workflow — 按 lumen.yaml 执行多 Agent 编排
+lumen workflow run                # 默认 pipeline；-e prod 指定环境；--dry-run 不实际调 LLM
 
-```bash
-lumen mcp serve --port 3333
-# 或自定义清单
-lumen mcp serve --manifest ./my-tools.yaml
-```
-
-Claude Code / Codex 配置 `mcp_servers` 指向 `http://127.0.0.1:3333` 即可调用。
-
-## `workflow`
-
-`lumen.yaml` 描述多 Agent 编排，`lumen workflow run` 执行：
-
-```bash
-lumen workflow run                # 执行默认 pipeline
-lumen workflow run -e prod        # 指定环境
-lumen workflow run --dry-run      # 不实际调用 LLM
-```
-
-## `deploy`
-
-将 Agent 定义推送到 [Kova](/kova/) Cluster：
-
-```bash
+# deploy — 推送 Agent 定义到 Kova Cluster
 lumen deploy --target kova://my-cluster
-```
 
-## `config`
-
-```bash
+# config
 lumen config get api_key
 lumen config set api_key sk-xxxx
 lumen config unset telemetry.endpoint
