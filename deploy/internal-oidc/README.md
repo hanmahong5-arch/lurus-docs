@@ -1,5 +1,17 @@
 # internal.lurus.cn → Lurus Identity (Zitadel) OIDC
 
+> 🛑 **未部署 — 现状是 BasicAuth(决策 2026-06-13:暂不迁 OIDC)**
+>
+> 本目录(`oauth2-proxy.yaml` + `middleware.yaml` + `ingressroute.yaml`)是**设计完整但从未上线**的迁移方案。
+> `internal.lurus.cn` 实测仍走 **HTTP Basic Auth**(`www-authenticate: Basic realm="Lurus Internal"`,R1 edge `43.226.46.164` → R6:8881 后端),即下文所谓 "original path"。
+> 下面"你需要做的(一次性~3分钟)"**从未执行**——Zitadel OIDC client 未创建(同 lutu/webgame 的 OIDC app 未注册通病)。
+>
+> **决策依据(生存优先)**: 团队内部静态文档站,BasicAuth 已够用;不值得为它常驻 oauth2-proxy + Traefik ForwardAuth 中间件 + 维护一个 Zitadel client。本方案**保留备查、可逆**——若将来 S3 issuer rebrand 落地、或团队扩张需要 SSO 审计粒度,再启用。**当前它既不是现状、也不是待办,别照着它调研。**
+>
+> 重启前必须先解决文末「已知约束」(Zitadel System API SA 私钥未挂载,client 只能手动建);并**重新生成**下文示例里的 `cookie-secret`(已暴露在 git 历史)。
+>
+> ---
+
 把内部站从 BasicAuth 切到 Zitadel OIDC SSO。
 
 ## 架构
