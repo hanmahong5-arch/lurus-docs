@@ -117,6 +117,60 @@ curl https://api.lurus.cn/v1/chat/completions \
     "temperature": 0.3
   }'
 ```
+
+== Node.js
+```javascript
+import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'https://api.lurus.cn/v1',
+  apiKey: process.env.LURUS_API_KEY
+});
+
+const response = await client.chat.completions.create({
+  model: 'deepseek-chat',
+  messages: [
+    { role: 'system', content: '你是一位专业的技术顾问，回复简洁，不超过 100 字。' },
+    { role: 'user',   content: '什么是 RESTful API？' }
+  ],
+  temperature: 0.3,
+  max_tokens: 200
+});
+
+console.log(response.choices[0].message.content);
+console.log(`Token 用量：${response.usage.total_tokens}`);
+```
+
+== Go
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openai "github.com/sashabaranov/go-openai"
+)
+
+func main() {
+    cfg := openai.DefaultConfig(os.Getenv("LURUS_API_KEY"))
+    cfg.BaseURL = "https://api.lurus.cn/v1"
+    client := openai.NewClientWithConfig(cfg)
+
+    resp, _ := client.CreateChatCompletion(context.Background(),
+        openai.ChatCompletionRequest{
+            Model:       "deepseek-chat",
+            Temperature: 0.3,
+            Messages: []openai.ChatCompletionMessage{
+                {Role: "system", Content: "你是一位专业的技术顾问，回复简洁，不超过 100 字。"},
+                {Role: "user", Content: "什么是 RESTful API？"},
+            },
+        },
+    )
+    fmt.Println(resp.Choices[0].Message.Content)
+    fmt.Printf("Token 用量：%d\n", resp.Usage.TotalTokens)
+}
+```
 :::
 
 ---

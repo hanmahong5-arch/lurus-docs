@@ -9,7 +9,7 @@ description: 一个 API Key 接入 50+ 主流 AI 模型，完全兼容 OpenAI SD
 
 <MetricStats :items="[
   { label: '接入模型', value: '50+' },
-  { label: '网关 p95', value: '<50ms' },
+  { label: '免费额度', value: '100 次/天' },
   { label: '兼容性', value: 'OpenAI SDK' },
 ]" />
 

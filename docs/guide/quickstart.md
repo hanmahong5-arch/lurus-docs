@@ -12,13 +12,24 @@ description: 5 分钟内完成首次 Lurus API 调用，支持 Python、Node.js�
 </div>
 
 ::: info 前置条件
-Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）· Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（任选）· 基本终端知识。预计 5 分钟。
+一个 Lurus 账号（注册即得免费配额，第一步带你创建）· Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（任选）· 基本终端知识。预计 5 分钟。
 :::
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="key-round" :size="14" /> 第一步</span>
-  <h2 class="lurus-section-head__title">获取 API Key</h2>
+  <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> 第一步</span>
+  <h2 class="lurus-section-head__title">注册账号 —— 免费起步</h2>
+  <p class="lurus-section-head__lede">注册即得免费配额，无需充值就能跑通这篇教程。</p>
 </div>
+
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">注册即用，无需付费</p>
+    <div class="lurus-callout__body"><p>新账号自动获得 <strong>5 鹿贝 + 免费配额</strong>（Free 套餐 <strong>100 次/天</strong>，含 <code>deepseek-chat</code>、<code>gpt-3.5-turbo</code>），跑通本教程绰绰有余。配额与升级详情见 <a href="/guide/faq">常见问题</a> 与 <a href="/platform/billing">计费说明</a>。</p></div>
+  </div>
+</div>
+
+接着创建一个 API Key：
 
 <ol class="lurus-steps">
 <li>
@@ -146,21 +157,23 @@ func main() {
 ```
 :::
 
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">看到模型回复了？第一次调用已跑通 🎉</p>
+    <div class="lurus-callout__body"><p>这次请求走的就是注册赠送的免费配额，没花一分钱。下一步换个模型试试 —— 代码几乎不用动。</p></div>
+  </div>
+</div>
+
 ---
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="shuffle" :size="14" /> 第三步</span>
   <h2 class="lurus-section-head__title">切换模型</h2>
-  <p class="lurus-section-head__lede">只改 <code>model</code> 参数，无需修改其他任何代码。</p>
+  <p class="lurus-section-head__lede">只改 <code>model</code> 参数，无需修改其他任何代码。选一个模型，下面的片段即时更新、复制即跑。</p>
 </div>
 
-| 模型 | 特点 | 成本参考 |
-|------|------|---------|
-| `deepseek-chat` | 中文极强，高性价比 | ¥1/M tokens |
-| `deepseek-reasoner` | 数学、代码、逻辑推理 | ¥2/M tokens |
-| `gpt-4o` | 综合最强，多模态 | ¥30/M tokens |
-| `claude-3-5-sonnet` | 长文本、创意写作 | ¥15/M tokens |
-| `gemini-3-pro-preview` | 1M 超长上下文 | ¥5/M tokens |
+<ModelPicker />
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="sparkles" :size="18" /></span>

@@ -91,12 +91,12 @@ export const products: Record<string, Product> = {
     highlights: [
       { title: '50+ 模型一键切换', body: 'DeepSeek / 通义 / 智谱 / Claude / GPT 全覆盖，按 model 名称自动路由', icon: 'layers' },
       { title: 'OpenAI SDK 即插即用', body: '改一行 base_url 即可迁移存量代码，无需重写业务逻辑', icon: 'repeat' },
-      { title: 'p95 < 50ms 网关延迟', body: '智能路由、自动故障转移、per-channel 熔断保护', icon: 'zap' },
+      { title: '智能路由与故障转移', body: '多渠道权重负载均衡、自动故障转移、per-channel 熔断保护', icon: 'zap' },
       { title: '透明计费', body: '鹿贝钱包 · 按量扣费 · 详细用量报表 · 免费额度', icon: 'wallet' },
     ],
     metrics: [
       { label: '接入模型', value: '50+' },
-      { label: '网关 p95', value: '<50ms' },
+      { label: '免费额度', value: '100 次/天' },
       { label: '兼容性', value: 'OpenAI SDK' },
     ],
     codeExamples: [
@@ -441,7 +441,7 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
     home: '/lumen/',
     highlights: [
       { title: 'Replay 零成本重放', body: '记录 LLM 调用序列，本地回放不消耗 Token', icon: 'rewind' },
-      { title: 'Crash Recovery', body: 'LumenCheckpointer 替换 LangGraph SqliteSaver，3μs 恢复', icon: 'life-buoy' },
+      { title: 'Crash Recovery', body: 'LumenCheckpointer 替换 LangGraph SqliteSaver，微秒级 WAL 恢复', icon: 'life-buoy' },
       { title: 'Cost Tracking', body: '按 Agent/Graph/Node 聚合 Token 成本，实时告警', icon: 'coins' },
       { title: 'Python SDK 优先', body: 'pip install lumen-ai，三行接入 LangGraph', icon: 'package-plus' },
     ],

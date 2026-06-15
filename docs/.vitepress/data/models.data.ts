@@ -43,7 +43,9 @@ function parseModelsYaml(yaml: string): ModelsData {
   let inVendors = false
   let inModels = false
 
-  for (const line of yaml.split('\n')) {
+  // Split on both LF and CRLF so a CRLF checkout (e.g. Windows via git
+  // autocrlf) doesn't leave a trailing '\r' that breaks exact line matches.
+  for (const line of yaml.split(/\r?\n/)) {
     const trimmed = line.trimStart()
     if (trimmed === '' || trimmed.startsWith('#')) continue
 

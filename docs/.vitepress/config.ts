@@ -18,6 +18,7 @@ export default defineConfig({
     ['link', { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }],
     ['link', { href: 'https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500&display=swap', rel: 'stylesheet' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ['link', { rel: 'alternate', type: 'application/rss+xml', title: 'Lurus 产品动态', href: '/feed.xml' }],
     // Self-hosted variable fonts — served from /public/fonts/ when present,
     // otherwise the system stack in tokens/_typography.css takes over.
     ['link', { rel: 'preload', href: '/fonts/InterVariable.woff2', as: 'font', type: 'font/woff2', crossorigin: '' }],
@@ -56,12 +57,13 @@ export default defineConfig({
 
     nav: [
       { text: '首页', link: '/' },
+      { text: '快速开始', link: '/guide/quickstart' },
       {
         text: '开始使用',
         items: [
-          { text: '快速开始', link: '/guide/quickstart' },
           { text: '获取 API Key', link: '/guide/get-api-key' },
           { text: '常见问题', link: '/guide/faq' },
+          { text: '故障排查', link: '/guide/troubleshooting' },
           { text: '术语表', link: '/guide/glossary' },
           { text: '跨产品教程', link: '/tutorials/' },
           { text: '迁移指南', link: '/migrations/' },
@@ -71,6 +73,7 @@ export default defineConfig({
         text: '开发者',
         items: [
           { text: 'API 参考', link: '/api/overview' },
+          { text: '集成与 MCP 目录', link: '/integrations/' },
           { text: 'Kova — Agent 执行引擎', link: '/kova/' },
           { text: 'MemX — AI 智能记忆', link: '/memx/' },
           { text: 'Lumen — Agent 可观测', link: '/lumen/' },
@@ -135,6 +138,7 @@ export default defineConfig({
             { text: '获取 API Key', link: '/guide/get-api-key' },
             { text: '支持的模型', link: '/guide/models' },
             { text: '常见问题', link: '/guide/faq' },
+            { text: '故障排查', link: '/guide/troubleshooting' },
             { text: '术语表', link: '/guide/glossary' }
           ]
         },
@@ -157,7 +161,17 @@ export default defineConfig({
             { text: '概述', link: '/api/overview' },
             { text: '认证', link: '/api/authentication' },
             { text: 'Chat Completions', link: '/api/chat-completions' },
+            { text: '数据结构 (Schema)', link: '/api/schemas' },
             { text: '错误处理', link: '/api/errors' }
+          ]
+        }
+      ],
+      '/integrations/': [
+        {
+          text: '集成目录',
+          collapsed: false,
+          items: [
+            { text: '集成与 MCP 目录', link: '/integrations/' }
           ]
         }
       ],
@@ -279,6 +293,7 @@ export default defineConfig({
             { text: '记忆 Agent (MemX+Kova)', link: '/tutorials/memory-agent' },
             { text: 'Lumen × LangGraph × Kova', link: '/tutorials/lumen-kova-langgraph' },
             { text: 'Lucrum 策略完整流', link: '/tutorials/lucrum-strategy-workflow' },
+            { text: '团队 AI CLI 接入 (Switch+MCP)', link: '/tutorials/switch-mcp-team' },
           ]
         }
       ],

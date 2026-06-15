@@ -10,7 +10,7 @@ const metrics = [
   { label: '产品矩阵', value: '12' },
   { label: 'AI 模型接入', value: '50+' },
   { label: 'Kova 调度延迟', value: '3μs' },
-  { label: 'API 网关 p95', value: '<50ms' },
+  { label: '免费额度', value: '100 次/天' },
 ]
 
 let frame = 0

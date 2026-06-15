@@ -17,6 +17,53 @@ description: 5 分钟内体验 MemX AI 自适应记忆引擎的核心功能。
   </div>
 </div>
 
+## 选择接入方式
+
+MemX 提供 **Python SDK / REST / MCP** 三种接入形态。下面用「写入 + 检索」演示，选你习惯的方式（参数三者对齐）：
+
+:::tabs
+== Python SDK
+
+```python
+from memx import Memory
+
+m = Memory(config={"ace_enabled": True})
+
+# 从一段对话中学习
+m.add([
+    {"role": "user", "content": "pytest 超时怎么办？"},
+    {"role": "assistant", "content": "用 pytest -x --timeout=30 逐个排查"},
+], user_id="dev1", scope="project:backend")
+
+# 检索
+results = m.search("pytest 调试", user_id="dev1")
+```
+
+== REST
+
+```bash
+# 写入（POST /v1/memories）
+curl -X POST https://memx.lurus.cn/v1/memories \
+  -H "Authorization: Bearer $MEMX_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"pytest 超时怎么办？"}],"user_id":"dev1"}'
+
+# 检索（GET /v1/memories/search）
+curl "https://memx.lurus.cn/v1/memories/search?query=pytest+调试&user_id=dev1&limit=5" \
+  -H "Authorization: Bearer $MEMX_KEY"
+```
+
+== MCP
+
+MemX 以 MCP server 形态把记忆操作暴露为 agent 工具，供 Claude / Codex 等 MCP 客户端调用（参数与 REST 对齐）：
+
+- `memory_add` — 写入知识（`content`、`user_id`）
+- `memory_search` — 语义检索（`query`、`limit`、`user_id`）
+- `memory_delete` — 删除条目（`memory_id`）
+:::
+
+下面的分步教程以 Python SDK 为例，REST / MCP 同理。
+
 <ol class="lurus-steps">
 
 <li>

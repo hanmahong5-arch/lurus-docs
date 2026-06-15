@@ -11,8 +11,8 @@ description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 
 
 <MetricStats :items="[
   { label: '网关接入模型', value: '50+', hint: '一个 Key' },
-  { label: 'Kova 调度', value: '3μs', hint: 'Criterion' },
-  { label: '网关 p95', value: '<50ms' },
+  { label: 'Kova 调度', value: '3μs', hint: 'Criterion 基准' },
+  { label: '统一身份', value: 'SSO/MFA', hint: '接企业 IdP' },
   { label: 'MemX PII 规则', value: '12 种', hint: '不可绕过' },
 ]" />
 
@@ -28,7 +28,6 @@ description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 
   :competitors="['自建 OneAPI', '自建 LiteLLM']"
   :rows="[
     { dimension: '接入模型数', self: '50+（内置）', alt: { '自建 OneAPI': '需逐个接', '自建 LiteLLM': '需逐个接' } },
-    { dimension: 'p95 延迟', self: '< 50ms', alt: { '自建 OneAPI': '通常 >= 100ms', '自建 LiteLLM': '通常 >= 80ms' } },
     { dimension: 'OpenAI SDK 兼容', self: '开箱', alt: { '自建 OneAPI': '部分', '自建 LiteLLM': '部分' } },
     { dimension: '计费 + 限流', self: '内置', alt: { '自建 OneAPI': '需自建', '自建 LiteLLM': '需自建' } },
     { dimension: '工程人月', self: '0', alt: { '自建 OneAPI': '2-4 人月', '自建 LiteLLM': '2-3 人月' } },

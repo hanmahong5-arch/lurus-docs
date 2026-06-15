@@ -28,6 +28,7 @@ import ProductHero from './components/landing/ProductHero.vue'
 import CapabilityGrid from './components/landing/CapabilityGrid.vue'
 import ArchitectureDiagram from './components/landing/ArchitectureDiagram.vue'
 import CodeShowcase from './components/landing/CodeShowcase.vue'
+import ModelPicker from './components/landing/ModelPicker.vue'
 import UserScenarios from './components/landing/UserScenarios.vue'
 import ComparisonTable from './components/landing/ComparisonTable.vue'
 import RelatedProducts from './components/landing/RelatedProducts.vue'
@@ -71,6 +72,7 @@ export default {
     app.component('CapabilityGrid', CapabilityGrid)
     app.component('ArchitectureDiagram', ArchitectureDiagram)
     app.component('CodeShowcase', CodeShowcase)
+    app.component('ModelPicker', ModelPicker)
     app.component('UserScenarios', UserScenarios)
     app.component('ComparisonTable', ComparisonTable)
     app.component('RelatedProducts', RelatedProducts)

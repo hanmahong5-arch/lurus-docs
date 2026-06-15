@@ -28,66 +28,45 @@ description: Lurus Switch 桌面应用的下载和安装步骤。
 
 ---
 
-## Windows 安装 {#windows}
+## 安装 {#install}
 
-<ol class="lurus-steps">
-<li>下载 <code>LurusSwitch-windows-amd64.exe</code> 并双击运行。</li>
-<li>若弹出「Windows 已保护你的电脑」，点「<strong>更多信息</strong>」→「<strong>仍要运行</strong>」。</li>
-<li>完成安装向导，在开始菜单启动「Lurus Switch」。</li>
-<li>首次启动防火墙弹窗选「<strong>允许</strong>」（私有网络）。</li>
-</ol>
+下载后按你的操作系统选择安装方式。
 
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">开机自启</p>
-    <div class="lurus-callout__body">设置 → 通用 → 勾选「<strong>开机时自动启动</strong>」。</div>
-  </div>
-</div>
+:::tabs
+== Windows
 
----
+1. 下载 `LurusSwitch-windows-amd64.exe` 并双击运行。
+2. 若弹出「Windows 已保护你的电脑」，点「**更多信息**」→「**仍要运行**」。
+3. 完成安装向导，在开始菜单启动「Lurus Switch」。
+4. 首次启动防火墙弹窗选「**允许**」（私有网络）。
 
-## macOS 安装 {#macos}
+> **开机自启**：设置 → 通用 → 勾选「开机时自动启动」。
 
-<ol class="lurus-steps">
-<li>下载对应芯片 <code>.dmg</code>（M 系列用 <code>darwin-arm64</code>，Intel 用 <code>darwin-amd64</code>）并双击挂载。</li>
-<li>拖 <strong>Lurus Switch</strong> 到「应用程序」。</li>
-<li>首次打开提示「无法验证开发者」时：系统设置 → 隐私与安全性 → 已阻止使用「Lurus Switch」→「<strong>仍要打开</strong>」。</li>
-<li>应用出现在菜单栏。</li>
-</ol>
+== macOS
 
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">开机自启</p>
-    <div class="lurus-callout__body">系统设置 → 通用 → 登录项 → <code>+</code> 添加。</div>
-  </div>
-</div>
+1. 下载对应芯片 `.dmg`（M 系列用 `darwin-arm64`，Intel 用 `darwin-amd64`）并双击挂载。
+2. 拖 **Lurus Switch** 到「应用程序」。
+3. 首次打开提示「无法验证开发者」时：系统设置 → 隐私与安全性 → 已阻止使用「Lurus Switch」→「**仍要打开**」。
+4. 应用出现在菜单栏。
 
----
+> **开机自启**：系统设置 → 通用 → 登录项 → `+` 添加。
 
-## Linux 安装 {#linux}
+== Linux
 
-### AppImage 方式
+**AppImage 方式**
 
 ```bash
-# 下载
+# 下载并赋予执行权限
 wget https://github.com/hanmahong5-arch/lurus-switch/releases/latest/download/LurusSwitch-linux-amd64.AppImage
-
-# 添加执行权限
 chmod +x LurusSwitch-linux-amd64.AppImage
-
-# 运行
 ./LurusSwitch-linux-amd64.AppImage
 ```
 
-### 集成到桌面
+**集成到桌面 + 开机自启**
 
 ```bash
-# 移动到 /opt
+# 移动到 /opt 并创建桌面快捷方式
 sudo mv LurusSwitch-linux-amd64.AppImage /opt/lurus-switch
-
-# 创建桌面快捷方式
 cat > ~/.local/share/applications/lurus-switch.desktop << EOF
 [Desktop Entry]
 Name=Lurus Switch
@@ -96,14 +75,9 @@ Icon=lurus-switch
 Type=Application
 Categories=Utility;Network;
 EOF
-```
 
-### 开机自启
-
-```bash
-# 创建 systemd 用户服务
+# systemd 用户服务（开机自启）
 mkdir -p ~/.config/systemd/user
-
 cat > ~/.config/systemd/user/lurus-switch.service << EOF
 [Unit]
 Description=Lurus Switch AI Gateway
@@ -115,10 +89,9 @@ Restart=on-failure
 [Install]
 WantedBy=default.target
 EOF
-
-systemctl --user enable lurus-switch
-systemctl --user start lurus-switch
+systemctl --user enable --now lurus-switch
 ```
+:::
 
 ---
 

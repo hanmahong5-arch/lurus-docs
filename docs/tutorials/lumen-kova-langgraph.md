@@ -22,7 +22,7 @@ description: 用 Lumen 替换 LangGraph 默认 SqliteSaver，部署到 Kova Clus
   <div class="lurus-card lurus-card--lumen">
     <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
     <div class="lurus-card__title">After — Lumen + Kova</div>
-    <p class="lurus-card__body">3μs 崩溃恢复（Kova 引擎）· 原生多进程安全 · 自动 Trace + Cost · 远程持久化。</p>
+    <p class="lurus-card__body">微秒级崩溃恢复（Kova WAL 引擎）· 原生多进程安全 · 自动 Trace + Cost · 远程持久化。</p>
   </div>
 </div>
 
@@ -109,7 +109,7 @@ lumen deploy --target kova://prod-cluster
 
 | 指标 | SqliteSaver | Lumen + Kova |
 |------|-------------|--------------|
-| 恢复延迟 | 8ms（单机） | **3μs** |
+| 恢复延迟 | 8ms（单机） | **微秒级** |
 | 多副本 | 需额外加锁 | **原生** |
 | 跨机房 | 手动复制 | **异步复制内置** |
 | LLM 重调 | 若 SQLite 写失败则重调 | **永不重调** |
@@ -118,8 +118,8 @@ lumen deploy --target kova://prod-cluster
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">3μs 从哪来</p>
-    <div class="lurus-callout__body"><p>3μs 是 Kova 引擎的调度延迟（Criterion 基准）。<code>LumenCheckpointer</code> 把 LangGraph 的 checkpoint 写入交给 Kova WAL，所以恢复路径走的是引擎级而非 SQLite 文件级。</p></div>
+    <p class="lurus-callout__title">微秒级恢复从哪来</p>
+    <div class="lurus-callout__body"><p>Kova 引擎调度延迟低至 3μs（FIFO 完整管道 Criterion 基准 3.17μs、315K ops/s）。<code>LumenCheckpointer</code> 把 LangGraph 的 checkpoint 写入交给 Kova WAL —— 恢复走引擎级 WAL 重放而非 SQLite 文件级，因此是微秒级，远快于单机 SQLite 的毫秒级。</p></div>
   </div>
 </div>
 

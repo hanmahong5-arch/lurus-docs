@@ -15,7 +15,7 @@ description: SqliteSaver → LumenCheckpointer + LumenTracer，Agent 部署到 K
 
 | Before（纯 LangGraph） | After |
 |---------------------|-------|
-| SqliteSaver 单机持久化 | **LumenCheckpointer + Kova** 3μs 恢复 |
+| SqliteSaver 单机持久化 | **LumenCheckpointer + Kova** 微秒级 WAL 恢复 |
 | 无 Trace | **LumenTracer** 自动采集 |
 | 无 Cost 统计 | **CostTracker** 按 Node 聚合 |
 | 手动 Replay | **Replay.from_run_id()** 一行 |
@@ -85,7 +85,7 @@ python my_agent.py           # 从中断点继续，不重调 LLM
 
 | 指标 | Before | After |
 |------|--------|-------|
-| 恢复延迟 | 8ms | **3μs** |
+| 恢复延迟 | 8ms | **微秒级** |
 | 多进程 | 需加锁 | **原生** |
 | 跨机房 | 手动 | **异步复制** |
 | LLM 重调 | 有时 | **永不** |

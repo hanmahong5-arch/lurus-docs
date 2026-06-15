@@ -64,7 +64,7 @@ graph = workflow.compile(checkpointer=LumenCheckpointer())
 
 | 维度 | SqliteSaver | LumenCheckpointer |
 |------|-------------|-------------------|
-| 恢复速度 | 毫秒级 | **3μs**（基于 Kova 引擎） |
+| 恢复速度 | 毫秒级 | **微秒级**（基于 Kova WAL 引擎） |
 | 多进程 | 需加锁 | **原生支持** |
 | 远程持久化 | 需自实现 | **内置** |
 | 成本关联 | 无 | **自动** |

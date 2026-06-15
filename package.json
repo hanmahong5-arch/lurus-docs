@@ -5,11 +5,12 @@
   "description": "Lurus AI Platform Documentation — API, Kova, MemX, Lucrum, Switch, Creator, Lumen, Forge",
   "scripts": {
     "sync": "bun scripts/sync.ts",
+    "gen-feed": "bun scripts/gen-feed.ts",
     "dev": "vitepress dev docs",
     "dev:server": "bun run --watch server/index.ts",
     "build": "vitepress build docs",
     "preview": "vitepress preview docs",
-    "deploy": "bun run sync && bun run build",
+    "deploy": "bun run sync && bun run gen-feed && bun run build",
     "start": "bun run server/index.ts",
     "dev:internal": "vitepress dev internal --port 5174",
     "build:internal": "bun scripts/secrets-guard.ts && bun scripts/inject-build-meta.ts && vitepress build internal",

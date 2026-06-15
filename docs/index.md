@@ -31,6 +31,19 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
   </a>
 </nav>
 
+<div class="topic-grid-head"><Icon name="compass" :size="16" /> <strong>按主题浏览</strong> —— 知道要找什么？直接进对应主题。</div>
+
+<div class="lurus-cards lurus-cards--compact">
+  <a class="lurus-card lurus-card--api" href="/guide/introduction"><span class="lurus-card__icon"><Icon name="plug-zap" :size="20" /></span><div class="lurus-card__title">网关接入</div><p class="lurus-card__body">一个 Key 接 50+ 模型，OpenAI SDK 兼容。</p></a>
+  <a class="lurus-card lurus-card--kova" href="/kova/"><span class="lurus-card__icon"><Icon name="bot" :size="20" /></span><div class="lurus-card__title">Agent 执行</div><p class="lurus-card__body">Kova WAL-First 引擎，崩溃自动恢复。</p></a>
+  <a class="lurus-card lurus-card--memx" href="/memx/"><span class="lurus-card__icon"><Icon name="brain" :size="20" /></span><div class="lurus-card__title">智能记忆</div><p class="lurus-card__body">MemX 自适应记忆，零 LLM 成本蒸馏。</p></a>
+  <a class="lurus-card lurus-card--lumen" href="/lumen/"><span class="lurus-card__icon"><Icon name="zap" :size="20" /></span><div class="lurus-card__title">可观测</div><p class="lurus-card__body">Lumen Replay + 崩溃恢复 + 成本追踪。</p></a>
+  <a class="lurus-card lurus-card--lucrum" href="/lucrum/"><span class="lurus-card__icon"><Icon name="trending-up" :size="20" /></span><div class="lurus-card__title">量化交易</div><p class="lurus-card__body">Lucrum 自然语言生成 vnpy 策略并回测。</p></a>
+  <a class="lurus-card lurus-card--switch" href="/switch/"><span class="lurus-card__icon"><Icon name="monitor" :size="20" /></span><div class="lurus-card__title">桌面工具</div><p class="lurus-card__body">Switch 统一管理多 AI CLI、MCP、成本。</p></a>
+  <a class="lurus-card lurus-card--api" href="/integrations/"><span class="lurus-card__icon"><Icon name="puzzle" :size="20" /></span><div class="lurus-card__title">集成与 MCP</div><p class="lurus-card__body">产品 MCP、Switch 内置服务器、客户端目录。</p></a>
+  <a class="lurus-card lurus-card--api" href="/guide/troubleshooting"><span class="lurus-card__icon"><Icon name="life-buoy" :size="20" /></span><div class="lurus-card__title">故障排查</div><p class="lurus-card__body">401 / 配额 / 超时等高频问题一页定位。</p></a>
+</div>
+
 ## <Icon name="rocket" :size="22" /> 我是新手 — 3 分钟跑通第一次调用 {#newbie}
 
 选错模型，比写错代码贵 10 倍。先用我们的网关跑一次，再决定迁不迁。
@@ -253,7 +266,7 @@ LLM 应用的四个底层组件：执行 · 记忆 · 网关 · CLI。各自能�
       <span class="diff-card__icon"><Icon name="zap" :size="20" /></span>
       <h3 class="diff-card__title">引擎级性能</h3>
     </header>
-    <p class="diff-card__lede">Kova 调度 <strong>3μs</strong>（Criterion）· 网关 p95 <strong>&lt; 50ms</strong>。</p>
+    <p class="diff-card__lede">Kova 调度 <strong>3μs</strong>（Criterion 基准）· 315K ops/s 吞吐。</p>
     <ul class="diff-card__points">
       <li>我们写了执行引擎，不是又包了 Temporal 一层</li>
       <li>MemX 不调 LLM 也能蒸馏 · Lucrum 全精度无浮点漂移</li>
@@ -291,7 +304,7 @@ LLM 应用的四个底层组件：执行 · 记忆 · 网关 · CLI。各自能�
 | 维度 | Lurus 的优势 | 对照自建 |
 |------|-------------|---------|
 | **全栈自研** | 从 Rust 执行引擎到 Flutter 移动端，核心技术完全自主可控 | 多供应商拼装，版本锁定风险 |
-| **引擎级性能** | Kova 3μs 调度延迟（Criterion 基准），网关 p95 < 50ms | 自建 Temporal/LangGraph 量级较慢 |
+| **引擎级性能** | Kova 3μs 调度延迟、315K ops/s（Criterion 基准），零外部依赖 | 自建 Temporal/LangGraph 量级较慢 |
 | **数据主权** | 私有化部署，数据不出企业边界，支持国密 SM4-GCM | 公有云合规与审计难度高 |
 | **统一身份** | 所有产品共享 SSO、Passkey、MFA，接企业 IdP 联邦 | Keycloak / Auth0 自运维 |
 | **生态协同** | 12 个产品共享账户/计费/记忆/LLM 网关，越用越值 | 工具栈碎片化 |

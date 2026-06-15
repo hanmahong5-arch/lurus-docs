@@ -10,7 +10,7 @@ description: 五层闭环 — Auth · API · MemX · Kova · Lumen，给企业�
 <MetricStats :items="[
   { label: '能力层', value: '5 层', hint: '独立可用 · 组合闭环' },
   { label: '网关模型', value: '50+' },
-  { label: 'Kova 恢复', value: '3μs', hint: 'WAL 断点续跑' },
+  { label: 'Kova 恢复', value: '微秒级', hint: 'WAL 断点续跑' },
   { label: '落地路径', value: '10 周', hint: '参考' },
 ]" />
 

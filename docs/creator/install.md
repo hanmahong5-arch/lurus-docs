@@ -30,64 +30,32 @@ description: Creator 桌面内容工厂的下载和安装步骤。
 
 ## 分平台安装
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="monitor" :size="14" /> Windows</span>
-  <h2 class="lurus-section-head__title">Windows 安装</h2>
-</div>
+下载后按你的操作系统选择安装方式。
 
-<ol class="lurus-steps">
-<li>下载 <code>LurusCreator-windows-amd64.exe</code> 并双击运行。</li>
-<li>若弹出「Windows 已保护你的电脑」，点「更多信息」→「仍要运行」。</li>
-<li>完成安装向导，从桌面快捷方式启动。</li>
-<li><strong>首次配置</strong>：在 <a href="https://api.lurus.cn">api.lurus.cn</a> 获取 Key 粘贴到 Creator 设置（用于 AI 改写）。</li>
-<li>选择工作目录（视频/文案存储位置）。</li>
-</ol>
+:::tabs
+== Windows
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="monitor" :size="14" /> macOS</span>
-  <h2 class="lurus-section-head__title">macOS 安装</h2>
-</div>
+1. 下载 `LurusCreator-windows-amd64.exe` 并双击运行。
+2. 若弹出「Windows 已保护你的电脑」，点「更多信息」→「仍要运行」。
+3. 完成安装向导，从桌面快捷方式启动。
+4. **首次配置**：在 [api.lurus.cn](https://api.lurus.cn) 获取 Key 粘贴到 Creator 设置（用于 AI 改写）。
+5. 选择工作目录（视频/文案存储位置）。
 
-<ol class="lurus-steps">
-<li>下载对应芯片的 <code>.dmg</code>，双击挂载。</li>
-<li>将 <strong>Lurus Creator</strong> 拖到「应用程序」。</li>
-<li>首次打开若提示「无法验证开发者」，前往「系统设置 → 隐私与安全性 → 仍要打开」。</li>
-</ol>
+== macOS
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="terminal" :size="14" /> Linux</span>
-  <h2 class="lurus-section-head__title">Linux 安装</h2>
-</div>
+1. 下载对应芯片的 `.dmg`，双击挂载。
+2. 将 **Lurus Creator** 拖到「应用程序」。
+3. 首次打开若提示「无法验证开发者」，前往「系统设置 → 隐私与安全性 → 仍要打开」。
 
-<ol class="lurus-steps">
-<li>
-
-下载 AppImage：
+== Linux
 
 ```bash
+# 下载、赋予执行权限、运行
 wget https://github.com/hanmahong5-arch/lurus-creator/releases/latest/download/LurusCreator-linux-amd64.AppImage
-```
-
-</li>
-<li>
-
-添加执行权限：
-
-```bash
 chmod +x LurusCreator-linux-amd64.AppImage
-```
-
-</li>
-<li>
-
-运行：
-
-```bash
 ./LurusCreator-linux-amd64.AppImage
 ```
-
-</li>
-</ol>
+:::
 
 ---
 

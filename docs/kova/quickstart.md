@@ -94,17 +94,15 @@ sync_mode = "normal"  # "normal" | "full" (每次写入 fsync)
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="bot" :size="14" /> 上手</span>
   <h2 class="lurus-section-head__title">启动你的第一个 Agent</h2>
-  <p class="lurus-section-head__lede">通过 REST API 创建 Agent、发送任务、流式查看执行过程。</p>
+  <p class="lurus-section-head__lede">REST / Rust SDK / CLI 任选，创建 Agent、发送任务、流式查看执行。</p>
 </div>
 
-### 通过 REST API
+启动后，选择你习惯的接入方式创建并运行第一个 Agent（完整端点见 [API 参考](/kova/api)）。
 
-启动后通过 REST API 创建和管理 Agent（完整端点见 [API 参考](/kova/api)）：
+:::tabs
+== REST API
 
-<ol class="lurus-steps">
-<li>
-
-**创建 Agent** <ApiEndpoint method="POST" path="/api/v1/agents" /> — 响应含 `id="agt_a1b2c3d4"`, `status="idle"`
+1. **创建 Agent** — `POST /api/v1/agents`，响应含 `id="agt_a1b2c3d4"`、`status="idle"`
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/agents \
@@ -112,10 +110,7 @@ curl -X POST http://localhost:8080/api/v1/agents \
   -d '{ "name": "researcher", "system_prompt": "你是一个专业的技术研究员，深入分析主题并给出结构化研究报告。", "model": "deepseek-chat", "tools": ["web_search", "file_write"] }'
 ```
 
-</li>
-<li>
-
-**发送任务** <ApiEndpoint method="POST" path="/api/v1/agents/{id}/tasks" /> — 响应含 `task_id="tsk_e5f6g7h8"`, `status="running"`
+2. **发送任务** — `POST /api/v1/agents/{id}/tasks`，响应含 `task_id="tsk_e5f6g7h8"`、`status="running"`
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/agents/agt_a1b2c3d4/tasks \
@@ -123,40 +118,48 @@ curl -X POST http://localhost:8080/api/v1/agents/agt_a1b2c3d4/tasks \
   -d '{ "message": "研究 Rust 在 AI 基础设施中的应用趋势，输出一份 500 字的报告" }'
 ```
 
-</li>
-<li>
-
-**查看 / 流式跟踪** <ApiEndpoint method="GET" path="/api/v1/tasks/{id}" /> — 或经 WebSocket 实时查看执行过程
+3. **查看 / 流式跟踪** — `GET /api/v1/tasks/{id}` 或经 WebSocket 实时查看执行过程
 
 ```bash
-# 查看任务状态
 curl http://localhost:8080/api/v1/tasks/tsk_e5f6g7h8
-# 流式查看执行过程（WebSocket）
 wscat -c ws://localhost:8080/api/v1/tasks/tsk_e5f6g7h8/stream
 ```
 
-</li>
-</ol>
+== Rust SDK
 
----
+直接在进程内嵌入 Kova 引擎，崩溃后从本地 WAL 自动恢复：
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="terminal" :size="14" /> CLI</span>
-  <h2 class="lurus-section-head__title">通过 CLI 使用</h2>
-</div>
+```rust
+use kova::prelude::*;
 
-Kova 内置 TUI（终端用户界面），提供交互式的 Agent 管理体验：
+let engine = KovaBuilder::new()
+    .wal_dir("./agent-state")
+    .build()?;
+
+let agent = engine.create_agent("researcher")
+    .model("deepseek-chat")
+    .tools(&["web_search", "file_read"])
+    .build()?;
+
+// Agent 崩溃 → 从 WAL 自动恢复，不重调 LLM
+agent.run("帮我调研 WASM Component Model").await?;
+```
+
+== CLI
+
+Kova 内置 TUI（终端交互界面）与命令行：
 
 ```bash
 # 启动 TUI
 kova tui
 
-# 或直接通过 CLI 命令
+# 或直接用 CLI 命令
 kova agent create --name researcher --model deepseek-chat
 kova agent run researcher "分析 Rust 在 AI 领域的应用"
 kova agent list
 kova agent logs researcher --tail 50
 ```
+:::
 
 ---
 

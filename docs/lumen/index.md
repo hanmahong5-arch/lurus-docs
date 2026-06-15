@@ -17,7 +17,7 @@ description: Python SDK 优先 + Rust 引擎 + 可选 CLI，为 Agent 开发者�
 
 ## 什么是 Lumen？
 
-**Lumen** 是面向 AI Agent 开发者的**三合一可靠性工具** — Replay（零成本重放）+ Crash Recovery（3μs <Term t="Checkpoint">崩溃恢复</Term>）+ Cost Tracking（实时成本追踪）。**交付形态**：Python SDK 优先（`pip install lumen-ai`，LangGraph/Agent 首选）+ Rust 引擎（`lumen-core` 性能底座）+ 可选 CLI（`lumen-cli` v0.1.0）。理念：*Illuminate your AI agents. Never lose a run. Never burn tokens blindly.*
+**Lumen** 是面向 AI Agent 开发者的**三合一可靠性工具** — Replay（零成本重放）+ Crash Recovery（微秒级 <Term t="Checkpoint">崩溃恢复</Term>）+ Cost Tracking（实时成本追踪）。**交付形态**：Python SDK 优先（`pip install lumen-ai`，LangGraph/Agent 首选）+ Rust 引擎（`lumen-core` 性能底座）+ 可选 CLI（`lumen-cli` v0.1.0）。理念：*Illuminate your AI agents. Never lose a run. Never burn tokens blindly.*
 
 ```python
 pip install lumen-ai
@@ -35,7 +35,7 @@ graph = workflow.compile(
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">3 行</span><span class="lurus-stat__label">接入 LangGraph</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">3μs</span><span class="lurus-stat__label">崩溃恢复</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">微秒级</span><span class="lurus-stat__label">崩溃恢复</span></div>
   <div class="lurus-stat"><span class="lurus-stat__value">30+</span><span class="lurus-stat__label">模型定价表</span></div>
   <div class="lurus-stat"><span class="lurus-stat__value">v0.1.0</span><span class="lurus-stat__label">lumen-cli</span></div>
 </div>
@@ -52,7 +52,7 @@ graph = workflow.compile(
   accent="var(--lurus-color-lumen)"
   :items="[
     { title: 'Replay — 零成本确定性重放', icon: 'rewind', body: '从 trace JSON 重放任意执行，不调 LLM 不花钱，可从指定步骤开始精确定位问题。lumen replay TRACE_ID（完整）/ --from 5（从第 5 步）。' },
-    { title: 'Crash Recovery — 3μs 级崩溃恢复', icon: 'life-buoy', body: 'LangGraph CheckpointSaver 完整实现，直接替换原生 SQLite/Redis Checkpointer。内存+磁盘双层、原子写入，比 SQLite 快 100 倍，零外部服务依赖。' },
+    { title: 'Crash Recovery — 微秒级崩溃恢复', icon: 'life-buoy', body: 'LangGraph CheckpointSaver 完整实现，直接替换原生 SQLite/Redis Checkpointer。内存+磁盘双层、原子写入，恢复走引擎级 WAL 重放，零外部服务依赖。' },
     { title: 'Cost Tracking — 实时成本追踪', icon: 'coins', body: '内置 30+ 模型定价表（Claude / GPT-4o / Gemini / Llama / DeepSeek），LLM 不返回费用也能估算。单次调用 > 2x 平均值自动告警。lumen cost --last 24h / lumen traces。' },
   ]"
 />

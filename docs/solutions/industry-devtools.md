@@ -10,7 +10,7 @@ description: Kova + Switch + Lumen — 面向开发者工具公司和基础设�
 <MetricStats :items="[
   { label: '统一管理 CLI', value: '5 款', hint: 'Switch' },
   { label: '网关模型', value: '50+' },
-  { label: 'Agent 恢复', value: '3μs', hint: '断点续跑' },
+  { label: 'Agent 恢复', value: '微秒级', hint: 'WAL 断点续跑' },
   { label: '接入组件', value: '4 个', hint: 'Kova · MemX · API · Lumen' },
 ]" />
 
@@ -75,7 +75,7 @@ description: Kova + Switch + Lumen — 面向开发者工具公司和基础设�
 |------|--------|-------|
 | AI 工具配置分散 | 5 份 JSON | **1 份 yaml** |
 | 每月 Token 成本 | 不可见 | **仪表盘 + 告警** |
-| Agent 崩溃恢复 | 重启从头 | **3μs 断点续跑** |
+| Agent 崩溃恢复 | 重启从头 | **微秒级断点续跑** |
 | 上线周期 | 周级 | **天级** |
 
 ## 下一步

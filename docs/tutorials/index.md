@@ -12,7 +12,7 @@ description: 把多个 Lurus 产品串起来的端到端教程，按角色分组
 </div>
 
 <div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">端到端教程</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">4</span><span class="lurus-stat__label">端到端教程</span></div>
   <div class="lurus-stat"><span class="lurus-stat__value">5+</span><span class="lurus-stat__label">联动产品</span></div>
   <div class="lurus-stat"><span class="lurus-stat__value">2</span><span class="lurus-stat__label">角色路线</span></div>
 </div>
@@ -58,6 +58,11 @@ description: 把多个 Lurus 产品串起来的端到端教程，按角色分组
     <span class="lurus-card__icon"><Icon name="trending-up" :size="20" /></span>
     <div class="lurus-card__title">量化闭环</div>
     <p class="lurus-card__body">自然语言描述策略 → AI 生成 vnpy 代码 → 回测 → 优化 → 策略市场上架。</p>
+  </a>
+  <a class="lurus-card lurus-card--switch" href="/tutorials/switch-mcp-team">
+    <span class="lurus-card__icon"><Icon name="monitor" :size="20" /></span>
+    <div class="lurus-card__title">团队工具统一</div>
+    <p class="lurus-card__body">Switch 把团队 AI CLI 的 MCP 配置、模型 Key、成本看板收敛成一份中央配置。</p>
   </a>
 </div>
 
