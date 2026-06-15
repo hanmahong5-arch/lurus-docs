@@ -3,13 +3,40 @@ title: Chat Completions API
 description: Lurus Chat Completions API 参考，完全兼容 OpenAI 接口格式。
 ---
 
+<div class="api-chat-page">
+
 # Chat Completions API
 
 最常用的对话 API，完全兼容 OpenAI Chat Completions 接口。
 
+<ApiEndpoint method="POST" path="/v1/chat/completions" description="创建聊天对话" />
+
 ```
 POST https://api.lurus.cn/v1/chat/completions
 ```
+
+<div class="lurus-cards lurus-cards--compact">
+  <a class="lurus-card lurus-card--api" href="#流式响应">
+    <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
+    <div class="lurus-card__title">流式响应</div>
+    <p class="lurus-card__body">SSE 逐 Token 返回</p>
+  </a>
+  <a class="lurus-card lurus-card--api" href="#function-calling">
+    <span class="lurus-card__icon"><Icon name="plug-zap" :size="20" /></span>
+    <div class="lurus-card__title">Function Calling</div>
+    <p class="lurus-card__body">让模型调用你的函数</p>
+  </a>
+  <a class="lurus-card lurus-card--api" href="#多模态输入-vision">
+    <span class="lurus-card__icon"><Icon name="monitor" :size="20" /></span>
+    <div class="lurus-card__title">多模态 Vision</div>
+    <p class="lurus-card__body">混合传入文字与图片</p>
+  </a>
+  <a class="lurus-card lurus-card--api" href="#最佳实践">
+    <span class="lurus-card__icon"><Icon name="sparkles" :size="20" /></span>
+    <div class="lurus-card__title">最佳实践</div>
+    <p class="lurus-card__body">温度 / System Prompt / 多轮</p>
+  </a>
+</div>
 
 ---
 
@@ -149,15 +176,10 @@ data: [DONE]
 
 ### 工作流程
 
-```
-你的请求（含 tools 定义）
-       ↓
-AI 决定调用哪个函数，返回 finish_reason: "tool_calls"
-       ↓
-你执行该函数，把结果以 role: "tool" 传回
-       ↓
-AI 结合结果生成最终回答
-```
+<ArchitectureDiagram
+  title="Function Calling 调用流程"
+  chart="graph LR; A[你的请求<br/>含 tools 定义] --> B[模型返回<br/>finish_reason: tool_calls]; B --> C[你执行函数<br/>结果以 role: tool 传回]; C --> D[模型结合结果<br/>生成最终回答]"
+/>
 
 ### 完整示例：查询天气
 
@@ -341,3 +363,23 @@ print(chat("他有哪些重要成就？"))  # 模型能记住上文的"秦始皇
 ## 错误处理
 
 常见状态码：`400` 请求格式错误 → 检查 JSON 结构和必填参数；`401` Key 无效/过期；`403` 无权访问此模型 → 联系管理员；`429` 超出速率限制 → 指数退避重试；`500/502` 上游模型异常 → 重试或切换备用模型。完整错误码和重试策略见 [错误处理](/api/errors)。
+
+---
+
+<NextSteps
+  title="下一步"
+  :steps="[
+    { text: '错误处理', link: '/api/errors', primary: true },
+    { text: '认证', link: '/api/authentication' },
+    { text: 'API 概述', link: '/api/overview' },
+    { text: '支持的模型', link: '/guide/models' },
+  ]"
+/>
+
+</div>
+
+<style>
+.api-chat-page .lurus-card__body code {
+  font-size: 0.85em;
+}
+</style>

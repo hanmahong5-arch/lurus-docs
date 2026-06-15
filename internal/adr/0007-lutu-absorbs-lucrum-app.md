@@ -25,9 +25,23 @@ date: 2026-03
 
 ## 决定
 
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="layers" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">决定 · accepted 2026-03 · live</p>
+    <div class="lurus-callout__body"><code>2c-app-lutu/</code>（Flutter）吸收 lucrum 功能 module（行情 / advisor / 简化策略）；<code>2c-app-lucrum-mobile/</code>（RN Expo 仓库）归档 + 删除。单一移动栈。</div>
+  </div>
+</div>
+
 - `2c-app-lutu/` 增加 lucrum 相关功能 module（行情 / advisor / 简化策略）
 - `2c-app-lucrum-mobile/`（RN Expo 仓库）归档 + 删除
-- Lutu 三阶段战略明确：internal-tool → enterprise-demo → consumer
+- Lutu 三阶段战略明确：
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">①</span><span class="lurus-stat__label">internal-tool</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">②</span><span class="lurus-stat__label">enterprise-demo</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">③</span><span class="lurus-stat__label">consumer</span></div>
+</div>
 
 ## 后果
 

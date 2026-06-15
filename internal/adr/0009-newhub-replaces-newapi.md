@@ -18,7 +18,7 @@ ADR-0006 后，`newapi.lurus.cn`（QuantumNous/new-api fork）成为唯一 LLM �
 
 - 多租户认证（`tenant_slug` 维度的 Zitadel OIDC）
 - Platform gRPC 计费集成（`ReportUsage` / `WalletDebit`）
-- 日志全文检索（Meilisearch）、Prometheus/OTel 一等可观测性
+- 日志全文检索（Meilisearch）、Prometheus-format `/metrics` + OTel 一等可观测性（平台侧监控见 [可观测性手册](/ops/observability)）
 - `governance/` / `hub/` / `openrouter_pool/` / `nats/` 等护城河模块（newhub 独有 ~2,183 LOC）
 
 `2b-svc-newhub` 在 newapi 之上叠了这些能力，已 stage on R6（`test-newhub.lurus.cn`），NATS publisher live。问题是：长期维护**两份**网关代码，违背 ADR-0006 当初"单一网关"的初衷。
@@ -40,9 +40,23 @@ ADR-0006 后，`newapi.lurus.cn`（QuantumNous/new-api fork）成为唯一 LLM �
 
 ## 决定
 
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="git-merge" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">决定 · accepted 2026-05-27 · Option A</p>
+    <div class="lurus-callout__body"><strong>newapi 退役，整合到 newhub</strong>。<code>hub.lurus.cn</code> 成为唯一 LLM gateway；<code>newapi.lurus.cn</code> 经 STAGE 演练后 DNS 切 newhub；原 newapi GitHub repo 归档 + 90 天只读。</div>
+  </div>
+</div>
+
 **2026-05-27 正式接受 Option A**：newapi 退役，整合到 newhub。`hub.lurus.cn` 成为唯一 LLM gateway；`newapi.lurus.cn` 经 STAGE 演练后 DNS 切 newhub；原 newapi GitHub repo 归档 + 90 天只读。
 
-> 历史修正：`sprint-status.yaml` 曾把本决策误标为 "Option B"，并引用了一个不存在的占位 ADR 文件名。Anita 的真实意图始终是 Option A，本 ADR 形式化已存在的实质决策。决策原文：`lurus/doc/decisions/2026-05-27-d1-newapi-retire.md`。
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="history" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">历史修正</p>
+    <div class="lurus-callout__body"><code>sprint-status.yaml</code> 曾把本决策误标为 "Option B"，并引用了一个不存在的占位 ADR 文件名。真实意图始终是 Option A，本 ADR 形式化已存在的实质决策。决策原文：<code>lurus/doc/decisions/2026-05-27-d1-newapi-retire.md</code>。</div>
+  </div>
+</div>
 
 ## 理由
 
@@ -68,7 +82,41 @@ ADR-0006 后，`newapi.lurus.cn`（QuantumNous/new-api fork）成为唯一 LLM �
 
 ## 整合路线（R-1~R-5）
 
-详见 [newhub 内部手册](../products/newhub) 的"与 newapi 整合路线"表：R-1 移植原创 commit → R-2 Provider Parity 审计 → R-3 切流方案设计（镜像+灰度+DNS）→ R-4 PROD 切流 → R-5 newapi 归档 + 文档修订。截至 2026-05-28 全部 R 阶段未开跑。
+<ol class="lurus-steps">
+<li>
+
+**R-1 · 移植原创 commit** — 把 newapi 近 90 天 Lurus 原创 commit 移植到 newhub
+
+</li>
+<li>
+
+**R-2 · Provider Parity 审计** — 比对两侧 provider 行为一致性
+
+</li>
+<li>
+
+**R-3 · 切流方案设计** — 镜像 + 灰度 + DNS（短 TTL）
+
+</li>
+<li>
+
+**R-4 · PROD 切流** — gated on SCIM / HA / Reliability hard floor 全 done
+
+</li>
+<li>
+
+**R-5 · newapi 归档 + 文档修订**
+
+</li>
+</ol>
+
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="timer" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">状态</p>
+    <div class="lurus-callout__body">截至 <strong>2026-05-28</strong>，全部 R 阶段<strong>未开跑</strong>。完整"与 newapi 整合路线"表见 <a href="/products/newhub">newhub 内部手册</a>。</div>
+  </div>
+</div>
 
 ## 参考
 

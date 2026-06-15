@@ -3,31 +3,56 @@ title: 快速开始
 description: 5 分钟内完成首次 Lurus API 调用，支持 Python、Node.js、Go 和 cURL。
 ---
 
-# 快速开始
+<div class="qs-page">
 
-5 分钟内完成首次 API 调用。
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="rocket" :size="14" /> 快速开始</span>
+  <h1 class="lurus-section-head__title">5 分钟跑通第一次调用</h1>
+  <p class="lurus-section-head__lede">获取 Key → 发送请求 → 切换模型，三步搞定。</p>
+</div>
 
 ::: info 前置条件
 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)）· Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（任选）· 基本终端知识。预计 5 分钟。
 :::
 
-## 第一步：获取 API Key
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="key-round" :size="14" /> 第一步</span>
+  <h2 class="lurus-section-head__title">获取 API Key</h2>
+</div>
 
-1. 访问 [api.lurus.cn](https://api.lurus.cn)，登录或注册
-2. 进入「**令牌管理**」→「**创建新令牌**」
-3. 复制生成的 Key（格式：`sk-xxxxxxxxxxxxxxxx`）
+<ol class="lurus-steps">
+<li>
 
-::: warning 安全提示
-API Key 等同于密码。**不要**提交到 Git，**不要**写在前端代码中。
-推荐通过环境变量传入：
-```bash
-export LURUS_API_KEY="sk-your-key-here"
-```
-:::
+访问 [api.lurus.cn](https://api.lurus.cn)，登录或注册
+
+</li>
+<li>
+
+进入「**令牌管理**」→「**创建新令牌**」
+
+</li>
+<li>
+
+复制生成的 Key（格式：`sk-xxxxxxxxxxxxxxxx`）
+
+</li>
+</ol>
+
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="shield-check" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">安全提示</p>
+    <div class="lurus-callout__body"><p>API Key 等同于密码。<strong>不要</strong>提交到 Git，<strong>不要</strong>写在前端代码中。推荐通过环境变量传入：</p><pre><code>export LURUS_API_KEY="sk-your-key-here"</code></pre></div>
+  </div>
+</div>
 
 ---
 
-## 第二步：发送第一个请求
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="zap" :size="14" /> 第二步</span>
+  <h2 class="lurus-section-head__title">发送第一个请求</h2>
+  <p class="lurus-section-head__lede">选你的语言，复制即可运行。</p>
+</div>
 
 :::tabs
 == Python
@@ -123,9 +148,11 @@ func main() {
 
 ---
 
-## 第三步：切换模型
-
-只改 `model` 参数，无需修改其他任何代码：
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="shuffle" :size="14" /> 第三步</span>
+  <h2 class="lurus-section-head__title">切换模型</h2>
+  <p class="lurus-section-head__lede">只改 <code>model</code> 参数，无需修改其他任何代码。</p>
+</div>
 
 | 模型 | 特点 | 成本参考 |
 |------|------|---------|
@@ -135,43 +162,59 @@ func main() {
 | `claude-3-5-sonnet` | 长文本、创意写作 | ¥15/M tokens |
 | `gemini-3-pro-preview` | 1M 超长上下文 | ¥5/M tokens |
 
-::: tip 不知道选哪个？
-**日常使用** → `deepseek-chat`（成本最低，中文最好）
-**复杂推理** → `deepseek-reasoner`
-**长文档处理** → `gemini-3-pro-preview`
-
-完整对比见 [支持的模型](/guide/models)。
-:::
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="sparkles" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">不知道选哪个？</p>
+    <div class="lurus-callout__body"><p><strong>日常使用</strong> → <code>deepseek-chat</code>（成本最低，中文最好）<br><strong>复杂推理</strong> → <code>deepseek-reasoner</code><br><strong>长文档处理</strong> → <code>gemini-3-pro-preview</code></p><p>完整对比见 <a href="/guide/models">支持的模型</a>。</p></div>
+  </div>
+</div>
 
 ---
 
-## 常见问题
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="life-buoy" :size="14" /> 常见问题</span>
+  <h2 class="lurus-section-head__title">跑不通？先看这里</h2>
+</div>
 
-### 返回 `401 Unauthorized`
+<details class="lurus-faq-item">
+<summary>返回 <code>401 Unauthorized</code></summary>
 
 ```
 {"error": {"code": "invalid_api_key", "type": "authentication_error"}}
 ```
 
 检查：
+
 - Key 是否以 `sk-` 开头
 - 请求头格式：`Authorization: Bearer sk-xxxx`（注意 Bearer 后有空格）
 - Key 是否处于「启用」状态（控制台确认）
 
-### 返回 `"no available server"`
+</details>
+
+<details class="lurus-faq-item">
+<summary>返回 <code>"no available server"</code></summary>
 
 - 检查 `model` 名称拼写（区分大小写）
 - 确认该 Key 有权限访问此模型
 - 如果刚创建 Key，等待约 10 秒后再试
 
-### 流式响应怎么开启？
+</details>
+
+<details class="lurus-faq-item">
+<summary>流式响应怎么开启？</summary>
 
 在请求体中加 `"stream": true`，详见 [<Term t="Streaming">流式响应</Term>](/api/chat-completions#流式响应)。
 
----
+</details>
 
-## 下一步
+<NextSteps
+  title="下一步"
+  :steps="[
+    { text: 'Chat Completions 完整文档', link: '/api/chat-completions', primary: true },
+    { text: '支持的模型', link: '/guide/models' },
+    { text: '配置 AI 客户端', link: '/guide/clients/cherry-studio' },
+  ]"
+/>
 
-- [Chat Completions 完整文档](/api/chat-completions) — 参数详解、Function Calling、多模态
-- [支持的模型](/guide/models) — 完整模型列表与选型建议
-- [配置 AI 客户端](/guide/clients/cherry-studio) — 在 Cherry Studio、Lobe Chat 等工具中使用
+</div>

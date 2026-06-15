@@ -3,9 +3,27 @@ title: MemX 核心概念
 description: MemX ACE 引擎的四大核心模块：智能蒸馏、语义去重、衰退遗忘和混合检索。
 ---
 
+<div class="memx-page">
+
 # 核心概念
 
 MemX 的 ACE（Adaptive Context Engine）引擎由四大核心模块组成，独立运作、协同配合，实现知识的完整生命周期管理。
+
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="brain" :size="14" /> ACE 引擎</span>
+  <h2 class="lurus-section-head__title">四大核心模块</h2>
+  <p class="lurus-section-head__lede">蒸馏 → 去重 → 衰减 → 检索，覆盖知识的完整生命周期。</p>
+</div>
+
+<CapabilityGrid
+  accent="var(--lurus-color-memx)"
+  :items="[
+    { title: 'Reflector · 知识蒸馏', body: 'hybrid 模式规则预筛 + LLM 精炼，5 种检测规则，相比全量 LLM 减少 90%+ 调用。', icon: 'filter' },
+    { title: 'Curator · 语义去重', body: '余弦相似度三级去重：≥0.8 合并、0.5~0.8 标记冲突、低于 0.5 独立写入。', icon: 'database-backup' },
+    { title: 'Decay · 时间衰减', body: 'Ebbinghaus 遗忘曲线，半衰期 30 天，召回增强 + 永久记忆三层保护。', icon: 'timer' },
+    { title: 'Generator · 混合检索', body: '四层搜索 L1~L4，关键词 0.6 + 语义 0.4 融合，再乘衰减/新近/作用域加成。', icon: 'search' },
+  ]"
+/>
 
 ## <Term t="Reflector">Reflector</Term> — 知识蒸馏引擎
 
@@ -21,9 +39,13 @@ Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。
 
 **hybrid 工作流程**：原始对话 → PatternDetector（规则检测）→ 候选知识项 → LLM 评估+蒸馏（仅候选项）→ 取规则分数与 LLM 分数的平均值 → KnowledgeScorer（评分分类）→ PrivacySanitizer（隐私脱敏）→ BulletDistiller（压缩精炼）。
 
-::: tip
-默认混合模式 + 自动降级：LLM 不可用时自动切换纯规则模式，零调用零成本。
-:::
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="shield-check" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">默认混合模式 + 自动降级</p>
+    <div class="lurus-callout__body"><p>LLM 不可用时自动切换纯规则模式，零调用零成本。</p></div>
+  </div>
+</div>
 
 ### 五种检测规则
 
@@ -91,9 +113,13 @@ final       = clamp(boosted, 0.0, 1.0)
 
 ### 三层保护机制
 
-- `recall_count ≥ 15` → 永久记忆（weight 固定 1.0）
-- `age ≤ 7 天` → 保护期（weight 固定 1.0）
-- `weight < 0.02` → 归档候选（可清理）
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="lock" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">三层保护</p>
+    <div class="lurus-callout__body"><ul><li><code>recall_count ≥ 15</code> → 永久记忆（weight 固定 1.0）</li><li><code>age ≤ 7 天</code> → 保护期（weight 固定 1.0）</li><li><code>weight &lt; 0.02</code> → 归档候选（可清理）</li></ul></div>
+  </div>
+</div>
 
 直觉：刚学的（7 天内）记得清楚；常回忆的越来越牢；用 15 次以上成"肌肉记忆"；久不用逐渐遗忘。
 
@@ -154,8 +180,25 @@ L4 向量搜索不可用时（嵌入模型加载失败）自动降级纯关键�
 
 ---
 
-## 下一步
+<NextSteps
+  title="下一步"
+  :steps="[
+    { text: '架构设计 — 完整的管道架构和数据流', link: '/memx/architecture', primary: true },
+    { text: '快速开始 — 5 分钟体验 MemX 核心功能', link: '/memx/quickstart' },
+    { text: '常见问题 — 使用中的常见问题解答', link: '/memx/faq' },
+  ]"
+/>
 
-- [架构设计](/memx/architecture) — 完整的管道架构和数据流
-- [快速开始](/memx/quickstart) — 5 分钟体验 MemX 核心功能
-- [常见问题](/memx/faq) — 使用中的常见问题解答
+</div>
+
+<style>
+.memx-page .lurus-section-head {
+  margin-top: 2.5rem;
+}
+.memx-page .cap-grid {
+  margin: 1.5rem 0 2.25rem;
+}
+.memx-page .lurus-callout {
+  margin: 1.25rem 0;
+}
+</style>

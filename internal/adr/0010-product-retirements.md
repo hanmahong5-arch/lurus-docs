@@ -16,11 +16,17 @@ date: 2026-05-28
 
 ## 退役清单
 
-| 产品 | 下线日期 | 真实状态 | 决策 doc |
-|---|---|---|---|
-| **admin**（运营后台，`2l-bs-admin`）| 2026-05-10 | SPA 从未交付（9 commits，0 production deploy）；`admin.lurus.cn` 实测 404 | `2026-05-10-sunset-bs-admin.md`（+ 2026-05-19 Correction）|
-| **webgame**（`2c-bs-www-phoenix`）| 2026-05-28 | pod 活但 auth 死约 1 个月 + 0 `/play` 流量 + 0 营收 | `2026-05-28-sunset-webgame.md` |
-| **xianyu**（`2b-svc-xianyu`）| 2026-05-14 | 与主业脱节 + R5 NotReady，已 archived | `lurus.yaml` lifecycle_index（backup 待 R5 复活后 tar）|
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">本季下线</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">2</span><span class="lurus-stat__label">sunset</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">1</span><span class="lurus-stat__label">archived</span></div>
+</div>
+
+| 产品 | 下线日期 | 状态 | 真实状态 | 决策 doc |
+|---|---|---|---|---|
+| **admin**（运营后台，`2l-bs-admin`）| 2026-05-10 | <span class="lurus-tag lurus-tag--muted">sunset</span> | SPA 从未交付（9 commits，0 production deploy）；`admin.lurus.cn` 实测 404 | `2026-05-10-sunset-bs-admin.md`（+ 2026-05-19 Correction）|
+| **webgame**（`2c-bs-www-phoenix`）| 2026-05-28 | <span class="lurus-tag lurus-tag--muted">sunset</span> | pod 活但 auth 死约 1 个月 + 0 `/play` 流量 + 0 营收 | `2026-05-28-sunset-webgame.md` |
+| **xianyu**（`2b-svc-xianyu`）| 2026-05-14 | <span class="lurus-tag lurus-tag--muted">archived</span> | 与主业脱节 + R5 NotReady，已 archived | `lurus.yaml` lifecycle_index（backup 待 R5 复活后 tar）|
 
 ## 各自的决定与替代
 
@@ -30,7 +36,21 @@ date: 2026-05-28
 ### webgame — sunset 2026-05-28
 根因是 ops（Zitadel OIDC app `unused-placeholder` 未注册 → `Errors.App.NotFound`），**非代码**。`q3-survival-goal.md §2` 把 webgame 列入 90 天 0 投入。**选 sunset 而非 archive 的边界**：archive 含下架 pod / 删 DNS / repo archive / 备份等不可逆 R1 写操作，owner-gated；sunset 是诚实中间态——停止假装 prod，保留 pod（已跑 27d，0 资源压力）+ DNS，留 archive 决策窗口。
 
-> ⚠️ **archive 时的坑**：webgame repo 名历史沿用 `lurus-www`，与 www-next **同名**——`gh repo archive` 前必须确认不误伤 www（见 webgame decision doc"不碰清单"）。
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="eye" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">sunset vs archive</p>
+    <div class="lurus-callout__body"><strong>sunset</strong> = 诚实中间态，停止假装 prod，保留 pod + DNS（可逆，留决策窗口）。<strong>archive</strong> = 下架 pod / 删 DNS / repo archive / 备份等<strong>不可逆 R1 写操作</strong>，owner-gated。</div>
+  </div>
+</div>
+
+<div class="lurus-callout lurus-callout--danger">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">archive 时的坑</p>
+    <div class="lurus-callout__body">webgame repo 名历史沿用 <code>lurus-www</code>，与 www-next <strong>同名</strong>——执行 <code>gh repo archive</code> 前必须确认不误伤 www（见 webgame decision doc"不碰清单"）。</div>
+  </div>
+</div>
 
 ### xianyu — archived 2026-05-14
 闲鱼扩展与主业脱节，叠加 R5 NotReady（宿主机离线）。已从 services 段移除，backup 待 R5 复活后 tar 到 `D:/_backup/`。

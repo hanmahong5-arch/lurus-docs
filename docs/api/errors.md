@@ -3,7 +3,19 @@ title: 错误处理
 description: Lurus API 错误响应格式、HTTP 状态码和常见错误的处理方法。
 ---
 
+<div class="api-errors-page">
+
 # 错误处理
+
+所有错误响应遵循统一结构，每个错误码都附带 `code` + `message` + 建议动作，便于自动化处理。
+
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="repeat" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">重试黄金法则</p>
+    <p class="lurus-callout__body">认证错误（401）<strong>不重试</strong>直接上抛；速率限制（429）按 <code>2 ** attempt</code> 秒<strong>指数退避</strong>后重试；其余 API 错误重试到 <code>max_retries</code> 上限。</p>
+  </div>
+</div>
 
 ## 错误响应格式
 
@@ -117,10 +129,23 @@ async function chatWithRetry(messages, maxRetries = 3) {
 
 ## 联系支持
 
-问题持续请联系 **support@lurus.cn**，提供：错误信息完整内容、请求 ID（response header `X-Request-ID`）、发生时间、复现步骤。
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">问题持续？联系 support@lurus.cn</p>
+    <div class="lurus-callout__body">请提供以下信息，便于快速定位：<ul><li>错误信息完整内容</li><li>请求 ID（response header <code>X-Request-ID</code>）</li><li>发生时间</li><li>复现步骤</li></ul></div>
+  </div>
+</div>
 
 ---
 
-## 下一步
+<NextSteps
+  title="下一步"
+  :steps="[
+    { text: 'Chat Completions API', link: '/api/chat-completions', primary: true },
+    { text: '认证', link: '/api/authentication' },
+    { text: 'API 概述', link: '/api/overview' },
+  ]"
+/>
 
-- [Chat Completions API](/api/chat-completions) · [认证](/api/authentication) · [API 概述](/api/overview)
+</div>

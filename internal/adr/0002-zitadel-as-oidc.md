@@ -7,6 +7,14 @@ date: 2025-09
 
 # ADR-0002: Zitadel 作为统一 OIDC Provider
 
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="shield-check" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">决定 · accepted 2025-09 · live</p>
+    <div class="lurus-callout__body">部署 <strong>Zitadel</strong> 到 R1 K3s，域 <code>auth.lurus.cn</code>。所有需要登录的产品（admin / forge / login UI / switch / lutu / docs internal）统一走 Zitadel OIDC。</div>
+  </div>
+</div>
+
 ## 背景
 
 公司起步阶段，账户体系散落在每个产品里 — switch 自管用户表、lucrum 自有登录、admin 用 Phoenix.guardian。  
@@ -36,6 +44,14 @@ date: 2025-09
 - Zitadel 是关键依赖，挂了 = 所有需登录服务挂
 - Zitadel 升级要测兼容（OIDC discovery / claim 格式）
 - bus factor 1 + Zitadel = 单人需深度理解 Zitadel 内部
+
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">单点风险</p>
+    <div class="lurus-callout__body">Zitadel 是<strong>关键依赖</strong>——挂了等于所有需登录服务挂。叠加 <strong>bus factor 1</strong>，运维深度全压在单人身上。监控状态见 <a href="/ops/observability">可观测性手册</a>。</div>
+  </div>
+</div>
 
 ## 参考
 

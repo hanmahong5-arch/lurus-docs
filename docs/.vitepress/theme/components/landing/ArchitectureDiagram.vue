@@ -43,7 +43,7 @@ watch(() => props.chart, render)
   <figure class="arch-diagram">
     <figcaption v-if="title" class="arch-diagram__title">{{ title }}</figcaption>
     <div v-if="!errored" ref="container" class="arch-diagram__canvas" />
-    <pre v-else class="arch-diagram__fallback" v-pre><code>{{ chart }}</code></pre>
+    <pre v-else class="arch-diagram__fallback"><code>{{ chart }}</code></pre>
   </figure>
 </template>
 

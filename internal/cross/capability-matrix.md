@@ -1,8 +1,6 @@
-# 能力矩阵 — 15 产品 × 12 能力
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="layers" :size="14"/> 横向视角</span><h2 class="lurus-section-head__title">能力矩阵 — 15 产品 × 12 能力</h2><p class="lurus-section-head__lede">横看产品，竖看能力。每个 ✓ 是该产品现在就具备的能力；🚧 是规划中；空白是不打算做。</p></div>
 
-横看产品，竖看能力。每个 ✓ 是该产品**现在**就具备的能力；🚧 是规划中；空白是不打算做。
-
-> 不要用这张表当 marketing — 这是**给员工看自己产品差在哪**的诊断工具。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">这不是 marketing 表</p><div class="lurus-callout__body">不要用这张表当 marketing — 这是<strong>给员工看自己产品差在哪</strong>的诊断工具。</div></div></div>
 
 ## 主能力矩阵
 
@@ -34,6 +32,8 @@
 - **MCP 是新维度**：5 个产品已经支持 MCP（MemX/Kova/Lumen/Switch/MCP servers）。意味着内部"对话即操作"的入口是真在做。
 - **移动是单点**：只有 Lutu。lucrum-app 已被 Lutu 吸收（[ADR-0007](/adr/0007-lutu-absorbs-lucrum-app)）。
 - **Admin / Webgame 已下线**：见 [ADR-0010](/adr/0010-product-retirements)。本表保留两列作历史对照，其 ✓ **不代表当前可用**（`admin.lurus.cn` 实测 404；webgame auth 已死）。
+
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">最大单点：LLM 调用全压在网关</p><div class="lurus-callout__body">9 个有 LLM 能力的产品全部经过 Newapi —— 网关挂则 9 个产品 LLM 全瘫。按 <a href="/adr/0009-newhub-replaces-newapi">ADR-0009</a>，<strong>newapi 退役中</strong>，网关将迁到 newhub（<code>hub.lurus.cn</code>），单点随之迁移但仍是单点。</div></div></div>
 
 ## 反向：能力 → 提供方一览（lurus.yaml capabilities 摘录）
 
@@ -125,6 +125,13 @@ graph LR
 
 ## 性能 / 容量基线（请季度更新）
 
+<div class="lurus-stat-strip">
+<div class="lurus-stat"><span class="lurus-stat__value">~2k/s</span><span class="lurus-stat__label">Platform QPS</span></div>
+<div class="lurus-stat"><span class="lurus-stat__value">~5k/s</span><span class="lurus-stat__label">Newapi QPS</span></div>
+<div class="lurus-stat"><span class="lurus-stat__value">~500/s</span><span class="lurus-stat__label">MemX QPS</span></div>
+<div class="lurus-stat"><span class="lurus-stat__value">~50 任务/s</span><span class="lurus-stat__label">Kova 吞吐</span></div>
+</div>
+
 | 维度 | Platform | Newapi | MemX | Kova |
 |---|---|---|---|---|
 | QPS 上限（实测） | ~2k/s | ~5k/s | ~500/s | ~50 任务/s |
@@ -132,7 +139,7 @@ graph LR
 | 关键瓶颈 | postgres conn | 上游 LLM 限流 | embedding 速率 | postgres + checkpoint 写 |
 | 扩容方式 | 加 replica + pg pool | 加 replica + 多上游 channel | 加 worker + 读副本 | 加 worker + 分片 |
 
-> 数字按经验估，不是 SLA。生产观测用 grafana.lurus.cn / jaeger.lurus.cn。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="gauge" :size="18"/></span><div><p class="lurus-callout__title">数字按经验估，不是 SLA</p><div class="lurus-callout__body">生产观测改用 <strong>Netdata 自托管 Agent</strong> —— 抓取规则、面板入口见 <a href="/ops/observability">运维 · 可观测性</a>。</div></div></div>
 
 ## 维护建议
 

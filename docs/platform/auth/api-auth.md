@@ -3,13 +3,30 @@ title: API 认证 | Zitadel 身份认证
 description: Service User、Personal Access Token、JWT Profile 与 Client Credentials 的完整说明，涵盖 Lurus 所有机器对机器认证场景。
 ---
 
-# API 认证（机器对机器）
+<div class="auth-api-page">
+
+# API 认证（机器对机器） <StatusBadge status="live" />
 
 面向 M2M 认证：与浏览器 OIDC 流程不同，M2M 用 Zitadel **Service Account**（服务账号），无需人工干预获取 access token。Zitadel 实例 `https://auth.lurus.cn`，以下端点均以此为基础。
 
----
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">认证方式</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">RS256</span><span class="lurus-stat__label">JWT Profile 签名</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">≤5 分钟</span><span class="lurus-stat__label">assertion 有效期</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">≈12 小时</span><span class="lurus-stat__label">access token 有效期</span></div>
+</div>
+
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="layers" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">先看用浏览器登录？</p>
+    <div class="lurus-callout__body">人类用户的登录用 <a href="/platform/auth/oidc">OIDC / OAuth2 集成</a>；本页只讲<strong>机器对机器</strong>——脚本、后台任务、服务间调用。</div>
+  </div>
+</div>
 
 ## 三种认证方式对比
+
+从最简单（PAT）到最安全（JWT Profile），按安全性与运维成本权衡。
 
 | 方式 | 适用场景 | 权限模型 | Token 有效期 |
 |------|---------|---------|------------|
@@ -25,17 +42,19 @@ description: Service User、Personal Access Token、JWT Profile 与 Client Crede
 
 ---
 
-## 一、Personal Access Token (PAT)
+## 一、Personal Access Token (PAT) <Badge text="即用型" type="tip" />
 
 PAT 是**即用型 token**，直接作 Bearer token 放入 `Authorization` header，无需先换 access token。
 
 ### 1.1 创建 PAT
 
-1. 登录 [auth.lurus.cn](https://auth.lurus.cn) 控制台。
-2. 进入 **Users → Service Accounts**（账号归属某 Organization 时在该上下文内操作）。
-3. **New** 创建服务账号，填用户名（命名规范见[第三节](#三service-account-服务账号)）和显示名称。
-4. 账号详情 → **Personal Access Tokens** → **New**，按需设过期时间（留空则永不过期）。
-5. 复制 token——**只显示一次，关闭弹窗后无法再查看**。
+<ol class="lurus-steps">
+<li>登录 <a href="https://auth.lurus.cn">auth.lurus.cn</a> 控制台。</li>
+<li>进入 <strong>Users → Service Accounts</strong>（账号归属某 Organization 时在该上下文内操作）。</li>
+<li><strong>New</strong> 创建服务账号，填用户名（命名规范见<a href="#三service-account-服务账号">第三节</a>）和显示名称。</li>
+<li>账号详情 → <strong>Personal Access Tokens</strong> → <strong>New</strong>，按需设过期时间（留空则永不过期）。</li>
+<li>复制 token——<strong>只显示一次，关闭弹窗后无法再查看</strong>。</li>
+</ol>
 
 ### 1.2 使用 PAT
 
@@ -96,7 +115,7 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 
 ---
 
-## 三、Client Credentials（最简机器账号调用方式）
+## 三、Client Credentials（最简机器账号调用方式） <Badge text="标准 OAuth2" type="info" />
 
 OAuth 2.0 标准授权类型，适合不需强安全性的机器账号场景。
 
@@ -156,7 +175,7 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 
 ---
 
-## 四、JWT Profile（最安全的机器认证方式）
+## 四、JWT Profile（最安全的机器认证方式） <Badge text="生产推荐" type="tip" />
 
 使用非对称密钥：Service Account 持**私钥**，Zitadel 保存对应**公钥**。客户端用私钥签名短生命周期 JWT 作 `client_assertion`，Zitadel 验签后颁发 access token。**私钥不通过网络传输**，是最安全的 M2M 方式。
 
@@ -471,7 +490,24 @@ containers:
 
 ---
 
+<NextSteps
+  :steps="[
+    { text: 'OIDC / OAuth2 集成（浏览器登录）', link: '/platform/auth/oidc', primary: true },
+    { text: '身份认证概述与接入点', link: '/platform/auth/' },
+    { text: '认证控制台', link: 'https://auth.lurus.cn', external: true },
+  ]"
+  title="下一步"
+/>
+
+<RelatedProducts product-id="auth" />
+
 ## 参考链接
 
 - [Zitadel：Service Account 认证概述](https://zitadel.com/docs/guides/integrate/service-accounts/authenticate-service-accounts) · [PAT](https://zitadel.com/docs/guides/integrate/service-accounts/personal-access-token) · [Client Credentials](https://zitadel.com/docs/guides/integrate/service-accounts/client-credentials) · [Private Key JWT](https://zitadel.com/docs/guides/integrate/service-accounts/private-key-jwt) · [访问 Zitadel API](https://zitadel.com/docs/guides/integrate/zitadel-apis/access-zitadel-apis)
 - [RFC 7523：JWT Bearer Token Grant](https://datatracker.ietf.org/doc/html/rfc7523)
+
+</div>
+
+<style scoped>
+.auth-api-page .lurus-stat-strip { margin: 1.5rem 0 0.5rem; }
+</style>

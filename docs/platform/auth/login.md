@@ -3,27 +3,26 @@ title: 登录与多因素认证 | Zitadel 身份认证
 description: Lurus 支持的登录方式（密码、Passkey、社交登录、企业 SSO）与多因素认证策略。
 ---
 
+<div class="auth-login">
+
 # 登录与多因素认证
 
 Lurus 所有产品共用同一套身份认证基础设施（**Zitadel**，对外 `auth.lurus.cn`）。无论用 Lurus API、Switch、Lucrum 还是 Forge，登录都经同一入口，一次登录全线贯通。
 
 ---
 
-## 1. 登录流程概览
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="git-merge" :size="14" /> 流程</span>
+  <h2 class="lurus-section-head__title">1. 登录流程概览</h2>
+  <p class="lurus-section-head__lede">OIDC Authorization Code Flow + PKCE，客户端不存储任何密钥。</p>
+</div>
 
-用户访问任意产品时若无有效会话，应用将浏览器重定向到 `auth.lurus.cn` 验证后带授权码跳回。采用 **OIDC Authorization Code Flow + PKCE**，客户端不存储任何密钥。
+用户访问任意产品时若无有效会话，应用将浏览器重定向到 `auth.lurus.cn` 验证后带授权码跳回。
 
-```
-用户浏览器                Lurus 产品                auth.lurus.cn
-   │── 访问产品页面 ─────►│                            │
-   │◄── 302 重定向 ───────│                            │
-   │── GET /authorize?client_id=&response_type=code&code_challenge=<sha256>&scope=openid ──►│
-   │            ┌── 登录页（Zitadel hosted UI）：邮箱/Passkey/SSO ──┐   │
-   │◄── 302 redirect_uri?code=<auth_code>&state=... ─────────────────│
-   │── 授权码 ───────────►│── POST /token (code + code_verifier) ──►│
-   │                      │◄── access_token / id_token ─────────────│
-   │◄── 登录成功，进入产品 │                            │
-```
+<ArchitectureDiagram
+  title="Authorization Code + PKCE 流程"
+  chart="sequenceDiagram; participant B as 用户浏览器; participant P as Lurus 产品; participant A as auth.lurus.cn; B->>P: 访问产品页面; P-->>B: 302 重定向; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: 登录页 邮箱/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: 授权码; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: 登录成功，进入产品"
+/>
 
 **PKCE**：客户端发授权请求前生成随机 `code_verifier`，将其 SHA-256 哈希 `code_challenge` 随请求发出；取回授权码后凭原始 verifier 换 token，服务器验两者一致才颁发。即使授权码被截获也无法换 token。
 
@@ -54,7 +53,15 @@ Passkey > 社交登录 > 邮箱密码。Passkey 无需记忆密码、抗钓鱼�
 
 **原理**：基于 **WebAuthn / FIDO2**，非对称加密替代密码。注册时设备生成密钥对，**私钥留设备**（受生物特征/PIN 保护），公钥上传 `auth.lurus.cn`；登录时服务器发挑战，设备私钥签名后服务器用公钥验证。全程**零密码传输**，数据库泄露也只得到公钥。
 
-**注册（用户操作）**：登录 `auth.lurus.cn` → **账户设置 → 安全 → 添加 Passkey** → 命名（如"MacBook Touch ID"）→ 完成生物识别 → 下次登录选 Passkey 免密登录。
+**注册（用户操作）**：
+
+<ol class="lurus-steps">
+<li>登录 <code>auth.lurus.cn</code>。</li>
+<li>进入 <strong>账户设置 → 安全 → 添加 Passkey</strong>。</li>
+<li>为 Passkey 命名（如 "MacBook Touch ID"）。</li>
+<li>完成生物识别（Touch ID / Face ID / PIN / 硬件密钥）。</li>
+<li>下次登录选 Passkey 即可免密登录。</li>
+</ol>
 
 ::: tip 建议注册多个 Passkey
 在主力手机 + 笔记本各注册一个，防单设备丢失无法登录。
@@ -118,11 +125,10 @@ Passkey > 社交登录 > 邮箱密码。Passkey 无需记忆密码、抗钓鱼�
 
 Zitadel 作中间 IdP，对接一个或多个**上游外部 IdP**（企业 Azure AD/Okta，或社交 GitHub/Google）。用户点"使用 XXX 登录" → 跳上游 IdP 验证 → Zitadel 接收结果 → 颁发 Lurus 统一 token。
 
-```
-Lurus 产品 ─► auth.lurus.cn (Zitadel) ─► 上游 IdP (Azure AD / Okta / GitHub ...)
-                  │◄── 用户身份断言（OIDC/SAML）──│
-                  └─► 颁发 Lurus access_token / id_token
-```
+<ArchitectureDiagram
+  title="Identity Brokering 链路"
+  chart="graph LR; P[Lurus 产品] --> Z[auth.lurus.cn · Zitadel]; Z --> U[上游 IdP · Azure AD / Okta / GitHub …]; U -. 用户身份断言 OIDC/SAML .-> Z; Z -. 颁发 Lurus access_token / id_token .-> P"
+/>
 
 **何时使用**：企业客户 B2B SSO（员工用自家 Azure AD/Okta 直接登录，无需注册）；域名自动路由（输企业邮箱后按域名跳对应 IdP，Domain Discovery）；账号关联（已有 Lurus 账号关联 GitHub/Google）；Just-in-Time 创建（首次外部 IdP 登录自动建账号并分配默认角色）。
 
@@ -144,22 +150,57 @@ Lurus 产品 ─► auth.lurus.cn (Zitadel) ─► 上游 IdP (Azure AD / Okta /
 
 ---
 
-## 8. 常见问题与排查
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="life-buoy" :size="14" /> 排查</span>
+  <h2 class="lurus-section-head__title">8. 常见问题与排查</h2>
+  <p class="lurus-section-head__lede">四类高频登录 / 权限问题的成因与处理步骤。</p>
+</div>
 
-::: warning 常见坑
+<details class="lurus-faq-item">
+<summary>跨子域 Cookie 失效 — 登录后访问其他子域仍要求重登？</summary>
 
-**跨子域 Cookie 失效**：在 `app.lurus.cn` 登录后访问 `docs.lurus.cn` 仍要求重登。原因：OIDC 会话 Cookie 的 `Domain` 不正确或 CORS 限制跨子域。排查：确认所有子域同顶级域，Cookie 设 `Domain=.lurus.cn`；iframe 嵌入登录页需 `SameSite=None; Secure` 且 HTTPS。
+在 `app.lurus.cn` 登录后访问 `docs.lurus.cn` 仍要求重登。**原因**：OIDC 会话 Cookie 的 `Domain` 不正确或 CORS 限制跨子域。**排查**：确认所有子域同顶级域，Cookie 设 `Domain=.lurus.cn`；iframe 嵌入登录页需 `SameSite=None; Secure` 且 HTTPS。
 
-**MFA 绑定设备丢失**：TOTP 无法生成验证码。处理：① MFA 验证界面点 **使用恢复码登录** ② 输任意恢复码 ③ 登录后立即 **账户设置 → 安全** 解绑旧 MFA 重绑新设备 ④ 恢复码也丢失则联系组织管理员强制重置 MFA。
+</details>
 
-**企业 SSO 登录后看不到资源**：SSO 成功但无权限或资源为空。原因：① User Grant 未配置（未将用户授权给对应 Project）② Project Role 缺失（已授权未分配 `viewer`/`editor`）③ JIT 创建账户未入组。排查：控制台 → **用户** → 该账户 → **授权 (Grants)** 标签，确认项目和角色。
+<details class="lurus-faq-item">
+<summary>MFA 绑定设备丢失 — TOTP 无法生成验证码？</summary>
 
-**Passkey 在公司电脑无法使用**："无法创建凭据"。原因：企业 MDM/GPO 禁用平台验证器或 WebAuthn。解决：联系 IT 解除限制 / 用 YubiKey 等跨平台硬件密钥 / 回退 TOTP + 密码。
+处理步骤：① MFA 验证界面点 **使用恢复码登录** ② 输任意恢复码 ③ 登录后立即 **账户设置 → 安全** 解绑旧 MFA 重绑新设备 ④ 恢复码也丢失则联系组织管理员强制重置 MFA。
 
-:::
+</details>
+
+<details class="lurus-faq-item">
+<summary>企业 SSO 登录后看不到资源 — SSO 成功但无权限或资源为空？</summary>
+
+**原因**：① User Grant 未配置（未将用户授权给对应 Project）② Project Role 缺失（已授权未分配 `viewer`/`editor`）③ JIT 创建账户未入组。**排查**：控制台 → **用户** → 该账户 → **授权 (Grants)** 标签，确认项目和角色。
+
+</details>
+
+<details class="lurus-faq-item">
+<summary>Passkey 在公司电脑无法使用 — 提示"无法创建凭据"？</summary>
+
+**原因**：企业 MDM/GPO 禁用平台验证器或 WebAuthn。**解决**：联系 IT 解除限制 / 用 YubiKey 等跨平台硬件密钥 / 回退 TOTP + 密码。
+
+</details>
 
 ---
 
 ## 相关文档
 
+<NextSteps
+  title="下一步"
+  :steps="[
+    { text: 'OIDC / OAuth2 集成', link: '/platform/auth/oidc', primary: true },
+    { text: 'API 认证 (PAT / JWT)', link: '/platform/auth/api-auth' },
+    { text: '认证控制台', link: 'https://auth.lurus.cn', external: true },
+  ]"
+/>
+
 - [账单与订阅](../billing.md) · [平台常见问题](../faq.md) · [Lurus API 接入指南](/api/overview) · [Zitadel 官方文档](https://zitadel.com/docs)（英文）
+
+</div>
+
+<style scoped>
+.auth-login .lurus-section-head { margin-top: 8px; }
+</style>

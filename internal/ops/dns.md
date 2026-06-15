@@ -6,19 +6,22 @@ owner: marvin
 
 # DNS 管理（lurus.cn）
 
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="network" :size="14"/> 网络运维</span><h2 class="lurus-section-head__title">DNS 管理（lurus.cn）</h2><p class="lurus-section-head__lede">权威 DNS 在 Cloudflare；主域 / www 因 ICP 备案单独指向阿里云，<strong>改动前务必读 ICP 章节</strong>。</p></div>
+
 ## 拓扑
 
-```
-权威 DNS: Cloudflare
-└─ A *.lurus.cn        → 43.226.46.164  （三丰云 R1 / 50Mbps）
-   A www.lurus.cn      → 123.57.143.63  （阿里云 / 3Mbps / ICP 备案）
-   A lurus.cn          → 123.57.143.63  （根域）
-   A mail.lurus.cn     → 43.226.46.164
-   MX lurus.cn         → mail.lurus.cn (priority 10)
-   TXT lurus.cn        → "v=spf1 ip4:43.226.46.164 include:sendcloud.net -all"
-   TXT _dmarc          → "v=DMARC1; p=quarantine; rua=mailto:postmaster@lurus.cn"
-   TXT dkim._domainkey → (从 stalwart 控制台取)
-```
+权威 DNS: **Cloudflare**
+
+| 记录 | 值 | 备注 |
+|---|---|---|
+| `A *.lurus.cn` | `43.226.46.164` | 三丰云 R1 / 50Mbps |
+| `A www.lurus.cn` | `123.57.143.63` | 阿里云 / 3Mbps / ICP 备案 |
+| `A lurus.cn` | `123.57.143.63` | 根域 |
+| `A mail.lurus.cn` | `43.226.46.164` | — |
+| `MX lurus.cn` | `mail.lurus.cn` | priority 10 |
+| `TXT lurus.cn` | `"v=spf1 ip4:43.226.46.164 include:sendcloud.net -all"` | SPF |
+| `TXT _dmarc` | `"v=DMARC1; p=quarantine; rua=mailto:postmaster@lurus.cn"` | DMARC |
+| `TXT dkim._domainkey` | （从 stalwart 控制台取） | DKIM |
 
 ## 为什么 www 要拆出去 → ICP 备案
 
@@ -31,17 +34,27 @@ owner: marvin
 
 ### 加新子域
 
+<ol class="lurus-steps">
+<li>决定指向（默认 R1：<code>43.226.46.164</code>）。</li>
+<li>
+
+Cloudflare API 加 A 记录：
+
 ```bash
-# 1. 决定指向（默认 R1：43.226.46.164）
-# 2. Cloudflare API
 TOKEN=<cloudflare-api-token>
-ZONE_ID=&lt;lurus.cn zone id&gt;
+ZONE_ID=<lurus.cn zone id>
 curl -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   --data '{"type":"A","name":"new-sub","content":"43.226.46.164","ttl":300,"proxied":false}'
+```
 
-# 3. 加对应 K8s IngressRoute（Traefik）
+</li>
+<li>
+
+加对应 K8s IngressRoute（Traefik）：
+
+```bash
 ssh root@100.98.57.55 "kubectl apply -f -" <<EOF
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -59,36 +72,39 @@ spec:
   tls:
     secretName: lurus-cn-wildcard-tls
 EOF
+```
 
-# 4. 验证
+</li>
+<li>
+
+验证：
+
+```bash
 dig +short new-sub.lurus.cn
 curl -sS -o /dev/null -w '%{http_code}\n' https://new-sub.lurus.cn/
 ```
 
+</li>
+</ol>
+
 ### 改主域 / www（涉及 ICP）
 
-⚠️ **改 lurus.cn / www.lurus.cn 必须保证仍指向 ICP 备案 IP**。  
-当前 ICP 备案在阿里云 `123.57.143.63`。改到其它 IP 之前必须先在阿里云控制台变更备案，否则会被运营商**拦截**。
-
-切勿"测试一下指三丰云" — 即使是 5 分钟也可能触发 GFW/运营商拦截，且记录会缓存。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">改 lurus.cn / www.lurus.cn 必须仍指向 ICP 备案 IP</p><div class="lurus-callout__body">当前 ICP 备案在阿里云 <code>123.57.143.63</code>。改到其它 IP 之前必须先在阿里云控制台变更备案，否则会被运营商<strong>拦截</strong>。切勿"测试一下指三丰云" — 即使是 5 分钟也可能触发 GFW/运营商拦截，且记录会缓存。</div></div></div>
 
 ### Cloudflare proxy 模式
 
-不要开启橙云（proxied=true）。  
-原因：开了橙云 = 流量走 Cloudflare 反代，但 Cloudflare 在大陆访问慢/不稳；且 ICP 入口要求是真实国内 IP，橙云会暴露 Cloudflare CDN IP，不符合 ICP 政策。
-
-`proxied: false` 永远。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="cloud" :size="18"/></span><div><p class="lurus-callout__title">不要开启橙云（proxied=true）</p><div class="lurus-callout__body">开了橙云 = 流量走 Cloudflare 反代，但 Cloudflare 在大陆访问慢/不稳；且 ICP 入口要求是真实国内 IP，橙云会暴露 Cloudflare CDN IP，不符合 ICP 政策。<strong><code>proxied: false</code> 永远。</strong></div></div></div>
 
 ### 紧急切流量（R1 → R6）
 
-```
-1. Cloudflare 控制台 / API 改 A *.lurus.cn → 43.226.38.244
-2. R6 Traefik / nginx 配置承接（IngressRoute / nginx.conf）
-3. TLS cert 同步（lurus-cn-wildcard-tls 在 R1，要 export → import 到 R6 cert-manager）
-4. DNS TTL 已配 300s（5 分钟），全网更新完成
-```
+<ol class="lurus-steps">
+<li>Cloudflare 控制台 / API 改 <code>A *.lurus.cn → 43.226.38.244</code>。</li>
+<li>R6 Traefik / nginx 配置承接（IngressRoute / nginx.conf）。</li>
+<li>TLS cert 同步（<code>lurus-cn-wildcard-tls</code> 在 R1，要 export → import 到 R6 cert-manager）。</li>
+<li>DNS TTL 已配 300s（5 分钟），全网更新完成。</li>
+</ol>
 
-> 这条路径**没演练过**。计划 2026 Q3 做一次切换演练。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-circle" :size="18"/></span><div><p class="lurus-callout__title">未演练</p><div class="lurus-callout__body">这条路径<strong>没演练过</strong>。计划 2026 Q3 做一次切换演练。</div></div></div>
 
 ## 紧急联系
 
@@ -101,6 +117,4 @@ curl -sS -o /dev/null -w '%{http_code}\n' https://new-sub.lurus.cn/
 
 ## 已知坑
 
-- 三丰云 50Mbps 公网，对外 https 单点。带宽爆掉时所有 *.lurus.cn 卡顿。监控未接 Prometheus，目前靠 Pingdom 外部探测。
-- 阿里云 cloud-ali-4 仅 3Mbps，承载 www.lurus.cn 主页 + ICP 入口，访问量上来要么换大带宽要么 CDN 缓存（CDN 又跟 ICP 政策打架）。
-- DNS TTL 300s 切流量快，但缓存污染恢复也慢。改重要记录前预设回滚。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">带宽单点 + 缓存污染</p><div class="lurus-callout__body"><ul><li>三丰云 50Mbps 公网，对外 https 单点。带宽爆掉时所有 <code>*.lurus.cn</code> 卡顿。目前靠 Pingdom 外部探测；服务侧指标采集见 <a href="/ops/observability">可观测性 Runbook</a>。</li><li>阿里云 cloud-ali-4 仅 3Mbps，承载 <code>www.lurus.cn</code> 主页 + ICP 入口，访问量上来要么换大带宽要么 CDN 缓存（CDN 又跟 ICP 政策打架）。</li><li>DNS TTL 300s 切流量快，但缓存污染恢复也慢。改重要记录前预设回滚。</li></ul></div></div></div>

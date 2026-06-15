@@ -3,6 +3,8 @@ title: Lumen CLI 手册
 description: lumen-cli 的全部子命令、选项、退出码与工作流脚手架。
 ---
 
+<div class="lumen-page">
+
 # Lumen CLI 手册 <StatusBadge status="dev" />
 
 `lumen-cli` 是 Lumen 的可选 CLI（Rust 构建），提供不依赖 Python SDK 的命令行工作流能力。
@@ -64,6 +66,14 @@ lumen config set api_key sk-xxxx
 lumen config unset telemetry.endpoint
 ```
 
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="rewind" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">replay 与 dry-run 都不花钱</p>
+    <div class="lurus-callout__body"><code>lumen agent replay &lt;run-id&gt;</code> 从历史记录回放，<strong>不消耗 Token</strong>；<code>lumen workflow run --dry-run</code> 走完编排流程但<strong>不实际调用 LLM</strong>，适合验证 <code>lumen.yaml</code> 配置。</div>
+  </div>
+</div>
+
 ## 退出码
 
 | Code | 含义 |
@@ -82,3 +92,11 @@ lumen config unset telemetry.endpoint
   { text: 'Python SDK', link: '/lumen/python-sdk' },
   { text: '生态集成', link: '/lumen/integration' },
 ]" />
+
+<RelatedProducts product-id="lumen" />
+
+</div>
+
+<style>
+.lumen-page .lurus-callout { margin: 18px 0; }
+</style>

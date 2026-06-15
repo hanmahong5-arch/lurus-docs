@@ -3,11 +3,29 @@ title: Switch 配置说明
 description: Switch 的 AI 工具配置、MCP 服务器管理和成本监控设置。
 ---
 
+<div class="switch-page">
+
 # Switch 配置说明
 
 ## 打开配置界面
 
-- **菜单栏图标**（macOS / Linux）→「配置」· **系统托盘**（Windows）右键 →「打开配置」· **快捷键** `Ctrl+Shift+S`（Win/Linux）/ `Cmd+Shift+S`（macOS）。
+<div class="lurus-cards lurus-cards--compact">
+  <div class="lurus-card lurus-card--switch">
+    <span class="lurus-card__icon"><Icon name="monitor" :size="20" /></span>
+    <div class="lurus-card__title">菜单栏图标</div>
+    <p class="lurus-card__body">macOS / Linux：点击菜单栏图标 →「配置」。</p>
+  </div>
+  <div class="lurus-card lurus-card--switch">
+    <span class="lurus-card__icon"><Icon name="monitor" :size="20" /></span>
+    <div class="lurus-card__title">系统托盘</div>
+    <p class="lurus-card__body">Windows：托盘图标右键 →「打开配置」。</p>
+  </div>
+  <div class="lurus-card lurus-card--switch">
+    <span class="lurus-card__icon"><Icon name="key-round" :size="20" /></span>
+    <div class="lurus-card__title">快捷键</div>
+    <p class="lurus-card__body"><span class="lurus-kbd">Ctrl+Shift+S</span>（Win/Linux）/ <span class="lurus-kbd">Cmd+Shift+S</span>（macOS）。</p>
+  </div>
+</div>
 
 ---
 
@@ -17,16 +35,18 @@ description: Switch 的 AI 工具配置、MCP 服务器管理和成本监控设�
 
 | 提供商 | API Base URL | API Key |
 |------|------|------|
-| **Lurus API**（推荐） | `https://api.lurus.cn/v1` | Lurus Key（`sk-` 开头）；模型点「自动检测」 |
+| **Lurus API** <span class="lurus-tag">推荐</span> | `https://api.lurus.cn/v1` | Lurus Key（`sk-` 开头）；模型点「自动检测」 |
 | **OpenAI** | `https://api.openai.com/v1` | `sk-...`（官方） |
 | **Anthropic** | `https://api.anthropic.com/v1` | `sk-ant-...` |
 | **Ollama**（本地） | `http://localhost:11434/v1` | （留空） |
 
 ---
 
-## 配置路由规则
-
-「**路由**」选项卡定义哪个请求走哪个提供商，未匹配的请求走默认提供商（`默认 → Lurus API`）。
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="shuffle" :size="14" /> 路由</span>
+  <h2 class="lurus-section-head__title">配置路由规则</h2>
+  <p class="lurus-section-head__lede">定义哪个请求走哪个提供商，未匹配的请求走默认提供商（默认 → Lurus API）。</p>
+</div>
 
 **按模型名称路由**：`gpt-*` → OpenAI；`claude-*` → Anthropic；`deepseek-*` / `*`（其他）→ Lurus API；`llama*` → Ollama。JSON：
 
@@ -62,6 +82,14 @@ description: Switch 的 AI 工具配置、MCP 服务器管理和成本监控设�
 ## 代理端口配置
 
 「**通用**」→「**监听端口**」，默认 `11434`。端口冲突（如与 Ollama）时改为其他端口（如 `11435`），应用侧相应修改 `base_url=http://localhost:11435/v1`（`api_key` 随意填，Switch 用配置的 provider key）。
+
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="alert-circle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">端口冲突</p>
+    <div class="lurus-callout__body">默认端口 <code>11434</code> 与 Ollama 的默认端口相同。两者同机运行时，把 Switch 改到其它端口（如 <code>11435</code>），并同步更新应用侧的 <code>base_url</code>。</div>
+  </div>
+</div>
 
 ---
 
@@ -118,3 +146,19 @@ curl http://localhost:11434/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{"model":"deepseek-chat","messages":[{"role":"user","content":"ping"}]}'
 ```
+
+---
+
+## 下一步
+
+<NextSteps :steps="[
+  { text: '成本监控', link: '/switch/cost-monitoring', primary: true },
+  { text: 'MCP 服务器', link: '/switch/mcp-servers' },
+  { text: '团队配置', link: '/switch/team-config' },
+]" title="" />
+
+</div>
+
+<style>
+.switch-page .lurus-section-head { margin-top: 8px; }
+</style>

@@ -11,9 +11,20 @@ sourcePath: 2l-svc-platform
 
 # Lurus Platform 内部手册
 
-## 一句话定位
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="wallet" :size="14"/> P0 · 资金可信源</span><h2 class="lurus-section-head__title">一句话定位</h2><p class="lurus-section-head__lede">全公司唯一的账号 / 钱包 / 计费 / 订阅 / 通知 / 邮件中台，资金零损失负责方。</p></div>
+
+<span class="lurus-tag">P0</span> <span class="lurus-tag">live</span> <span class="lurus-tag lurus-tag--muted">owner: marvin (+ AI assist)</span>
 
 Lurus Platform 是全公司唯一的账号、钱包、计费、订阅、通知与邮件中台——所有产品的用户身份和资金流转必须经由它，不得绕过。它对资金零损失负责：任何扣款失败都必须回滚，不接受"扣了钱但订阅没开"的状态。技术上它是一个 Go 单体（Gin + gRPC 双协议），加上两个独立部署的子模块（notification / mail）。
+
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield-check" :size="18"/></span><div><p class="lurus-callout__title">核心约束：资金零损失</p><div class="lurus-callout__body">任何扣款失败必须回滚——不接受<strong>"扣了钱但订阅没开"</strong>的中间态。续费 / 支付完成<strong>必须经 Temporal Workflow</strong>（含补偿 Activity），不得在 cron 或 handler 层直接拼 <code>WalletDebit + Activate</code>。</div></div></div>
+
+<div class="lurus-grid--kpi">
+<KPITile label="协议" value="HTTP + gRPC" hint="18104 / 18105" tone="neutral" />
+<KPITile label="部署" value="R1 PROD" hint="43.226.46.164" tone="good" />
+<KPITile label="PG schemas" :value="3" hint="identity / billing / notification" tone="neutral" />
+<KPITile label="计费链路" :value="3" hint="kova / lucrum / newapi" tone="good" />
+</div>
 
 ## 速查
 
@@ -283,6 +294,8 @@ ssh root@100.98.57.55 "argocd app sync lurus-platform"
 
 ## 运行与运维
 
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="activity" :size="18"/></span><div><p class="lurus-callout__title">监控平台 = Netdata 自托管 Agent</p><div class="lurus-callout__body">指标看板见 <a href="/ops/observability">/ops/observability</a>（R6 内网，Tailscale）。服务侧零改动——继续暴露 prometheus-format <code>/metrics</code>，由 Netdata go.d <code>prometheus</code> collector 主动抓取。下文 <code>wallet_operations_total</code> / <code>outbox_dlq_total</code> 等指标名不变。日志 / 分布式 trace 平台<strong>不在本次观测切换范围内</strong>（TBD）。</div></div></div>
+
 ### 健康检查端点
 
 | 端点 | 用途 |
@@ -291,9 +304,9 @@ ssh root@100.98.57.55 "argocd app sync lurus-platform"
 | `GET /readyz` | readiness probe，主动验证 Redis + PostgreSQL 连通性 |
 | `GET /metrics` | Prometheus scrape（unauthenticated，ServiceMonitor 自动发现） |
 
-NATS **不在** readiness set 中——outbox 会降级到 Redis DLQ，NATS 断线不应摘流量。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">NATS 不进 readiness set</p><div class="lurus-callout__body">outbox 会降级到 Redis DLQ，<strong>NATS 断线不应摘流量</strong>。</div></div></div>
 
-### 关键日志（JSON structured，Loki 可搜索）
+### 关键日志（JSON structured）
 
 | 关键词 | 含义 |
 |--------|------|
@@ -335,7 +348,7 @@ ssh root@100.98.57.55 "kubectl logs -n lurus-platform deploy/platform-core -f"
 ssh root@100.98.57.55 "kubectl rollout status deployment/platform-core -n lurus-platform"
 ```
 
-## 数据契约
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="plug-zap" :size="14"/> 对外接口</span><h2 class="lurus-section-head__title">数据契约</h2><p class="lurus-section-head__lede">gRPC :18105 / HTTP Internal :18104 / NATS IDENTITY_EVENTS / 核心 DB 表 / 幂等 key。</p></div>
 
 ### gRPC 服务（:18105）— 下游消费者
 
@@ -407,6 +420,8 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/platform-core -n lurus-
 
 ## 已知坑
 
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-circle" :size="18"/></span><div><p class="lurus-callout__title">两条会咬人的</p><div class="lurus-callout__body"><strong>#2 Temporal 必须先于 Platform 启动</strong>——Temporal server 不可用时整个进程退出，连带影响全站身份验证（软降级仍是 TODO）。<strong>#7 SMS 待 E2E 验证</strong>——代码 complete 但未用真实手机号跑过 E2E，上线前必须验证。</div></div></div>
+
 1. **钱包精度 float64 参数传递**：`Wallet.Balance` 在 Go 层是 `float64`，DB 层是 `DECIMAL(14,4)`。所有余额计算在 SQL 里做（`balance - ?`），不在 Go 层做，但函数签名仍接受 `float64`。调用方传入 `0.1 + 0.2` 这类浮点值理论上有漂移风险，目前靠"SQL 算，Go 只传参数"规避，但没有显式的精度转换层。
 
 2. **Temporal 必须先于 Platform 启动**：`lurustemporal.NewClient` 失败直接 `return error`，导致整个进程退出。Temporal server 不可用时 Platform 无法启动，连带影响所有服务的身份验证。应改为软降级但目前没有。
@@ -423,9 +438,11 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/platform-core -n lurus-
 
 8. **Subscription 表在 identity schema，Wallet 表在 billing schema**：跨 schema join 在 PostgreSQL 里可以但 GORM 需要显式声明 `TableName()`，目前 `Subscription.TableName()` 返回 `identity.subscriptions` 而 `Wallet.TableName()` 返回 `billing.wallets`。新增实体时容易忘记声明，会落到 `public` schema 造成数据分区混乱。
 
-## 决策档案
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="history" :size="14"/> 为什么是这样</span><h2 class="lurus-section-head__title">决策档案</h2><p class="lurus-section-head__lede">Temporal / lurus-hub 剥离 / 双协议 / 支付 fallback / QR-delegate 的来龙去脉。</p></div>
 
 ### 为何选 Temporal 而非 cron
+
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="repeat" :size="18"/></span><div><p class="lurus-callout__title">决策：cron → Temporal Saga（P0 架构变更）</p><div class="lurus-callout__body">2025 年底前 cron 驱动续费曾出现<strong>"扣款成功但激活失败"</strong>的资金丢失（cron 无 Saga 补偿，跨进程 DB 事务无法保证）。迁到 Temporal 后 <code>SubscriptionRenewalWorkflow</code> Step 3 失败时经 <code>DisconnectedContext</code> 执行 Credit 补偿，由 Temporal Server 保证补偿 activity 最终执行——这是兑现"资金零损失"约束的核心。</div></div></div>
 
 2025 年底前使用 cron job 驱动订阅续费，出现过"扣款成功但订阅激活失败"的资金丢失问题（cron 没有 Saga 补偿机制，数据库事务跨进程无法保证）。迁移到 Temporal 后，`SubscriptionRenewalWorkflow` 的 Step 3 失败时通过 `DisconnectedContext` 执行 Credit 补偿，Temporal Server 保证 compensation activity 最终执行。这是 P0 级别的架构变更，解决了零资金损失的核心约束。
 
@@ -460,14 +477,22 @@ lurus-hub 原本是 LLM 中转站，2026-04-23 从产品线移除。原因：功
 
 ## 应急 Runbook（10 分钟版）
 
+<div class="lurus-callout lurus-callout--tip"><span class="lurus-callout__icon"><Icon name="terminal" :size="18"/></span><div><p class="lurus-callout__title">读前提示</p><div class="lurus-callout__body">下列命令均经跳板 <code>ssh root@100.98.57.55</code> 进集群，逐字可复制；占位符 <code>{id}</code> / <code>{account_id}</code> 需替换为真实值。监控指标走 <a href="/ops/observability">Netdata</a>（R6 内网）。</div></div></div>
+
+<div class="lurus-stat-strip">
+<div class="lurus-stat"><span class="lurus-stat__value">4</span><span class="lurus-stat__label">应急场景</span></div>
+<div class="lurus-stat"><span class="lurus-stat__value">5</span><span class="lurus-stat__label">故障速查项</span></div>
+<div class="lurus-stat"><span class="lurus-stat__value">7天</span><span class="lurus-stat__label">DLQ TTL</span></div>
+</div>
+
 ### 场景一：钱包扣款挂了（用户充值后余额未更新）
 
 ```bash
 # 1. 查 pod 日志，搜索 wallet/mark-order-paid 和 CRITICAL
 ssh root@100.98.57.55 "kubectl logs -n lurus-platform deploy/platform-core --tail=200 | grep -E 'mark-order-paid|CRITICAL|wallet'"
 
-# 2. 查 Prometheus：payment_order_transitions_total 中 to=paid 最近是否有计数
-# Grafana: https://grafana.lurus.cn
+# 2. 查指标 payment_order_transitions_total 中 to=paid 最近是否有计数
+# 监控 = Netdata 自托管 Agent（见 /ops/observability），go.d prometheus collector 抓取 /metrics
 
 # 3. 如怀疑 webhook 幂等 key 问题（同一订单多次回调），查 Redis DLQ
 ssh root@100.98.57.55 "kubectl exec -n lurus-platform deploy/platform-core -- /bin/sh -c 'redis-cli -h redis.lurus-system.svc -n 3 LLEN outbox:dlq'"
@@ -547,7 +572,7 @@ ssh root@100.98.57.55 "kubectl exec -n lurus-platform deploy/platform-core -- /b
 
 ---
 
-## 多视角速览
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="eye" :size="14"/> 四个视角</span><h2 class="lurus-section-head__title">多视角速览</h2><p class="lurus-section-head__lede">同一个 Platform，终端用户 / 开发者 / 运维 / 决策者各看到什么。</p></div>
 
 **终端用户视角**：Platform 是账号背后的"资金与权益引擎"。用户充值后看到的余额、购买 Pro 订阅后解锁的模型限额、扫码加入企业组织——全部由它驱动。典型场景：① 用户在 lucrum.lurus.cn 充 100 元，钱进钱包，权益快照刷新；② kova Agent 任务跑完自动按 token 扣费，余额不足则任务暂停。
 
@@ -876,7 +901,7 @@ curl -s -X POST "$PLATFORM_HTTP/internal/v1/subscriptions/checkout" \
 
 ---
 
-## 最佳实践 ✓/✗
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="check-circle" :size="14"/> 接入规范</span><h2 class="lurus-section-head__title">最佳实践 ✓/✗</h2><p class="lurus-section-head__lede">8 条 do / don't——认证、幂等、缓存、预授权、NATS、Temporal、ConfigMap overlay。</p></div>
 
 **1. 内部 API 认证**
 - ✓ 所有内部服务调用使用 `Authorization: Bearer $INTERNAL_API_KEY`，从 K8s Secret 注入，不硬编码
@@ -920,7 +945,7 @@ curl -s -X POST "$PLATFORM_HTTP/internal/v1/subscriptions/checkout" \
 
 ---
 
-## 跨产品集成场景
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="git-merge" :size="14"/> 端到端集成</span><h2 class="lurus-section-head__title">跨产品集成场景</h2><p class="lurus-section-head__lede">两条真实链路：newapi 按 token 计费、lucrum 到期续费 → notification 推送。</p></div>
 
 ### 场景一：newapi 按 token 消费 → Platform 钱包计费
 
@@ -1112,11 +1137,11 @@ func SubscriptionRenewalWorkflow(ctx workflow.Context, input RenewalInput) error
 **部署要点**：
 - notification 模块需使用 `overlays/with-notification` 或 `overlays/full`；base overlay 默认关闭
 - lucrum 侧只需消费 `IDENTITY_EVENTS` 中 subject `identity.subscription.*`，无需调用额外 API
-- 续费失败告警：Temporal workflow failure 会触发 Prometheus `temporal_workflow_failed_total` 上涨，Grafana 告警规则建议阈值 > 5/10min
+- 续费失败告警：Temporal workflow failure 会触发 `temporal_workflow_failed_total` 上涨（go.d prometheus collector 抓取，监控见 [/ops/observability](/ops/observability)），建议关注阈值 > 5/10min
 
 ---
 
-## 运维常见问题
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="radar" :size="14"/> 故障排查</span><h2 class="lurus-section-head__title">运维常见问题</h2><p class="lurus-section-head__lede">先走诊断流程图分流症状，再按速查列表逐项处置；指标看板见 <a href="/ops/observability">/ops/observability</a>。</p></div>
 
 ### 故障诊断流程图
 
@@ -1137,7 +1162,7 @@ flowchart TD
     B2 -->|"Failed"| B4["查日志 CRITICAL: saga compensation\n确认补偿 Credit 是否执行\n人工核查 billing.wallet_transactions"]
     B4 --> B5["如补偿未执行，人工 topup\n按 Step 5 Runbook 操作"]
 
-    S1 -->|"NATS 事件丢失\n通知未推送"| C1["检查 outbox_dlq_total 指标\nGrafana / Prometheus"]
+    S1 -->|"NATS 事件丢失\n通知未推送"| C1["检查 outbox_dlq_total 指标\nNetdata (见 /ops/observability)"]
     C1 --> C2{DLQ 有积压?}
     C2 -->|是| C3["检查 NATS pod 状态\nkubectl get pods -n messaging"]
     C3 --> C4{NATS 健康?}

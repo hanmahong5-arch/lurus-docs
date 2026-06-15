@@ -3,11 +3,23 @@ title: 教程 — 搭建有记忆的 AI 客服
 description: 用 MemX + Kova + Lurus API 搭一个长期记忆的客服 Agent，附完整项目产物。
 ---
 
-# 搭建有记忆的 AI 客服
+<div class="memagent-page">
 
-**目标**：30 分钟内跑通一个能记住用户历史问题、崩溃自动恢复、按需蒸馏知识的客服 Agent。
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="brain" :size="14" /> MemX × Kova × Lurus API</span>
+  <h1 class="lurus-section-head__title">搭建有记忆的 AI 客服</h1>
+  <p class="lurus-section-head__lede"><strong>目标</strong>：30 分钟内跑通一个能记住用户历史问题、崩溃自动恢复、按需蒸馏知识的客服 Agent。</p>
+</div>
 
-## 架构图
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">30 分钟</span><span class="lurus-stat__label">跑通目标</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">6 步</span><span class="lurus-stat__label">从依赖到回写</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">3 服务</span><span class="lurus-stat__label">MemX · Kova · API</span></div>
+</div>
+
+## <Icon name="network" :size="20" /> 架构图
+
+三个服务各司其职：MemX 负责长期记忆的召回与蒸馏，Lurus API 负责 LLM 调用，Kova WAL 负责状态持久化与崩溃恢复。
 
 <ArchitectureDiagram title="有记忆 AI 客服架构" chart="graph LR
   U[用户] --> W[Web 前端]
@@ -19,15 +31,21 @@ description: 用 MemX + Kova + Lurus API 搭一个长期记忆的客服 Agent，
   L --> A
   M --> A" />
 
-## 6 步骤
+## <Icon name="workflow" :size="20" /> 6 步骤
 
-### 1. 准备依赖
+<ol class="lurus-steps">
+<li>
+
+**准备依赖**
 
 ```bash
 pip install lurus memx-client kova-py lumen-ai openai
 ```
 
-### 2. 初始化三个服务
+</li>
+<li>
+
+**初始化三个服务**
 
 ```python
 from openai import OpenAI
@@ -39,7 +57,10 @@ mem = Memory(config={"ace_enabled": True})
 kova = KovaClient("kova://localhost")
 ```
 
-### 3. 定义 Agent 状态
+</li>
+<li>
+
+**定义 Agent 状态**
 
 ```python
 from typing import TypedDict, Annotated, Sequence
@@ -50,7 +71,10 @@ class State(TypedDict):
     relevant_memory: list
 ```
 
-### 4. 召回历史
+</li>
+<li>
+
+**召回历史** — 从 MemX 取回与当前问题相关的记忆
 
 ```python
 def retrieve_memory(state: State) -> State:
@@ -59,7 +83,10 @@ def retrieve_memory(state: State) -> State:
     return {**state, "relevant_memory": hits}
 ```
 
-### 5. 调 LLM 并返回
+</li>
+<li>
+
+**调 LLM 并返回** — 把召回的事实注入 system prompt
 
 ```python
 def respond(state: State) -> State:
@@ -75,7 +102,10 @@ def respond(state: State) -> State:
     return {**state, "messages": [*state["messages"], {"role": "assistant", "content": reply}]}
 ```
 
-### 6. 蒸馏回写
+</li>
+<li>
+
+**蒸馏回写** — 把新对话写回 MemX，下次召回即可用
 
 ```python
 def distill(state: State) -> State:
@@ -87,13 +117,36 @@ def distill(state: State) -> State:
     return state
 ```
 
-## 加 Kova 崩溃恢复
+</li>
+</ol>
 
-`graph = wf.compile(checkpointer=KovaCheckpointer(kova))`（`from kova.langgraph import KovaCheckpointer`）。崩溃后从 WAL 恢复，不重调 LLM。
+## <Icon name="life-buoy" :size="20" /> 加 Kova 崩溃恢复
 
-## 完整项目产物
+把 Kova 作为 LangGraph 的 checkpointer 接上，Agent 崩溃后从 WAL 恢复，**不重调 LLM**：
 
-<https://github.com/hanmahong5-arch/lurus-examples/tree/main/memory-agent> — 含代码完整版、`docker-compose.yml`（本地起 MemX + Kova）、Pytest 覆盖三节点、`.env.example`。
+```python
+from kova.langgraph import KovaCheckpointer
+
+graph = wf.compile(checkpointer=KovaCheckpointer(kova))
+```
+
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">为什么不重调 LLM</p>
+    <div class="lurus-callout__body"><p>Kova 每步执行预写日志（WAL）。进程崩溃后，引擎从断点重放执行状态，已完成的 LLM 调用不会再次发出——既省 Token，又保证回答一致。</p></div>
+  </div>
+</div>
+
+## <Icon name="package" :size="20" /> 完整项目产物
+
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="github" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">示例仓库</p>
+    <div class="lurus-callout__body"><p><a href="https://github.com/hanmahong5-arch/lurus-examples/tree/main/memory-agent">https://github.com/hanmahong5-arch/lurus-examples/tree/main/memory-agent</a> — 含代码完整版、<code>docker-compose.yml</code>（本地起 MemX + Kova）、Pytest 覆盖三节点、<code>.env.example</code>。</p></div>
+  </div>
+</div>
 
 ## 下一步
 
@@ -102,3 +155,5 @@ def distill(state: State) -> State:
   { text: '深入 MemX 概念', link: '/memx/concepts' },
   { text: '部署到 Kova 集群', link: '/kova/quickstart' },
 ]" />
+
+</div>

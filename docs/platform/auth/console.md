@@ -3,9 +3,42 @@ title: 控制台管理 | Zitadel 身份认证
 description: 使用 auth.lurus.cn 控制台管理组织、用户、项目、应用、身份策略的完整操作手册。
 ---
 
+<div class="console-page">
+
 # 控制台管理
 
 Lurus 用 [Zitadel](https://zitadel.com) 作统一身份认证平台，控制台入口 [auth.lurus.cn](https://auth.lurus.cn)。本文面向**组织管理员 / IT 运维**，覆盖日常操作完整流程。
+
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">谁该读这篇</p>
+    <div class="lurus-callout__body">需要管理组织、用户、项目、应用与身份策略的 <strong>Org Owner / IT 运维</strong>。只想接入登录的开发者请看 <a href="/platform/auth/oidc">OIDC / OAuth2</a> 与 <a href="/platform/auth/api-auth">API 认证</a>。</div>
+  </div>
+</div>
+
+<div class="lurus-cards lurus-cards--compact">
+  <a class="lurus-card lurus-card--auth" href="#_2-组织管理-organization">
+    <span class="lurus-card__icon"><Icon name="building-2" :size="20" /></span>
+    <div class="lurus-card__title">组织管理</div>
+    <p class="lurus-card__body">创建 / 切换、域名验证、成员角色、元数据</p>
+  </a>
+  <a class="lurus-card lurus-card--auth" href="#_3-用户管理-users">
+    <span class="lurus-card__icon"><Icon name="users" :size="20" /></span>
+    <div class="lurus-card__title">用户管理</div>
+    <p class="lurus-card__body">Human / Service User、PAT、状态流转、审计</p>
+  </a>
+  <a class="lurus-card lurus-card--auth" href="#_4-项目管理-projects">
+    <span class="lurus-card__icon"><Icon name="layers" :size="20" /></span>
+    <div class="lurus-card__title">项目与应用</div>
+    <p class="lurus-card__body">Roles、Grant、Redirect URI、Token 设置</p>
+  </a>
+  <a class="lurus-card lurus-card--auth" href="#_7-策略管理-policies">
+    <span class="lurus-card__icon"><Icon name="shield-check" :size="20" /></span>
+    <div class="lurus-card__title">身份策略</div>
+    <p class="lurus-card__body">登录 / 密码 / 锁定 / 品牌 / 通知策略</p>
+  </a>
+</div>
 
 ---
 
@@ -87,11 +120,22 @@ Organization → **Metadata → Add Metadata** → 输入 Key / Value → 保存
 
 ### 3.3 用户状态流转
 
+<ArchitectureDiagram title="用户状态机" chart="stateDiagram-v2
+  [*] --> Initial: 创建
+  Initial --> Active: 完成初始化
+  Active --> Locked: Lock / 策略触发
+  Locked --> Active: Unlock
+  Active --> Inactive: 停用
+  Active --> Deleted: 删除
+  Deleted --> [*]" />
+
+::: details 文本版状态图
 ```
 [Initial] →(完成初始化)→ [Active]
 [Active]  →(Lock / 策略触发)→ [Locked] →(Unlock)→ [Active]
 [Active]  →(停用)→ [Inactive]    [Active]→(删除)→[Deleted]
 ```
+:::
 
 | 状态 | 说明 |
 |------|------|
@@ -310,34 +354,89 @@ Actions 在登录/注册/用户创建等关键事件触发点运行 **JavaScript
 
 ## 10. Lurus 常见操作场景
 
-::: tip 快速参考
+<p class="console-scenario-lede"><span class="lurus-tag"><Icon name="life-buoy" :size="13" /> 快速参考</span> 四个高频运维剧本 —— 展开即照做。</p>
 
-**新员工入职**
-1. **Users → Human Users → New**，填姓名和工作邮箱，选 **Send Invitation Email**。
-2. `lurus-api` 项目 → **Authorizations → New** → 搜该用户 → 分配角色。
-3. 重复为 `lucrum`、`switch` 等项目分配 Grant（按岗位）。
-4. 通知员工查收初始化邮件，完成密码设置和 MFA 注册。
+<details class="lurus-faq-item">
+<summary><Icon name="user-check" :size="16" /> 新员工入职</summary>
 
-**CI / 机器账号**
-1. **Users → Service Users → New**，Username 建议 `ci-<service-name>`。
-2. 详情 → **Personal Access Tokens → New** 设过期时间复制 Token；或 **Keys → Add Key** 下载 JSON Key 文件在 CI 配私钥。
-3. 对应 Project → **Authorizations** 分配所需 Role。
+<ol class="lurus-steps">
+<li><strong>Users → Human Users → New</strong>，填姓名和工作邮箱，选 <strong>Send Invitation Email</strong>。</li>
+<li><code>lurus-api</code> 项目 → <strong>Authorizations → New</strong> → 搜该用户 → 分配角色。</li>
+<li>重复为 <code>lucrum</code>、<code>switch</code> 等项目分配 Grant（按岗位）。</li>
+<li>通知员工查收初始化邮件，完成密码设置和 MFA 注册。</li>
+</ol>
 
-**员工离职**
-1. 详情页右上角 **Lock**（立即阻止登录，保留账号和审计）。
-2. 每个关联 Project → **Authorizations** → 找到该用户 → 删除图标撤销所有 Grant。
-3. 确认不再需审计数据（通常不建议）可进一步 **Delete User**。
+</details>
 
-**企业客户接入（B2B）**
-1. Instance 级 → **Organizations → New Organization**，名称用客户公司名。
-2. 添加 Org Owner（客户 IT 管理员账号）。
-3. Organization → **Settings → Organization Domains** 验证客户域名。
-4. 客户有自家 IdP（Azure AD）：Organization → **Settings → IDP** 添加 SAML/OIDC IdP。
-5. `lurus-api` 项目 → **Project Grants → New** → 选该客户 Organization → 分配允许的 Role。
-6. 客户 Org Owner 登录后在 **Granted Projects** 下为员工分配角色。
+<details class="lurus-faq-item">
+<summary><Icon name="bot" :size="16" /> CI / 机器账号</summary>
 
-:::
+<ol class="lurus-steps">
+<li><strong>Users → Service Users → New</strong>，Username 建议 <code>ci-&lt;service-name&gt;</code>。</li>
+<li>详情 → <strong>Personal Access Tokens → New</strong> 设过期时间复制 Token；或 <strong>Keys → Add Key</strong> 下载 JSON Key 文件在 CI 配私钥。</li>
+<li>对应 Project → <strong>Authorizations</strong> 分配所需 Role。</li>
+</ol>
+
+</details>
+
+<details class="lurus-faq-item">
+<summary><Icon name="lock" :size="16" /> 员工离职</summary>
+
+<ol class="lurus-steps">
+<li>详情页右上角 <strong>Lock</strong>（立即阻止登录，保留账号和审计）。</li>
+<li>每个关联 Project → <strong>Authorizations</strong> → 找到该用户 → 删除图标撤销所有 Grant。</li>
+<li>确认不再需审计数据（通常不建议）可进一步 <strong>Delete User</strong>。</li>
+</ol>
+
+</details>
+
+<details class="lurus-faq-item">
+<summary><Icon name="building-2" :size="16" /> 企业客户接入（B2B）</summary>
+
+<ol class="lurus-steps">
+<li>Instance 级 → <strong>Organizations → New Organization</strong>，名称用客户公司名。</li>
+<li>添加 Org Owner（客户 IT 管理员账号）。</li>
+<li>Organization → <strong>Settings → Organization Domains</strong> 验证客户域名。</li>
+<li>客户有自家 IdP（Azure AD）：Organization → <strong>Settings → IDP</strong> 添加 SAML/OIDC IdP。</li>
+<li><code>lurus-api</code> 项目 → <strong>Project Grants → New</strong> → 选该客户 Organization → 分配允许的 Role。</li>
+<li>客户 Org Owner 登录后在 <strong>Granted Projects</strong> 下为员工分配角色。</li>
+</ol>
+
+</details>
 
 ---
 
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="link" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">相关文档</p>
+    <div class="lurus-callout__body"><a href="/platform/auth/">认证概述与接入点</a> · <a href="/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/platform/auth/api-auth">API 认证</a> · <a href="https://auth.lurus.cn">认证控制台 ↗</a></div>
+  </div>
+</div>
+
 *基于 Zitadel 自托管实例（`auth.lurus.cn`），界面细节以实际版本为准。策略变更请同步本文档。*
+
+</div>
+
+<style>
+.console-page .lurus-cards { margin: 1.1rem 0 1.4rem; }
+.console-page .console-scenario-lede {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  color: var(--vp-c-text-2);
+  font-size: 0.9rem;
+}
+.console-page .console-scenario-lede .lurus-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.console-page .lurus-faq-item { margin: 0.6rem 0; }
+.console-page .lurus-faq-item summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>

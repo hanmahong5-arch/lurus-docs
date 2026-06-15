@@ -13,7 +13,7 @@ export interface Server {
   provider: string
   k3s: 'master' | 'agent' | 'none' | 'embedded'
   workloads: string[]
-  /** human-readable utilization estimate (we'll wire to Prometheus later) */
+  /** human-readable utilization estimate — manual; TODO wire to Netdata /api/v1/data (R6 :19999) */
   cpuPct?: number
   memPct?: number
   diskPct?: number

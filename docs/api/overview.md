@@ -3,9 +3,42 @@ title: API 概述
 description: Lurus API 基础信息，包括 Base URL、请求格式和端点列表。
 ---
 
-# API 概述
+<div class="api-overview-page">
+
+<ProductHero product-id="api-ref" />
 
 Lurus API 完全兼容 OpenAI API 格式，你可以使用任何支持 OpenAI 的 SDK 或工具直接调用。
+
+<CapabilityGrid
+  accent="var(--lurus-color-api-ref)"
+  title="为什么用 Lurus API"
+  :items="[
+    { title: 'OpenAI 兼容', body: '所有端点路径与语义对齐 OpenAI，SDK 零改动直接替换 base_url', icon: 'shuffle' },
+    { title: '完整错误码', body: '每个错误均有 code + message + 建议动作，便于自动化处理', icon: 'alert-circle' },
+    { title: '多种认证', body: 'Bearer Token / PAT / JWT，脚本到企业 SSO 全覆盖', icon: 'key' },
+    { title: '模型路由与重试', body: '按模型名自动路由上游渠道，失败自动切换备用', icon: 'shuffle' },
+  ]"
+/>
+
+## 接入三步 {#quickstart}
+
+<ol class="lurus-steps">
+<li>
+
+把 base URL 指向 `https://api.lurus.cn/v1`。
+
+</li>
+<li>
+
+在请求头携带 `Authorization: Bearer sk-your-api-key`（[获取 API Key](/guide/get-api-key)）。
+
+</li>
+<li>
+
+用任意 OpenAI SDK 发起请求，无需改动业务代码。见下方 [SDK 支持](#sdk-支持)。
+
+</li>
+</ol>
 
 ## Base URL
 
@@ -20,6 +53,14 @@ https://api.lurus.cn/v1
 ```http
 Authorization: Bearer sk-your-api-key
 ```
+
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">认证不止 API Key</p>
+    <div class="lurus-callout__body">除 Bearer Token 外还支持 OIDC / OAuth2、PAT、JWT。详见 <a href="/api/authentication">认证详解</a>。</div>
+  </div>
+</div>
 
 ## 可用端点
 
@@ -152,13 +193,19 @@ Authorization: Bearer sk-your-api-key
 
 ## 速率限制
 
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">60</span><span class="lurus-stat__label">RPM 请求/分钟</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">100,000</span><span class="lurus-stat__label">TPM Token/分钟</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">10</span><span class="lurus-stat__label">最大并发请求</span></div>
+</div>
+
 | 限制类型 | 默认值 | 说明 |
 |---------|--------|------|
 | RPM (请求/分钟) | 60 | 每分钟最大请求数 |
 | TPM (Token/分钟) | 100,000 | 每分钟最大 Token 数 |
 | 并发请求 | 10 | 最大同时进行的请求 |
 
-超出限制会返回 `429 Too Many Requests` 错误。
+超出限制会返回 `429 Too Many Requests` 错误，处理方式见 [错误处理](/api/errors)。
 
 ## SDK 支持
 
@@ -213,6 +260,16 @@ curl https://api.lurus.cn/v1/chat/completions \
 
 ## 特殊功能
 
+<CapabilityGrid
+  accent="var(--lurus-color-api-ref)"
+  title="网关增强能力"
+  :items="[
+    { title: '流式响应', body: '设置 stream: true 启用 Server-Sent Events，逐 Token 返回', icon: 'zap' },
+    { title: '模型路由', body: '通过模型名称自动路由到对应上游渠道，无需关心底层配置', icon: 'shuffle' },
+    { title: '自动重试', body: '请求失败时自动切换到备用渠道（如果配置了多个）', icon: 'repeat' },
+  ]"
+/>
+
 ### 流式响应
 
 设置 `stream: true` 启用 Server-Sent Events 流式响应：
@@ -225,6 +282,8 @@ curl https://api.lurus.cn/v1/chat/completions \
 }
 ```
 
+完整的流式数据格式与逐 Token 处理见 [Chat Completions — 流式响应](/api/chat-completions#流式响应)。
+
 ### 模型路由
 
 通过模型名称自动路由到对应的上游渠道，无需关心底层配置。
@@ -233,8 +292,24 @@ curl https://api.lurus.cn/v1/chat/completions \
 
 请求失败时自动切换到备用渠道（如果配置了多个）。
 
-## 下一步
+---
 
-- [认证详解](/api/authentication)
-- [Chat Completions](/api/chat-completions)
-- [错误处理](/api/errors)
+<NextSteps
+  title="下一步"
+  :steps="[
+    { text: '认证详解', link: '/api/authentication', primary: true },
+    { text: 'Chat Completions', link: '/api/chat-completions' },
+    { text: '错误处理', link: '/api/errors' },
+    { text: '获取 API Key', link: '/guide/get-api-key' },
+  ]"
+/>
+
+<RelatedProducts product-id="api-ref" />
+
+</div>
+
+<style>
+.api-overview-page .lurus-stat-strip {
+  margin: 1.5rem 0;
+}
+</style>

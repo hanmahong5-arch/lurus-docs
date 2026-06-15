@@ -11,9 +11,18 @@ sourcePath: 2b-svc-newapi
 
 # Lurus Newapi 内部手册
 
-> 🟡 **2026-05-28 状态更新**：仍是当前生产 LLM 网关（prod）；ADR D1 已决定退役 → 整合并入 newhub（hub.lurus.cn 将成唯一网关），PROD 切流（R-4）尚未执行，调用方式与地址暂不变。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body">仍是当前生产 LLM 网关（<strong>prod</strong>）；<strong>ADR D1</strong> 已决定退役 → 整合并入 newhub（<code>hub.lurus.cn</code> 将成唯一网关），PROD 切流（R-4）尚未执行，<strong>调用方式与地址暂不变</strong>。</div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">仅限内部</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、未公开问题。</div></div></div>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">30+</span><span class="lurus-stat__label">Provider 适配器</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">50+</span><span class="lurus-stat__label">统一模型</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">3000</span><span class="lurus-stat__label">pod/svc 端口</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">R1</span><span class="lurus-stat__label">PROD 落点</span></div>
+</div>
+
+<p><span class="lurus-tag">P0</span> <span class="lurus-tag lurus-tag--muted">退役中 → newhub</span> <RiskBadge flag="no-monitor" /></p>
 
 ## 一句话定位
 
@@ -160,6 +169,8 @@ sequenceDiagram
 
 ## 部署
 
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="rocket" :size="18"/></span><div><p class="lurus-callout__title">部署铁律</p><div class="lurus-callout__body">必须调度到 <code>lurus.cn/vpn=true</code> 节点，否则 Gemini 等境外 API 不可达；升级走 <code>deploy/k8s.yaml</code> 改 tag → commit → ArgoCD auto-sync，<strong>勿</strong> 用 kubectl patch 做永久改动。</div></div></div>
+
 - **构建**: `go build -ldflags "-s -w" -o new-api .` + `cd web && bun install && bun run build`
 - **CI**: `.github/workflows/docker-main.yml` — push to main → amd64 构建 → GHCR
 - **镜像 tag 格式**: `main-<sha7>`（例如 `main-da3cb48`）
@@ -190,11 +201,13 @@ ssh root@100.98.57.55 "kubectl rollout restart deployment/lurus-newapi -n lurus-
 ssh root@100.98.57.55 "kubectl exec -n database deploy/pg-primary -- psql -U lurus -d newapi -c \"SELECT id,name,type,status FROM channels ORDER BY id;\""
 ```
 
-**关键指标（目前靠日志 grep，Prometheus 未接入）**：
+**关键指标（目前靠日志 grep）**：
 - SSE 超时：`STREAMING_TIMEOUT=300s`（无数据则断流）
 - Relay 超时：`RELAY_TIMEOUT=300s`
 - 渠道缓存同步：`MEMORY_CACHE_ENABLED=true`，与 DB 定期同步
 - Batch update：`BATCH_UPDATE_ENABLED=true`（日志批量写入，降低 DB 写压力）
+
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="gauge" :size="18"/></span><div><p class="lurus-callout__title">监控</p><div class="lurus-callout__body">平台监控统一走 <strong>Netdata 自托管 Agent</strong>，详见 <a href="/ops/observability">/ops/observability</a>。newapi 当前服务侧仅靠日志排障，未暴露 <code>/metrics</code> 端点（见下方 Roadmap）。</div></div></div>
 
 ## 上游同步策略
 
@@ -402,7 +415,7 @@ for retry := 0; retry <= RetryTimes; retry++ {
 ## TODO / Roadmap
 
 - [ ] 接入 NATS `LLM_EVENTS` 流，发布每次模型调用事件（model/tokens/latency/user） — 高优
-- [ ] Prometheus metrics 端点（当前仅靠日志排障，无 QPS / p95 / error_rate 指标）— 高优
+- [ ] 暴露 prometheus-format `/metrics` 端点供 Netdata go.d 抓取（当前仅靠日志排障，无 QPS / p95 / error_rate 指标）— 高优
 - [ ] 上游大版本 sync（v0.13.0 → latest）— 需专项排期，评估 48K diff 冲突
 - [ ] Azure 渠道 api_version 统一（消除 `distributor.go:377` TODO）
 - [ ] 完善 Ali / Baidu / AWS / Claude adaptor 的 Rerank / Embedding 接口（目前 `//TODO implement me`）
@@ -412,29 +425,50 @@ for retry := 0; retry <= RetryTimes; retry++ {
 
 ### 模型挂了（单个模型无法使用）
 
-**症状**：特定模型返回 503 或 "no available channel"
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-circle" :size="18"/></span><div><p class="lurus-callout__title">症状</p><div class="lurus-callout__body">特定模型返回 503 或 "no available channel"。</div></div></div>
+
+<ol class="lurus-steps">
+<li>
+
+查看哪些渠道支持该模型，当前状态：
 
 ```bash
-# 1. 查看哪些渠道支持该模型，当前状态
 ssh root@100.98.57.55 "kubectl exec -n database deploy/pg-primary -- psql -U lurus -d newapi -c \"
   SELECT c.id, c.name, c.type, c.status, c.response_time
   FROM channels c
   WHERE c.models LIKE '%gpt-4o%'
   ORDER BY c.status, c.priority DESC;
 \""
+```
 
-# 2. 如果渠道被自动禁用（status=3），查看原因
+</li>
+<li>
+
+如果渠道被自动禁用（status=3），查看原因：
+
+```bash
 ssh root@100.98.57.55 "kubectl exec -n database deploy/pg-primary -- psql -U lurus -d newapi -c \"
   SELECT id, name, status, last_tested_time
   FROM channels WHERE status = 3;
 \""
+```
 
-# 3. 在 Web Admin 后台手动 enable 渠道并测试
-# 进入 newapi.lurus.cn → 渠道 → 找到禁用渠道 → 手动启用 → 点击「测试」
+</li>
+<li>
 
-# 4. 查看近期错误日志确认是否是上游 API 问题
+在 Web Admin 后台手动 enable 渠道并测试：进入 `newapi.lurus.cn` → 渠道 → 找到禁用渠道 → 手动启用 → 点击「测试」。
+
+</li>
+<li>
+
+查看近期错误日志确认是否是上游 API 问题：
+
+```bash
 ssh root@100.98.57.55 "kubectl logs -n lurus-system deploy/lurus-newapi --tail=500 | grep 'relay error'"
 ```
+
+</li>
+</ol>
 
 ### 渠道全挂（所有渠道不可用）
 
@@ -730,7 +764,7 @@ ssh root@100.98.57.55 "kubectl exec -n database deploy/pg-primary -- psql -U lur
 | 1 | ✓ 用 `model_mapping` 在渠道层做别名（如 `claude-sonnet-4:claude-sonnet-4-20251101`），客户端无感切换上游版本 | ✗ 在代码里硬编码上游 model 全名（如 `claude-sonnet-4-20251101`），上游改名时所有调用方都要改 |
 | 2 | ✓ Token 按 group 分配（产品线/团队维度），搭配 QPM/TPM 限流，独立审计用量 | ✗ 一个 root token 给所有产品线共享，额度耗尽影响全平台，且无法溯源哪个产品超量 |
 | 3 | ✓ 配置多渠道 failover（同模型绑定多个渠道，priority 梯度拉开），上游故障自动重试切换 | ✗ 只配单渠道，上游挂机时直接 5xx 影响终端用户 |
-| 4 | ✓ 开启渠道 `health_check`（自动探活），配合 Prometheus alert（待接入）做主动告警 | ✗ 只看 Prometheus 不设报警规则，渠道静默失败直到用户投诉才发现 |
+| 4 | ✓ 开启渠道 `health_check`（自动探活），配合主动告警（监控走 Netdata，见 [/ops/observability](/ops/observability)）尽早发现故障 | ✗ 不设任何告警，渠道静默失败直到用户投诉才发现 |
 | 5 | ✓ 长文本/大模型响应走 streaming（`"stream": true`），避免前端长时间等待 loading | ✗ 所有请求 sync 模式，单次大输出阻塞 30s+ 导致 Traefik 超时或客户端 504 |
 | 6 | ✓ 关注不同上游同名模型的单价差异（`ModelPriceHelper` 按渠道计价），定期审查渠道成本效比，低价高质渠道优先 | ✗ 不算账，所有渠道同等对待；可能把流量压到贵 3-5 倍的渠道上而不自知 |
 | 7 | ✓ 密钥池（多行 key）分散单 key 的 RPM 上限风险，单 key 封禁不影响整个渠道 | ✗ 每个渠道只填一个 key，key 被限速时整个渠道瘫痪 |

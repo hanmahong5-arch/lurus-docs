@@ -3,20 +3,45 @@ title: MemX 架构设计
 description: MemX 管道架构详解，包括写入管道、检索管道和组件独立降级设计。
 ---
 
+<div class="memx-page">
+
 # 架构设计
 
 MemX 采用管道（Pipeline）架构，写入和检索分别由独立管道编排，所有组件支持独立失败和优雅降级。
 
-## 系统总览
+<MetricStats
+  :items="[
+    { label: 'Memory API', value: '5 方法', hint: 'add / search / status / detect_conflicts / export' },
+    { label: '核心管道', value: '2 条', hint: 'Ingest 写入 + Retrieval 检索' },
+    { label: '降级', value: '组件级', hint: '单组件失败不中断服务' },
+  ]"
+/>
 
-```
-MemX Memory API: add() / search() / status() / detect_conflicts() / export()
- ├─ IngestPipeline(写入): Privacy Sanitizer → Reflector → Curator → mem0.add()
- └─ RetrievalPipeline(检索): Generator(L1-L4) → ScoreMerger → TokenBudgetTrimmer → RecallReinforcer
-两管道 → Decay Engine(异步衰减计算) → Vector Store(mem0 Backend)
-```
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="network" :size="14" /> 拓扑</span>
+  <h2 class="lurus-section-head__title">系统总览</h2>
+  <p class="lurus-section-head__lede">两条独立管道汇入 Decay Engine 与向量存储。</p>
+</div>
+
+<ArchitectureDiagram title="MemX 管道架构" chart="graph TB
+  API[Memory API<br/>add / search / status / detect_conflicts / export]
+  API --> Ingest[IngestPipeline 写入]
+  API --> Retrieval[RetrievalPipeline 检索]
+  Ingest --> I1[Privacy Sanitizer] --> I2[Reflector] --> I3[Curator] --> I4[mem0.add]
+  Retrieval --> R1[Generator L1-L4] --> R2[ScoreMerger] --> R3[TokenBudgetTrimmer] --> R4[RecallReinforcer]
+  I4 --> Decay[Decay Engine<br/>异步衰减计算]
+  R4 --> Decay
+  Decay --> Store[(Vector Store<br/>mem0 Backend)]" />
 
 ## 写入管道 — IngestPipeline
+
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="shield-check" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">隐私网关不可绕过</p>
+    <div class="lurus-callout__body"><p>Privacy Sanitizer 是管道首站且无法跳过，12 条内置敏感信息规则在数据写入向量库前完成拦截，净化器永不抛异常。</p></div>
+  </div>
+</div>
 
 `Raw Input` 依次经过：
 
@@ -76,9 +101,22 @@ MemX Memory API: add() / search() / status() / detect_conflicts() / export()
 
 MemX 用 ONNX Runtime 在本地运行嵌入模型，无需外部 API，完全离线无隐私泄露：模型 all-MiniLM-L6-v2、维度 384、存储 `~/.memx/models/`、首次下载约 90MB、推理 < 5ms/条。
 
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">all-MiniLM-L6-v2</span><span class="lurus-stat__label">嵌入模型</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">384</span><span class="lurus-stat__label">向量维度</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">~90MB</span><span class="lurus-stat__label">首次下载</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">&lt;5ms</span><span class="lurus-stat__label">单条推理</span></div>
+</div>
+
 ## 守护进程模式
 
 可选后台守护进程，多 Agent/多进程（Agent A/B/C）经 **MemX Daemon（IPC Socket）** 共享同一 Vector Store。IPC Socket 通信避免数据库连接竞争；空闲超时自动退出（默认 300 秒）；适用 IDE 插件、多窗口等。
+
+<ArchitectureDiagram title="守护进程共享拓扑" chart="graph LR
+  A[Agent A] --> D[MemX Daemon<br/>IPC Socket]
+  B[Agent B] --> D
+  C[Agent C] --> D
+  D --> S[(共享 Vector Store)]" />
 
 ## 配置参考
 
@@ -128,8 +166,26 @@ m = Memory(config={
 
 ---
 
-## 下一步
+<NextSteps
+  title="下一步"
+  :steps="[
+    { text: '核心概念 — 深入理解 ACE 引擎的四大核心模块', link: '/memx/concepts', primary: true },
+    { text: '快速开始 — 5 分钟体验 MemX 核心功能', link: '/memx/quickstart' },
+    { text: '常见问题 — 使用中的常见问题解答', link: '/memx/faq' },
+  ]"
+/>
 
-- [核心概念](/memx/concepts) — 深入理解 ACE 引擎的四大核心模块
-- [快速开始](/memx/quickstart) — 5 分钟体验 MemX 核心功能
-- [常见问题](/memx/faq) — 使用中的常见问题解答
+</div>
+
+<style>
+.memx-page .lurus-section-head {
+  margin-top: 2.5rem;
+}
+.memx-page .metric-stats,
+.memx-page .lurus-stat-strip {
+  margin: 1.5rem 0 2rem;
+}
+.memx-page .lurus-callout {
+  margin: 1.25rem 0;
+}
+</style>

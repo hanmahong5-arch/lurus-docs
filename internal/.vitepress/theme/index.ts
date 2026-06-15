@@ -1,7 +1,9 @@
 import DefaultTheme from 'vitepress/theme'
 import type { Theme } from 'vitepress'
 import './style.css'
+import './lurus-utilities.css'
 
+import Icon from './components/Icon.vue'
 import InternalDashboard from './components/InternalDashboard.vue'
 import ProductStatusGrid from './components/ProductStatusGrid.vue'
 import ServerTopology from './components/ServerTopology.vue'
@@ -14,6 +16,7 @@ import MermaidBlock from './components/MermaidBlock.vue'
 export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
+    app.component('Icon', Icon)
     app.component('InternalDashboard', InternalDashboard)
     app.component('ProductStatusGrid', ProductStatusGrid)
     app.component('ServerTopology', ServerTopology)

@@ -1,9 +1,6 @@
-# 集成配方 — 跨产品组合的可复用方案
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="workflow" :size="14"/> 横向视角</span><h2 class="lurus-section-head__title">集成配方 — 跨产品组合的可复用方案</h2><p class="lurus-section-head__lede">把单产品手册末尾的跨产品集成场景横向汇总，加上更复杂的多端组合，按业务目标分类。</p></div>
 
-> 单产品手册末尾各有 1-2 个 "跨产品集成场景"。
-> 这一页是把那些场景**横向汇总**，加上更复杂的多端组合，按业务目标分类。
->
-> 每条配方包含：业务目标 / 涉及产品 / 数据流图 / 关键代码 / 部署要点 / 常见坑。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="package" :size="18"/></span><div><p class="lurus-callout__title">每条配方的结构</p><div class="lurus-callout__body">业务目标 / 涉及产品 / 数据流图 / 关键代码 / 部署要点 / 常见坑。</div></div></div>
 
 ## 配方索引
 
@@ -67,9 +64,11 @@ async def customer_support(ctx, user_id: str, message: str):
 
 **部署要点**：
 
-- Kova workflow 部署到 R1，配 LumenCheckpointer（中断也能恢复）
-- MemX 调用走 lurus-system 内网 svc 名（不要走公网）
-- Newapi token 用 group=customer-support 单独限流，避免抢配额
+<ol class="lurus-steps">
+<li>Kova workflow 部署到 R1，配 LumenCheckpointer（中断也能恢复）。</li>
+<li>MemX 调用走 lurus-system 内网 svc 名（不要走公网）。</li>
+<li>Newapi token 用 group=customer-support 单独限流，避免抢配额。</li>
+</ol>
 
 **常见坑**：
 
@@ -126,9 +125,11 @@ workflow.run(input).await?;  // 中断后再 run 同 task_id 自动续上
 
 **部署要点**：
 
-- 用 Lumen 的 PostgresCheckpointer，**不要** in-memory（[lumen 最佳实践](/products/lumen)）
-- 每 step 必有明确 input/output schema
-- max_duration 设上限，防失控
+<ol class="lurus-steps">
+<li>用 Lumen 的 PostgresCheckpointer，<strong>不要</strong> in-memory（<a href="/products/lumen">lumen 最佳实践</a>）。</li>
+<li>每 step 必有明确 input/output schema。</li>
+<li>max_duration 设上限，防失控。</li>
+</ol>
 
 ---
 
@@ -182,9 +183,12 @@ func RunStrategy(ctx context.Context, nl string) error {
 
 **部署要点**：
 
-- **回测和实盘必须分账户**（[lucrum 最佳实践](/products/lucrum)）
-- 风控参数（仓位/止损）独立配置文件，**不写代码**
-- NL → 代码生成走 newapi 多模型对比（三家投票），降低单模型 bias
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">回测和实盘必须分账户</p><div class="lurus-callout__body">见 <a href="/products/lucrum">lucrum 最佳实践</a>。混用账户会让回测污染实盘资金。</div></div></div>
+
+<ol class="lurus-steps">
+<li>风控参数（仓位/止损）独立配置文件，<strong>不写代码</strong>。</li>
+<li>NL → 代码生成走 newapi 多模型对比（三家投票），降低单模型 bias。</li>
+</ol>
 
 ---
 
@@ -232,9 +236,11 @@ curl -L "https://auth.lurus.cn/oauth/v2/authorize?client_id=$CID&..."
 
 **部署要点**：
 
-- 走 zitadel-mcp 在 Switch 里 chat 操作（[mcp 手册](/products/mcp)）
-- SCIM 配置变更先在 R6 staging 验证 1 周
-- 提供 break-glass 本地账户（联邦失效兜底）
+<ol class="lurus-steps">
+<li>走 zitadel-mcp 在 Switch 里 chat 操作（<a href="/products/mcp">mcp 手册</a>）。</li>
+<li>SCIM 配置变更先在 R6 staging 验证 1 周。</li>
+<li>提供 break-glass 本地账户（联邦失效兜底）。</li>
+</ol>
 
 ---
 
@@ -295,9 +301,7 @@ Switch: ✓ 已重置，审计日志 audit-id=abc123
 
 **部署要点**：
 
-- **3 个 MCP server 全部只暴露给 Tailscale**，公网封死
-- READONLY 模式建议默认开，写操作要手动切
-- 审计日志走 platform-core，不依赖 chat 历史
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="shield-check" :size="18"/></span><div><p class="lurus-callout__title">3 个 MCP server 全部只暴露给 Tailscale</p><div class="lurus-callout__body">公网封死。READONLY 模式建议默认开，写操作要手动切。审计日志走 platform-core，不依赖 chat 历史。</div></div></div>
 
 ---
 
@@ -390,9 +394,11 @@ saver = LumenCheckpointer(env="dev")  # dev 用本地 sqlite, prod 自动 postgr
 
 **部署要点**：
 
-- `lumen init` 一次，生成本地工作目录
-- `lumen deploy` 推到 Kova
-- LangGraph 的 graph 定义、tool、prompt **全保留**
+<ol class="lurus-steps">
+<li><code>lumen init</code> 一次，生成本地工作目录。</li>
+<li><code>lumen deploy</code> 推到 Kova。</li>
+<li>LangGraph 的 graph 定义、tool、prompt <strong>全保留</strong>。</li>
+</ol>
 
 ---
 
@@ -423,16 +429,20 @@ sequenceDiagram
 
 **关键步骤**：
 
-1. Admin 后台给集成商创建 group + 限流配额（[admin 手册](/products/admin)）
-2. 集成商业务系统：拿到 newapi 调用成本 → 加自己的 markup → 写到 platform 计费
-3. Admin 月度账单导出（[platform 最佳实践](/products/platform) 中有月报 SQL）
+<ol class="lurus-steps">
+<li>Admin 后台给集成商创建 group + 限流配额（<a href="/products/admin">admin 手册</a>）。</li>
+<li>集成商业务系统：拿到 newapi 调用成本 → 加自己的 markup → 写到 platform 计费。</li>
+<li>Admin 月度账单导出（<a href="/products/platform">platform 最佳实践</a> 中有月报 SQL）。</li>
+</ol>
 
 ---
 
 ## 怎么用这些配方
 
-- **现成的**：直接 fork 代码片段开干，预期 1 天内跑通。
-- **自定义的**：参考数据流图作为基础，替换具体步骤。
-- **新业务讨论**：用 mermaid 画类似的图，3 个图带来的对话效率比 30 句描述强。
+<div class="lurus-grid--products">
+<div class="lurus-card"><strong><Icon name="rocket" :size="16"/> 现成的</strong><p>直接 fork 代码片段开干，预期 1 天内跑通。</p></div>
+<div class="lurus-card"><strong><Icon name="git-merge" :size="16"/> 自定义的</strong><p>参考数据流图作为基础，替换具体步骤。</p></div>
+<div class="lurus-card"><strong><Icon name="workflow" :size="16"/> 新业务讨论</strong><p>用 mermaid 画类似的图，3 个图带来的对话效率比 30 句描述强。</p></div>
+</div>
 
 > 缺哪个配方？写到 [Roadmap](/roadmap/) 让其他员工接着做。

@@ -11,15 +11,17 @@ sourcePath: 2c-cli-lumen
 
 # Lumen 内部手册
 
-> 🟡 **2026-05-28 状态更新**：alpha 阶段（早于 beta）。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body"><strong>alpha</strong> 阶段（早于 beta）。<span class="lurus-tag">P1</span> <span class="lurus-tag lurus-tag--muted">dev</span> <RiskBadge flag="wip" /></div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">内部专属</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、未公开问题。</div></div></div>
 
-## 一句话定位
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="eye" :size="14"/> 定位</span><h2 class="lurus-section-head__title">一句话定位</h2><p class="lurus-section-head__lede">面向 AI 开发者的可靠性与可观测性工具——回放 / 成本审计 / 断点续跑。</p></div>
 
 Lumen 是面向 AI 应用开发者的可靠性与可观测性工具，解决三个核心痛点：**Agent 执行轨迹可回放**（零 LLM 费用）、**每笔 token 消费可审计**、**进程崩溃后可断点续跑**。对外品牌完全独立（PyPI `lumen-ai` / crates.io `lumen-cli`），用户不需要知道 Kova 或 Lurus 的存在。归属 Kova P1 产品组，是 Kova 生态的开发者入口工具。
 
-## 速查
+<div class="lurus-stat-strip"><div class="lurus-stat"><span class="lurus-stat__value">~3μs</span><span class="lurus-stat__label">checkpoint 写入</span></div><div class="lurus-stat"><span class="lurus-stat__value">30+</span><span class="lurus-stat__label">模型定价</span></div><div class="lurus-stat"><span class="lurus-stat__value">11</span><span class="lurus-stat__label">Rust 集成测试</span></div><div class="lurus-stat"><span class="lurus-stat__value">$0</span><span class="lurus-stat__label">replay 费用</span></div></div>
+
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="search" :size="14"/> 速查</span><h2 class="lurus-section-head__title">速查卡</h2><p class="lurus-section-head__lede">仓库 / 包名 / 版本 / 存储路径一屏看全。</p></div>
 
 | 项 | 值 |
 |---|---|
@@ -80,9 +82,9 @@ flowchart TD
         CDIR[./checkpoints/*.json\n线程检查点]
     end
 
-    subgraph "可观测性后端（可选）"
-        OTLP[OTLP Endpoint\ne.g. Grafana / Datadog]
-        GRAF[Grafana]
+    subgraph "OTLP trace 后端（可选 · 范围外）"
+        OTLP[OTLP Endpoint\n外部 trace 后端]
+        TRACEBE[Trace 后端\n本次观测切换不含 trace 平台]
     end
 
     DEV --> INST
@@ -108,7 +110,7 @@ flowchart TD
     CLI_COST --> COST
     CLI_TRACES --> TRACE
     INST -.->|LUMEN_OTLP_ENABLED| OTLP
-    OTLP --> GRAF
+    OTLP --> TRACEBE
 ```
 
 ## 核心数据流
@@ -284,9 +286,11 @@ tool_timeout_secs = 120
 
 [export.otlp]
 enabled = true
-endpoint = "http://grafana-alloy:4317"   # 接 Lurus Grafana stack
+endpoint = "http://otel-collector:4317"   # 外部 OTLP trace 后端（日志/trace 平台范围外）
 headers = { "x-lumen-project" = "my-agent" }
 ```
+
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="git-merge" :size="18"/></span><div><p class="lurus-callout__title">OTLP 后端是 trace 平台 — 本次观测切换范围外</p><div class="lurus-callout__body">Lumen 的 OTLP span 导出指向外部 trace 后端，属于分布式 trace 范畴，<strong>不在本次观测平台切换内（TBD）</strong>。集群 metrics 监控请走 Netdata，见 <a href="/ops/observability">/ops/observability</a>。</div></div></div>
 
 ### 环境变量速查
 
@@ -301,7 +305,9 @@ headers = { "x-lumen-project" = "my-agent" }
 | `LUMEN_OTLP_ENABLED` | `export.otlp_enabled` | 开启 OTLP 上报 |
 | `LUMEN_OTLP_ENDPOINT` | `export.otlp_endpoint` | OTLP 接收端 |
 
-## 部署与发布
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="package" :size="14"/> 发布</span><h2 class="lurus-section-head__title">部署与发布</h2><p class="lurus-section-head__lede">PyPI <code>lumen-ai</code> + crates.io <code>lumen-cli</code> 均手动发布，CI 暂未自动化。</p></div>
+
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">无自动发布流水线</p><div class="lurus-callout__body">PyPI 和 crates.io 均为<strong>手动发布</strong>。发布前必须三绿：<code>cargo test -p lumen-core -p lumen-cli</code> / <code>cargo clippy -- -D warnings</code> / <code>python -m pytest</code>。</div></div></div>
 
 ### 本地开发（Kova 宿主机）
 
@@ -362,7 +368,7 @@ lumen.iterations      = <int>
 lumen.status          = Completed | Failed
 ```
 
-上报目标：Lurus Grafana stack（`grafana.lurus.cn`）上已有 Tempo（trace）+ Prometheus（metrics）+ Loki（logs）。接入路径为 Grafana Alloy → Tempo。
+上报目标：外部 OTLP trace 后端。分布式 trace / 日志平台属于本次观测平台切换**范围外（TBD）**——集群 metrics 监控统一走 Netdata 自托管 Agent，见 [/ops/observability](/ops/observability)。
 
 ## 已知坑（内部专属）
 
@@ -400,7 +406,7 @@ lumen.status          = Completed | Failed
 - [x] P1: Python SDK instrument() auto-patch（OpenAI + Anthropic + LangGraph）
 - [x] P1: BudgetTracker / AnomalyDetector / EventBus（已完成）
 - [ ] P2: Python SDK → lumen-core PyO3 wiring（统一定价表，性能提升）
-- [ ] P2: OTel OTLP span 导出实现（接 Grafana Tempo）
+- [ ] P2: OTel OTLP span 导出实现（接外部 trace 后端；trace 平台范围外，TBD）
 - [ ] P2: Web dashboard（`lumen dashboard`，port 9700）
 - [ ] P2: GHA CI matrix（4 平台交叉编译 + PyPI 自动发布）
 - [ ] P2: LumenCheckpointer async 接口（`aget_tuple` / `aput` / `aput_writes`）
@@ -408,7 +414,7 @@ lumen.status          = Completed | Failed
 - [ ] P3: CrewAI / AutoGen 集成
 - [ ] P3: 定价表统一服务（从 Lurus NewAPI 拉取最新价格，不再手动双写）
 
-## 应急 Runbook
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="alert-circle" :size="14"/> Runbook</span><h2 class="lurus-section-head__title">应急 Runbook</h2><p class="lurus-section-head__lede">Trace 丢失 / Replay 失败 / Checkpoint 损坏 / 版本漂移 / 成本异常 / OTel。</p></div>
 
 ### Trace 丢失 / 找不到 trace
 
@@ -523,7 +529,9 @@ from lumen.pricing import register_custom_pricing
 register_custom_pricing({"your-model": (2.0, 8.0)})
 ```
 
-### OTel trace 未出现在 Grafana
+### OTel trace 未出现在后端
+
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="git-merge" :size="18"/></span><div><p class="lurus-callout__title">OTLP 导出尚未实现 — 这是根因</p><div class="lurus-callout__body">当前 OTel span 导出 <strong>尚未实现</strong>（Phase 2），即使 OTLP 配置正确也不会有数据推送到任何 trace 后端。trace 平台属本次观测切换范围外（TBD）；集群 metrics 走 Netdata，见 <a href="/ops/observability">/ops/observability</a>。</div></div></div>
 
 ```bash
 # 1. 确认 OTLP 配置
@@ -535,14 +543,11 @@ print('otlp_endpoint:', c.export.otlp_endpoint)
 "
 
 # 2. 注意：当前 OTel span 导出尚未实现（Phase 2），
-# 即使配置正确也不会有数据推送到 Grafana Tempo。
+# 即使配置正确也不会有数据推送到 trace 后端。
 # 状态: 待实现。
 
-# 临时方案: 用 lumen cost --format json 导出数据，
-# 通过 Grafana HTTP API 手动 push 到 Loki 作为日志
-lumen cost --last 7d --format json | \
-  curl -s -X POST http://loki.lurus.cn/loki/api/v1/push \
-  -H "Content-Type: application/json" -d @-
+# 临时方案: 用 lumen cost --format json 在本地导出成本数据
+lumen cost --last 7d --format json
 ```
 
 ---
@@ -590,12 +595,9 @@ Lumen 在运维层面承担两个角色：
 
 1. **Kova Checkpointer**：Kova engine 托管的 agent 在执行时，通过 `LumenCheckpointer` 将每个 LangGraph checkpoint 写入本地文件（开发环境）或 PostgreSQL（生产环境，`lurus-pg-rw.database.svc:5432`）。进程崩溃后 Kova 可调用 `get_tuple` 从最后 checkpoint 续跑，实现断点恢复，无需重跑已完成步骤。
 
-2. **OTel Exporter**：配置 `LUMEN_OTLP_ENABLED=true` + `LUMEN_OTLP_ENDPOINT` 后，每次 `TraceSession.finalize()` 向 Grafana Alloy（`grafana-alloy:4317`）推送 OpenTelemetry span，包含 `lumen.cost_usd`、`lumen.iterations`、`lumen.model` 等自定义 attribute。Grafana Tempo 接收后可按 agent 名称、模型、成本等维度聚合查询。⚠ 当前 Phase 1 OTLP 实现待完成，仅配置已就绪。
+2. **OTel Exporter**：配置 `LUMEN_OTLP_ENABLED=true` + `LUMEN_OTLP_ENDPOINT` 后，每次 `TraceSession.finalize()` 向外部 OTLP trace 后端推送 OpenTelemetry span，包含 `lumen.cost_usd`、`lumen.iterations`、`lumen.model` 等自定义 attribute，可按 agent 名称、模型、成本等维度聚合查询。⚠ 当前 Phase 1 OTLP 实现待完成，仅配置已就绪。分布式 trace 平台属本次观测切换范围外（TBD）；集群 metrics 监控见 [/ops/observability](/ops/observability)。
 
-运维关注点：
-- trace 文件落在 `/data/kova/lumen/traces/`（R6）；注意磁盘水位，`df -h /data`。
-- checkpoint 文件落在 `/data/kova/lumen/checkpoints/`；定期 `ls -lt` 确认无 `.tmp` 残留。
-- `lumen doctor` 可输出 JSON，接入 Prometheus pushgateway 做健康基线。
+<div class="lurus-callout lurus-callout--tip"><span class="lurus-callout__icon"><Icon name="hard-drive" :size="18"/></span><div><p class="lurus-callout__title">运维关注点</p><div class="lurus-callout__body"><ul><li>trace 文件落在 <code>/data/kova/lumen/traces/</code>（R6）；注意磁盘水位，<code>df -h /data</code>。</li><li>checkpoint 文件落在 <code>/data/kova/lumen/checkpoints/</code>；定期 <code>ls -lt</code> 确认无 <code>.tmp</code> 残留。</li><li><code>lumen doctor</code> 可输出 JSON，接入 Prometheus pushgateway 做健康基线。</li></ul>集群 metrics 平台见 <a href="/ops/observability">/ops/observability</a>。</div></div></div>
 
 ### 决策者视角
 
@@ -828,7 +830,7 @@ lumen doctor
 # ✓ lumen-cli 0.1.0 installed
 # ✓ LUMEN_TRACE_DIR: ./traces (writable)
 # ✓ LUMEN_BUDGET_USD: 10.0
-# ⚠ LUMEN_OTLP_ENABLED: true but endpoint unreachable (grafana-alloy:4317)
+# ⚠ LUMEN_OTLP_ENABLED: true but endpoint unreachable (otel-collector:4317)
 # ✓ langgraph-checkpoint: 3.x (compatible)
 # ✓ openai: 1.x (patched)
 ```
@@ -844,7 +846,7 @@ lumen doctor
 | 3 | ✓ `lumen deploy` 将 agent 打包推送到 Kova engine，统一生命周期管理，可监控 | ✗ 手工 `docker build && docker push`，镜像 tag 随意，无版本追踪，Kova 侧不可见 |
 | 4 | ✓ 首次上线或修改配置后跑 `lumen doctor`，提前发现依赖版本冲突 / 目录不可写 / OTel 连通失败 | ✗ 出了问题再排查，尤其 `langgraph-checkpoint` 接口漂移导致的 `TypeError` 难定位 |
 | 5 | ✓ 用 `lumen mcp manage` 集中注册和启停本地 MCP server，配置统一存 `lumen.toml` | ✗ 各项目目录各自散落 `mcp_config.json`，版本不一，端口冲突无人知晓 |
-| 6 | ✓ 开启 `LUMEN_OTLP_ENABLED=true` 接 Lurus Grafana（`grafana.lurus.cn` Tempo），生产 agent 有全链路 trace | ✗ 没有任何监控，成本飙升 / 失败率上升只能靠人工发现 |
+| 6 | ✓ 开启 `LUMEN_OTLP_ENABLED=true` 接外部 OTLP trace 后端（trace 平台范围外，TBD），生产 agent 有全链路 trace | ✗ 没有任何监控，成本飙升 / 失败率上升只能靠人工发现 |
 | 7 | ✓ 生产环境设 `sampling_rate = 0.3`（`lumen.toml`），减少存储压力；关键 agent 设 `1.0` | ✗ 全量采样不分场景，高频 agent 磁盘迅速耗尽（参见 R5 根盘 90% 教训） |
 | 8 | ✓ `BudgetTracker` 设 `kill_on_budget_exceeded = true`（测试环境），阻止失控 agent 烧光预算 | ✗ 无预算上限，agent 进入死循环或 tool call 失控时无任何止损机制 |
 
@@ -859,7 +861,7 @@ Lumen 是 Kova 生态的**开发者入口**，两者形成 dev → prod 闭环�
 1. **本地开发阶段**：开发者用 `pip install lumen-ai` + `LumenCheckpointer` + `LumenTracer` 在本地迭代 agent，所有状态落文件，`lumen replay` 本地调试。
 2. **测试验证阶段**：`lumen cost` 统计 token 消耗，`lumen doctor` 体检，确认 agent 行为符合预期。
 3. **部署阶段**：`lumen deploy` 将 agent 配置（`lumen.toml` + agent 代码）打包，通过 Kova HTTP API 推送到 Kova engine（`kova.lurus.cn`）托管执行。
-4. **生产监控阶段**：Kova engine 内部调用 `LumenCheckpointer`（指向生产 PG `lurus-pg-rw.database.svc:5432`）持久化 checkpoint，同时通过 OTLP 推送 span 到 Grafana Tempo；运维在 `grafana.lurus.cn` 按 `lumen.agent_name` 筛选查看。
+4. **生产监控阶段**：Kova engine 内部调用 `LumenCheckpointer`（指向生产 PG `lurus-pg-rw.database.svc:5432`）持久化 checkpoint，同时通过 OTLP 推送 span 到外部 trace 后端（trace 平台范围外，TBD），可按 `lumen.agent_name` 筛选查看；集群 metrics 监控统一走 Netdata，见 [/ops/observability](/ops/observability)。
 
 关键数据流：
 ```
@@ -915,7 +917,7 @@ flowchart TD
     Q1 --> A1[lumen init 失败]
     Q1 --> A2[checkpointer 写失败]
     Q1 --> A3[replay 数据不一致]
-    Q1 --> A4[OTel 连不上 Grafana]
+    Q1 --> A4[OTel 连不上 trace 后端]
     Q1 --> A5[mcp server 启动失败]
     Q1 --> A6[成本数字为 0 / 偏低]
     Q1 --> A7[checkpoint 无法恢复]
@@ -936,8 +938,8 @@ flowchart TD
 
     A4 --> B4{配置检查}
     B4 --> B4A[LUMEN_OTLP_ENABLED=false\n或未设] --> C4A[设置环境变量或 lumen.toml\nexport.otlp_enabled=true]
-    B4 --> B4B[OTel 实现未完成] --> C4B[⚠ Phase 1：OTLP 导出代码未实现\n临时用 lumen cost --format json\n手动 push 到 Loki]
-    B4 --> B4C[grafana-alloy 不可达] --> C4C[curl -v grafana-alloy:4317\n检查 K8s service 与 network policy]
+    B4 --> B4B[OTel 实现未完成] --> C4B[⚠ Phase 1：OTLP 导出代码未实现\n临时用 lumen cost --format json\n本地导出成本数据]
+    B4 --> B4C[OTLP 后端不可达] --> C4C[curl -v otel-collector:4317\n检查 K8s service 与 network policy]
 
     A5 --> B5{mcp server 状态}
     B5 --> B5A[端口冲突] --> C5A[lumen mcp list 查看已注册 server\n修改 port 配置后 lumen mcp restart]

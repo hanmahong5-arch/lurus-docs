@@ -3,13 +3,29 @@ title: Lumen Python SDK
 description: LumenTracer / LumenCheckpointer / CostTracker 三大核心类的完整使用说明。
 ---
 
+<div class="lumen-page">
+
 # Lumen Python SDK <StatusBadge status="dev" />
 
-`pip install lumen-ai` 后，SDK 的三大核心类：
+`pip install lumen-ai` 后，SDK 提供三大核心类，覆盖采集、持久化与成本聚合：
 
-- `LumenTracer` — 回调形式的 Trace + Cost 采集
-- `LumenCheckpointer` — 替代 `langgraph.checkpoint.sqlite.SqliteSaver` 的持久化层
-- `CostTracker` — 跨 Agent 成本聚合查询
+<div class="lurus-cards lurus-cards--compact">
+  <a class="lurus-card lurus-card--lumen" href="#lumentracer">
+    <span class="lurus-card__icon"><Icon name="activity" :size="20" /></span>
+    <div class="lurus-card__title">LumenTracer</div>
+    <p class="lurus-card__body">回调形式的 Trace + Cost 采集。</p>
+  </a>
+  <a class="lurus-card lurus-card--lumen" href="#lumencheckpointer">
+    <span class="lurus-card__icon"><Icon name="life-buoy" :size="20" /></span>
+    <div class="lurus-card__title">LumenCheckpointer</div>
+    <p class="lurus-card__body">替代 <code>SqliteSaver</code> 的持久化层。</p>
+  </a>
+  <a class="lurus-card lurus-card--lumen" href="#costtracker">
+    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
+    <div class="lurus-card__title">CostTracker</div>
+    <p class="lurus-card__body">跨 Agent 成本聚合查询。</p>
+  </a>
+</div>
 
 ## LumenTracer
 
@@ -52,6 +68,14 @@ graph = workflow.compile(checkpointer=LumenCheckpointer())
 | 多进程 | 需加锁 | **原生支持** |
 | 远程持久化 | 需自实现 | **内置** |
 | 成本关联 | 无 | **自动** |
+
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">直接替换，API 兼容</p>
+    <div class="lurus-callout__body"><code>LumenCheckpointer</code> 兼容 LangGraph 的 <code>BaseCheckpointSaver</code> 接口，把原有 <code>SqliteSaver</code> 一行换掉即可，无需改动图结构。详见 <a href="/lumen/integration">生态集成 · LangGraph</a>。</div>
+  </div>
+</div>
 
 ## CostTracker
 
@@ -107,3 +131,11 @@ asyncio.run(main())
   { text: 'CLI 手册', link: '/lumen/cli' },
   { text: '生态集成', link: '/lumen/integration' },
 ]" />
+
+<RelatedProducts product-id="lumen" />
+
+</div>
+
+<style>
+.lumen-page .lurus-cards--compact { margin: 18px 0 8px; }
+</style>

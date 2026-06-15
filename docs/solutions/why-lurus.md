@@ -3,11 +3,24 @@ title: 为什么选择 Lurus
 description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 TCO 对比。
 ---
 
+<div class="why-lurus-page">
+
 # 为什么选择 Lurus
 
 > 如果你正在评估"自建 vs 采购"，这页给你四项关键能力的 TCO 对比。
 
-## 四项核心能力 vs 自建
+<MetricStats :items="[
+  { label: '网关接入模型', value: '50+', hint: '一个 Key' },
+  { label: 'Kova 调度', value: '3μs', hint: 'Criterion' },
+  { label: '网关 p95', value: '<50ms' },
+  { label: 'MemX PII 规则', value: '12 种', hint: '不可绕过' },
+]" />
+
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="award" :size="14" /> 核心对比</span>
+  <h2 class="lurus-section-head__title">四项核心能力 vs 自建</h2>
+  <p class="lurus-section-head__lede">网关 · Agent 执行 · 记忆 · 身份——逐项对照自建工程量。</p>
+</div>
 
 <ComparisonTable
   title="LLM 网关"
@@ -58,7 +71,11 @@ description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 
   ]"
 />
 
-## 综合 TCO
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="receipt" :size="14" /> 综合账</span>
+  <h2 class="lurus-section-head__title">综合 TCO</h2>
+  <p class="lurus-section-head__lede">把四件套的隐性成本——人月、基础设施、值班、合规——一次算清。</p>
+</div>
 
 | 项目 | 自建四件套（年） | Lurus 方案（年） |
 |------|----------------|------------------|
@@ -67,6 +84,14 @@ description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 
 | 维护值班 | 全年 24×7 | Lurus SLA |
 | 合规审计 | 自己扛 | 一套合规覆盖所有产品 |
 
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="award" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">一套合规覆盖所有产品</p>
+    <div class="lurus-callout__body">四项能力共享同一身份、计费与审计层——不必为每件套各做一遍合规评估，工程人月直接归零。</div>
+  </div>
+</div>
+
 ## 相关链接
 
 <NextSteps :steps="[
@@ -74,3 +99,5 @@ description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 
   { text: '企业 AI 中台', link: '/solutions/ai-midware' },
   { text: '联系商务', link: 'mailto:business@lurus.cn', external: true },
 ]" />
+
+</div>

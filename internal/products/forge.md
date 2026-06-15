@@ -11,13 +11,15 @@ sourcePath: 2b-bs-forge
 
 # Forge 内部手册
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">内部专属</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、未公开问题。<span class="lurus-tag">P1</span> <span class="lurus-tag lurus-tag--muted">beta</span> <RiskBadge flag="wip" /> <RiskBadge flag="no-monitor" /></div></div></div>
 
-## 一句话定位
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="workflow" :size="14"/> 定位</span><h2 class="lurus-section-head__title">一句话定位</h2><p class="lurus-section-head__lede">团队自用的 AI 产品开发工作台——一切皆对话，Session→Ontology→Canvas。</p></div>
 
 Forge 是 Lurus 团队自用的 AI 产品开发工作台（Route C 内部工具），同时作为 `api.lurus.cn` API Gateway LLM 路由能力的活体 Demo。核心哲学：**一切皆对话**——用户在 Session 中自然对话，PM Agent 自动提炼产品需求并写入 Ontology，形成可视化的产品知识图谱；Canvas 模块则提供拖拽式 Agent 编排，底层消费 Kova 执行引擎。对外**不开放注册**，申请制准入，当前 <5 人内测。
 
-## 速查
+<div class="lurus-stat-strip"><div class="lurus-stat"><span class="lurus-stat__value">&lt;5</span><span class="lurus-stat__label">内测人数</span></div><div class="lurus-stat"><span class="lurus-stat__value">11</span><span class="lurus-stat__label">Canvas 组件</span></div><div class="lurus-stat"><span class="lurus-stat__value">0–7</span><span class="lurus-stat__label">Ontology Level</span></div><div class="lurus-stat"><span class="lurus-stat__value">234</span><span class="lurus-stat__label">后端测试</span></div></div>
+
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="search" :size="14"/> 速查</span><h2 class="lurus-section-head__title">速查卡</h2><p class="lurus-section-head__lede">仓库 / 镜像 / 端口 / 依赖一屏看全。</p></div>
 
 | 项 | 值 |
 |---|---|
@@ -220,7 +222,9 @@ FORGE_ZITADEL_ENABLED=true (未来 SSO 模式)
 前端（Next.js）：
 - `BACKEND_URL`：K8s 内 `http://forge-backend.lurus-forge.svc:8000`（server-side proxy 用，非 NEXT_PUBLIC）
 
-## 七、部署
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="rocket" :size="14"/> 部署</span><h2 class="lurus-section-head__title">七、部署</h2><p class="lurus-section-head__lede">多阶段镜像构建 → GHCR → ArgoCD auto-sync（R6 STAGE）。</p></div>
+
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">镜像 tag 待修正</p><div class="lurus-callout__body">当前 manifest 使用 <code>latest</code>，<strong>待修正为 sha7 pinning</strong>（<code>main-&lt;sha7&gt;</code>）——否则 ArgoCD 无法感知新镜像推送。</div></div></div>
 
 ### 构建
 
@@ -238,7 +242,7 @@ docker build -f infra/Dockerfile.web -t ghcr.io/hanmahong5-arch/forge-web:main-<
 |---|---|
 | push main (2b-bs-forge/**) | lint → build backend image → build web image → push GHCR → ArgoCD auto-sync |
 
-镜像 tag 格式：`main-<sha7>`（当前 manifest 使用 `latest`，**待修正为 sha7 pinning**）
+镜像 tag 格式：`main-<sha7>`（当前 manifest 使用 `latest`，见上方告警）
 
 ### 数据库初始化
 
@@ -340,7 +344,7 @@ PMAgent 提取的 `OntologyOp` 结构在 Python（`agents/pm.py`）和前端 Typ
 - [ ] **Flow 执行全局超时** — `FlowExecutor` 加 `asyncio.wait_for` 超时保护，避免 agent loop 卡死
 - [ ] **实时执行状态推送** — 当前 Socket.io 仅用于 session 消息，flow 执行进度需轮询；改为 SSE 或 Socket.io event 推送
 
-## 十二、应急 Runbook（10 分钟版）
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="alert-circle" :size="14"/> Runbook</span><h2 class="lurus-section-head__title">十二、应急 Runbook（10 分钟版）</h2><p class="lurus-section-head__lede">前端 502 / 后端 500 / Kova 不响应 / DB / 数据恢复 / 回滚 / 审计。</p></div>
 
 ### 前端 502 / 页面空白
 
@@ -405,9 +409,7 @@ ssh root@100.98.57.55 "kubectl exec -n lurus-forge deploy/forge-backend -- \
 
 ### 数据恢复
 
-- 备份位置：MinIO `pg-backups-v2`（平台统一备份，forge schema 包含在内）
-- 恢复联系：marvin（DBA 权限）
-- 紧急直连 PG：Tailscale `100.98.57.55:30543`，用 `forge_user` 凭证
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="database-backup" :size="18"/></span><div><p class="lurus-callout__title">备份与直连</p><div class="lurus-callout__body"><strong>备份位置</strong>：MinIO <code>pg-backups-v2</code>（平台统一备份，forge schema 包含在内）。<strong>恢复联系</strong>：marvin（DBA 权限）。<strong>紧急直连 PG</strong>：Tailscale <code>100.98.57.55:30543</code>，用 <code>forge_user</code> 凭证。</div></div></div>
 
 ### 回滚
 
@@ -457,7 +459,7 @@ Forge 提供可视化拖拽式 agent 工作流编排界面（Canvas），无需�
 仓库为 TypeScript + Python 的混合 monorepo（Turbo 编排，pnpm 管理），前端两个独立 Next.js 应用（web :3000 / canvas :3001），后端 FastAPI + Socket.io（:8000），Kova REST 客户端（:3002）。Ontology 数据存 PostgreSQL `forge` schema，节点层级 0–7 对应 Product Vision → Implementation Note。Canvas 执行引擎（`FlowExecutor`）使用 Kahn 拓扑排序驱动组件图，每个组件通过 `KovaClient` 与 kova-rest 通信完成实际 agent 执行。
 
 **运维视角**
-当前为内部 beta（<5 人内测），部署于 R6（STAGE，`43.226.38.244`），namespace `lurus-forge`。镜像 tag 目前为 `latest`（待修正为 `main-<sha7>` sha 钉），ArgoCD 管理，kova-rest **尚未部署到 K8s**（Canvas 中 Kova 组件降级返回占位值）。⚠ 未达商业交付标准，不上 R1。关键监控缺口：无专用审计日志、flow 执行无全局超时、Socket.io 状态推送尚未实现。
+当前为内部 beta（<5 人内测），部署于 R6（STAGE，`43.226.38.244`），namespace `lurus-forge`。镜像 tag 目前为 `latest`（待修正为 `main-<sha7>` sha 钉），ArgoCD 管理，kova-rest **尚未部署到 K8s**（Canvas 中 Kova 组件降级返回占位值）。⚠ 未达商业交付标准，不上 R1。关键监控缺口：无专用审计日志、flow 执行无全局超时、Socket.io 状态推送尚未实现。平台级监控（Netdata 自托管 Agent）见 [/ops/observability](/ops/observability)。
 
 **决策者视角**
 Forge 的核心价值是把 agent 开发民主化——让 PM、运营等非工程师角色也能通过可视化拖拽构建和迭代 AI 工作流，同时沉淀产品知识为结构化 Ontology，避免需求在对话中消散。短期定位是内部 R&D 活体 Demo（展示 `api.lurus.cn` LLM 路由能力），中期路线是向企业客户开放为低代码 agent 平台。当前阶段优先验证核心循环（Session → Ontology → Canvas → 执行），范围外的功能（Zitadel SSO 全量/Redis/NATS）刻意推迟。

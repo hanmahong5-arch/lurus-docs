@@ -4,11 +4,25 @@ lastReviewed: 2026-04-28
 owner: marvin
 ---
 
-# 架构决策档案（ADR）
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="history" :size="14" /> 治理</span>
+  <h2 class="lurus-section-head__title">架构决策档案（ADR）</h2>
+  <p class="lurus-section-head__lede">关键架构决策的"为什么"。代码会变、注释会过期，但决策的上下文如果不写下来就永远丢失。</p>
+</div>
 
-> 关键架构决策的"为什么"。代码会变、注释会过期，但决策的上下文如果不写下来就永远丢失。
-> 当且仅当：（1）决策影响多个产品；（2）有真实的备选方案被拒绝；（3）后人可能问"为什么不用 X"——才写 ADR。
-> 内部专属——可以承认失败、写出当时的私心、记录"我赌错了"的决定。
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">何时该写 ADR</p>
+    <div class="lurus-callout__body">当且仅当三条<strong>同时</strong>满足：<strong>①</strong> 决策影响多个产品；<strong>②</strong> 有真实的备选方案被拒绝；<strong>③</strong> 后人可能问"为什么不用 X"。内部专属——可以承认失败、写出当时的私心、记录"我赌错了"的决定。</div>
+  </div>
+</div>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">10</span><span class="lurus-stat__label">已立档决策</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">8</span><span class="lurus-stat__label">live / 实施中</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">2</span><span class="lurus-stat__label">accepted</span></div>
+</div>
 
 ## 索引
 

@@ -11,9 +11,20 @@ sourcePath: 2c-gui-switch
 
 # Lurus Switch 内部手册
 
-> 🔴 **2026-05-28 状态更新**：building，CI 自 2026-03-21 全红；未交付。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body">building，CI 自 2026-03-21 全红；<strong>未交付</strong>。仅限内部员工查阅 —— 包含运维细节、决策档案、未公开问题。</div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">P2</span><span class="lurus-stat__label">优先级</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">desktop</span><span class="lurus-stat__label">部署目标</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">:19090</span><span class="lurus-stat__label">本地网关端口</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">:31416</span><span class="lurus-stat__label">OIDC 回调端口</span></div>
+</div>
+
+<p>
+  <RiskBadge flag="manual-deploy" />
+  <RiskBadge flag="wip" />
+  <span class="lurus-tag lurus-tag--muted">dev</span>
+</p>
 
 ## 一句话定位
 
@@ -179,12 +190,14 @@ cd frontend && bun run test:run
 
 ### CI 发布流程（lurus-dev/lurus-switch）
 
-1. push tag `v*.*.*` 触发 GitHub Actions
-2. 交叉编译：`wails build` for Windows x64、macOS arm64、Linux x64
-3. 产物上传到 GitHub Release
-4. Switch 客户端在 `startup()` 阶段后台调用 `refreshManifest()`，拉取 `toolmanifest` 获取最新版本信息
-5. `SelfUpdater.CheckUpdate()` 对比版本号，有更新时通知前端；用户确认后调用 `ApplyUpdate()`
-6. Windows 使用 `.update.bat` 延迟替换（因运行中 exe 被锁），替换完毕自动重启
+<ol class="lurus-steps">
+<li>push tag <code>v*.*.*</code> 触发 GitHub Actions</li>
+<li>交叉编译：<code>wails build</code> for Windows x64、macOS arm64、Linux x64</li>
+<li>产物上传到 GitHub Release</li>
+<li>Switch 客户端在 <code>startup()</code> 阶段后台调用 <code>refreshManifest()</code>，拉取 <code>toolmanifest</code> 获取最新版本信息</li>
+<li><code>SelfUpdater.CheckUpdate()</code> 对比版本号，有更新时通知前端；用户确认后调用 <code>ApplyUpdate()</code></li>
+<li>Windows 使用 <code>.update.bat</code> 延迟替换（因运行中 exe 被锁），替换完毕自动重启</li>
+</ol>
 
 ### 版本注入
 
@@ -194,7 +207,7 @@ wails build -ldflags "-X main.AppVersion=1.2.3"
 
 ### 签名（已知坑见下文）
 
-macOS 需 Developer ID + Notarization，Windows 需代码签名证书。自动更新流程依赖签名可信，否则 Gatekeeper / SmartScreen 会拦截替换后的 exe。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="shield" :size="18"/></span><div><p class="lurus-callout__title">签名是自动更新的前置</p><div class="lurus-callout__body">macOS 需 <strong>Developer ID + Notarization</strong>，Windows 需<strong>代码签名证书</strong>。自动更新流程依赖签名可信，否则 Gatekeeper / SmartScreen 会拦截替换后的 exe。</div></div></div>
 
 ## 运行与配置
 
@@ -278,7 +291,7 @@ MCPServer 支持三种 transport：
 
 Switch 通过各工具的 generator（如 `claude_generator.go`）将 MCPServer 定义写入工具配置文件的 `mcpServers` 字段。写入后需重启对应工具才能生效。
 
-> 注意：MCP Server 子进程由工具本身（如 Claude Code）启动和管理，Switch 不直接 spawn MCP 进程，仅负责配置写入。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="plug-zap" :size="18"/></span><div><p class="lurus-callout__title">谁 spawn MCP 进程</p><div class="lurus-callout__body">MCP Server 子进程由工具本身（如 Claude Code）启动和管理，Switch <strong>不直接 spawn</strong> MCP 进程，仅负责配置写入。</div></div></div>
 
 ## 成本监控与 Token 统计
 
@@ -308,6 +321,8 @@ Switch 通过各工具的 generator（如 `claude_generator.go`）将 MCPServer 
 ### 云端配额同步
 
 `billing.Client` 定期调用 `GET /api/v2/user/info` 获取 `Quota`、`UsedQuota`、`RemainingQuota`、`DailyQuota`、`DailyUsed`。系统托盘显示配额使用百分比，超阈值时 badge 变色。前端 BillingPage 提供充值（`CreateTopUp`）、订阅（`Subscribe`/`CancelSubscription`）、兑换码（`RedeemCode`）入口。
+
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="gauge" :size="18"/></span><div><p class="lurus-callout__title">计量是本地的，不是平台监控</p><div class="lurus-callout__body">这里的 token 计量与配额展示都跑在用户本机（<code>internal/metering</code> + 系统托盘），与平台侧服务监控无关。平台侧自托管监控见 <a href="/ops/observability">/ops/observability</a>（Netdata Agent）。</div></div></div>
 
 ## 自动更新机制
 
@@ -381,55 +396,69 @@ SelfUpdater.ApplyUpdate()
 
 ## 应急 Runbook（10 分钟版）
 
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="terminal" :size="18"/></span><div><p class="lurus-callout__title">桌面应用前提</p><div class="lurus-callout__body">Switch 是桌面应用，<strong>无 K8s、无 Pod、无 Ingress</strong>。所有 runbook 针对用户本机；平台侧服务监控请走 <a href="/ops/observability">/ops/observability</a>。</div></div></div>
+
 ### App 启动崩溃
 
-Switch 是桌面应用，无 K8s，崩溃时：
+<ol class="lurus-steps">
+<li>查看 stderr 日志（Wails 开发模式输出到终端；生产模式输出到 app-data 目录下，如有 log 文件）</li>
+<li>
+
+检查 app-data 目录是否可写：
 
 ```bash
-# 1. 查看 stderr 日志（Wails 开发模式会输出到终端）
-# 生产模式日志输出到 app-data 目录下（如有 log 文件）
-
-# 2. 检查 app-data 目录是否可写
 ls %APPDATA%\lurus-switch\
-
-# 3. 检查 SQLite 是否损坏（见"本地数据损坏"章节）
-
-# 4. 启动时 warnings 会打印到 stderr：
-# "Warning: config store: ..."
-# "Warning: database: ..."
-# 按提示逐一排查
-
-# 5. 万能修复：备份 app-data 目录后删除，让 app 重新初始化
-mv %APPDATA%\lurus-switch %APPDATA%\lurus-switch.bak
-# 重新启动 Switch，所有状态重置为默认
 ```
+
+</li>
+<li>检查 SQLite 是否损坏（见“本地数据损坏”章节）</li>
+<li>启动时 warnings 会打印到 stderr（<code>Warning: config store: ...</code> / <code>Warning: database: ...</code>），按提示逐一排查</li>
+<li>
+
+万能修复：备份 app-data 目录后删除，让 app 重新初始化（重启后所有状态重置为默认）：
+
+```bash
+mv %APPDATA%\lurus-switch %APPDATA%\lurus-switch.bak
+```
+
+</li>
+</ol>
 
 ### 模型不响应（工具调用超时）
 
+<ol class="lurus-steps">
+<li>确认本地网关在运行：前端 NewGatewayPage 查看 gateway status，或检查 app-data/server/ 下是否有 newapi.db</li>
+<li>
+
+测试本地网关健康：
+
 ```bash
-# 1. 确认本地网关在运行
-# 前端 NewGatewayPage 查看 gateway status
-# 或检查 app-data/server/ 下是否有 newapi.db
-
-# 2. 测试本地网关健康
 curl http://localhost:19090/api/status
-
-# 3. 检查上游连通性
-curl -H "Authorization: Bearer <UserToken>" https://api.lurus.cn/api/v2/user/info
-
-# 4. 检查工具配置中 base URL 是否指向本地网关
-cat ~/.claude/settings.json | grep -i "base_url\|ANTHROPIC_BASE_URL"
-
-# 5. 检查配额是否耗尽
-# 前端 BillingPage → 配额剩余
-# 或 curl https://api.lurus.cn/api/v2/user/info
-
-# 6. 检查 relay 健康（RelayPage）
-# 切换到备用 relay endpoint
-
-# 7. 工具健康检查（前端 ToolConfigPage 或命令行）
-# Switch 执行 toolhealth.CheckAll() 并在 dashboard 显示
 ```
+
+</li>
+<li>
+
+检查上游连通性：
+
+```bash
+curl -H "Authorization: Bearer <UserToken>" https://api.lurus.cn/api/v2/user/info
+```
+
+</li>
+<li>
+
+检查工具配置中 base URL 是否指向本地网关：
+
+```bash
+cat ~/.claude/settings.json | grep -i "base_url\|ANTHROPIC_BASE_URL"
+```
+
+</li>
+<li>检查配额是否耗尽：前端 BillingPage → 配额剩余，或 <code>curl https://api.lurus.cn/api/v2/user/info</code></li>
+<li>检查 relay 健康（RelayPage）→ 切换到备用 relay endpoint</li>
+<li>工具健康检查：Switch 执行 <code>toolhealth.CheckAll()</code> 并在 dashboard 显示（前端 ToolConfigPage 或命令行）</li>
+</ol>
 
 ### 本地数据损坏
 

@@ -11,9 +11,18 @@ sourcePath: 2b-svc-psi
 
 # Lurus Tally 内部员工手册
 
-> 🟢 **2026-05-28 状态更新**：stage（R6），Epic 1 done，Billing 待 R6 部署；tally-mcp 仍 alpha。
+<div class="lurus-callout lurus-callout--tip"><span class="lurus-callout__icon"><Icon name="check-circle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body">stage（R6），Epic 1 done，Billing 待 R6 部署；tally-mcp 仍 alpha。</div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、已知坑、未公开风险。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">仅限内部</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、已知坑、未公开风险。</div></div></div>
+
+<p><span class="lurus-tag">P0</span> <span class="lurus-tag lurus-tag--muted">beta · stage</span> <RiskBadge flag="wip" /></p>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">18200</span><span class="lurus-stat__label">后端端口</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">12</span><span class="lurus-stat__label">Migration head</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">6</span><span class="lurus-stat__label">复用 Platform 能力</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">行业 Profile</span></div>
+</div>
 
 ---
 
@@ -488,6 +497,8 @@ V1 边界：AI 不直接执行任何写操作，只建议+跳转预填表单。
 
 ### 9.2 R1 Prod 毕业门槛（三个缺一不可）
 
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield-check" :size="18"/></span><div><p class="lurus-callout__title">三个门槛缺一不可</p><div class="lurus-callout__body"><ul><li><strong>Stage 稳定运行 ≥ 30 天</strong>，无数据事故，无 P1/P2 级 Bug 积压</li><li><strong>≥ 5 个早期客户验证</strong>，其中至少 2 个是真实付费客户</li><li><strong>零数据安全事故</strong>：无 RLS 绕过记录，无跨租户数据泄露</li></ul></div></div></div>
+
 1. **Stage 稳定运行 ≥ 30 天**，无数据事故，无 P1/P2 级 Bug 积压
 2. **≥ 5 个早期客户验证**，其中至少 2 个是真实付费客户
 3. **零 数据安全事故**：无 RLS 绕过记录，无跨租户数据泄露
@@ -654,7 +665,7 @@ ssh root@100.98.57.55 "kubectl rollout restart deployment/tally-web -n lurus-tal
 
 ### 12.2 多租户隔离失败（RLS 可能 bypass）
 
-**症状**：某用户看到了其他租户的商品/单据；或 API 返回了超出预期的数据量。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="shield" :size="18"/></span><div><p class="lurus-callout__title">数据安全事件 — 最高优先级</p><div class="lurus-callout__body"><strong>症状</strong>：某用户看到了其他租户的商品/单据；或 API 返回了超出预期的数据量。一经怀疑，<strong>不论是否确认真实泄露，立即通知 marvin</strong>。</div></div></div>
 
 **紧急处置**：
 
@@ -788,7 +799,7 @@ curl -s http://kova-rest.lurus-kova.svc:3002/health
 
 ### 运维视角
 
-R1（100.98.57.55）生产环境，命名空间 `lurus-tally`。关键依赖：PostgreSQL `lurus-pg-rw.database.svc:5432` schema `tally`、Redis DB 5、NATS stream `PSI_EVENTS`、Platform :18104、Memorus :8880、notification :18900。健康检查：`/healthz`（liveness）、`/readyz`（readiness，含 DB ping）。监控告警覆盖：OCR 识别准确率、NATS 消费延迟、月报生成耗时、跨租户 RLS 审计。Stage 在 R6（43.226.38.244），毕业标准见 §9.2。
+R1（100.98.57.55）生产环境，命名空间 `lurus-tally`。关键依赖：PostgreSQL `lurus-pg-rw.database.svc:5432` schema `tally`、Redis DB 5、NATS stream `PSI_EVENTS`、Platform :18104、Memorus :8880、notification :18900。健康检查：`/healthz`（liveness）、`/readyz`（readiness，含 DB ping）。监控告警覆盖：OCR 识别准确率、NATS 消费延迟、月报生成耗时、跨租户 RLS 审计（平台监控走 Netdata，见 [/ops/observability](/ops/observability)）。Stage 在 R6（43.226.38.244），毕业标准见 §9.2。
 
 ### 决策者视角
 

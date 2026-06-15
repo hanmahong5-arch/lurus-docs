@@ -1,17 +1,15 @@
-# 横向视角：跨产品速查
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="layers" :size="14"/> 横向视角</span><h2 class="lurus-section-head__title">跨产品速查</h2><p class="lurus-section-head__lede">单产品手册回答 "这个产品怎么用"；这一组横向页面回答 "14 个产品凑一起怎么用"。</p></div>
 
-> 单产品手册回答 "**这个产品怎么用**"；这一组横向页面回答 "**14 个产品凑一起怎么用**"。
->
-> 单产品手册 → `/products/<id>`，索引在导航栏 `产品手册`。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="search" :size="18"/></span><div><p class="lurus-callout__title">找单产品手册</p><div class="lurus-callout__body">单产品手册 → <code>/products/&lt;id&gt;</code>，索引在导航栏 <strong>产品手册</strong>。</div></div></div>
 
 ## 四张总览
 
 | 页面 | 适合谁 | 一句话 |
 |---|---|---|
-| [能力矩阵](/cross/capability-matrix) | 决策者 / PM | 14 产品 × 12 能力的勾选表，找重合与缺口 |
-| [用户旅程](/cross/user-journeys) | 客户成功 / 销售 / 决策者 | 4 类用户从注册到续费的全流程图 |
-| [集成配方](/cross/integration-recipes) | 开发者 / 架构师 | 真实跨产品组合的可复用 recipe |
-| [决策路由](/cross/decision-router) | 任何人 | "我有 X 需求，该用 Lurus 哪个产品？" 决策树 |
+| <Icon name="layers" :size="15"/> [能力矩阵](/cross/capability-matrix) | 决策者 / PM | 14 产品 × 12 能力的勾选表，找重合与缺口 |
+| <Icon name="users" :size="15"/> [用户旅程](/cross/user-journeys) | 客户成功 / 销售 / 决策者 | 4 类用户从注册到续费的全流程图 |
+| <Icon name="workflow" :size="15"/> [集成配方](/cross/integration-recipes) | 开发者 / 架构师 | 真实跨产品组合的可复用 recipe |
+| <Icon name="git-branch" :size="15"/> [决策路由](/cross/decision-router) | 任何人 | "我有 X 需求，该用 Lurus 哪个产品？" 决策树 |
 
 ## 系统全貌（一图速览）
 
@@ -95,7 +93,7 @@ graph TB
   class U1,U2,U3,U4 user
 ```
 
-**怎么读这张图**：从你是谁（用户世界）出发，看你会进入哪个入口（P2），那个入口背后调用哪些业务（P1），所有业务最终都接平台底座（P0）。MCP 是把后台直接桌面化，让员工 chat 操作。
+<div class="lurus-callout lurus-callout--tip"><span class="lurus-callout__icon"><Icon name="eye" :size="18"/></span><div><p class="lurus-callout__title">怎么读这张图</p><div class="lurus-callout__body">从你是谁（用户世界）出发，看你会进入哪个入口（P2），那个入口背后调用哪些业务（P1），所有业务最终都接平台底座（P0）。MCP 是把后台直接桌面化，让员工 chat 操作。</div></div></div>
 
 > 一句话产品速记见 [决策路由](/cross/decision-router) 的一句话索引表。
 
@@ -125,7 +123,9 @@ graph TD
 
 ## 阅读顺序建议
 
-- **新员工**：先看 [七天入职 onboarding](/onboarding/)，再读这页 → [能力矩阵](/cross/capability-matrix)，挑 1 个产品深入。
-- **新销售**：[用户旅程](/cross/user-journeys) → [决策路由](/cross/decision-router)（学着回答客户"我该用哪个"）。
-- **新客户成功 / PM**：[能力矩阵](/cross/capability-matrix) → [用户旅程](/cross/user-journeys) → 读你负责产品的手册。
-- **新工程师**：[集成配方](/cross/integration-recipes) → 读你接手产品的手册 → [运维 SOP](/ops/)。
+<div class="lurus-grid--products">
+<div class="lurus-card"><strong><Icon name="users" :size="16"/> 新员工</strong><p>先看 <a href="/onboarding/">七天入职 onboarding</a>，再读这页 → <a href="/cross/capability-matrix">能力矩阵</a>，挑 1 个产品深入。</p></div>
+<div class="lurus-card"><strong><Icon name="trending-up" :size="16"/> 新销售</strong><p><a href="/cross/user-journeys">用户旅程</a> → <a href="/cross/decision-router">决策路由</a>（学着回答客户"我该用哪个"）。</p></div>
+<div class="lurus-card"><strong><Icon name="check-circle" :size="16"/> 新客户成功 / PM</strong><p><a href="/cross/capability-matrix">能力矩阵</a> → <a href="/cross/user-journeys">用户旅程</a> → 读你负责产品的手册。</p></div>
+<div class="lurus-card"><strong><Icon name="hammer" :size="16"/> 新工程师</strong><p><a href="/cross/integration-recipes">集成配方</a> → 读你接手产品的手册 → <a href="/ops/">运维 SOP</a>。</p></div>
+</div>

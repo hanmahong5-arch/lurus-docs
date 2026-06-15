@@ -11,9 +11,21 @@ sourcePath: 2l-svc-zitadel-mcp, 2l-svc-k8s-mcp, 2l-svc-platform-mcp
 
 # MCP 工具链 内部手册
 
-> 🟢 **2026-05-28 状态更新**：zita/k8s/platform MCP 在 prod；tally-mcp 仍 alpha（待首发 tag）。
+<div class="lurus-callout lurus-callout--tip"><span class="lurus-callout__icon"><Icon name="check-circle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body">zita / k8s / platform MCP 在 <strong>prod</strong>；tally-mcp 仍 <strong>alpha</strong>（待首发 tag）。仅限内部员工查阅 —— 包含运维细节、决策档案、未公开问题。</div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">prod MCP server</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">stdio</span><span class="lurus-stat__label">传输（无端口）</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">v0.1.0</span><span class="lurus-stat__label">版本</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">~10MB</span><span class="lurus-stat__label">单二进制体积</span></div>
+</div>
+
+<p>
+  <span class="lurus-tag">zitadel-mcp · prod</span>
+  <span class="lurus-tag">k8s-mcp · prod</span>
+  <span class="lurus-tag">platform-mcp · prod</span>
+  <span class="lurus-tag lurus-tag--muted">tally-mcp · alpha</span>
+</p>
 
 ## 一句话定位
 
@@ -84,12 +96,7 @@ sequenceDiagram
 
 三个 server 共享同一套手写 `internal/mcp/mcp.go` 实现，不依赖第三方 MCP SDK。
 
-- **协议版本**: `2024-11-05`
-- **传输**: stdio，每行一个 JSON-RPC 消息（`bufio.Scanner`，frame 上限 1 MiB）
-- **支持方法**: `initialize` / `tools/list` / `tools/call` / `ping`
-- **日志**: 全部写到 `stderr`，`stdout` 严格保留给 JSON-RPC 响应
-- **信号处理**: `SIGINT` / `SIGTERM` 触发 context cancel，当前 tool call 超时后退出
-- **Tool 结果格式**: 包装为 `{"content":[{"type":"text","text":"<JSON string>"}]}`，错误时附加 `"isError":true`
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="workflow" :size="18"/></span><div><p class="lurus-callout__title">协议实现要点</p><div class="lurus-callout__body"><ul><li><strong>协议版本</strong>：<code>2024-11-05</code></li><li><strong>传输</strong>：stdio，每行一个 JSON-RPC 消息（<code>bufio.Scanner</code>，frame 上限 1 MiB）</li><li><strong>支持方法</strong>：<code>initialize</code> / <code>tools/list</code> / <code>tools/call</code> / <code>ping</code></li><li><strong>日志</strong>：全部写到 <code>stderr</code>，<code>stdout</code> 严格保留给 JSON-RPC 响应</li><li><strong>信号处理</strong>：<code>SIGINT</code> / <code>SIGTERM</code> 触发 context cancel，当前 tool call 超时后退出</li><li><strong>Tool 结果格式</strong>：包装为 <code>{"content":[{"type":"text","text":"&lt;JSON string&gt;"}]}</code>，错误时附加 <code>"isError":true</code></li></ul></div></div></div>
 
 ---
 
@@ -212,7 +219,9 @@ SA JSON 文件格式（Zitadel 下载的 machine key）：
 
 ### pg_query 写保护逻辑
 
-`containsDestructiveVerb` 在 SQL 上扫描 `INSERT / UPDATE / DELETE / DROP / TRUNCATE / ALTER / CREATE / GRANT / REVOKE / REINDEX`（先剥离 `--` 注释，大写比对）。这是**安全带而非防线**，真正防线是 Postgres 的用户权限（当前 psql 跑 postgres superuser）。
+`containsDestructiveVerb` 在 SQL 上扫描 `INSERT / UPDATE / DELETE / DROP / TRUNCATE / ALTER / CREATE / GRANT / REVOKE / REINDEX`（先剥离 `--` 注释，大写比对）。
+
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">安全带而非防线</p><div class="lurus-callout__body">写动词扫描只是<strong>安全带</strong>，真正防线是 Postgres 的用户权限（当前 psql 跑 postgres superuser）。</div></div></div>
 
 ### 环境变量
 
@@ -271,8 +280,7 @@ ssh root@100.98.57.55 "kubectl get secret platform-core-secrets \
 
 支持的 payment_method 枚举：`alipay_qr` / `alipay` / `wechat_native` / `wechat_h5` / `stripe` / `creem` / `epay_alipay` / `epay_wxpay` / `worldfirst`
 
-**v0.1 刻意不暴露**（需要独立 admin-JWT + 审计链路）：
-- wallet 人工调账 / 订阅取消退款 / 对账 issue 处理 / 组织 suspend
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="shield-check" :size="18"/></span><div><p class="lurus-callout__title">v0.1 刻意不暴露</p><div class="lurus-callout__body">以下操作需要独立 admin-JWT + 审计链路，<strong>未</strong>暴露为 MCP 工具：wallet 人工调账 / 订阅取消退款 / 对账 issue 处理 / 组织 suspend。</div></div></div>
 
 ### 环境变量
 
@@ -370,10 +378,7 @@ flowchart TD
     end
 ```
 
-关键差异：
-- **zitadel-mcp**：无 allowlist，安全边界在 SA 本身的 Zitadel 权限；误用 `grant_iam_role` 可能提权。
-- **k8s-mcp**：allowlist 编译进二进制，写目标有限，但 `pg_query allow_write=true` 仍是 superuser 执行。
-- **platform-mcp**：v0.1 写工具只有 checkout_create（生成支付链接），不改数据状态。
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield" :size="18"/></span><div><p class="lurus-callout__title">关键差异：写工具安全边界</p><div class="lurus-callout__body"><ul><li><strong>zitadel-mcp</strong>：无 allowlist，安全边界在 SA 本身的 Zitadel 权限；误用 <code>grant_iam_role</code> 可能提权。</li><li><strong>k8s-mcp</strong>：allowlist 编译进二进制，写目标有限，但 <code>pg_query allow_write=true</code> 仍是 superuser 执行。</li><li><strong>platform-mcp</strong>：v0.1 写工具只有 <code>checkout_create</code>（生成支付链接），不改数据状态。</li></ul></div></div></div>
 
 ---
 
@@ -431,9 +436,12 @@ kill -9 <PID>
 ```
 
 排查步骤：
-1. 查看 Claude Code 的 MCP 日志（stderr 输出，通常在 `~/.claude/logs/mcp-<name>.log`）
-2. 确认 stderr 中是否有 `serve: EOF` 或 `serve: broken pipe`
-3. 若是 k8s-mcp，检查 SSH 是否挂起：`ssh -o ConnectTimeout=5 root@100.98.57.55 "echo ok"`
+
+<ol class="lurus-steps">
+<li>查看 Claude Code 的 MCP 日志（stderr 输出，通常在 <code>~/.claude/logs/mcp-&lt;name&gt;.log</code>）</li>
+<li>确认 stderr 中是否有 <code>serve: EOF</code> 或 <code>serve: broken pipe</code></li>
+<li>若是 k8s-mcp，检查 SSH 是否挂起：<code>ssh -o ConnectTimeout=5 root@100.98.57.55 "echo ok"</code></li>
+</ol>
 
 ### SSH 连接失败（k8s-mcp）
 
@@ -489,7 +497,7 @@ ssh root@100.98.57.55 "kubectl exec -i -n database lurus-pg-1 -- \
 
 ### 误删 K8s 资源（防范）
 
-k8s-mcp **没有** `kubectl delete` 工具，现有 write tools 只有 `rollout_restart` 和 `crictl_pull`，无法通过 MCP 删除任何 K8s 资源。若需要删除操作，只能手工 SSH。
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield-check" :size="18"/></span><div><p class="lurus-callout__title">MCP 无删除能力</p><div class="lurus-callout__body">k8s-mcp <strong>没有</strong> <code>kubectl delete</code> 工具，现有 write tools 只有 <code>rollout_restart</code> 和 <code>crictl_pull</code>，无法通过 MCP 删除任何 K8s 资源。若需要删除操作，只能手工 SSH。</div></div></div>
 
 ### K8s pg_query 写操作误执行
 
@@ -787,7 +795,7 @@ Agent：
 ③ 告知客服：已为用户生成临时登录令牌，有效期 24h，请通过安全渠道发送给用户
 ```
 
-⚠ 此场景绕过了 admin 后台的审批流程，仅在紧急情况（admin 后台不可用 / 正式工单 pending）下使用，操作后需在 Slack #ops-incidents 频道补记操作记录。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">绕过审批流程</p><div class="lurus-callout__body">此场景绕过了 admin 后台的审批流程，仅在紧急情况（admin 后台不可用 / 正式工单 pending）下使用，操作后需在 Slack #ops-incidents 频道补记操作记录。</div></div></div>
 
 ---
 
@@ -857,4 +865,4 @@ AI Chat 工具
 - 紧急改密/锁号（zitadel-mcp 直接操作 Zitadel，Admin 经 platform-core 中转）
 - Chat MCP 失败的降级路径（保证任何情况下都有 Web 界面兜底）
 
-**⚠ 两个通道写同一数据**：zitadel-mcp 直接操作 Zitadel 用户数据，Admin 经 platform-core 操作 platform DB。确保两者操作的是同一 `user_id`（Zitadel sub），避免数据不一致。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="git-merge" :size="18"/></span><div><p class="lurus-callout__title">两个通道写同一数据</p><div class="lurus-callout__body">zitadel-mcp 直接操作 Zitadel 用户数据，Admin 经 platform-core 操作 platform DB。确保两者操作的是同一 <code>user_id</code>（Zitadel sub），避免数据不一致。</div></div></div>

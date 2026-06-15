@@ -6,21 +6,27 @@ owner: marvin
 
 # PostgreSQL 操作
 
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="database" :size="14"/> 数据 · 运维</span><h2 class="lurus-section-head__title">PostgreSQL 操作</h2><p class="lurus-section-head__lede">R1 主 CNPG cluster 的日常操作：连接、锁排查、切主、加 schema。</p></div>
+
 ## 拓扑
 
-```
-R1 K3s namespace: database
-└─ Cluster: lurus-pg (CNPG)
-    ├─ lurus-pg-1  primary
-    ├─ lurus-pg-2  replica
-    └─ lurus-pg-3  replica (R2)
-
-集群内访问: lurus-pg-rw.database.svc:5432  (写)
-            lurus-pg-ro.database.svc:5432  (只读)
-集群外:     100.98.57.55:30543
-
-R6 staging: 自己一份独立 lurus-pg StatefulSet（local PG）
-```
+<MermaidBlock id="pg-topo" chart="graph TD
+  subgraph R1[R1 K3s · namespace database]
+    C[Cluster lurus-pg · CNPG]
+    P[lurus-pg-1 · primary]
+    R2a[lurus-pg-2 · replica]
+    R3[lurus-pg-3 · replica R2]
+    C --> P
+    C --> R2a
+    C --> R3
+  end
+  RW[lurus-pg-rw.database.svc:5432 · 写]
+  RO[lurus-pg-ro.database.svc:5432 · 只读]
+  EXT[集群外 100.98.57.55:30543]
+  P --> RW
+  R2a --> RO
+  P --> EXT
+  R6[R6 staging · 独立 lurus-pg StatefulSet local PG]" />
 
 ## Schema 划分（业务隔离）
 
@@ -34,7 +40,7 @@ R6 staging: 自己一份独立 lurus-pg StatefulSet（local PG）
 | lucrum | lucrum | 量化交易数据 |
 | tally | tally | 商品 / 库存 / 单据 |
 
-> **不允许跨 schema 直接 SQL** — 跨业务用 capability API。
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield" :size="18"/></span><div><p class="lurus-callout__title">不允许跨 schema 直接 SQL</p><div class="lurus-callout__body">跨业务用 capability API。</div></div></div>
 
 ## 常用操作
 
@@ -94,6 +100,8 @@ kubectl cnpg promote lurus-pg lurus-pg-2 -n database
 kubectl get cluster lurus-pg -n database
 ```
 
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="repeat" :size="18"/></span><div><p class="lurus-callout__title">自动 failover</p><div class="lurus-callout__body">触发条件：primary unhealthy 30s。CNPG 会自行选 replica 升主。</div></div></div>
+
 ### 加新 schema（新业务接入）
 
 ```sql
@@ -143,30 +151,43 @@ kubectl edit cluster lurus-pg -n database
 
 ## R6 supabase pooler 已知问题
 
-R6 上 zhongtie-oa 项目使用的 supabase stack，13 容器中 `supabase-pooler` 持续重启。
-
-根因：`VAULT_ENC_KEY` 在 `/data/zhongtie-oa/supabase/.env` 是 31 字节，AES-256 需要 32 字节。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">supabase-pooler 持续重启</p><div class="lurus-callout__body">R6 上 zhongtie-oa 项目使用的 supabase stack，13 容器中 <code>supabase-pooler</code> 持续重启。根因：<code>VAULT_ENC_KEY</code> 在 <code>/data/zhongtie-oa/supabase/.env</code> 是 31 字节，AES-256 需要 32 字节。</div></div></div>
 
 修复：
+
+<ol class="lurus-steps">
+<li>
+
+看现状
 
 ```bash
 ssh root@100.122.83.20
 cd /data/zhongtie-oa/supabase
-
-# 看现状
 docker ps -a | grep supabase-pooler
 docker logs supabase-pooler 2>&1 | tail -20
+```
 
-# 改 .env（确认无已加密 vault 数据；当前 pooler 从未成功，应安全）
+</li>
+<li>
+
+改 `.env`（确认无已加密 vault 数据；当前 pooler 从未成功，应安全）
+
+```bash
 sed -i 's/VAULT_ENC_KEY=\(.\{31\}\)$/VAULT_ENC_KEY=\1A/' .env
+```
 
-# 重启
+</li>
+<li>
+
+重启
+
+```bash
 docker compose restart supabase-pooler
 ```
 
+</li>
+</ol>
+
 ## 已知坑
 
-- CNPG 跨节点的 replica 在 R2（100.94.177.10），跨 Tailscale 网络复制延迟高峰可能滞后。
-- 长事务会阻塞 vacuum，autovacuum 难追上 → 表膨胀。看 `pg_stat_user_tables.n_dead_tup`。
-- pg_dump/restore 不带索引和约束，恢复时手工加。
-- 数据库密码改后必须同时改：CNPG cluster spec、各应用 secret、连接池配置。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-circle" :size="18"/></span><div><p class="lurus-callout__title">运维注意</p><div class="lurus-callout__body"><ul><li>CNPG 跨节点的 replica 在 R2（<code>100.94.177.10</code>），跨 Tailscale 网络复制延迟高峰可能滞后。</li><li>长事务会阻塞 vacuum，autovacuum 难追上 → 表膨胀。看 <code>pg_stat_user_tables.n_dead_tup</code>。</li><li>pg_dump/restore 不带索引和约束，恢复时手工加。</li><li>数据库密码改后必须同时改：CNPG cluster spec、各应用 secret、连接池配置。</li></ul></div></div></div>

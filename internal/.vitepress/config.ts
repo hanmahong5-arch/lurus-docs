@@ -143,7 +143,27 @@ export default defineConfig({
       '/ops/': [
         { text: '运维 SOP', items: [
           { text: '索引', link: '/ops/' },
-        ]}
+        ]},
+        { text: '部署 / 回滚', items: [
+          { text: '部署到 R1（生产）', link: '/ops/deploy-r1' },
+          { text: '部署到 R6（staging）', link: '/ops/deploy-r6' },
+          { text: '回滚', link: '/ops/rollback' },
+        ]},
+        { text: '数据 / 存储', items: [
+          { text: 'PostgreSQL 备份恢复', link: '/ops/db-backup' },
+          { text: 'Postgres 操作', link: '/ops/postgres' },
+          { text: 'Redis / NATS', link: '/ops/redis-nats' },
+          { text: 'MinIO 对象存储', link: '/ops/minio' },
+        ]},
+        { text: '可观测性 / 安全', items: [
+          { text: '可观测性（Netdata）', link: '/ops/observability' },
+          { text: '密钥轮换', link: '/ops/key-rotation' },
+          { text: '证书管理', link: '/ops/cert' },
+          { text: 'DNS 管理', link: '/ops/dns' },
+        ]},
+        { text: '应急', items: [
+          { text: '事故响应总则', link: '/ops/incident-response' },
+        ]},
       ],
       '/adr/': [
         { text: '架构决策', items: [

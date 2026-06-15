@@ -3,21 +3,32 @@ title: Creator 使用手册
 description: Creator 桌面内容工厂的使用指南和功能说明。
 ---
 
+<div class="creator-page">
+
 # 使用手册
 
 ## 快速体验
 
-主界面 →「**新建任务**」→ 粘贴视频 URL（YouTube/Bilibili 等）→ 选目标操作（仅下载 / 下载+转写 / 下载+转写+改写 / 完整流水线含发布）→「**开始**」。Creator 按顺序执行各阶段，任务面板查看实时进度。
+<ol class="lurus-steps">
+<li>主界面点「<strong>新建任务</strong>」。</li>
+<li>粘贴视频 URL（YouTube / Bilibili 等）。</li>
+<li>选目标操作：仅下载 / 下载+转写 / 下载+转写+改写 / 完整流水线（含发布）。</li>
+<li>点「<strong>开始</strong>」，Creator 按顺序执行各阶段，任务面板查看实时进度。</li>
+</ol>
 
 ---
 
 ## 内容流水线详解
 
-### 阶段 1：视频下载
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="video" :size="14" /> 阶段 1</span>
+  <h2 class="lurus-section-head__title">视频下载</h2>
+  <p class="lurus-section-head__lede">支持 1000+ 视频平台（完整列表见 yt-dlp 支持的网站）。</p>
+</div>
 
-支持 1000+ 视频平台（完整列表见 [yt-dlp 支持的网站](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)）。
+完整列表见 [yt-dlp 支持的网站](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)。
 
-**常用来源**:
+**常用来源**：
 
 | 平台 | URL 格式 |
 |------|---------|
@@ -26,7 +37,7 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 | 抖音 | `https://www.douyin.com/video/xxx` |
 | Twitter/X | `https://x.com/user/status/xxx` |
 
-**下载选项**:
+**下载选项**：
 
 | 选项 | 说明 | 默认值 |
 |------|------|--------|
@@ -34,9 +45,11 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 | 字幕 | 自动下载可用字幕 | 开启 |
 | 代理 | HTTP/SOCKS5 代理（访问海外平台） | 无 |
 
-### 阶段 2：音频转写
-
-使用 OpenAI Whisper 模型将音频转为文字。
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="search" :size="14" /> 阶段 2</span>
+  <h2 class="lurus-section-head__title">音频转写</h2>
+  <p class="lurus-section-head__lede">使用 OpenAI Whisper 模型将音频转为文字。</p>
+</div>
 
 | 模型 | 大小 | 速度 | 准确率 | 适用场景 |
 |------|------|------|--------|---------|
@@ -45,13 +58,17 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 | `small` | 466 MB | 中 | 优秀 | 需要较高准确率 |
 | `medium` | 1.5 GB | 慢 | 极佳 | 专业内容、多语言 |
 
-**语言支持**: 自动检测语言，也可手动指定（支持中文、英文、日文等 99 种语言）。
+**语言支持**：自动检测语言，也可手动指定（支持中文、英文、日文等 99 种语言）。
 
-### 阶段 3：AI 改写
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="sparkles" :size="14" /> 阶段 3</span>
+  <h2 class="lurus-section-head__title">AI 改写</h2>
+  <p class="lurus-section-head__lede">通过 Lurus API 调用 AI 模型对转写文本进行加工。</p>
+</div>
 
 通过 [Lurus API](/guide/introduction) 调用 AI 模型对转写文本进行加工。
 
-**改写模式**:
+**改写模式**：
 
 | 模式 | 说明 | 适合 |
 |------|------|------|
@@ -62,7 +79,7 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 | **风格转换** | 调整语气（正式↔轻松） | 适配不同平台 |
 | **SEO 优化** | 生成标题、标签、摘要 | 提升搜索排名 |
 
-**模型选择**:
+**模型选择**：
 
 | 推荐模型 | 适合 | 成本 |
 |---------|------|------|
@@ -70,11 +87,27 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 | `gpt-4o` | 英文内容、复杂改写 | 高 |
 | `claude-3-5-sonnet` | 创意写作、长文本 | 中 |
 
-### 阶段 4：自动发布
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="share-2" :size="14" /> 阶段 4</span>
+  <h2 class="lurus-section-head__title">自动发布</h2>
+  <p class="lurus-section-head__lede">通过 chromedp 无头浏览器自动发布。</p>
+</div>
 
-通过 chromedp 无头浏览器自动发布。**当前仅支持 3 个平台自动发布：微信公众号 / 抖音 / 小红书。** 其他平台（YouTube Shorts / TikTok / Instagram Reels 等）文案可生成但需手动发布。
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="alert-circle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">仅 3 个平台支持自动发布</p>
+    <div class="lurus-callout__body">当前仅支持 <strong>微信公众号 / 抖音 / 小红书</strong> 自动发布。其他平台（YouTube Shorts / TikTok / Instagram Reels 等）文案可生成但需手动发布。</div>
+  </div>
+</div>
 
-**首次配置**：设置 →「**发布平台**」→ 选目标平台 →「**登录**」弹出浏览器窗口 → 手动扫码/密码登录 → Creator 保存登录状态。
+**首次配置**：
+
+<ol class="lurus-steps">
+<li>设置 →「<strong>发布平台</strong>」→ 选目标平台。</li>
+<li>点「<strong>登录</strong>」弹出浏览器窗口。</li>
+<li>手动扫码 / 密码登录，Creator 保存登录状态。</li>
+</ol>
 
 **发布设置**（每平台独立配置）：
 
@@ -89,7 +122,12 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 
 ## 批量处理
 
-创建文本文件每行一个视频 URL → Creator「**批量导入**」选文件 → 选统一处理配置 →「**全部开始**」。
+<ol class="lurus-steps">
+<li>创建文本文件，每行一个视频 URL。</li>
+<li>Creator 点「<strong>批量导入</strong>」选文件。</li>
+<li>选统一处理配置。</li>
+<li>点「<strong>全部开始</strong>」。</li>
+</ol>
 
 ### 任务状态
 
@@ -105,7 +143,13 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 | `completed` | 全部完成 |
 | `failed` | 某阶段失败（可重试） |
 
-失败的任务可以从失败阶段重新开始，无需从头处理。
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">断点续传</p>
+    <div class="lurus-callout__body">失败的任务可以从失败阶段重新开始，无需从头处理。</div>
+  </div>
+</div>
 
 ---
 
@@ -127,17 +171,52 @@ description: Creator 桌面内容工厂的使用指南和功能说明。
 
 | 快捷键 | 功能 |
 |--------|------|
-| `Ctrl+N` / `Cmd+N` | 新建任务 |
-| `Ctrl+V` / `Cmd+V` | 粘贴 URL 并创建任务 |
-| `Ctrl+Shift+S` / `Cmd+Shift+S` | 打开设置 |
-| `Space` | 暂停/恢复当前任务 |
-| `Delete` | 删除选中任务 |
+| <span class="lurus-kbd">Ctrl+N</span> / <span class="lurus-kbd">Cmd+N</span> | 新建任务 |
+| <span class="lurus-kbd">Ctrl+V</span> / <span class="lurus-kbd">Cmd+V</span> | 粘贴 URL 并创建任务 |
+| <span class="lurus-kbd">Ctrl+Shift+S</span> / <span class="lurus-kbd">Cmd+Shift+S</span> | 打开设置 |
+| <span class="lurus-kbd">Space</span> | 暂停/恢复当前任务 |
+| <span class="lurus-kbd">Delete</span> | 删除选中任务 |
 
 ---
 
 ## 故障排查
 
-- **视频下载失败**：检查网络（海外视频或需代理）；部分平台有反爬，更新 Creator 到最新版；确认 URL 格式。
-- **转写不准确**：用更大的 Whisper 模型（设置 → Whisper 模型）；手动指定音频语言；背景噪音大会降低准确率。
-- **AI 改写超时**：检查 API Key 余额；文本过长分段处理；切换更快的模型（如 `deepseek-chat`）。
-- **发布失败**：平台登录可能过期重新扫码；检查内容是否违反平台规则（标题/图片/敏感词）；平台 API 变更需等 Creator 更新适配。
+<details class="lurus-faq-item">
+<summary>视频下载失败？</summary>
+
+检查网络（海外视频或需代理）；部分平台有反爬，更新 Creator 到最新版；确认 URL 格式。
+
+</details>
+
+<details class="lurus-faq-item">
+<summary>转写不准确？</summary>
+
+用更大的 Whisper 模型（设置 → Whisper 模型）；手动指定音频语言；背景噪音大会降低准确率。
+
+</details>
+
+<details class="lurus-faq-item">
+<summary>AI 改写超时？</summary>
+
+检查 API Key 余额；文本过长分段处理；切换更快的模型（如 `deepseek-chat`）。
+
+</details>
+
+<details class="lurus-faq-item">
+<summary>发布失败？</summary>
+
+平台登录可能过期，重新扫码；检查内容是否违反平台规则（标题/图片/敏感词）；平台 API 变更需等 Creator 更新适配。
+
+</details>
+
+---
+
+## 下一步
+
+<NextSteps :steps="[
+  { text: '使用案例', link: '/creator/use-cases', primary: true },
+  { text: '回到简介', link: '/creator/' },
+  { text: '安装指南', link: '/creator/install' },
+]" />
+
+</div>

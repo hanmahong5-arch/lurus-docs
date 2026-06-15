@@ -1,0 +1,157 @@
+/**
+ * lurus-utilities.css (internal) — opt-in content utilities for the internal site.
+ *
+ * Loaded AFTER style.css (see theme/index.ts). Leans on the --lurus-* / --vp-*
+ * tokens already imported by style.css. Everything is namespaced `.lurus-*` and
+ * applied EXPLICITLY by class — nothing restyles bare markdown.
+ *
+ * NOTE: the internal style.css already owns `.lurus-card`, `.lurus-grid`,
+ * `.lurus-pill`, `.lurus-status-dot`, `.lurus-mermaid` — those are NOT redefined
+ * here to avoid collisions. Use `.lurus-grid--products` + `.lurus-card` for card
+ * grids; use the primitives below for callouts / steppers / FAQ / section heads /
+ * stat strips that the internal theme lacked.
+ *
+ * Authoring rule: inside a nested raw <div> wrapper (e.g. a callout body), keep
+ * content CONTIGUOUS — no blank-line markdown — or VitePress throws
+ * "Element is missing end tag". Convert **x**→<strong>, `x`→<code>, lists→<ul><li>.
+ */
+
+/* ─── Section head ───────────────────────────────────────────────────────── */
+.lurus-section-head { margin: var(--lurus-space-6) 0 var(--lurus-space-4); }
+.lurus-section-head__eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--lurus-fs-xs); font-weight: var(--lurus-fw-semibold);
+  letter-spacing: var(--lurus-tracking-wide); text-transform: uppercase;
+  color: var(--vp-c-brand-1);
+}
+.lurus-section-head__title {
+  margin: 6px 0 0 !important; padding: 0 !important; border: none !important;
+  font-size: var(--lurus-fs-2xl); font-weight: var(--lurus-fw-bold);
+  letter-spacing: var(--lurus-tracking-tight); line-height: var(--lurus-lh-tight);
+  color: var(--vp-c-text-1);
+}
+.lurus-section-head__lede {
+  margin: 10px 0 0; max-width: 70ch; font-size: var(--lurus-fs-base);
+  line-height: var(--lurus-lh-normal); color: var(--vp-c-text-2);
+}
+.vp-doc h2.lurus-h2, .vp-doc h3.lurus-h3 {
+  display: flex; align-items: center; gap: 10px; border-bottom: none; padding-bottom: 10px;
+  background: linear-gradient(to right, var(--vp-c-brand-1),
+    color-mix(in srgb, var(--vp-c-brand-1) 30%, transparent) 55%, transparent 100%)
+    bottom left / 40% 2px no-repeat;
+}
+.vp-doc h2.lurus-h2 .lurus-icon, .vp-doc h3.lurus-h3 .lurus-icon { color: var(--vp-c-brand-1); }
+
+/* ─── Callout ────────────────────────────────────────────────────────────── */
+.lurus-callout {
+  --c: var(--vp-c-brand-1);
+  display: grid; grid-template-columns: auto 1fr; gap: 12px;
+  margin: var(--lurus-space-4) 0; padding: 14px 18px;
+  border: 1px solid color-mix(in srgb, var(--c) 30%, var(--vp-c-divider));
+  border-left: 3px solid var(--c); border-radius: var(--lurus-radius-md);
+  background: color-mix(in srgb, var(--c) 7%, var(--vp-c-bg-soft));
+}
+.lurus-callout__icon { color: var(--c); padding-top: 1px; }
+.lurus-callout__title { margin: 0 0 2px; font-size: var(--lurus-fs-sm); font-weight: var(--lurus-fw-bold); color: var(--c); }
+.lurus-callout__body { font-size: var(--lurus-fs-sm); line-height: var(--lurus-lh-normal); color: var(--vp-c-text-1); }
+.lurus-callout__body :last-child { margin-bottom: 0; }
+.lurus-callout--tip    { --c: var(--lurus-status-live); }
+.lurus-callout--warn   { --c: var(--lurus-status-beta); }
+.lurus-callout--info   { --c: var(--lurus-status-dev); }
+.lurus-callout--key    { --c: var(--vp-c-brand-1); }
+.lurus-callout--danger { --c: #DC2626; }
+.dark .lurus-callout--danger { --c: #F87171; }
+
+/* ─── Stepper ────────────────────────────────────────────────────────────── */
+ol.lurus-steps { list-style: none; counter-reset: lurus-step; margin: var(--lurus-space-5) 0; padding: 0; }
+ol.lurus-steps > li { counter-increment: lurus-step; position: relative; padding: 0 0 var(--lurus-space-5) 48px; margin: 0; }
+ol.lurus-steps > li::before {
+  content: counter(lurus-step); position: absolute; left: 0; top: 0;
+  display: flex; align-items: center; justify-content: center; width: 30px; height: 30px;
+  border-radius: var(--lurus-radius-pill); background: var(--vp-c-brand-1); color: #fff;
+  font-size: var(--lurus-fs-sm); font-weight: var(--lurus-fw-bold); font-feature-settings: 'tnum'; z-index: 1;
+}
+ol.lurus-steps > li:not(:last-child)::after {
+  content: ''; position: absolute; left: 14px; top: 30px; bottom: 6px; width: 2px;
+  background: linear-gradient(to bottom, var(--vp-c-brand-soft), transparent);
+}
+ol.lurus-steps > li > :first-child { margin-top: 2px; }
+
+/* ─── FAQ accordion ──────────────────────────────────────────────────────── */
+.lurus-faq { margin: var(--lurus-space-5) 0; display: flex; flex-direction: column; gap: 10px; }
+.lurus-faq details, details.lurus-faq-item {
+  border: 1px solid var(--vp-c-divider); border-radius: var(--lurus-radius-md);
+  background: var(--vp-c-bg-soft); overflow: hidden;
+  transition: border-color var(--lurus-dur-fast), box-shadow var(--lurus-dur-base);
+}
+.lurus-faq details[open], details.lurus-faq-item[open] {
+  border-color: color-mix(in srgb, var(--vp-c-brand-1) 35%, var(--vp-c-divider)); box-shadow: var(--lurus-shadow-2);
+}
+.lurus-faq summary, details.lurus-faq-item > summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; font-size: var(--lurus-fs-base); font-weight: var(--lurus-fw-semibold);
+  color: var(--vp-c-text-1); user-select: none; transition: background var(--lurus-dur-fast);
+}
+.lurus-faq summary::-webkit-details-marker, details.lurus-faq-item > summary::-webkit-details-marker { display: none; }
+.lurus-faq summary::before, details.lurus-faq-item > summary::before {
+  content: '+'; display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px;
+  flex-shrink: 0; border-radius: var(--lurus-radius-sm); background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1); font-weight: var(--lurus-fw-bold); transition: transform var(--lurus-dur-fast);
+}
+.lurus-faq details[open] summary::before, details.lurus-faq-item[open] > summary::before { content: '\2212'; }
+.lurus-faq summary:hover, details.lurus-faq-item > summary:hover { background: var(--vp-c-bg-mute); }
+.lurus-faq details > *:not(summary), details.lurus-faq-item > *:not(summary) { padding: 0 16px; }
+.lurus-faq details > *:not(summary):last-child, details.lurus-faq-item > *:not(summary):last-child { padding-bottom: 14px; }
+
+/* ─── Stat strip ─────────────────────────────────────────────────────────── */
+.lurus-stat-strip {
+  display: flex; flex-wrap: wrap; gap: var(--lurus-space-6); margin: var(--lurus-space-5) 0;
+  padding: var(--lurus-space-4) var(--lurus-space-5); border: 1px solid var(--vp-c-divider);
+  border-radius: var(--lurus-radius-lg); background: var(--vp-c-bg-soft);
+}
+.lurus-stat { display: flex; flex-direction: column; gap: 2px; }
+.lurus-stat__value {
+  font-size: var(--lurus-fs-2xl); font-weight: var(--lurus-fw-black); line-height: 1; font-feature-settings: 'tnum';
+  background: linear-gradient(135deg, var(--vp-c-brand-1), var(--vp-c-brand-2));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.lurus-stat__label { font-size: var(--lurus-fs-xs); color: var(--vp-c-text-3); font-weight: var(--lurus-fw-medium); }
+
+/* ─── CTA banner ─────────────────────────────────────────────────────────── */
+.lurus-cta {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--lurus-space-4);
+  margin: var(--lurus-space-6) 0 var(--lurus-space-4); padding: var(--lurus-space-5) var(--lurus-space-6);
+  border: 1px solid var(--vp-c-divider); border-radius: var(--lurus-radius-xl);
+  background: radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--vp-c-brand-1) 12%, transparent), transparent 60%), var(--vp-c-bg-soft);
+}
+.lurus-cta__title { margin: 0 0 4px !important; padding: 0 !important; border: none !important; font-size: var(--lurus-fs-lg); font-weight: var(--lurus-fw-bold); color: var(--vp-c-text-1); }
+.lurus-cta__text { margin: 0; font-size: var(--lurus-fs-sm); color: var(--vp-c-text-2); }
+.lurus-cta__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.lurus-cta__btn {
+  display: inline-flex; align-items: center; gap: 4px; padding: 9px 18px; font-size: var(--lurus-fs-sm);
+  font-weight: var(--lurus-fw-semibold); border-radius: var(--lurus-radius-pill); text-decoration: none !important;
+  transition: transform var(--lurus-dur-fast), filter var(--lurus-dur-fast), border-color var(--lurus-dur-fast), color var(--lurus-dur-fast);
+}
+.lurus-cta__btn:hover { transform: var(--lurus-hover-rise); }
+.lurus-cta__btn--primary { background: var(--vp-c-brand-1); color: #fff !important; }
+.lurus-cta__btn--primary:hover { filter: brightness(1.08); }
+.lurus-cta__btn--ghost { color: var(--vp-c-text-1) !important; border: 1px solid var(--vp-c-divider); }
+.lurus-cta__btn--ghost:hover { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1) !important; }
+
+/* ─── Inline chips ───────────────────────────────────────────────────────── */
+.lurus-tag {
+  display: inline-flex; align-items: center; gap: 4px; padding: 1px 9px; border-radius: var(--lurus-radius-pill);
+  font-size: var(--lurus-fs-xs); font-weight: var(--lurus-fw-semibold);
+  background: var(--vp-c-brand-soft); color: var(--vp-c-brand-1); vertical-align: middle;
+}
+.lurus-tag--muted { background: var(--vp-c-bg-mute); color: var(--vp-c-text-3); }
+.lurus-kbd {
+  display: inline-block; padding: 1px 7px; border: 1px solid var(--vp-c-divider); border-bottom-width: 2px;
+  border-radius: var(--lurus-radius-sm); background: var(--vp-c-bg); font-family: var(--lurus-font-mono);
+  font-size: 0.82em; color: var(--vp-c-text-1);
+}
+
+@media (max-width: 640px) {
+  .lurus-cta { flex-direction: column; align-items: flex-start; }
+  .lurus-stat-strip { gap: var(--lurus-space-4); }
+}

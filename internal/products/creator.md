@@ -11,7 +11,20 @@ sourcePath: 2c-gui-creator
 
 # Lurus Creator Studio 内部手册
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="eye" :size="18"/></span><div><p class="lurus-callout__title">内部手册</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、未公开问题。</div></div></div>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">P2</span><span class="lurus-stat__label">优先级</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">0.3.0</span><span class="lurus-stat__label">版本</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">desktop</span><span class="lurus-stat__label">部署目标</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">:31415</span><span class="lurus-stat__label">OIDC 回调端口</span></div>
+</div>
+
+<p>
+  <RiskBadge flag="manual-deploy" />
+  <RiskBadge flag="wip" />
+  <span class="lurus-tag lurus-tag--muted">beta</span>
+</p>
 
 ## 一句话定位
 
@@ -158,20 +171,22 @@ sequenceDiagram
 
 `EnsureBinaries()` 在第一次 content 任务触发时（非阻塞 goroutine）执行：
 
-1. 先查 PATH，再查 `%APPDATA%\lurus-creator\bin\`
-2. yt-dlp 缺失 → HTTP GET GitHub releases latest，约 10MB
-3. ffmpeg 缺失 → 下载 BtbN ffmpeg-master-latest-win64-gpl.zip (~130MB)，zip slip 防护，仅解出 `ffmpeg.exe` + `ffprobe.exe`
-4. 下载失败不 panic，记录日志，任务报错 "yt-dlp not found"
+<ol class="lurus-steps">
+<li>先查 PATH，再查 <code>%APPDATA%\lurus-creator\bin\</code></li>
+<li>yt-dlp 缺失 → HTTP GET GitHub releases latest，约 10MB</li>
+<li>ffmpeg 缺失 → 下载 BtbN ffmpeg-master-latest-win64-gpl.zip (~130MB)，zip slip 防护，仅解出 <code>ffmpeg.exe</code> + <code>ffprobe.exe</code></li>
+<li>下载失败不 panic，记录日志，任务报错 “yt-dlp not found”</li>
+</ol>
 
 ## 认证与网关预配
 
-1. 登录：PKCE flow，本地临时 HTTP server `:31415/auth/callback` 接收 code
-2. tokens 用 AES-256-GCM 加密存 `%APPDATA%\lurus-creator\auth.enc`
-3. 首次登录后（或启动时 token 丢失），后台 goroutine 调 `gateway.Provision()`
-   - 需要 `LURUS_CREATOR_INTERNAL_KEY` 环境变量（编译时或用户 env）
-   - 成功后更新 `gateway_token`，启动余额轮询
-4. Provider 解析优先级：`__lurus__` → 用户配置 provider → 空 ID 时自动 fallback 到 gateway
-5. Circuit Breaker 开路时所有 LLM 调用立即返回错误，不打穿下游
+<ol class="lurus-steps">
+<li>登录：PKCE flow，本地临时 HTTP server <code>:31415/auth/callback</code> 接收 code</li>
+<li>tokens 用 AES-256-GCM 加密存 <code>%APPDATA%\lurus-creator\auth.enc</code></li>
+<li>首次登录后（或启动时 token 丢失），后台 goroutine 调 <code>gateway.Provision()</code>：需要 <code>LURUS_CREATOR_INTERNAL_KEY</code> 环境变量（编译时或用户 env）；成功后更新 <code>gateway_token</code>，启动余额轮询</li>
+<li>Provider 解析优先级：<code>__lurus__</code> → 用户配置 provider → 空 ID 时自动 fallback 到 gateway</li>
+<li>Circuit Breaker 开路时所有 LLM 调用立即返回错误，不打穿下游</li>
+</ol>
 
 ## Provider 链配置
 
@@ -199,7 +214,7 @@ queued → planning → developing → reviewing ⇄ fixing
 failed ← (任何步骤)  →  重新入队
 ```
 
-预算硬上限：`$5/story`，`$50/day`（超出自动 fail）。SQLite 表 `budget_ledger` 追踪每步 cost_usd。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="coins" :size="18"/></span><div><p class="lurus-callout__title">预算硬上限</p><div class="lurus-callout__body"><code>$5/story</code>、<code>$50/day</code>（超出自动 fail）。SQLite 表 <code>budget_ledger</code> 追踪每步 cost_usd。</div></div></div>
 
 ## 构建
 
@@ -249,7 +264,7 @@ cd frontend && bun install && bun run build && bunx tsc --noEmit
     └── generated\
 ```
 
-所有 SQLite 数据库统一：`journal_mode=WAL`、`busy_timeout=5000`、`foreign_keys=ON`。DDL on open + "duplicate column" catch 保证向后兼容。
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="database" :size="18"/></span><div><p class="lurus-callout__title">SQLite 统一约定</p><div class="lurus-callout__body">所有 SQLite 数据库统一：<code>journal_mode=WAL</code>、<code>busy_timeout=5000</code>、<code>foreign_keys=ON</code>。DDL on open + “duplicate column” catch 保证向后兼容。</div></div></div>
 
 ## 已知坑（内部专属）
 
@@ -295,7 +310,7 @@ cd frontend && bun install && bun run build && bunx tsc --noEmit
 
 ## 应急 Runbook
 
-Creator 是桌面应用，无 K8s 操作。所有 runbook 针对用户本地机器或内部分发场景。
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="monitor" :size="18"/></span><div><p class="lurus-callout__title">桌面应用前提</p><div class="lurus-callout__body">Creator 是桌面应用，<strong>无 K8s 操作</strong>。所有 runbook 针对用户本地机器或内部分发场景；平台侧服务监控请走 <a href="/ops/observability">/ops/observability</a>。</div></div></div>
 
 ### 下载失败（yt-dlp 报错）
 
@@ -303,14 +318,21 @@ Creator 是桌面应用，无 K8s 操作。所有 runbook 针对用户本地机�
 症状: Content Studio 任务卡在 state=downloading，错误含 "yt-dlp failed"
 ```
 
-1. 确认网络可达 YouTube/B站（检查代理设置）
-2. 检查 yt-dlp 版本是否过旧（YouTube 反爬策略频繁更新）：
-   ```
-   %APPDATA%\lurus-creator\bin\yt-dlp.exe --version
-   ```
-3. 手动更新 yt-dlp：删除 `%APPDATA%\lurus-creator\bin\yt-dlp.exe`，Creator 重启后重新触发任务将自动下载最新版
-4. 若错误含 "Sign in to confirm"：用 Chrome 登录 YouTube，yt-dlp 会自动读取 cookie
-5. 若仍失败：用 `--cookies-from-browser` 手动测试，将错误截图报告给开发团队
+<ol class="lurus-steps">
+<li>确认网络可达 YouTube/B站（检查代理设置）</li>
+<li>
+
+检查 yt-dlp 版本是否过旧（YouTube 反爬策略频繁更新）：
+
+```
+%APPDATA%\lurus-creator\bin\yt-dlp.exe --version
+```
+
+</li>
+<li>手动更新 yt-dlp：删除 <code>%APPDATA%\lurus-creator\bin\yt-dlp.exe</code>，Creator 重启后重新触发任务将自动下载最新版</li>
+<li>若错误含 “Sign in to confirm”：用 Chrome 登录 YouTube，yt-dlp 会自动读取 cookie</li>
+<li>若仍失败：用 <code>--cookies-from-browser</code> 手动测试，将错误截图报告给开发团队</li>
+</ol>
 
 ### 转写超时（Whisper API 无响应）
 
@@ -318,14 +340,21 @@ Creator 是桌面应用，无 K8s 操作。所有 runbook 针对用户本地机�
 症状: 任务卡在 state=transcribing 超过 5 分钟
 ```
 
-1. 检查 Settings 中的 Whisper provider 配置（baseURL + apiKey）
-2. 确认 Groq / Newapi 账号余额正常
-3. Transcriber 最多重试 3 次（5s/15s/30s），超时 5 分钟，重试对象仅 429/502/503/504
-4. 音频文件 >24MB 时需分段（当前代码未分段，直接 fail）—— 临时解法：提前用 ffmpeg 压缩音频：
-   ```
-   ffmpeg -i input.mp3 -b:a 32k output.mp3
-   ```
-5. 若 Whisper API 宕机，在 Settings 中切换到备用 provider（如直接 OpenAI）
+<ol class="lurus-steps">
+<li>检查 Settings 中的 Whisper provider 配置（baseURL + apiKey）</li>
+<li>确认 Groq / Newapi 账号余额正常</li>
+<li>Transcriber 最多重试 3 次（5s/15s/30s），超时 5 分钟，重试对象仅 429/502/503/504</li>
+<li>
+
+音频文件 >24MB 时需分段（当前代码未分段，直接 fail）—— 临时解法：提前用 ffmpeg 压缩音频：
+
+```
+ffmpeg -i input.mp3 -b:a 32k output.mp3
+```
+
+</li>
+<li>若 Whisper API 宕机，在 Settings 中切换到备用 provider（如直接 OpenAI）</li>
+</ol>
 
 ### 发布被平台风控
 

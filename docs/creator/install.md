@@ -3,11 +3,17 @@ title: Creator 安装指南
 description: Creator 桌面内容工厂的下载和安装步骤。
 ---
 
+<div class="creator-page">
+
 # 安装指南
 
-::: info 前置条件
-Windows 10+ / macOS 12+ / Linux（64 位）· Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)，用于 AI 改写）· 4 GB+ 内存（推荐 8 GB+）。预计 3 分钟。
-:::
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="alert-circle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">前置条件 · 预计 3 分钟</p>
+    <div class="lurus-callout__body">Windows 10+ / macOS 12+ / Linux（64 位）· Lurus <Term t="API Key">API Key</Term>（<a href="/guide/get-api-key">获取方式</a>，用于 AI 改写）· 4 GB+ 内存（推荐 8 GB+）。</div>
+  </div>
+</div>
 
 ## 下载
 
@@ -22,30 +28,66 @@ Windows 10+ / macOS 12+ / Linux（64 位）· Lurus <Term t="API Key">API Key</T
 
 ---
 
-## Windows 安装
+## 分平台安装
 
-下载 `LurusCreator-windows-amd64.exe` → 双击运行 →（弹「Windows 已保护你的电脑」则「更多信息」→「仍要运行」）→ 完成向导 → 桌面快捷方式启动。**首次配置**：在 [api.lurus.cn](https://api.lurus.cn) 获取 Key 粘贴到 Creator 设置（用于 AI 改写）→ 选工作目录（视频/文案存储位置）。
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="monitor" :size="14" /> Windows</span>
+  <h2 class="lurus-section-head__title">Windows 安装</h2>
+</div>
 
----
+<ol class="lurus-steps">
+<li>下载 <code>LurusCreator-windows-amd64.exe</code> 并双击运行。</li>
+<li>若弹出「Windows 已保护你的电脑」，点「更多信息」→「仍要运行」。</li>
+<li>完成安装向导，从桌面快捷方式启动。</li>
+<li><strong>首次配置</strong>：在 <a href="https://api.lurus.cn">api.lurus.cn</a> 获取 Key 粘贴到 Creator 设置（用于 AI 改写）。</li>
+<li>选择工作目录（视频/文案存储位置）。</li>
+</ol>
 
-## macOS 安装
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="monitor" :size="14" /> macOS</span>
+  <h2 class="lurus-section-head__title">macOS 安装</h2>
+</div>
 
-下载对应芯片 `.dmg` → 双击挂载 → 拖 **Lurus Creator** 到「应用程序」→ 首次打开提示「无法验证开发者」则「系统设置 → 隐私与安全性 → 仍要打开」。
+<ol class="lurus-steps">
+<li>下载对应芯片的 <code>.dmg</code>，双击挂载。</li>
+<li>将 <strong>Lurus Creator</strong> 拖到「应用程序」。</li>
+<li>首次打开若提示「无法验证开发者」，前往「系统设置 → 隐私与安全性 → 仍要打开」。</li>
+</ol>
 
----
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="terminal" :size="14" /> Linux</span>
+  <h2 class="lurus-section-head__title">Linux 安装</h2>
+</div>
 
-## Linux 安装
+<ol class="lurus-steps">
+<li>
+
+下载 AppImage：
 
 ```bash
-# 下载
 wget https://github.com/hanmahong5-arch/lurus-creator/releases/latest/download/LurusCreator-linux-amd64.AppImage
+```
 
-# 添加执行权限
+</li>
+<li>
+
+添加执行权限：
+
+```bash
 chmod +x LurusCreator-linux-amd64.AppImage
+```
 
-# 运行
+</li>
+<li>
+
+运行：
+
+```bash
 ./LurusCreator-linux-amd64.AppImage
 ```
+
+</li>
+</ol>
 
 ---
 
@@ -60,9 +102,13 @@ Creator 打包了所有必需的工具，无需额外安装：
 | Whisper | 语音转文字 | 内置（tiny/base 模型） |
 | chromedp | 自动发布 | 内置 |
 
-::: tip Whisper 模型
-默认内置 `tiny` 和 `base` 模型。如果转写质量不够好，可以在设置中下载更大的模型（`small` / `medium`），准确率更高但需要更多内存。
-:::
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">Whisper 模型</p>
+    <div class="lurus-callout__body">默认内置 <code>tiny</code> 和 <code>base</code> 模型。如果转写质量不够好，可以在设置中下载更大的模型（<code>small</code> / <code>medium</code>），准确率更高但需要更多内存。</div>
+  </div>
+</div>
 
 ---
 
@@ -79,12 +125,30 @@ Creator 打包了所有必需的工具，无需额外安装：
 
 ## 验证安装
 
-设置页面：确认 API Key 状态「已连接」→「检查依赖」所有工具显示绿色对勾 → 输入视频 URL 测试下载。
+<ol class="lurus-steps">
+<li>打开设置页面，确认 API Key 状态显示「已连接」。</li>
+<li>点「检查依赖」，确认所有工具显示绿色对勾。</li>
+<li>输入一个视频 URL 测试下载。</li>
+</ol>
 
 ---
 
 ## 卸载
 
-- **Windows**：控制面板 → 卸载程序 →「Lurus Creator」；配置/缓存在 `%APPDATA%\LurusCreator\`。
-- **macOS**：应用程序「Lurus Creator」拖入废纸篓；配置/缓存在 `~/Library/Application Support/LurusCreator/`。
-- **Linux**：`rm /opt/lurus-creator`（或 AppImage 位置）+ `rm -rf ~/.config/LurusCreator/`。
+| 平台 | 操作 | 配置/缓存位置 |
+|------|------|--------------|
+| **Windows** | 控制面板 → 卸载程序 →「Lurus Creator」 | `%APPDATA%\LurusCreator\` |
+| **macOS** | 应用程序「Lurus Creator」拖入废纸篓 | `~/Library/Application Support/LurusCreator/` |
+| **Linux** | `rm /opt/lurus-creator`（或 AppImage 位置） | `rm -rf ~/.config/LurusCreator/` |
+
+---
+
+## 下一步
+
+<NextSteps :steps="[
+  { text: '使用手册', link: '/creator/usage', primary: true },
+  { text: '使用案例', link: '/creator/use-cases' },
+  { text: '获取 API Key', link: '/guide/get-api-key' },
+]" />
+
+</div>

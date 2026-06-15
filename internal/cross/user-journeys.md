@@ -1,20 +1,17 @@
-# 用户旅程 — 4 类用户的全流程
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="users" :size="14"/> 横向视角</span><h2 class="lurus-section-head__title">用户旅程 — 4 类用户的全流程</h2><p class="lurus-section-head__lede">把用户分成 4 类，从第一次接触 Lurus 到续费/流失全流程画出来；每条旅程标出涉及产品、关键卡点、已做好的部分、还差什么。</p></div>
 
-我们把用户分成 4 类，把他们从**第一次接触 Lurus** 到**续费/流失**的全流程画出来。
-每条旅程标出涉及的产品、关键卡点、目前已经做好的部分、还差什么。
-
-> 用法：销售/客户成功带客户走流程时，对照旅程图找差距。
+<div class="lurus-callout lurus-callout--tip"><span class="lurus-callout__icon"><Icon name="radar" :size="18"/></span><div><p class="lurus-callout__title">用法</p><div class="lurus-callout__body">销售 / 客户成功带客户走流程时，对照旅程图找差距。</div></div></div>
 
 ## 4 类用户速览
 
 | 用户 | 典型画像 | 主入口 | 次要触点 | 主要价值产品 |
 |---|---|---|---|---|
-| **A. 玩家 / 个人开发者** | 想用 AI 做点东西的程序员 | Switch / Newapi | docs / Creator | Newapi + Switch |
-| **B. 企业客户** | 中小公司 IT/业务负责人 | www / Tally / Lucrum | 销售 + Admin | Platform + Tally / Lucrum |
-| **C. 内部员工** | Lurus 公司员工 | Admin / Switch + MCP | docs / 内部站 | 内部全套 |
-| **D. 集成开发商** | 把 Lurus 嵌进自己产品 | docs / API | Newapi / Platform | Newapi + Platform API |
+| <Icon name="terminal" :size="15"/> **A. 玩家 / 个人开发者** | 想用 AI 做点东西的程序员 | Switch / Newapi | docs / Creator | Newapi + Switch |
+| <Icon name="users" :size="15"/> **B. 企业客户** | 中小公司 IT/业务负责人 | www / Tally / Lucrum | 销售 + Admin | Platform + Tally / Lucrum |
+| <Icon name="shield" :size="15"/> **C. 内部员工** | Lurus 公司员工 | Admin / Switch + MCP | docs / 内部站 | 内部全套 |
+| <Icon name="plug-zap" :size="15"/> **D. 集成开发商** | 把 Lurus 嵌进自己产品 | docs / API | Newapi / Platform | Newapi + Platform API |
 
-## A. 玩家 / 个人开发者旅程
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="terminal" :size="14"/> 旅程 A</span><h2 class="lurus-section-head__title">玩家 / 个人开发者</h2><p class="lurus-section-head__lede">个人决策、自助为主、关心 ¥ 单价。</p></div>
 
 ```mermaid
 journey
@@ -73,7 +70,7 @@ graph LR
 | 装 Switch | Win 杀软误报 | 暂无 | 代码签名 |
 | 充值 | 不知道单价 | Platform 计费透明 | 一键预估对话费用 |
 
-## B. 企业客户旅程
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="users" :size="14"/> 旅程 B</span><h2 class="lurus-section-head__title">企业客户</h2><p class="lurus-section-head__lede">多人决策、销售 + CS 推动、关心 SLA + 私有化。</p></div>
 
 ```mermaid
 journey
@@ -142,12 +139,14 @@ graph TD
 | 阶段 | 卡点 | 现在能给 | 缺什么 |
 |---|---|---|---|
 | 评估 | 客户问"你们对比 X 怎么样" | 销售有 [能力矩阵](/cross/capability-matrix) | TCO 计算器 |
-| PoC | 数据导入费力 | 各产品手册有"端到端例子" | 数据迁移工具集 |
+| PoC | 数据导入费力 | 各产品手册核心数据流 + 数据契约章节（端到端示例待补充） | 数据迁移工具集 |
 | 私有化 | 部署文档分散 | [ops/deploy-r6](/ops/deploy-r6) | 一键私有化脚本 |
 | SSO 联邦 | zitadel 配联邦门槛高 | [adr/0002-zitadel-as-oidc](/adr/0002-zitadel-as-oidc) | 演示视频 + 模板 |
 | 续约 | 无月用量报告自动化 | Platform 后台手查 | 自动月报推送 |
 
-## C. 内部员工旅程
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="activity" :size="18"/></span><div><p class="lurus-callout__title">"监控告警接通" 这一环</p><div class="lurus-callout__body">内部观测已统一到 <strong>Netdata 自托管 Agent</strong>；接入与查看入口见 <a href="/ops/observability">运维 · 可观测性</a>。</div></div></div>
+
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="shield" :size="14"/> 旅程 C</span><h2 class="lurus-section-head__title">内部员工</h2><p class="lurus-section-head__lede">无决策、自助 + 同事带、关心熟练度。</p></div>
 
 ```mermaid
 journey
@@ -199,7 +198,7 @@ graph LR
 | 第一周 | 本地起服务卡 | 各产品 README + ops SOP | 一键 dev container |
 | ops 学习 | SOP 散落 | [/ops/](/ops/) 12 篇集中 | 演练脚本 |
 
-## D. 集成开发商旅程
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="plug-zap" :size="14"/> 旅程 D</span><h2 class="lurus-section-head__title">集成开发商</h2><p class="lurus-section-head__lede">开发者决策、纯文档驱动、关心 API 稳定。</p></div>
 
 ```mermaid
 graph LR
@@ -247,7 +246,9 @@ graph TD
 
 ## 怎么用这页
 
-- **销售**：跟客户讲方案前 5 分钟看 B 路径，自检是否有 PoC 卡点。
-- **CS**：客户报问题，先定位它在路径哪一环，再决定升级到 PM/工程。
-- **新员工**：照 C 路径走一遍。
-- **集成开发商**：D 路径整段贴给客户。
+<div class="lurus-grid--products">
+<div class="lurus-card"><strong><Icon name="trending-up" :size="16"/> 销售</strong><p>跟客户讲方案前 5 分钟看 <strong>B 路径</strong>，自检是否有 PoC 卡点。</p></div>
+<div class="lurus-card"><strong><Icon name="check-circle" :size="16"/> CS</strong><p>客户报问题，先定位它在路径哪一环，再决定升级到 PM / 工程。</p></div>
+<div class="lurus-card"><strong><Icon name="users" :size="16"/> 新员工</strong><p>照 <strong>C 路径</strong>走一遍。</p></div>
+<div class="lurus-card"><strong><Icon name="plug-zap" :size="16"/> 集成开发商</strong><p><strong>D 路径</strong>整段贴给客户。</p></div>
+</div>

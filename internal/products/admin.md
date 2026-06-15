@@ -11,9 +11,11 @@ sourcePath: 2l-bs-admin (archived)
 
 # Admin (运营后台) 内部手册
 
-> 仅限内部员工查阅。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="history" :size="18"/></span><div><p class="lurus-callout__title">本产品已 SUNSET（2026-05-10）</p><div class="lurus-callout__body"><code>admin.lurus.cn</code> 实测 <strong>404</strong>，独立运营后台 SPA <strong>从未交付</strong>。本页作为历史归档 + 替代入口指引保留。需要运营能力请直接看下方<a href="#真实替代入口-现在用这些">真实替代入口</a>。</div></div></div>
 
-> ⚫ **本产品已 SUNSET（2026-05-10）**。`admin.lurus.cn` 实测 **404**，独立运营后台 SPA **从未交付**。本页作为历史归档 + 替代入口指引保留。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">仅限内部</p><div class="lurus-callout__body">仅限内部员工查阅。</div></div></div>
+
+<p><span class="lurus-tag lurus-tag--muted">P1 · SUNSET</span> <span class="lurus-tag lurus-tag--muted">0 production deploy</span></p>
 
 ## 一句话定位（历史）
 
@@ -38,6 +40,8 @@ sourcePath: 2l-bs-admin (archived)
 ## 后续
 
 `lurus.yaml` `future_reviews` 登记了 **2026-06-02 的 admin SPA 决断**（选 A：wire `web/` embedded `r.StaticFS /admin`；或 B：`kubectl apply apps/admin/`，二选一不二选删另一份避免代码漂移）。在该决断落地并实测可访问之前，本产品保持 sunset，**不要**把 `admin.lurus.cn` 当作可用入口写进任何对内 / 对外文档。
+
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">勿当可用入口</p><div class="lurus-callout__body">在 2026-06-02 决断落地并实测可访问前，<strong>不要</strong>把 <code>admin.lurus.cn</code> 写进任何对内 / 对外文档作为可用入口。</div></div></div>
 
 ## 历史归档
 

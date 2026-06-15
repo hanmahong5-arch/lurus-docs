@@ -3,19 +3,36 @@ title: OIDC / OAuth2 集成 | Zitadel 身份认证
 description: 将自有应用接入 Lurus SSO 的完整指南 — 端点、Scopes、Claims、PKCE、Device Flow。
 ---
 
-# OIDC / OAuth2 集成
+<div class="auth-oidc-page">
+
+# OIDC / OAuth2 集成 <StatusBadge status="live" />
 
 Lurus 统一身份认证基于 [Zitadel](https://zitadel.com)，对外暴露标准 OIDC / OAuth2 接口。应用支持标准 OIDC 即可直接接入 Lurus SSO，无需修改核心认证逻辑。
 
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">1</span><span class="lurus-stat__label">Discovery URL 自动发现</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">9</span><span class="lurus-stat__label">标准端点</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">5</span><span class="lurus-stat__label">Grant Type / Flow</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">S256</span><span class="lurus-stat__label">PKCE 强制方式</span></div>
+</div>
+
 ## 快速开始
 
-绝大多数 OIDC SDK 支持 **Discovery**，只需一个 URL 即可自动获取所有端点、算法和能力：
+绝大多数 OIDC SDK 支持 **Discovery**，只需一个 URL 即可自动获取所有端点、算法和能力。
 
 ```
 Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
 ```
 
-初始化 SDK 直接指向该 URL（而非硬编码端点），服务端密钥轮换或端点变更时应用无需修改。**最低配置**：`client_id` + `redirect_uri` + Discovery URL。
+初始化 SDK 直接指向该 URL（而非硬编码端点），服务端密钥轮换或端点变更时应用无需修改。
+
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="zap" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">最低配置</p>
+    <div class="lurus-callout__body"><code>client_id</code> + <code>redirect_uri</code> + Discovery URL — 三项齐备即可发起授权码流程。</div>
+  </div>
+</div>
 
 ---
 
@@ -54,6 +71,8 @@ Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
 
 ## 支持的 Grant Type / Flow
 
+按客户端类型选择授权流；SPA / Native / Web 首选 Authorization Code + PKCE。
+
 | Flow | 适用场景 | 是否推荐 |
 |------|----------|---------|
 | **Authorization Code + PKCE** | SPA、Native App、Web App | ✓ 首选 |
@@ -62,7 +81,16 @@ Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
 | **Refresh Token** | 长期会话，静默续期 | 配合 `offline_access` scope |
 | **JWT Bearer（Service User）** | 服务账号，签名 JWT 换 token | 服务账号场景 |
 
-**Authorization Code + PKCE**：① 客户端生成 `code_verifier`（随机 43-128 字符）② 算 `code_challenge = Base64URL(SHA-256(verifier))` ③ 重定向到 `/oauth/v2/authorize`（带 challenge）④ 用户登录授权，回调带 `code` ⑤ POST `/oauth/v2/token`（带 `code` + `code_verifier`）⑥ 获得 access/id/refresh token。
+**Authorization Code + PKCE** 六步：
+
+<ol class="lurus-steps">
+<li>客户端生成 <code>code_verifier</code>（随机 43-128 字符）。</li>
+<li>算 <code>code_challenge = Base64URL(SHA-256(verifier))</code>。</li>
+<li>重定向到 <code>/oauth/v2/authorize</code>（带 challenge）。</li>
+<li>用户登录授权，回调带 <code>code</code>。</li>
+<li>POST <code>/oauth/v2/token</code>（带 <code>code</code> + <code>code_verifier</code>）。</li>
+<li>获得 access / id / refresh token。</li>
+</ol>
 
 **Client Credentials**：POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:zitadel:iam:org:project:id:{projectid}:aud` → 获得 access_token（无 id_token，无用户身份）。
 
@@ -154,6 +182,8 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 ## Scopes 清单
 
+标准 OIDC scopes 决定返回哪些 claim；Zitadel 特有 scopes 控制 audience、角色与组织约束。
+
 ### 标准 Scopes
 
 | Scope | 说明 | 影响的 Token |
@@ -184,6 +214,8 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 ---
 
 ## Claims 清单
+
+下表标注每个 claim 出现在哪种 token，以及它依赖哪个 scope。
 
 ### 标准 Claims
 
@@ -292,7 +324,16 @@ curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
 
 适用无浏览器输入设备（CLI、TV、IoT）。Lurus CLI 产品（Lumen、kova-cli）均用此流程。
 
-**时序**：设备 POST `/device_authorization` → 收到 `device_code` + `user_code` + `verification_uri` → 展示 user_code 和 URL 给用户 → 用户在浏览器打开 verification_uri、输 user_code、登录授权 → 设备每 `interval` 秒轮询 `/token` → 用户授权后下一次轮询返回 access/id token。
+**时序：**
+
+<ol class="lurus-steps">
+<li>设备 POST <code>/device_authorization</code>。</li>
+<li>收到 <code>device_code</code> + <code>user_code</code> + <code>verification_uri</code>。</li>
+<li>展示 <code>user_code</code> 和 URL 给用户。</li>
+<li>用户在浏览器打开 <code>verification_uri</code>、输 <code>user_code</code>、登录授权。</li>
+<li>设备每 <code>interval</code> 秒轮询 <code>/token</code>。</li>
+<li>用户授权后下一次轮询返回 access / id token。</li>
+</ol>
 
 ### Step 1: 请求 Device Code
 
@@ -341,30 +382,64 @@ TypeScript 实现同构：`fetch` POST `/device_authorization` 起 flow，再以
 
 ## 常见问题
 
-::: tip audience 错误（`aud` claim 不匹配）
+最常见的接入报错与一步到位的修法。
+
+<details class="lurus-faq-item">
+<summary>audience 错误（<code>aud</code> claim 不匹配）</summary>
+
 **现象**：验签报 `token audience mismatch` / `invalid audience`。**原因**：access token 的 `aud` 默认只含 `client_id`。**解决**：scope 加 `urn:zitadel:iam:org:project:id:{projectid}:aud`，将 project ID 显式写入 `aud`。
-:::
 
-::: tip `roles` claim 为空或缺失
+</details>
+
+<details class="lurus-faq-item">
+<summary><code>roles</code> claim 为空或缺失</summary>
+
 **原因**：用户在该 Project 无 User Grant，或未请求角色 scope。**检查**：① 控制台 Project → Authorizations 确认有角色 Grant ② scope 含 `urn:zitadel:iam:org:projects:roles` ③ Project 设置开启「Assert Roles on Authentication」。
-:::
 
-::: tip `id_token` 中没有 `email`
+</details>
+
+<details class="lurus-faq-item">
+<summary><code>id_token</code> 中没有 <code>email</code></summary>
+
 **原因**：scope 遗漏 `email`。**解决**：scope 加 `email`（如 `openid profile email`）。
-:::
 
-::: tip Refresh token 失效需重新登录
+</details>
+
+<details class="lurus-faq-item">
+<summary>Refresh token 失效需重新登录</summary>
+
 续期返回 `invalid_grant`。可能：初次授权 scope 未含 `offline_access`；refresh token 过期；用户在控制台撤销了会话。**解决**：重新发起 Authorization Code 流程；需长期续期则确保 scope 含 `offline_access` 且应用类型为「Web」或「Native」。
-:::
 
-::: tip PKCE `code_verifier` 不匹配
+</details>
+
+<details class="lurus-faq-item">
+<summary>PKCE <code>code_verifier</code> 不匹配</summary>
+
 `/token` 返回 `invalid_grant: code verifier mismatch`。**原因**：verifier 在两步间变化，或 Base64URL 编码不一致（含 `=` padding 或用了 `+/`）。**解决**：用 `base64url`（无 padding，`-_` 替代 `+/`）；SPA 中用 `sessionStorage` 跨页面保持 verifier。
-:::
+
+</details>
 
 ---
+
+<NextSteps
+  :steps="[
+    { text: 'API 认证（机器对机器）', link: '/platform/auth/api-auth', primary: true },
+    { text: '身份认证概述与接入点', link: '/platform/auth/' },
+    { text: '认证控制台', link: 'https://auth.lurus.cn', external: true },
+  ]"
+  title="下一步"
+/>
+
+<RelatedProducts product-id="auth" />
 
 ## 相关链接
 
 - Zitadel 官方：[Endpoints](https://zitadel.com/docs/apis/openidoauth/endpoints) · [Scopes](https://zitadel.com/docs/apis/openidoauth/scopes) · [Claims](https://zitadel.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
 - Auth 控制台 [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
+
+</div>
+
+<style scoped>
+.auth-oidc-page .lurus-stat-strip { margin: 1.5rem 0 0.5rem; }
+</style>

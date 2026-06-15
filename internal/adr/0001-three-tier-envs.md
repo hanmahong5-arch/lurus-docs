@@ -7,6 +7,14 @@ date: 2026-04-24
 
 # ADR-0001: PROD / STAGE / DEV 三层环境划分
 
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="layers" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">决定 · accepted 2026-04-24</p>
+    <div class="lurus-callout__body">引入 <strong>PROD / STAGE / DEV</strong> 三层模型，<strong>复用</strong>现有机器（R1 / R6 / R3），成本零增加。PROD 只放客户面向 + 完全在生产的工作负载；非稳定服务住 STAGE；活跃 feature 开发用 DEV 节点。</div>
+  </div>
+</div>
+
 ## 背景
 
 2026 年 4 月，R1（cloud-ubuntu-1, 16C/32G）已经承担：
@@ -19,7 +27,13 @@ date: 2026-04-24
 - 一次 lucrum 内存泄漏 → 把 R1 内存吃光，docs 也 502
 - 资源容量预测不可能（生产 + 实验混在一起）
 
-R1 内存利用率长期 70%+，没缓冲。
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">触发事件</p>
+    <div class="lurus-callout__body">R1 内存利用率长期 <strong>70%+</strong>，没缓冲。<strong>2026-04-23</strong> lucrum 内存泄漏吃光 R1 内存，导致 <code>docs.lurus.cn</code> 502 持续 <strong>7 分钟</strong>——这是本决策的直接导火索。</div>
+  </div>
+</div>
 
 ## 备选方案
 
@@ -44,9 +58,9 @@ R1 内存利用率长期 70%+，没缓冲。
 
 | 层 | 机器 | 准入 |
 |---|---|---|
-| PROD | R1 (43.226.46.164, 16C/32G) | 已对外商业交付 |
-| STAGE | R6 (43.226.38.244, 32C/32G) | 达测试标准但未交付客户 |
-| DEV | R3 (100.113.79.77) + 任意 | 活跃 feature 开发 |
+| <span class="lurus-tag">PROD</span> | R1 (43.226.46.164, 16C/32G) | 已对外商业交付 |
+| <span class="lurus-tag">STAGE</span> | R6 (43.226.38.244, 32C/32G) | 达测试标准但未交付客户 |
+| <span class="lurus-tag lurus-tag--muted">DEV</span> | R3 (100.113.79.77) + 任意 | 活跃 feature 开发 |
 
 不变量：
 - PROD 只放"客户面向的 + 完全在生产的公司工作负载"

@@ -11,15 +11,17 @@ sourcePath: 2c-svc-lucrum
 
 # Lucrum 内部手册
 
-> 🔴 **2026-05-28 状态更新**：2026-04-30 从 prod 降级 stage（audit F7）；促升 blockers：DNS / web Secret / ai-qtrd quota。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body">2026-04-30 从 <strong>prod 降级 stage</strong>（audit F7）；促升 blockers：DNS / web Secret / ai-qtrd quota。<span class="lurus-tag">P1</span> <span class="lurus-tag lurus-tag--muted">stage</span> <RiskBadge flag="wip" /> <RiskBadge flag="no-monitor" /></div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">内部专属</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、未公开问题。</div></div></div>
 
-## 一句话定位
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="trending-up" :size="14"/> 定位</span><h2 class="lurus-section-head__title">一句话定位</h2><p class="lurus-section-head__lede">C 端 AI 量化交易平台——策略编辑 / 回测 / 模拟实盘 / AI 投顾四合一。</p></div>
 
 Lucrum 是 Lurus 面向 C 端用户的 AI 量化交易平台，覆盖 A 股策略编辑、历史回测、模拟/实盘交易和 AI 投资顾问四大场景。前端是 Next.js 14 BFF 架构，策略回测引擎跑在前端 TypeScript 层；量化计算后端是 Python FastAPI + vnpy 4.x，承接自然语言策略解析、AI Alpha 策略执行和行情数据服务。所有用户身份和计费能力由 Platform (2l-svc-platform) 统一提供，AI 顾问的长期记忆由 Memorus (2b-svc-memorus) 提供。
 
-## 速查
+<div class="lurus-stat-strip"><div class="lurus-stat"><span class="lurus-stat__value">11</span><span class="lurus-stat__label">Advisor Agent</span></div><div class="lurus-stat"><span class="lurus-stat__value">40+</span><span class="lurus-stat__label">Drizzle 表</span></div><div class="lurus-stat"><span class="lurus-stat__value">~5,000</span><span class="lurus-stat__label">A 股 stocks</span></div><div class="lurus-stat"><span class="lurus-stat__value">数百万</span><span class="lurus-stat__label">kline_daily 行</span></div></div>
+
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="search" :size="14"/> 速查</span><h2 class="lurus-section-head__title">速查卡</h2><p class="lurus-section-head__lede">仓库 / 镜像 / 端口 / 部署目标一屏看全。</p></div>
 
 | 项 | 值 |
 |---|---|
@@ -256,7 +258,7 @@ sequenceDiagram
 | `/ws` | lucrum-api:8000 | WebSocket 实时推送 |
 | 其他 | lucrum-web:3000 | UI 页面 |
 
-## 部署
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="rocket" :size="14"/> 部署</span><h2 class="lurus-section-head__title">部署</h2><p class="lurus-section-head__lede">GHA → GHCR → ArgoCD auto-sync（R6 单节点 K3s，nginx NodePort 反代）。</p></div>
 
 ### CI/CD 流程
 
@@ -297,28 +299,53 @@ push main (lucrum-web/** 或 lurus-ai-qtrd/**) → GitHub Actions
 
 ### 镜像导入坑（R6 K3s 无 Traefik 节点）
 
-R6 是单节点 K3s，没有多节点 overlay，但 containerd 镜像缓存问题依然存在。正确导入流程：
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">containerd 镜像缓存</p><div class="lurus-callout__body">R6 是单节点 K3s，没有多节点 overlay，但 containerd 镜像缓存问题依然存在——导入新镜像前先 <code>crictl rmi</code> 旧 tag，否则可能跑旧镜像。</div></div></div>
+
+<ol class="lurus-steps">
+<li>
+
+在 Master (R1) 构建并打包
 
 ```bash
-# 在 Master (R1) 构建
 docker build --no-cache -t lucrum-web:vXX .
 docker save lucrum-web:vXX -o /tmp/lucrum-web-vXX.tar
+```
 
-# 传到 R6
+</li>
+<li>
+
+传到 R6
+
+```bash
 scp /tmp/lucrum-web-vXX.tar root@100.122.83.20:/tmp/
+```
 
-# R6 上操作
+</li>
+<li>
+
+R6 上导入（先删旧 tag）
+
+```bash
 ssh root@100.122.83.20
 crictl rmi docker.io/library/lucrum-web:vXX 2>/dev/null || true
 k3s ctr images import /tmp/lucrum-web-vXX.tar
 crictl images | grep lucrum-web:vXX
+```
 
-# 重启 Pod
+</li>
+<li>
+
+重启 Pod
+
+```bash
 kubectl delete pod -n lucrum -l app=lucrum-web --force --grace-period=0
 kubectl rollout status deployment/lucrum-web -n lucrum
 ```
 
-## 运行与运维
+</li>
+</ol>
+
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="gauge" :size="14"/> 运维</span><h2 class="lurus-section-head__title">运行与运维</h2><p class="lurus-section-head__lede">Pod 状态 / 日志 / 重启 / 健康检查；平台监控见 <a href="/ops/observability">/ops/observability</a>。</p></div>
 
 ### 常用命令
 
@@ -359,7 +386,7 @@ pip install -r vnpy_ai_trader/requirements.txt
 python -m uvicorn vnpy_ai_trader.src.web.app:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-## 数据契约
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="git-merge" :size="14"/> 契约</span><h2 class="lurus-section-head__title">数据契约</h2><p class="lurus-section-head__lede">上游 Capabilities（identity/billing/llm/memory/notification）+ NATS 事件 + 下游消费者。</p></div>
 
 ### 上游消费的 Capabilities
 
@@ -371,7 +398,7 @@ python -m uvicorn vnpy_ai_trader.src.web.app:app --host 0.0.0.0 --port 8000 --re
 | **memory** | X-API-Key REST | `GET /memories/search`，`POST /memories` (fail-open，1500ms 超时) |
 | **notification** | NATS / `POST /internal/v1/notify` | 交易事件通知（规划中） |
 
-权益计费三层：订阅计划上限 → Redis 计数器 (DB 1) → 钱包余额降级。
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="wallet" :size="18"/></span><div><p class="lurus-callout__title">权益计费三层</p><div class="lurus-callout__body">订阅计划上限 → Redis 计数器 (DB 1) → 钱包余额降级。</div></div></div>
 
 ### NATS 事件
 
@@ -432,7 +459,7 @@ python -m uvicorn vnpy_ai_trader.src.web.app:app --host 0.0.0.0 --port 8000 --re
 - [ ] 端到端测试——Playwright 4 viewports 已配置，测试用例待补充
 - [ ] Game 模块——Gamification 积分体系（`lurus-game` service，规划中，在 lurus.yaml product_groups.lucrum 已注册）
 
-## 应急 Runbook（10 分钟版）
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="alert-circle" :size="14"/> Runbook</span><h2 class="lurus-section-head__title">应急 Runbook（10 分钟版）</h2><p class="lurus-section-head__lede">行情断流 / 回测卡死 / Advisor 失忆 / DB 死锁 / 服务挂了——五条故障路径。</p></div>
 
 ### 行情数据断流（K 线获取失败）
 

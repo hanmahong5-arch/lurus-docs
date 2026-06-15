@@ -9,8 +9,16 @@ sourcePath: 2c-app-lutu
 
 # 路途 Lutu — 内部员工手册
 
-> 版本 0.2.3+4 · Flutter 3.35+ / Dart 3.9+ · 仅 Android（Windows 手机号降级）
-> 最后更新 2026-04-28
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="package" :size="18"/></span><div><p class="lurus-callout__title">版本 0.2.3+4 · 最后更新 2026-04-28</p><div class="lurus-callout__body">Flutter 3.35+ / Dart 3.9+ · 仅 Android（Windows 手机号降级）。Lurus 平台唯一移动端入口。</div></div></div>
+
+<p><span class="lurus-tag">P2</span> <span class="lurus-tag lurus-tag--muted">dev · Phase 1 internal-tool</span></p>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">0.2.3+4</span><span class="lurus-stat__label">version</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">15</span><span class="lurus-stat__label">ChangeNotifier</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">1135</span><span class="lurus-stat__label">单元/Widget PASS</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">24.2 MB</span><span class="lurus-stat__label">arm64 APK</span></div>
+</div>
 
 ## Dev 速查
 
@@ -226,6 +234,8 @@ sequenceDiagram
 | Zitadel OIDC | `auth.lurus.cn` | OIDC/OAuth2 | SSO 企业登录 PKCE 流程 | PKCE code_verifier |
 | Notification WS | `wss://identity.lurus.cn/api/v1/notifications/ws` | WebSocket | 实时推送（未读计数、通知事件） | `?token=<access_token>` |
 
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="key-round" :size="18"/></span><div><p class="lurus-callout__title">LLM 鉴权现状（临时方案）</p><div class="lurus-callout__body">当前所有用户共享一个 newapi sk-xxx 令牌（<code>ApiConfig.gatewaySharedKey</code>，newapi user_id=1 root 账户）。原因：platform-core JWT 无法直接传入 newapi <code>/v1/*</code> 接口，SSO bridge 尚未实现。轮换与长期方案见下。</div></div></div>
+
 **重要：LLM 鉴权现状（临时方案）**
 
 当前所有用户共享一个 newapi sk-xxx 令牌（`ApiConfig.gatewaySharedKey`，newapi user_id=1 root 账户）。这是因为 platform-core JWT 无法直接传入 newapi `/v1/*` 接口，SSO bridge 尚未实现。
@@ -357,6 +367,8 @@ Release APK 尺寸（arm64 24.2 MB / armeabi-v7a 20.2 MB / x86_64 26.3 MB）。
 
 ### 10.1 当前 Known Blockers
 
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">6 项 Known Blocker</p><div class="lurus-callout__body">上线前必须清除：<code>lucrum.lurus.cn</code> DNS/cert（KB-1）、Android release 签名（KB-4）、Zitadel OIDC clientId（KB-3）等。详见下表。</div></div></div>
+
 | 编号 | 问题 | 影响范围 | 解决路径 |
 |------|------|---------|---------|
 | KB-1 | `lucrum.lurus.cn` DNS / IngressRoute + cert pending | Lucrum Tab 暂用 mock 数据 | 配置 K8s IngressRoute + 申请 wildcard cert |
@@ -458,14 +470,17 @@ storeFile=../../lutu-release.jks
 
 ### 12.1 App 启动崩溃
 
-**症状**：安装后立即闪退，无任何界面
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-circle" :size="18"/></span><div><p class="lurus-callout__title">症状</p><div class="lurus-callout__body">安装后立即闪退，无任何界面。</div></div></div>
 
 **排查步骤**：
-1. 连接设备，`flutter logs` 或 `adb logcat | grep -i lutu` 查看栈帧
-2. 若为 `MissingPluginException`：`flutter clean && flutter pub get && flutter run`（plugin native 代码未重建）
-3. 若为 `FlutterError: Unable to load assets`：检查 `pubspec.yaml` assets 声明与 `assets/images/` 文件是否一致
-4. 若为 Dart 初始化异常：检查 `ErrorReporting.run()` 中 `WidgetsFlutterBinding.ensureInitialized()` 是否在 `runApp` 前执行（main.dart 已正确实现）
-5. 若 Sentry 已集成，查看 Sentry 控制台对应 DSN 的 Issues
+
+<ol class="lurus-steps">
+<li>连接设备，<code>flutter logs</code> 或 <code>adb logcat | grep -i lutu</code> 查看栈帧</li>
+<li>若为 <code>MissingPluginException</code>：<code>flutter clean &amp;&amp; flutter pub get &amp;&amp; flutter run</code>（plugin native 代码未重建）</li>
+<li>若为 <code>FlutterError: Unable to load assets</code>：检查 <code>pubspec.yaml</code> assets 声明与 <code>assets/images/</code> 文件是否一致</li>
+<li>若为 Dart 初始化异常：检查 <code>ErrorReporting.run()</code> 中 <code>WidgetsFlutterBinding.ensureInitialized()</code> 是否在 <code>runApp</code> 前执行（main.dart 已正确实现）</li>
+<li>若 Sentry 已集成，查看 Sentry 控制台对应 DSN 的 Issues</li>
+</ol>
 
 ### 12.2 后端 503 / 所有接口失败
 

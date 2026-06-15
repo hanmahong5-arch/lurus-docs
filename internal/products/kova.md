@@ -11,17 +11,19 @@ sourcePath: 2b-svc-kova
 
 # Kova 内部手册
 
-> 🔴 **2026-05-28 状态更新**：building 阶段，CI 自 2026-03-21 全红（GitHub Actions billing，非代码问题），local 领先；未交付。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body"><strong>building</strong> 阶段，CI 自 2026-03-21 全红（GitHub Actions billing，<strong>非代码问题</strong>），local 领先；<strong>未交付</strong>。<span class="lurus-tag">P1</span> <span class="lurus-tag lurus-tag--muted">dev</span> <RiskBadge flag="wip" /></div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">内部专属</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、未公开问题。</div></div></div>
 
-## 一句话定位
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="brain" :size="14"/> 定位</span><h2 class="lurus-section-head__title">一句话定位</h2><p class="lurus-section-head__lede">嵌入式 AI Agent 持久执行引擎——WAL 崩溃恢复，零任务丢失。</p></div>
 
 Kova 是 Lurus 平台的嵌入式 AI Agent 持久执行引擎（`cargo add` 即可集成，无需额外服务），通过 Write-Ahead Log (WAL) 崩溃恢复实现零任务丢失，p50 全链路延迟 3.17 μs。当前主要消费者是 Forge（可视化 Agent 工作台），未来扩展到所有需要可靠 Agent 执行的产品线。仓库为私有仓库 `agentdrq`，未上 K8s，R6 跑测试床实例。
 
+<div class="lurus-stat-strip"><div class="lurus-stat"><span class="lurus-stat__value">3.17 μs</span><span class="lurus-stat__label">p50 全链路延迟</span></div><div class="lurus-stat"><span class="lurus-stat__value">21</span><span class="lurus-stat__label">工作区 crate</span></div><div class="lurus-stat"><span class="lurus-stat__value">1,565+</span><span class="lurus-stat__label">测试数</span></div><div class="lurus-stat"><span class="lurus-stat__value">5</span><span class="lurus-stat__label">Transport</span></div></div>
+
 ---
 
-## 速查
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="search" :size="14"/> 速查</span><h2 class="lurus-section-head__title">速查卡</h2><p class="lurus-section-head__lede">仓库 / 镜像 / 端口 / 部署目标一屏看全。</p></div>
 
 | 项 | 值 |
 |---|---|
@@ -191,6 +193,8 @@ WAL 由 segment 文件组成，每条 record 包含：
 
 ### 2. 性能基准（`cargo bench`）
 
+<div class="lurus-stat-strip"><div class="lurus-stat"><span class="lurus-stat__value">3.17 μs</span><span class="lurus-stat__label">FIFO 全链路 p50</span></div><div class="lurus-stat"><span class="lurus-stat__value">315,130</span><span class="lurus-stat__label">FIFO ops/s</span></div><div class="lurus-stat"><span class="lurus-stat__value">3.63 ns</span><span class="lurus-stat__label">Ring buffer 裸操作</span></div><div class="lurus-stat"><span class="lurus-stat__value">275 Mops/s</span><span class="lurus-stat__label">Ring buffer 吞吐</span></div></div>
+
 | 场景 | payload | p50 延迟 | 吞吐 |
 |---|---|---|---|
 | FIFO 全链路（enqueue→dequeue→complete） | 1 KB | **3.17 μs** | 315,130 ops/s |
@@ -254,7 +258,7 @@ Windows 强制：
 
 ---
 
-## 部署
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="rocket" :size="14"/> 部署</span><h2 class="lurus-section-head__title">部署</h2><p class="lurus-section-head__lede">本地 pure-Rust 构建 → R6 release 二进制 → 薄容器 → tester 实例。</p></div>
 
 ### 本地开发
 ```bash
@@ -265,13 +269,26 @@ cargo bench --features pure-rust --no-default-features --bench queue_bench
 ```
 
 ### R6 准生产部署流程
+
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">两个 load-bearing 约束</p><div class="lurus-callout__body"><code>llm</code> feature 必须带（否则 Worker/dispatch/backpressure 路径不激活）；<code>docker build</code> 必须 <code>--no-cache</code>（BuildKit 按内容哈希复用 COPY layer，新 tag 可能实际跑旧二进制）。</div></div></div>
+
+<ol class="lurus-steps">
+<li>
+
+打包源码（排除 `target/`）
+
 ```bash
-# 1. 打包源码（排除 target/）
 TAG=main-$(git rev-parse --short HEAD)
 git archive --format=tar -o /tmp/kova-src.tar HEAD
 scp /tmp/kova-src.tar root@100.122.83.20:/tmp/kova-src.tar
+```
 
-# 2. R6 上构建 release 二进制（gnu target，用 R6 共享工具链）
+</li>
+<li>
+
+R6 上构建 release 二进制（gnu target，用 R6 共享工具链）
+
+```bash
 ssh root@100.122.83.20 "
   rm -rf /tmp/kova-src && mkdir -p /tmp/kova-src &&
   cd /tmp/kova-src && tar xf /tmp/kova-src.tar &&
@@ -280,8 +297,14 @@ ssh root@100.122.83.20 "
   export PATH=\$CARGO_HOME/bin:\$PATH &&
   cargo build --release --features prometheus,llm -p kova-rest"
   # 注意：llm feature 必须带，否则 Worker/dispatch/backpressure 路径不激活
+```
 
-# 3. 薄容器（Dockerfile.prebuilt，Ubuntu 24.04 + 二进制 COPY）
+</li>
+<li>
+
+薄容器（`Dockerfile.prebuilt`，Ubuntu 24.04 + 二进制 COPY）
+
+```bash
 ssh root@100.122.83.20 "
   cd /tmp/kova-src &&
   docker build --no-cache -f Dockerfile.prebuilt \
@@ -289,19 +312,40 @@ ssh root@100.122.83.20 "
     -t localhost:5000/kova-rest:latest . &&
   docker push localhost:5000/kova-rest:$TAG &&
   docker push localhost:5000/kova-rest:latest"
+```
 
-# 4. 新 tester 实例
+</li>
+<li>
+
+新 tester 实例
+
+```bash
 ssh root@100.122.83.20 "sudo -u kova-test /data/kova-test/scripts/create-tester.sh <NAME>"
+```
 
-# 5. 升级
+</li>
+<li>
+
+升级
+
+```bash
 ssh root@100.122.83.20 "cd /data/kova-test/testers/<NAME> &&
   sudo -u kova-test docker compose pull &&
   sudo -u kova-test docker compose up -d"
+```
 
-# 6. 冒烟测试
+</li>
+<li>
+
+冒烟测试
+
+```bash
 curl -s -H 'X-API-Key: sk-<NAME>-admin' \
   "http://100.122.83.20:301X/api/v1/agents/42/history?format=causal&limit=10"
 ```
+
+</li>
+</ol>
 
 **关键环境变量（kova-rest）**
 
@@ -325,15 +369,11 @@ curl -s -H 'X-API-Key: sk-<NAME>-admin' \
 2. `/data/kova-test/.newapi-key` 文件（当前已配公司共享 key）
 3. 空 → 降级模式，REST 正常但 task 不执行
 
-**准入 gate（推 R6 前必须全绿）**：
-1. `cargo test -p kova --features pure-rust,agent,swarm --no-default-features --lib`
-2. `cargo test -p kova-rest --lib`
-3. `cargo clippy --features pure-rust --no-default-features -p kova --lib --tests -- -D warnings`
-4. `cargo clippy --features pure-rust,agent,swarm --no-default-features -p kova --lib --tests -- -D warnings`
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield-check" :size="18"/></span><div><p class="lurus-callout__title">准入 gate — 推 R6 前必须全绿</p><div class="lurus-callout__body"><ol><li><code>cargo test -p kova --features pure-rust,agent,swarm --no-default-features --lib</code></li><li><code>cargo test -p kova-rest --lib</code></li><li><code>cargo clippy --features pure-rust --no-default-features -p kova --lib --tests -- -D warnings</code></li><li><code>cargo clippy --features pure-rust,agent,swarm --no-default-features -p kova --lib --tests -- -D warnings</code></li></ol></div></div></div>
 
 ---
 
-## 运行与运维
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="gauge" :size="14"/> 运维</span><h2 class="lurus-section-head__title">运行与运维</h2><p class="lurus-section-head__lede">健康探针 + TUI + prometheus-format metrics；监控平台见 <a href="/ops/observability">/ops/observability</a>。</p></div>
 
 **健康检查**：
 - `GET /health` → 基础存活
@@ -429,17 +469,17 @@ ssh root@100.122.83.20 "cd /data/kova-test/testers/<NAME> &&
 - [ ] 消除 62 个 pre-existing clippy errors，CI gate 打开 `-D warnings`
 - [ ] PyO3 GIL 释放全面覆盖（所有阻塞 Rust 路径）
 - [ ] `kova-rest` healthcheck CLI flag 实装（当前 `--health` 不识别，template 已移除 Docker healthcheck）
-- [ ] WAL compaction 默认启用并接入 metrics dashboard
+- [ ] WAL compaction 默认启用并接入监控（kova-rest 暴露 prometheus-format `/metrics`，go.d prometheus collector 抓取，见 [/ops/observability](/ops/observability)）
 - [ ] A2A transport 文档化（RC1.0 → 正式版跟进）
 - [ ] kova-memory `MemorusProvider` 完整 UAT 测试（现有 `tests/uat_memory_lifecycle.rs`，需 R6 对接验证）
 
 ---
 
-## 应急 Runbook（10 分钟版）
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="alert-circle" :size="14"/> Runbook</span><h2 class="lurus-section-head__title">应急 Runbook（10 分钟版）</h2><p class="lurus-section-head__lede">WAL 损坏 / 性能退化 / 内存泄漏 / 服务挂了 / 回滚——五条故障路径。</p></div>
 
 ### WAL 损坏
 
-**症状**：服务重启后 task 丢失，或日志出现 `CRC32 mismatch` / `WAL header invalid`。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="database-backup" :size="18"/></span><div><p class="lurus-callout__title">症状</p><div class="lurus-callout__body">服务重启后 task 丢失，或日志出现 <code>CRC32 mismatch</code> / <code>WAL header invalid</code>。</div></div></div>
 
 **诊断**：
 ```bash

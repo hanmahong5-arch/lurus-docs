@@ -1,8 +1,6 @@
-# 决策路由 — "我有 X 需求，该用哪个 Lurus 产品？"
+<div class="lurus-section-head"><span class="lurus-section-head__eyebrow"><Icon name="git-branch" :size="14"/> 横向视角</span><h2 class="lurus-section-head__title">决策路由 — "我有 X 需求，该用哪个 Lurus 产品？"</h2><p class="lurus-section-head__lede">让你（员工 / 销售 / 客户）一句话问出需求，几步点到答案。</p></div>
 
-> 这页让你（员工 / 销售 / 客户）一句话问出需求，几步点到答案。
->
-> 它不替代单产品手册。点到答案后，请去对应产品手册做精细决策。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="search" :size="18"/></span><div><p class="lurus-callout__title">这不替代单产品手册</p><div class="lurus-callout__body">点到答案后，请去对应产品手册做精细决策。</div></div></div>
 
 ## 一句话索引
 
@@ -107,7 +105,7 @@ graph LR
 
 ## 我**不**该用 Lurus 哪些产品
 
-诚实地说，下面几类用户我们暂时回应不好：
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-circle" :size="18"/></span><div><p class="lurus-callout__title">诚实地说</p><div class="lurus-callout__body">下面几类用户我们暂时回应不好 —— 别硬塞，按下图指到更合适的方案。</div></div></div>
 
 ```mermaid
 graph TD
@@ -159,6 +157,8 @@ graph TD
 
 ## 用法
 
-- 销售第一通电话：先问 3-5 个核心问题，把客户定位到"按客户原话"那张表的某行。
-- 客户深聊：跳到具体产品手册的核心数据流 + 数据契约章节。
-- 决策者要 PPT：拿这页 + [能力矩阵](/cross/capability-matrix) + [集成配方](/cross/integration-recipes) 三张图直接抄。
+<ol class="lurus-steps">
+<li><strong>销售第一通电话</strong>：先问 3-5 个核心问题，把客户定位到"按客户原话"那张表的某行。</li>
+<li><strong>客户深聊</strong>：跳到具体产品手册的核心数据流 + 数据契约章节。</li>
+<li><strong>决策者要 PPT</strong>：拿这页 + <a href="/cross/capability-matrix">能力矩阵</a> + <a href="/cross/integration-recipes">集成配方</a> 三张图直接抄。</li>
+</ol>

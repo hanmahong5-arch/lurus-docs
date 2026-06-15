@@ -29,9 +29,17 @@ const groups = computed(() =>
 const total = computed(() => Object.keys(glossary).length)
 </script>
 
-# 术语表
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="book-a" :size="14" /> 术语表</span>
+  <h1 class="lurus-section-head__title">术语表</h1>
+  <p class="lurus-section-head__lede">Lurus 产品文档中出现的关键术语，共 <strong>{{ total }}</strong> 条，按主题分组。支持 <kbd>Ctrl</kbd> + <kbd>F</kbd> 快速定位。</p>
+</div>
 
-本页整理 Lurus 产品文档中出现的关键术语，共 <strong>{{ total }}</strong> 条，按主题分组。支持 <kbd>Ctrl</kbd> + <kbd>F</kbd> 快速定位。
+<nav class="glossary-nav" aria-label="按主题跳转">
+  <a v-for="g in groups" :key="g.tag" :href="`#${g.tag}`" class="glossary-nav__chip">
+    {{ g.title }}<span class="glossary-nav__count">{{ g.entries.length }}</span>
+  </a>
+</nav>
 
 <div v-for="g in groups" :key="g.tag" class="glossary-group">
   <h2 :id="g.tag">{{ g.title }}</h2>
@@ -55,6 +63,39 @@ const total = computed(() => Object.keys(glossary).length)
 :::
 
 <style scoped>
+.glossary-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 8px;
+}
+.glossary-nav__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--lurus-radius-pill);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--vp-c-text-2) !important;
+  text-decoration: none !important;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  transition: border-color var(--lurus-dur-fast), color var(--lurus-dur-fast);
+}
+.glossary-nav__chip:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1) !important;
+}
+.glossary-nav__count {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--vp-c-text-3);
+  background: var(--vp-c-bg);
+  border-radius: var(--lurus-radius-pill);
+  padding: 0 7px;
+  line-height: 1.5;
+}
 .glossary-group {
   margin-top: 2.25rem;
 }

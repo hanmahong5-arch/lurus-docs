@@ -3,11 +3,24 @@ title: 企业方案总览
 description: 按行业和角色入口分类 Lurus 企业级能力。
 ---
 
+<div class="solutions-hub">
+
 # 企业方案
 
 专为决策者 / 采购 / 架构评审 / 合规准备的入口。
 
-## 按角色
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">50+</span><span class="lurus-stat__label">接入模型</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">部署形态</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">SM4-GCM</span><span class="lurus-stat__label">国密加密</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">1 张</span><span class="lurus-stat__label">统一发票</span></div>
+</div>
+
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> 按角色</span>
+  <h2 class="lurus-section-head__title">找到属于你的入口</h2>
+  <p class="lurus-section-head__lede">CTO 看架构与 TCO，CISO 看合规边界，PMO 看计费与授权。</p>
+</div>
 
 <div class="action-grid">
   <ActionCard
@@ -42,7 +55,11 @@ description: 按行业和角色入口分类 Lurus 企业级能力。
   />
 </div>
 
-## 按行业
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="briefcase" :size="14" /> 按行业</span>
+  <h2 class="lurus-section-head__title">行业组合方案</h2>
+  <p class="lurus-section-head__lede">每个行业一套已验证的产品组合，直接落地。</p>
+</div>
 
 <div class="action-grid">
   <ActionCard
@@ -89,3 +106,9 @@ description: 按行业和角色入口分类 Lurus 企业级能力。
   { text: '为什么选择 Lurus', link: '/solutions/why-lurus', primary: true },
   { text: '联系商务', link: 'mailto:business@lurus.cn', external: true },
 ]" />
+
+</div>
+
+<style scoped>
+.solutions-hub .lurus-stat-strip { margin: 20px 0 8px; }
+</style>

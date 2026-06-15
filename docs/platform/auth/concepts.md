@@ -3,23 +3,24 @@ title: 核心概念 | Zitadel 身份认证
 description: Instance / Organization / Project / Application / User / Grant / Administrator 等 Zitadel 对象模型详解，结合 Lurus 实际部署说明。
 ---
 
+<div class="auth-concepts">
+
 # 核心概念
 
 Lurus 用 [Zitadel](https://zitadel.com) 作统一 OIDC 身份提供方（IdP），公网入口 `auth.lurus.cn`。本页梳理对象模型层级。
 
 ---
 
-## 对象模型一览
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="layers" :size="14" /> 模型</span>
+  <h2 class="lurus-section-head__title">对象模型一览</h2>
+  <p class="lurus-section-head__lede">六类对象、单向包含——理解这张图，后面每节都是它的展开。</p>
+</div>
 
-```
-Instance (lurus-prod)
-└─ Organization (lurus.cn)
-   ├─ User (员工 / 客户 / Service Account)
-   ├─ Project (lurus-api / lucrum / switch / lutu / admin / forge …)
-   │  ├─ Application (Web / SPA / Native / API / SAML)
-   │  └─ Role (项目内角色定义，如 lucrum:admin)
-   └─ Grant (将本组织的 Project 授权给其他 Organization)
-```
+<ArchitectureDiagram
+  title="Zitadel 对象模型层级"
+  chart="graph TD; Instance[Instance · lurus-prod] --> Org[Organization · lurus.cn]; Org --> User[User · 员工 / 客户 / Service Account]; Org --> Project[Project · lurus-api / lucrum / switch …]; Org --> OrgGrant[Grant · 授权 Project 给其他 Org]; Project --> App[Application · Web / SPA / Native / API / SAML]; Project --> Role[Role · 如 lucrum:admin]; User -. User Grant .-> Role"
+/>
 
 包含关系**严格单向**：Instance ⊃ Organization ⊃ Project ⊃ (Application, Role)。User 归属于 Organization，通过 User Grant 绑定到 Project Role。
 
@@ -143,10 +144,16 @@ Instance 层定义默认值，Organization 层按需覆盖。
 
 ---
 
-::: tip 对齐 Lurus 实际部署
-- **Project 命名**：每个产品对应一个 Project（`lurus-api`、`lucrum`、`switch`、`lutu`、`admin`、`forge`），以 Zitadel Console 为准。
-- **角色约定**：角色字符串由服务级 CLAUDE.md 或 `lurus.yaml` `capabilities:` 注册表定义，不在此硬编码。
-- **Machine User 场景**：M2M 调用统一用 Machine User + JWT Profile，避免共享人类账号。
-- **PAT 场景**：CI/CD 和脚本可用 PAT，须设最短有效期并定期轮换。
-- **完整配置参考**：`lurus.yaml` `capabilities:` 段为架构变更唯一入口。
-:::
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">对齐 Lurus 实际部署</p>
+    <div class="lurus-callout__body"><ul><li><strong>Project 命名</strong>：每个产品对应一个 Project（<code>lurus-api</code>、<code>lucrum</code>、<code>switch</code>、<code>lutu</code>、<code>admin</code>、<code>forge</code>），以 Zitadel Console 为准。</li><li><strong>角色约定</strong>：角色字符串由服务级 CLAUDE.md 或 <code>lurus.yaml</code> <code>capabilities:</code> 注册表定义，不在此硬编码。</li><li><strong>Machine User 场景</strong>：M2M 调用统一用 Machine User + JWT Profile，避免共享人类账号。</li><li><strong>PAT 场景</strong>：CI/CD 和脚本可用 PAT，须设最短有效期并定期轮换。</li><li><strong>完整配置参考</strong>：<code>lurus.yaml</code> <code>capabilities:</code> 段为架构变更唯一入口。</li></ul></div>
+  </div>
+</div>
+
+</div>
+
+<style scoped>
+.auth-concepts .lurus-section-head { margin-top: 8px; }
+</style>

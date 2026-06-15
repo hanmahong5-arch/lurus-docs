@@ -11,9 +11,12 @@ sourcePath: 2c-bs-www-next + 2c-bs-www-phoenix
 
 # Web 内部手册
 
-> ⚫ **2026-05-28 状态更新**：www.lurus.cn 在线（live）；webgame（Phoenix 游戏）2026-05-28 已 sunset（auth 死约 1 月 + 0 流量）。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="history" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body"><code>www.lurus.cn</code> 在线（<strong>live</strong>）；webgame（Phoenix 游戏）2026-05-28 已 <strong>sunset</strong>（auth 死约 1 月 + 0 流量）。仅限内部员工查阅 —— 包含运维细节、决策档案、未公开问题。</div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<p>
+  <span class="lurus-tag">www · live</span>
+  <span class="lurus-tag lurus-tag--muted">webgame · sunset</span>
+</p>
 
 ## 一句话定位
 
@@ -79,6 +82,13 @@ flowchart TB
 ---
 
 # Part 1: WWW（Next.js 16）
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">3Mbps</span><span class="lurus-stat__label">阿里云出口上限</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">:3000</span><span class="lurus-stat__label">Pod 端口</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">:30443</span><span class="lurus-stat__label">R1 Traefik NodePort</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">Recreate</span><span class="lurus-stat__label">部署策略</span></div>
+</div>
 
 ::: tip 运维速记
 **出口带宽上限**：阿里云 cloud-ali-4 出口 **3Mbps**（硬上限，无 CDN 时大 bundle 易拖慢首屏）。
@@ -150,11 +160,7 @@ sequenceDiagram
     ALI-->>U: HTTPS 响应
 ```
 
-**关键约束**:
-- `www.lurus.cn` / `lurus.cn` 的 DNS A 记录必须指向阿里云 `123.57.143.63`（ICP 备案要求）
-- nginx 使用 **TCP stream 模式**（非 HTTP 反代），不解密 TLS，SNI 由 Traefik 处理
-- lurus-www Pod 必须调度到 `cloud-ali-4-2c2g` 节点（nodeSelector `lurus.cn/role=www-gateway`），该节点同时是 K3s agent
-- 阿里云出口 **3Mbps 带宽上限**，高并发下有瓶颈风险
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="network" :size="18"/></span><div><p class="lurus-callout__title">关键约束</p><div class="lurus-callout__body"><ul><li><code>www.lurus.cn</code> / <code>lurus.cn</code> 的 DNS A 记录必须指向阿里云 <code>123.57.143.63</code>（ICP 备案要求）</li><li>nginx 使用 <strong>TCP stream 模式</strong>（非 HTTP 反代），不解密 TLS，SNI 由 Traefik 处理</li><li>lurus-www Pod 必须调度到 <code>cloud-ali-4-2c2g</code> 节点（nodeSelector <code>lurus.cn/role=www-gateway</code>），该节点同时是 K3s agent</li><li>阿里云出口 <strong>3Mbps 带宽上限</strong>，高并发下有瓶颈风险</li></ul></div></div></div>
 
 ## 设计系统
 
@@ -206,6 +212,13 @@ lurus-www 无环境变量依赖（所有外链硬编码为 `api.lurus.cn` / `aut
 | 共享库 | `deps_local/lurus_phoenix`（OIDC / HealthPlug / ApiProxy） |
 
 ## 游戏设计
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">50ms</span><span class="lurus-stat__label">Tick 速率</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">20</span><span class="lurus-stat__label">最大玩家/房间</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">2400×1600</span><span class="lurus-stat__label">竞技场像素</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">:4000</span><span class="lurus-stat__label">Bandit 端口</span></div>
+</div>
 
 - 风格: Slither.io + RPG 进化系统
 - 玩法: 吃食物升级 → 解锁道具 → 撞击其他蛇获得击杀积分
@@ -304,7 +317,7 @@ push main → test (ExUnit) → build (Elixir mix release)
          → webgame Pod rollout restart on R1
 ```
 
-**注意**: test job 和 build job 并行，build **不等** test 通过（`if: github.event_name == 'push'`）。生产部署不受测试失败阻断，测试仅作可见性报告。这是已知风险，后续应改为串行依赖。
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">Build 不等 Test（已知风险）</p><div class="lurus-callout__body">test job 和 build job <strong>并行</strong>，build <strong>不等</strong> test 通过（<code>if: github.event_name == 'push'</code>）。生产部署不受测试失败阻断，测试仅作可见性报告。后续应改为串行依赖。</div></div></div>
 
 ## 环境变量
 
@@ -377,7 +390,7 @@ push main → test (ExUnit) → build (Elixir mix release)
 
 - [ ] DATABASE_URL 迁移到 K8s Secret (`secretKeyRef`) — 高优，安全风险
 - [ ] webgame CI: test job 设为 build 的前置依赖（阻断不通过测试的部署）
-- [ ] 接入 Prometheus + Grafana 的 webgame telemetry（`:webgame.game.*` 指标已就位，未配 scrape）
+- [ ] 让自托管 Netdata Agent 抓取 webgame telemetry（`:webgame.game.*` 指标已就位，未配 scrape；go.d prometheus collector 主动抓，见 [/ops/observability](/ops/observability)）
 - [ ] Tick 崩溃上报 Sentry（当前只有 Logger.error）
 - [ ] `creator_live.ex` 皮肤/房间编辑器完成实现
 - [ ] www 接入 CDN 缓解阿里云 3Mbps 带宽瓶颈
@@ -390,33 +403,51 @@ push main → test (ExUnit) → build (Elixir mix release)
 
 ### ICP 入口挂（www.lurus.cn 无法访问）
 
-1. 确认 DNS 解析是否正常（应指向 `123.57.143.63`）：
-   ```bash
-   dig www.lurus.cn +short
-   # 期望: 123.57.143.63
-   ```
+<ol class="lurus-steps">
+<li>
 
-2. 检查是否被 ICP 拦截（返回 307 跳 icp.pppf.com.cn）：
-   ```bash
-   curl -I https://www.lurus.cn
-   # 若 Location: icp.pppf.com.cn → ICP 备案问题，联系阿里云
-   ```
+确认 DNS 解析是否正常（应指向 `123.57.143.63`）：
 
-3. 检查阿里云节点 nginx 状态（需要阿里云节点 SSH 权限）：
-   ```bash
-   # 无直接 SSH，通过 K3s 节点操作
-   ssh root@100.98.57.55 "kubectl get node cloud-ali-4-2c2g"
-   ssh root@100.98.57.55 "kubectl get pods -n lurus-www"
-   ssh root@100.98.57.55 "kubectl logs -n lurus-www deploy/lurus-www --tail=100"
-   ```
+```bash
+dig www.lurus.cn +short
+# 期望: 123.57.143.63
+```
 
-4. 强制重启 lurus-www Pod：
-   ```bash
-   ssh root@100.98.57.55 "kubectl rollout restart deployment/lurus-www -n lurus-www"
-   ssh root@100.98.57.55 "kubectl rollout status deployment/lurus-www -n lurus-www --timeout=60s"
-   ```
+</li>
+<li>
 
-5. 若节点本身下线（cloud-ali-4 not ready），需登录阿里云控制台重启 ECS。
+检查是否被 ICP 拦截（返回 307 跳 icp.pppf.com.cn）：
+
+```bash
+curl -I https://www.lurus.cn
+# 若 Location: icp.pppf.com.cn → ICP 备案问题，联系阿里云
+```
+
+</li>
+<li>
+
+检查阿里云节点 nginx 状态（需要阿里云节点 SSH 权限）：
+
+```bash
+# 无直接 SSH，通过 K3s 节点操作
+ssh root@100.98.57.55 "kubectl get node cloud-ali-4-2c2g"
+ssh root@100.98.57.55 "kubectl get pods -n lurus-www"
+ssh root@100.98.57.55 "kubectl logs -n lurus-www deploy/lurus-www --tail=100"
+```
+
+</li>
+<li>
+
+强制重启 lurus-www Pod：
+
+```bash
+ssh root@100.98.57.55 "kubectl rollout restart deployment/lurus-www -n lurus-www"
+ssh root@100.98.57.55 "kubectl rollout status deployment/lurus-www -n lurus-www --timeout=60s"
+```
+
+</li>
+<li>若节点本身下线（cloud-ali-4 not ready），需登录阿里云控制台重启 ECS。</li>
+</ol>
 
 ---
 
@@ -467,6 +498,8 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/webgame -n lurus-webgam
 
 症状: CPU 短暂飙升，websocket 连接握手堆积，游戏 lag 明显。
 
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="activity" :size="18"/></span><div><p class="lurus-callout__title">资源趋势看哪里</p><div class="lurus-callout__body">Pod CPU/Memory 实时趋势走自托管 Netdata Agent，见 <a href="/ops/observability">/ops/observability</a>；下方 <code>kubectl top pod</code> 是即时快照。</div></div></div>
+
 ```bash
 # 监控 Pod 资源
 ssh root@100.98.57.55 "kubectl top pod -n lurus-webgame"
@@ -483,7 +516,7 @@ ssh root@100.98.57.55 "kubectl logs -n lurus-webgame deploy/webgame --tail=100 |
 
 **场景**: 阿里云节点故障，需临时绕过 ICP 入口直接访问三丰云。
 
-**风险**: 绕过 ICP 备案入口可能违反工信部规定，仅在紧急且短暂场景下使用。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">合规风险</p><div class="lurus-callout__body">绕过 ICP 备案入口可能违反工信部规定，<strong>仅在紧急且短暂场景下使用</strong>。</div></div></div>
 
 ```bash
 # 将 www.lurus.cn DNS A 记录临时改为三丰云 43.226.46.164

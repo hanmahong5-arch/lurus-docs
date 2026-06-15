@@ -3,9 +3,27 @@ title: Kova 核心概念
 description: Kova 的 WAL、Agent Loop、Checkpoint 等核心架构组件和设计哲学。
 ---
 
-# 核心概念
+<div class="kova-concepts">
 
-Kova 的核心架构组件和设计哲学。
+<div class="lurus-section-head">
+  <span class="lurus-section-head__eyebrow"><Icon name="bot" :size="14" /> 核心概念</span>
+  <h1 class="lurus-section-head__title">Kova 核心概念</h1>
+  <p class="lurus-section-head__lede">从 Agent、Workflow、Swarm 到 WAL 持久化 —— 理解 Kova 的核心架构组件与设计哲学。</p>
+</div>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">3μs</span><span class="lurus-stat__label">调度延迟</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">315K</span><span class="lurus-stat__label">ops/s 吞吐</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">21</span><span class="lurus-stat__label">workspace crate</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">&lt;10MB</span><span class="lurus-stat__label">单二进制</span></div>
+</div>
+
+<div class="lurus-cards lurus-cards--compact">
+  <a class="lurus-card lurus-card--kova" href="#agent"><span class="lurus-card__icon"><Icon name="bot" :size="22" /></span><div class="lurus-card__title">Agent</div><p class="lurus-card__body">基本执行单元：Prompt + Model + Tools + Memory</p></a>
+  <a class="lurus-card lurus-card--kova" href="#workflow"><span class="lurus-card__icon"><Icon name="workflow" :size="22" /></span><div class="lurus-card__title">Workflow</div><p class="lurus-card__body">把多个 Agent 编排成有序执行管道</p></a>
+  <a class="lurus-card lurus-card--kova" href="#swarm-群体智能"><span class="lurus-card__icon"><Icon name="network" :size="22" /></span><div class="lurus-card__title">Swarm</div><p class="lurus-card__body">多 Agent 自主协作，A2A 协议直接通信</p></a>
+  <a class="lurus-card lurus-card--kova" href="#wal-write-ahead-log"><span class="lurus-card__icon"><Icon name="database-backup" :size="22" /></span><div class="lurus-card__title">WAL</div><p class="lurus-card__body">预写日志 + CRC32 校验，崩溃自动恢复</p></a>
+</div>
 
 ---
 
@@ -22,30 +40,40 @@ Agent 是基本执行单元，由以下要素组成：
 
 ### Agent 生命周期
 
-```
-Created → Idle → Running → Completed
-                   │
-                   ├── Paused (手动暂停)
-                   ├── Failed (异常退出)
-                   └── Recovering (崩溃恢复)
-```
+<ArchitectureDiagram title="Agent 状态机" chart="graph LR
+  Created --> Idle
+  Idle --> Running
+  Running --> Completed
+  Running --> Paused
+  Running --> Failed
+  Running --> Recovering
+  Paused -.恢复.-> Running
+  Recovering -.重放 WAL.-> Running" />
 
-- **Idle**: Agent 已创建，等待任务
-- **Running**: 正在执行任务
-- **Paused**: 手动暂停，可恢复
-- **Completed**: 任务完成
-- **Failed**: 执行失败（超过重试次数）
-- **Recovering**: 检测到未完成的 WAL 记录，自动恢复
+| 状态 | 含义 |
+|------|------|
+| **Idle** | Agent 已创建，等待任务 |
+| **Running** | 正在执行任务 |
+| **Paused** | 手动暂停，可恢复 |
+| **Completed** | 任务完成 |
+| **Failed** | 执行失败（超过重试次数） |
+| **Recovering** | 检测到未完成的 WAL 记录，自动恢复 |
 
 ### Agent 决策循环
 
-```
-接收任务/上一步结果 → LLM 推理(分析+规划) → 需要工具？
-  ├─ Yes → 调用工具 → 工具结果 → 继续下一轮推理
-  └─ No  → 生成最终回答 → 返回结果
-```
+<ArchitectureDiagram title="决策循环" chart="graph LR
+  A[接收任务 / 上一步结果] --> B[LLM 推理<br/>分析 + 规划]
+  B --> C{需要工具？}
+  C -->|Yes| D[调用工具] --> E[工具结果] --> B
+  C -->|No| F[生成最终回答] --> G[返回结果]" />
 
-每一轮决策都写入 WAL，确保可恢复。
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">每一轮都落盘</p>
+    <div class="lurus-callout__body">每一轮决策都写入 WAL，确保崩溃后可从断点重放，无需重新调用 LLM。</div>
+  </div>
+</div>
 
 ---
 
@@ -92,9 +120,16 @@ Swarm 模式让多个 Agent 自主协作，无需预定义固定流程。
 
 ### 工作方式
 
-```
-用户任务 → 协调者 Agent → 分解子任务 → 分配给专家 Agent(研究/编码/测试) → 收集结果 → 综合输出
-```
+<ArchitectureDiagram title="Swarm 协作流" chart="graph LR
+  U[用户任务] --> C[协调者 Agent]
+  C --> S[分解子任务]
+  S --> R[研究 Agent]
+  S --> D[编码 Agent]
+  S --> T[测试 Agent]
+  R --> M[收集结果]
+  D --> M
+  T --> M
+  M --> O[综合输出]" />
 
 Agent 之间通过 <Term t="A2A">A2A（Agent-to-Agent）</Term>协议直接通信：
 
@@ -121,13 +156,21 @@ WAL 是 Kova 持久化的核心机制，借鉴数据库系统设计。
 
 ### 写入流程
 
-```
-Agent 状态变更 → 序列化+CRC32(算校验和) → 写入 WAL 文件(先写日志) → 执行实际操作 → 标记 WAL 已完成(确认提交)
-```
+<ArchitectureDiagram title="WAL 写入流程" chart="graph LR
+  A[Agent 状态变更] --> B[序列化 + CRC32<br/>算校验和]
+  B --> C[写入 WAL 文件<br/>先写日志]
+  C --> D[执行实际操作]
+  D --> E[标记 WAL 已完成<br/>确认提交]" />
 
 ### 恢复流程
 
-启动时自动扫描 WAL，恢复未完成操作：已完成的记录跳过；CRC32 校验失败标记损坏并跳过；未完成的记录重新执行。
+启动时自动扫描 WAL，恢复未完成操作：
+
+<ol class="lurus-steps">
+<li>已完成的记录 —— <strong>跳过</strong>。</li>
+<li>CRC32 校验失败 —— <strong>标记损坏并跳过</strong>。</li>
+<li>未完成的记录 —— <strong>重新执行</strong>。</li>
+</ol>
 
 ### <Term t="Ring Buffer">环形缓冲</Term>
 
@@ -161,11 +204,16 @@ WAL 使用 power-of-2 大小的环形缓冲区：
 
 Kova 内部使用严格的锁获取顺序，从根本上杜绝死锁：
 
-```
-Buffer Lock → Queue Lock → Transaction Lock
-```
+<ArchitectureDiagram title="锁获取顺序" chart="graph LR
+  A[Buffer Lock] --> B[Queue Lock] --> C[Transaction Lock]" />
 
-所有代码路径必须遵守此顺序。尝试违反顺序获取锁会触发编译时检查（通过 Rust 类型系统保证）。
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="lock" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">编译期防死锁</p>
+    <div class="lurus-callout__body">所有代码路径必须遵守此顺序。尝试违反顺序获取锁会触发编译时检查（通过 Rust 类型系统保证）。</div>
+  </div>
+</div>
 
 ---
 
@@ -222,6 +270,21 @@ Kova 用 Rust feature flags 控制编译范围。最小化编译只需 `pure-rus
 
 ## 下一步
 
-- [快速开始](/kova/quickstart) — 5 分钟启动你的第一个 Kova Agent
-- [API 参考](/kova/api) — 完整的 REST API 端点文档
-- [MemX 记忆引擎](/memx/) — 为 Agent 添加持久化记忆能力
+<NextSteps title="下一步" :steps="[
+  { text: '快速开始 — 5 分钟启动第一个 Agent', link: '/kova/quickstart', primary: true },
+  { text: 'API 参考 — 完整 REST 端点文档', link: '/kova/api' },
+  { text: 'MemX 记忆引擎 — 为 Agent 添加持久化记忆', link: '/memx/' },
+]" />
+
+<RelatedProducts product-id="kova" />
+
+</div>
+
+<style scoped>
+.kova-concepts .lurus-stat-strip {
+  margin: 1.5rem 0 2rem;
+}
+.kova-concepts .lurus-cards--compact {
+  margin-bottom: 0.5rem;
+}
+</style>

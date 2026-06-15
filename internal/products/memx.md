@@ -11,9 +11,18 @@ sourcePath: 2b-svc-memorus
 
 # MemX / Memorus 内部手册
 
-> 🔴 **2026-05-28 状态更新**：现处 stage（R6），同事改造中，状态存疑；勿当 prod 强依赖。
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="alert-circle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body">现处 stage（R6），同事改造中，<strong>状态存疑；勿当 prod 强依赖</strong>。</div></div></div>
 
-> 仅限内部员工查阅。包含运维细节、决策档案、未公开问题。
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">仅限内部</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、未公开问题。</div></div></div>
+
+<p><span class="lurus-tag">P0</span> <span class="lurus-tag lurus-tag--muted">beta</span> <RiskBadge flag="wip" /> <RiskBadge flag="no-monitor" /></p>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">8880</span><span class="lurus-stat__label">集群内端口</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">5</span><span class="lurus-stat__label">MCP 工具</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">12</span><span class="lurus-stat__label">PII 脱敏规则</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">5Gi</span><span class="lurus-stat__label">PVC (/data)</span></div>
+</div>
 
 ## 一句话定位
 
@@ -282,6 +291,8 @@ final_score = (keyword_weight * 0.6 + semantic_weight * 0.4)
 | `MEMORUS_ACE_ENABLED` | ConfigMap | `false` | ACE 总开关（生产默认关） |
 
 ## 运行与运维
+
+<div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="gauge" :size="18"/></span><div><p class="lurus-callout__title">监控</p><div class="lurus-callout__body">平台监控统一走 <strong>Netdata 自托管 Agent</strong>，详见 <a href="/ops/observability">/ops/observability</a>。Memorus 当前仅有 <code>GET /health</code> 探活，未暴露指标端点（见 Roadmap）。</div></div></div>
 
 - **健康检查**: `GET /health`（无需认证，readiness probe 15s 后开始，每 10s 一次）
 - **日志**:
@@ -616,7 +627,7 @@ flowchart TD
 
 - [ ] 将部署迁回 ArgoCD GitOps（改 deploy.yaml image tag 格式为 `main-<sha7>`）— 高优
 - [ ] 生产环境启用 ACE（至少 rules 模式）— 需压测写入延迟
-- [ ] Prometheus metrics 接入（目前靠日志排障，无 QPS/latency 指标）
+- [ ] 暴露 prometheus-format `/metrics` 端点供 Netdata go.d 抓取（目前靠日志排障，无 QPS/latency 指标）
 - [ ] 多副本支持：Qdrant 独立服务 + SQLite → PG — 需 PVC RWX 或重构存储层
 - [ ] Team Memory Federation Mode 实现（当前仅架构设计，`memorus/team/` 有 Git Fallback 骨架）
 - [ ] ACE hybrid 模式写入延迟优化（异步 Reflector + 后台蒸馏队列）
@@ -625,19 +636,44 @@ flowchart TD
 
 ### 服务挂了 / Pod 未就绪
 
+<ol class="lurus-steps">
+<li>
+
+查 Pod 状态：
+
 ```bash
-# 查 Pod 状态
 ssh root@100.98.57.55 "kubectl get pods -n lurus-system -l app=lurus-memorus"
+```
 
-# 查日志（最近 200 行）
+</li>
+<li>
+
+查日志（最近 200 行）：
+
+```bash
 ssh root@100.98.57.55 "kubectl logs -n lurus-system deploy/lurus-memorus --tail=200"
+```
 
-# 查 describe（OOMKilled / ImagePullBackOff 等）
+</li>
+<li>
+
+查 describe（OOMKilled / ImagePullBackOff 等）：
+
+```bash
 ssh root@100.98.57.55 "kubectl describe pod -n lurus-system -l app=lurus-memorus"
+```
 
-# 重启
+</li>
+<li>
+
+重启：
+
+```bash
 ssh root@100.98.57.55 "kubectl rollout restart deployment/lurus-memorus -n lurus-system"
 ```
+
+</li>
+</ol>
 
 ### 内存爆（OOMKilled，limit 512Mi）
 

@@ -41,10 +41,22 @@ date: 2026-04
 
 ## 决定
 
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="git-branch" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">决定 · accepted 2026-04 · live</p>
+    <div class="lurus-callout__body">采用方案 D——同 GitHub 仓库 <code>lurus-www</code> 分两个目录：<code>www-next/</code>（Next.js 营销页）+ <code>www-phoenix/</code>（Phoenix 游戏），CI 按 path filter 触发，独立 image。</div>
+  </div>
+</div>
+
 **2026-04 起**：
-- `2c-bs-www-next/` → Next.js 16 + Bun + Tailwind 4，部署到 `www.lurus.cn`（阿里云 ICP 入口）
-- `2c-bs-www-phoenix/` → 现有 Phoenix 代码，转型为 `webgame.lurus.cn`（slither.io 风格 + RPG 进化）
-- 同 GitHub 仓库 `lurus-www`，目录区分；CI 按 path filter 触发
+
+| 目录 | 栈 | 域名 |
+|---|---|---|
+| `2c-bs-www-next/` | Next.js 16 + Bun + Tailwind 4 | `www.lurus.cn`（阿里云 ICP 入口）|
+| `2c-bs-www-phoenix/` | 现有 Phoenix 代码 | `webgame.lurus.cn`（slither.io 风格 + RPG 进化）|
+
+同 GitHub 仓库 `lurus-www`，目录区分；CI 按 path filter 触发。
 
 ## 理由
 
@@ -64,6 +76,14 @@ date: 2026-04
 - 同仓库混栈，新人 onboarding 第一天会迷惑
 - 镜像 tag 冲突：webgame 用 `:latest`（自动滚动），www 用 `main-<sha7>`（GitOps）— 要写明
 - LiveView 重连风暴问题转移到 webgame，要单独应对
+
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">镜像 tag 冲突陷阱</p>
+    <div class="lurus-callout__body">同仓两套发布约定必须写明：webgame 用 <code>:latest</code>（自动滚动），www 用 <code>main-&lt;sha7&gt;</code>（GitOps）。混淆会发错镜像。注：webgame 已于 <a href="./0010-product-retirements">ADR-0010</a> sunset。</div>
+  </div>
+</div>
 
 后续重评估触发：
 - Webgame 用户 < 10 持续 3 个月 → 关掉 webgame，把代码归档

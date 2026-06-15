@@ -6,10 +6,9 @@ owner: marvin
 
 # 路线图（with confidence）
 
-> 每条路线图条目带**信心等级**：是承诺、是计划、还是想法。  
-> 不分青红皂白把愿景包装成承诺是欺骗未来的自己。
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="radar" :size="18"/></span><div><p class="lurus-callout__title">每条都带信心等级</p><div class="lurus-callout__body">每条路线图条目带<strong>信心等级</strong>：是承诺、是计划、还是想法。不分青红皂白把愿景包装成承诺是欺骗未来的自己。</div></div></div>
 
-## 信心等级
+## <Icon name="gauge" :size="20" /> 信心等级
 
 | 等级 | 含义 | 适合场景 |
 |---|---|---|
@@ -18,15 +17,18 @@ owner: marvin
 | 🌱 **意向** | 想做，未排期，不保证今年 | 调研中、可能 pivot |
 | ☁ **远景** | 长期方向，不构成行动 | 5 年愿景 |
 
-## 2026 Q2（4-6 月）
+<p>
+<span class="lurus-tag">🔒 承诺</span>
+<span class="lurus-tag">📌 计划</span>
+<span class="lurus-tag lurus-tag--muted">🌱 意向</span>
+<span class="lurus-tag lurus-tag--muted">☁ 远景</span>
+</p>
+
+## <Icon name="timer" :size="20" /> 2026 Q2（4-6 月）
 
 ### 🔒 承诺
 
-- **Tally MVP 上线**（2026-06-30 前）
-  - PRD / Architecture 编写中
-  - R6 stage 跑 30 天 + 5 客户验证 → R1 prod
-  - 不达标推后，但 PRD 不缩水
-  - 客户：中铁/秒搭路径中获得的进销存潜在客户
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">Tally MVP 上线 — 2026-06-30 前</p><div class="lurus-callout__body">PRD / Architecture 编写中。路径：<strong>R6 stage 跑 30 天 + 5 客户验证 → R1 prod</strong>。不达标推后，但 PRD 不缩水。客户来自中铁/秒搭路径中获得的进销存潜在客户。</div></div></div>
 
 ### 📌 计划
 
@@ -52,13 +54,11 @@ owner: marvin
 - **Forge 准入流程文档化** + 用户管理 UI
 - **Lumen v0.2** — Agent.run() 完整实现 + Replay 重执行
 
-## 2026 Q3（7-9 月）
+## <Icon name="timer" :size="20" /> 2026 Q3（7-9 月）
 
 ### 🔒 承诺
 
-- **Tally Prod 稳定运行**
-  - SLA 99.9%
-  - 5+ 客户付费
+<div class="lurus-callout lurus-callout--danger"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">Tally Prod 稳定运行</p><div class="lurus-callout__body">目标 <strong>SLA 99.9%</strong>、<strong>5+ 客户付费</strong>。</div></div></div>
 
 ### 📌 计划
 
@@ -80,7 +80,7 @@ owner: marvin
 
 - 第二名工程师入职 — 不依赖时间表
 
-## 2026 Q4（10-12 月）
+## <Icon name="timer" :size="20" /> 2026 Q4（10-12 月）
 
 ### 📌 计划
 
@@ -93,7 +93,7 @@ owner: marvin
 - **API marketplace** — 把 newapi / memx / kova 作为对外 API 产品销售
 - **Lurus Cloud** — 私有化部署套件（packaging）
 
-## 2027+
+## <Icon name="cloud" :size="20" /> 2027+
 
 ### ☁ 远景
 
@@ -103,7 +103,7 @@ owner: marvin
 
 ---
 
-## 取消的路线图（学习存档）
+## <Icon name="history" :size="20" /> 取消的路线图（学习存档）
 
 | 时间 | 项目 | 原因 |
 |---|---|---|
@@ -111,7 +111,7 @@ owner: marvin
 | 2026-03 | lucrum-app（RN Expo）| 合并进 lutu（[ADR-0007](../adr/0007-lutu-absorbs-lucrum-app)）|
 | 2026-04 | www（Phoenix）| 转型为 webgame（[ADR-0008](../adr/0008-phoenix-to-nextjs-www)）|
 
-## 决策反思
+## <Icon name="repeat" :size="20" /> 决策反思
 
 每季度回看：
 - 承诺都达成了吗？没达成 → 是定得太满还是执行不到位？

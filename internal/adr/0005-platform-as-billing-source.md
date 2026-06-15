@@ -13,7 +13,13 @@ date: 2025-12
 - platform-core 的钱包扣款（DECIMAL 4 位精度，幂等，事件发到 NATS）
 - newapi 内置的 token 计费（自有数据库表，每请求 +1 计数，无幂等）
 
-后果：用户 $10 充值后，可能被双扣（newapi 扣一次 + platform 扣一次），账目对不上。
+<div class="lurus-callout lurus-callout--danger">
+  <span class="lurus-callout__icon"><Icon name="alert-circle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">触发后果：双扣</p>
+    <div class="lurus-callout__body">用户 $10 充值后，可能被<strong>双扣</strong>（newapi 扣一次 + platform 扣一次），账目对不上。两套独立扣费逻辑是本铁律的导火索。</div>
+  </div>
+</div>
 
 ## 备选方案
 
@@ -24,6 +30,14 @@ date: 2025-12
 - 接受
 
 ## 决定
+
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="wallet" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">铁律 · accepted 2025-12 · live</p>
+    <div class="lurus-callout__body">Platform 是<strong>唯一资金源</strong>。所有"用户付费"走 <code>POST /internal/v1/wallet/debit</code>（HTTP）或 gRPC <code>Wallet.Debit</code>。<strong>禁止</strong> shadow billing。</div>
+  </div>
+</div>
 
 **铁律**：
 
@@ -61,6 +75,14 @@ date: 2025-12
 - 各产品要适应"先 reserve 再 commit"的两步扣款模式（避免 race）
 - platform 成为所有产品的强依赖；platform 挂 = 所有付费功能挂
 - 跨服务网络延迟（每次扣款多 ~10ms）
+
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">代价：全局付费强依赖</p>
+    <div class="lurus-callout__body"><strong>Platform 挂 = 所有付费功能挂</strong>，每次扣款多 ~10ms 跨服务延迟。各产品必须改用"先 reserve 再 commit"两步扣款避免 race。金融精度章节见 <a href="/products/platform">platform 手册</a>。</div>
+  </div>
+</div>
 
 后续重评估：
 - platform billing QPS > 10K/s 持续 → 考虑读写分离 / 边缘节点

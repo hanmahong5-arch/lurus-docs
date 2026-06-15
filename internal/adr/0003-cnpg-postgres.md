@@ -21,7 +21,19 @@ date: 2025-08
 
 ## 决定
 
-R1 K3s 跑 CNPG cluster `lurus-pg`，3 副本（1 primary + 2 replica，跨节点）。备份到 MinIO `pg-backups-v2`，30 天 PITR。
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="database" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">决定 · accepted 2025-08 · live</p>
+    <div class="lurus-callout__body">R1 K3s 跑 CNPG cluster <code>lurus-pg</code>，3 副本（1 primary + 2 replica，跨节点）。备份到 MinIO <code>pg-backups-v2</code>，30 天 PITR。各产品分 schema。</div>
+  </div>
+</div>
+
+<div class="lurus-stat-strip">
+  <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">副本（1+2）</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">30</span><span class="lurus-stat__label">天 PITR</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">7</span><span class="lurus-stat__label">产品 schema</span></div>
+</div>
 
 各产品分 schema：identity / billing / notification / newapi / lucrum / forge / tally。
 
@@ -37,6 +49,14 @@ R1 K3s 跑 CNPG cluster `lurus-pg`，3 副本（1 primary + 2 replica，跨节�
 - 单集群所有产品共享 → 一个产品慢查询拖垮全部（已加 timeout 限制）
 - CNPG 升级要测；upstream 频率高
 - DR：R1 全挂 → R6 应急路径未演练
+
+<div class="lurus-callout lurus-callout--warn">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">未演练的 DR 路径</p>
+    <div class="lurus-callout__body">R1 全挂 → R6 应急切换<strong>路径未演练</strong>。备份/恢复 SOP 见 <a href="/ops/postgres">postgres 手册</a> 与 <a href="/ops/db-backup">db-backup 手册</a>；集群健康监控见 <a href="/ops/observability">可观测性手册</a>。</div>
+  </div>
+</div>
 
 ## 参考
 

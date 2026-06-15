@@ -7,6 +7,22 @@ date: 2026-04-23
 
 # ADR-0006: 移除 lurus-hub，newapi 全量承担 LLM 网关
 
+<div class="lurus-callout lurus-callout--key">
+  <span class="lurus-callout__icon"><Icon name="git-merge" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">决定 · accepted 2026-04-23</p>
+    <div class="lurus-callout__body"><strong>2026-04-23 移除 lurus-hub（2b-svc-api）</strong>，由 newapi 全量承担 LLM 网关，单一入口 <code>newapi.lurus.cn/v1</code>。</div>
+  </div>
+</div>
+
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="history" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">后续</p>
+    <div class="lurus-callout__body">本决策的下一章是 <a href="./0009-newhub-replaces-newapi">ADR-0009</a>——不到两个月，多租户需求又把网关从 newapi 推向 newhub。</div>
+  </div>
+</div>
+
 ## 背景
 
 2025 年我们 fork 了 [QuantumNous/new-api](https://github.com/QuantumNous/new-api) 一份做内部使用，命名为 `lurus-newapi`（2b-svc-newapi）。  
@@ -31,12 +47,35 @@ date: 2026-04-23
 
 ## 决定
 
-**2026-04-23 移除 lurus-hub（2b-svc-api）**：
-- 备份到 `D:/_backup/2b-svc-api-2026-04-23.tar.gz`
-- 从 `lurus.yaml` 删除条目
-- 调整 capabilities：`llm-inference.provider` 改 `lurus-newapi`
-- 调整 product_groups：platform 组成员表去掉 hub
-- 各消费者（switch/lucrum/lutu/forge/creator）切到 newapi.lurus.cn
+**2026-04-23 移除 lurus-hub（2b-svc-api）**，按以下步骤执行：
+
+<ol class="lurus-steps">
+<li>
+
+备份到 `D:/_backup/2b-svc-api-2026-04-23.tar.gz`
+
+</li>
+<li>
+
+从 `lurus.yaml` 删除条目
+
+</li>
+<li>
+
+调整 capabilities：`llm-inference.provider` 改 `lurus-newapi`
+
+</li>
+<li>
+
+调整 product_groups：platform 组成员表去掉 hub
+
+</li>
+<li>
+
+各消费者（switch / lucrum / lutu / forge / creator）切到 `newapi.lurus.cn`
+
+</li>
+</ol>
 
 ## 理由
 

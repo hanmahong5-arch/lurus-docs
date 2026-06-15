@@ -35,6 +35,7 @@ import NextSteps from './components/landing/NextSteps.vue'
 import MetricStats from './components/landing/MetricStats.vue'
 import './style.css'
 import './custom.css'
+import './lurus-utilities.css'
 
 export default {
   extends: DefaultTheme,

@@ -28,6 +28,10 @@ owner: marvin
 - [证书管理（`lurus-cn-wildcard-tls`）](./cert)
 - [DNS 管理（三丰云 + 阿里云 + Cloudflare）](./dns)
 
+## 可观测性
+
+- [可观测性（Netdata 自托管）](./observability) — 2026-06-05 起替代 Prometheus/Grafana/Alertmanager 观测栈
+
 ## 应急
 
 - [事故响应总则](./incident-response)
