@@ -1,0 +1,15 @@
+# Normalize all text files to LF in the repo and on checkout.
+# Prevents whole-file CRLF<->LF diffs across Windows / Linux / CI.
+* text=auto eol=lf
+
+# Binary assets — never touch line endings.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+
+# Kept as text (LF) intentionally:
+#   *.svg / feed.xml — XML markup, diffable
+#   bun.lock         — project convention locks the text lockfile, not .lockb
