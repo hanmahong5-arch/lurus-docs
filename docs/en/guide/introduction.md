@@ -97,8 +97,8 @@ response = client.chat.completions.create(model="deepseek-chat", messages=[{"rol
 |------|-----------|
 | **AI application development** | Use the same code to access all providers, and quickly A/B test different models |
 | **Cost optimization** | Route everyday tasks to DeepSeek (low cost) and complex tasks to GPT-4o (high quality) |
-| **Service reliability** | Multi-channel redundancy — a single provider outage won't affect your service |
-| **Team management** | Allocate Keys + quotas, and review everyone's AI usage and costs in one place |
+| **Service reliability** | Multi-channel redundancy — a single provider outage won’t affect your service |
+| **Team management** | Allocate Keys + quotas, and review everyone’s AI usage and costs in one place |
 | **AI clients** | Provide a unified backend for tools like Cherry Studio, Lobe Chat, and OpenCat |
 
 ---

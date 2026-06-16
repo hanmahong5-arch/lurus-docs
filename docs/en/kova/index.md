@@ -16,7 +16,7 @@ description: WAL-First architecture built in Rust, with automatic crash recovery
 
 ## What is Kova?
 
-**Kova** is Lurus's core AI Agent infrastructure — a high-performance, durable execution engine built in Rust. It solves **how agents reliably run for long periods, recover their state after a crash, and coordinate complex workflows**. Traditional frameworks (LangChain, CrewAI) run in memory, so state is lost the moment the process exits. Kova adopts a <Term t="WAL">WAL (Write-Ahead Log)</Term>-first architecture: every execution step is persisted as a record, so even after a crash it can recover precisely to the point of interruption — without re-calling the LLM, losing progress, or incurring extra cost.
+**Kova** is Lurus’s core AI Agent infrastructure — a high-performance, durable execution engine built in Rust. It solves **how agents reliably run for long periods, recover their state after a crash, and coordinate complex workflows**. Traditional frameworks (LangChain, CrewAI) run in memory, so state is lost the moment the process exits. Kova adopts a <Term t="WAL">WAL (Write-Ahead Log)</Term>-first architecture: every execution step is persisted as a record, so even after a crash it can recover precisely to the point of interruption — without re-calling the LLM, losing progress, or incurring extra cost.
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>
@@ -131,7 +131,7 @@ Kova is a workspace of **21 Rust crates**, **178,284 lines of code**, and **1,56
   <h2 class="lurus-section-head__title">Where Kova fits</h2>
 </div>
 
-| Scenario | Kova's advantage |
+| Scenario | Kova’s advantage |
 |------|-----------|
 | **Long-running agents** | WAL durability with automatic recovery after a crash |
 | **Complex workflows** | Multi-step orchestration, conditional branches, parallel execution |

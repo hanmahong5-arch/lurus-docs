@@ -19,7 +19,7 @@ Get it done in 10 minutes: install → integrate with LangGraph → view your fi
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Prerequisites</p>
-    <div class="lurus-callout__body">Python 3.9+ · Lurus <Term t="API Key">API Key</Term> (<a href="/en/guide/get-api-key">how to get one</a>) · an existing LangGraph/LangChain Agent project (or use the minimal example below if you don't have one).</div>
+    <div class="lurus-callout__body">Python 3.9+ · Lurus <Term t="API Key">API Key</Term> (<a href="/en/guide/get-api-key">how to get one</a>) · an existing LangGraph/LangChain Agent project (or use the minimal example below if you don’t have one).</div>
   </div>
 </div>
 

@@ -20,7 +20,7 @@ MemX is an enhanced version (superset) of [mem0](https://github.com/mem0ai/mem0)
 
 <details class="lurus-faq-item"><summary>Do I need a GPU?</summary>
 
-No. The local embedding model all-MiniLM-L6-v2 runs on CPU via ONNX Runtime (&lt; 5ms per item); the Reflector's rule-based pre-filtering does not depend on a GPU, and hybrid mode's LLM refinement goes through a remote API.
+No. The local embedding model all-MiniLM-L6-v2 runs on CPU via ONNX Runtime (&lt; 5ms per item); the Reflector’s rule-based pre-filtering does not depend on a GPU, and hybrid mode’s LLM refinement goes through a remote API.
 
 </details>
 
@@ -61,7 +61,7 @@ Existing code requires no changes (ACE is disabled by default).
 </li>
 <li>
 
-When you're ready, add `config={"ace_enabled": True}` to enable the intelligent features.
+When you’re ready, add `config={"ace_enabled": True}` to enable the intelligent features.
 
 </li>
 </ol>
@@ -159,7 +159,7 @@ It is replaced by a placeholder (such as `[REDACTED:api_key]`), and the original
 
 <details class="lurus-faq-item"><summary>How many memories can it store?</summary>
 
-It depends on the vector database backend's capacity; MemX itself has no hard limit; the decay engine automatically archives to keep the active scale reasonable.
+It depends on the vector database backend’s capacity; MemX itself has no hard limit; the decay engine automatically archives to keep the active scale reasonable.
 
 </details>
 

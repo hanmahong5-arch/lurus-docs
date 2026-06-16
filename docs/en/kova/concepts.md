@@ -1,6 +1,6 @@
 ---
 title: Kova Core Concepts
-description: Kova's core architecture components and design philosophy — WAL, Agent Loop, Checkpoint, and more.
+description: Kova’s core architecture components and design philosophy — WAL, Agent Loop, Checkpoint, and more.
 ---
 
 <div class="kova-concepts">
@@ -8,7 +8,7 @@ description: Kova's core architecture components and design philosophy — WAL, 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="bot" :size="14" /> Core Concepts</span>
   <h1 class="lurus-section-head__title">Kova Core Concepts</h1>
-  <p class="lurus-section-head__lede">From Agent, Workflow, and Swarm to WAL persistence — understand Kova's core architecture components and design philosophy.</p>
+  <p class="lurus-section-head__lede">From Agent, Workflow, and Swarm to WAL persistence — understand Kova’s core architecture components and design philosophy.</p>
 </div>
 
 <div class="lurus-stat-strip">
@@ -33,10 +33,10 @@ An Agent is the basic unit of execution, composed of the following elements:
 
 | Element | Description |
 |------|------|
-| **<Term t="System Prompt">System Prompt</Term>** | Defines the Agent's role, capability boundaries, and behavioral norms |
+| **<Term t="System Prompt">System Prompt</Term>** | Defines the Agent’s role, capability boundaries, and behavioral norms |
 | **Model** | The LLM model in use (switchable at runtime) |
 | **Tools** | The set of tools the Agent can invoke |
-| **Memory** | The Agent's conversation history and persisted state |
+| **Memory** | The Agent’s conversation history and persisted state |
 
 ### Agent Lifecycle
 
@@ -86,7 +86,7 @@ A Workflow orchestrates multiple Agents or steps into an ordered execution pipel
 | Type | Description |
 |------|------|
 | **Agent step** | Delegates execution to a specified Agent |
-| **Conditional branch** | Chooses a different path based on the previous step's result |
+| **Conditional branch** | Chooses a different path based on the previous step’s result |
 | **Parallel step** | Multiple steps execute simultaneously |
 | **Wait step** | Waits for an external event or human approval |
 | **Loop step** | Repeats execution until a condition is met |
@@ -152,7 +152,7 @@ Agents communicate directly via the <Term t="A2A">A2A (Agent-to-Agent)</Term> pr
 
 ## <Term t="WAL">WAL</Term> (Write-Ahead Log)
 
-The WAL is the core mechanism of Kova's persistence, drawing on database system design.
+The WAL is the core mechanism of Kova’s persistence, drawing on database system design.
 
 ### Write Flow
 
@@ -211,7 +211,7 @@ Kova internally uses a strict lock-acquisition order to fundamentally eliminate 
   <span class="lurus-callout__icon"><Icon name="lock" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Compile-time deadlock prevention</p>
-    <div class="lurus-callout__body">All code paths must observe this order. Attempting to acquire locks in violation of the order triggers a compile-time check (guaranteed by Rust's type system).</div>
+    <div class="lurus-callout__body">All code paths must observe this order. Attempting to acquire locks in violation of the order triggers a compile-time check (guaranteed by Rust’s type system).</div>
   </div>
 </div>
 

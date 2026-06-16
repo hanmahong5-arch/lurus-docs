@@ -10,12 +10,10 @@ import { localeLabels } from './i18n-labels'
 // finish its docs/<id>/ pages (docs-i18n workflow) then uncomment it here.
 const ENABLED_LOCALES = [
   { id: 'en', label: 'English', lang: 'en' },
-  // Pending full translation — labels ready in i18n-labels.ts, uncomment when
-  // docs/<id>/ is complete (49 core pages):
-  // { id: 'ja', label: '日本語', lang: 'ja' },
-  // { id: 'ko', label: '한국어', lang: 'ko' },
-  // { id: 'es', label: 'Español', lang: 'es' },
-  // { id: 'fr', label: 'Français', lang: 'fr' },
+  { id: 'ja', label: '日本語', lang: 'ja' },
+  { id: 'ko', label: '한국어', lang: 'ko' },
+  { id: 'es', label: 'Español', lang: 'es' },
+  { id: 'fr', label: 'Français', lang: 'fr' },
 ]
 
 // Route paths (normalized: no trailing slash except root) that have a

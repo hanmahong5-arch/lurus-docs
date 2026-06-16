@@ -161,7 +161,7 @@ func main() {
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">See a model reply? Your first call worked 🎉</p>
-    <div class="lurus-callout__body"><p>This request ran on the free quota that came with sign-up — it didn't cost a cent. Next, try a different model — you'll barely need to touch the code.</p></div>
+    <div class="lurus-callout__body"><p>This request ran on the free quota that came with sign-up — it didn’t cost a cent. Next, try a different model — you’ll barely need to touch the code.</p></div>
   </div>
 </div>
 

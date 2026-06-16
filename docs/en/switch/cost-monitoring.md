@@ -75,7 +75,7 @@ Switch provides **flame-graph-style** attribution, drilling down layer by layer 
 
 ## Lumen integration
 
-For agent projects that use the Lumen SDK, Switch can merge Lumen's fine-grained trace data:
+For agent projects that use the Lumen SDK, Switch can merge Lumen’s fine-grained trace data:
 
 ```
 Switch 粗粒度: 项目 / 工具 / 模型
@@ -89,7 +89,7 @@ Lumen 细粒度: Graph / Node / LLM Call
   <span class="lurus-callout__icon"><Icon name="git-merge" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Enable Lumen integration</p>
-    <div class="lurus-callout__body">In Switch settings, enable "Lumen integration" and point it at <code>http://localhost:7070</code> to merge Switch's coarse-grained cost with Lumen's Graph / Node / LLM Call level traces into a complete cost topology.</div>
+    <div class="lurus-callout__body">In Switch settings, enable "Lumen integration" and point it at <code>http://localhost:7070</code> to merge Switch’s coarse-grained cost with Lumen’s Graph / Node / LLM Call level traces into a complete cost topology.</div>
   </div>
 </div>
 

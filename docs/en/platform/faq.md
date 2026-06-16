@@ -71,7 +71,7 @@ It is automatically downgraded to Free. Your API keys remain valid but are subje
 </details>
 
 <details class="lurus-faq-item">
-<summary>What's the difference between annual and monthly billing?</summary>
+<summary>What’s the difference between annual and monthly billing?</summary>
 
 Annual plans are 20% off (≈ 2.4 months free); during the annual term you can upgrade but not downgrade.
 
@@ -155,9 +155,9 @@ Payment methods:
 </div>
 
 <details class="lurus-faq-item">
-<summary>What if my payment hasn't arrived?</summary>
+<summary>What if my payment hasn’t arrived?</summary>
 
-It is usually confirmed within 1 minute; if it hasn't arrived after 5 minutes, check whether the payment platform charged you, look for a confirmation email, and contact [support@lurus.cn](mailto:support@lurus.cn) with your payment order number.
+It is usually confirmed within 1 minute; if it hasn’t arrived after 5 minutes, check whether the payment platform charged you, look for a confirmation email, and contact [support@lurus.cn](mailto:support@lurus.cn) with your payment order number.
 
 </details>
 
@@ -192,7 +192,7 @@ Immediately disable the key in the console → create a new key → review the c
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Didn't find your answer?</p>
+    <p class="lurus-callout__title">Didn’t find your answer?</p>
     <div class="lurus-callout__body">Please contact <a href="mailto:support@lurus.cn">support@lurus.cn</a>.</div>
   </div>
 </div>

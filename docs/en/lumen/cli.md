@@ -7,7 +7,7 @@ description: All subcommands, options, exit codes, and workflow scaffolding for 
 
 # Lumen CLI Manual <StatusBadge status="dev" />
 
-`lumen-cli` is Lumen's optional CLI (built in Rust), providing command-line workflow capabilities that don't depend on the Python SDK.
+`lumen-cli` is Lumen’s optional CLI (built in Rust), providing command-line workflow capabilities that don’t depend on the Python SDK.
 
 ## Installation
 

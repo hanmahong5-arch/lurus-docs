@@ -7,7 +7,7 @@ description: The four core modules of the MemX ACE engine — intelligent distil
 
 # Core Concepts
 
-MemX's ACE (Adaptive Context Engine) is built from four core modules that operate independently and work in concert to deliver full-lifecycle knowledge management.
+MemX’s ACE (Adaptive Context Engine) is built from four core modules that operate independently and work in concert to deliver full-lifecycle knowledge management.
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="brain" :size="14" /> ACE Engine</span>
@@ -27,7 +27,7 @@ MemX's ACE (Adaptive Context Engine) is built from four core modules that operat
 
 ## <Term t="Reflector">Reflector</Term> — Knowledge Distillation Engine
 
-Reflector is MemX's most central innovation: **ultra-low-cost** intelligent knowledge extraction. Traditional AI memory systems extract knowledge from conversations via the LLM every time, consuming 2–5K tokens. Reflector defaults to **hybrid** mode: rule-based pre-filtering + LLM refinement only on valuable candidates, cutting call overhead by 90%+ versus full LLM.
+Reflector is MemX’s most central innovation: **ultra-low-cost** intelligent knowledge extraction. Traditional AI memory systems extract knowledge from conversations via the LLM every time, consuming 2–5K tokens. Reflector defaults to **hybrid** mode: rule-based pre-filtering + LLM refinement only on valuable candidates, cutting call overhead by 90%+ versus full LLM.
 
 ### Three Operating Modes
 
@@ -123,7 +123,7 @@ final       = clamp(boosted, 0.0, 1.0)
 
 Intuition: what you just learned (within 7 days) is remembered clearly; what you recall often grows ever stronger; used more than 15 times it becomes "muscle memory"; long unused, it gradually fades.
 
-### Decay's Effect at Retrieval Time
+### Decay’s Effect at Retrieval Time
 
 The decay weight directly factors into the final score of retrieval ranking:
 
@@ -172,7 +172,7 @@ When L4 vector search is unavailable (embedding model fails to load), it automat
 
 Retrieval results are doubly constrained: `max_results` (maximum number of results returned, default 5) + `token_budget` (maximum token budget, default 2000).
 
-**CJK-aware** (ensuring Chinese text isn't over-truncated due to incorrect token estimation): CJK characters at 1.5 chars/token; Latin characters at 4.0 chars/token.
+**CJK-aware** (ensuring Chinese text isn’t over-truncated due to incorrect token estimation): CJK characters at 1.5 chars/token; Latin characters at 4.0 chars/token.
 
 ## Hierarchical Scopes
 

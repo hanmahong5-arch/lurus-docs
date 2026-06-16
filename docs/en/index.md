@@ -31,7 +31,7 @@ description: LurusTech platform documentation — API Reference · Quickstart ·
   </a>
 </nav>
 
-<div class="topic-grid-head"><Icon name="compass" :size="16" /> <strong>Browse by topic</strong> —— Know what you're looking for? Jump straight to the right topic.</div>
+<div class="topic-grid-head"><Icon name="compass" :size="16" /> <strong>Browse by topic</strong> —— Know what you’re looking for? Jump straight to the right topic.</div>
 
 <div class="lurus-cards lurus-cards--compact">
   <a class="lurus-card lurus-card--api" href="/en/guide/introduction"><span class="lurus-card__icon"><Icon name="plug-zap" :size="20" /></span><div class="lurus-card__title">Gateway Access</div><p class="lurus-card__body">One key for 50+ models, OpenAI SDK compatible.</p></a>
@@ -44,7 +44,7 @@ description: LurusTech platform documentation — API Reference · Quickstart ·
   <a class="lurus-card lurus-card--api" href="/en/guide/troubleshooting"><span class="lurus-card__icon"><Icon name="life-buoy" :size="20" /></span><div class="lurus-card__title">Troubleshooting</div><p class="lurus-card__body">Pinpoint common issues like 401 / quota / timeout on one page.</p></a>
 </div>
 
-## <Icon name="rocket" :size="22" /> I'm a Newcomer — Make Your First Call in 3 Minutes {#newbie}
+## <Icon name="rocket" :size="22" /> I’m a Newcomer — Make Your First Call in 3 Minutes {#newbie}
 
 Picking the wrong model costs 10x more than writing the wrong code. Run one call through our gateway first, then decide whether to migrate.
 
@@ -70,7 +70,7 @@ Picking the wrong model costs 10x more than writing the wrong code. Run one call
 
 ---
 
-## <Icon name="gamepad-2" :size="22" /> I'm a Player — I Want Ready-made AI Tools {#player}
+## <Icon name="gamepad-2" :size="22" /> I’m a Player — I Want Ready-made AI Tools {#player}
 
 The code is already written for you. Download and run — not a single line of config.
 
@@ -111,9 +111,9 @@ The code is already written for you. Download and run — not a single line of c
 
 ---
 
-## <Icon name="briefcase" :size="22" /> I'm a Decision-maker — Evaluating Enterprise Procurement {#decider}
+## <Icon name="briefcase" :size="22" /> I’m a Decision-maker — Evaluating Enterprise Procurement {#decider}
 
-This isn't a tool purchase — it's an infrastructure replacement. Look at TCO and compliance boundaries first, then features.
+This isn’t a tool purchase — it’s an infrastructure replacement. Look at TCO and compliance boundaries first, then features.
 
 <div class="action-grid">
   <ActionCard
@@ -156,7 +156,7 @@ This isn't a tool purchase — it's an infrastructure replacement. Look at TCO a
 
 ---
 
-## <Icon name="code" :size="22" /> I'm a Developer — Building AI Systems {#dev}
+## <Icon name="code" :size="22" /> I’m a Developer — Building AI Systems {#dev}
 
 The four foundational components of an LLM application: execution · memory · gateway · CLI. Each works on its own, stronger together.
 

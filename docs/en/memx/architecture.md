@@ -1,6 +1,6 @@
 ---
 title: MemX Architecture
-description: A detailed walkthrough of MemX's pipeline architecture, covering the ingest pipeline, the retrieval pipeline, and the per-component independent degradation design.
+description: A detailed walkthrough of MemX’s pipeline architecture, covering the ingest pipeline, the retrieval pipeline, and the per-component independent degradation design.
 ---
 
 <div class="memx-page">

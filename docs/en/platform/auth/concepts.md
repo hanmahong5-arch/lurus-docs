@@ -28,7 +28,7 @@ The containment relationship is **strictly one-directional**: Instance ⊃ Organ
 
 ## Instance
 
-The **highest abstraction** in the data hierarchy, equivalent to an independent identity issuer. The `iss` of every token points to this Instance's domain.
+The **highest abstraction** in the data hierarchy, equivalent to an independent identity issuer. The `iss` of every token points to this Instance’s domain.
 
 | Attribute | Description |
 |------|------|
@@ -103,7 +103,7 @@ Each User belongs strictly to **exactly one Organization**. Cross-organization a
 Based on RBAC, with Project Role, User Grant, and Project Grant at its core.
 
 - **Project Role**: a role string within a Project, with three fields — Key (code identifier, such as `admin`), Display Name (shown in the console, such as "Administrator"), and Group (optional grouping, such as `management`). Shared by all Applications under the same Project.
-- **User Grant** = `User + Project + Role[]`: after login, the access token's `urn:zitadel:iam:org:project:roles` claim carries all roles the user has been granted in the target Project. The back-end parses this claim for authorization, with no need to make additional API calls.
+- **User Grant** = `User + Project + Role[]`: after login, the access token’s `urn:zitadel:iam:org:project:roles` claim carries all roles the user has been granted in the target Project. The back-end parses this claim for authorization, with no need to make additional API calls.
 - **Project Grant** = `Project (source Org) → Organization (target Org)`: grants management rights over the entire Project to another Organization. The core of B2B multi-tenancy: Lurus does not need to create accounts for customer employees; instead, customers self-manage users and permissions within their own Organization.
 
 ---
@@ -119,7 +119,7 @@ Four levels, following least privilege:
 | **Project** | Applications, roles, and grants within a single Project | `PROJECT_OWNER` |
 | **Project Grant** | User role management for a granted Project | `PROJECT_GRANT_OWNER` |
 
-**Common role strings**: `IAM_OWNER` (the highest at the instance level, manages all organizations/policies/virtual instances), `ORG_OWNER` (manages users/Projects/domains/policies within an organization), `ORG_USER_MANAGER` (manages only users and role assignments, does not change Project structure), `ORG_USER_PERMISSION_EDITOR` (edits only User Grants), `PROJECT_OWNER` (manages Application/Role/Grant within a Project), `PROJECT_GRANT_OWNER` (manages this organization's user roles within a granted Project).
+**Common role strings**: `IAM_OWNER` (the highest at the instance level, manages all organizations/policies/virtual instances), `ORG_OWNER` (manages users/Projects/domains/policies within an organization), `ORG_USER_MANAGER` (manages only users and role assignments, does not change Project structure), `ORG_USER_PERMISSION_EDITOR` (edits only User Grants), `PROJECT_OWNER` (manages Application/Role/Grant within a Project), `PROJECT_GRANT_OWNER` (manages this organization’s user roles within a granted Project).
 
 ::: warning Cross-organization visibility
 Only `IAM_OWNER` can view and manage across Organizations. `ORG_OWNER` is strictly limited to its own organization and cannot access data from other organizations.

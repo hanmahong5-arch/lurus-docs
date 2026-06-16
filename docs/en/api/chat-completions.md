@@ -74,9 +74,9 @@ POST https://api.lurus.cn/v1/chat/completions
 
 | Role | Purpose |
 |------|------|
-| `system` | Defines the AI's behavior, tone, and constraints. Place it first in the array |
-| `user` | The user's input |
-| `assistant` | The AI's reply. In multi-turn conversations you need to include past replies |
+| `system` | Defines the AI’s behavior, tone, and constraints. Place it first in the array |
+| `user` | The user’s input |
+| `assistant` | The AI’s reply. In multi-turn conversations you need to include past replies |
 
 For the full field definitions of the request body (`ChatCompletionRequest`) and messages (`Message`), see the [Schema Reference](/en/api/schemas).
 

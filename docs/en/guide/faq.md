@@ -163,8 +163,8 @@ support@lurus.cn / GitHub Issues.
 
 <div class="lurus-cta">
   <div>
-    <p class="lurus-cta__title">Didn't find your answer?</p>
-    <p class="lurus-cta__text">Send us your question and we'll reply within a business day.</p>
+    <p class="lurus-cta__title">Didn’t find your answer?</p>
+    <p class="lurus-cta__text">Send us your question and we’ll reply within a business day.</p>
   </div>
   <div class="lurus-cta__actions">
     <a class="lurus-cta__btn lurus-cta__btn--primary" href="mailto:support@lurus.cn">Contact us →</a>

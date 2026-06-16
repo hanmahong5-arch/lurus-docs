@@ -17,13 +17,13 @@ description: A desktop app that manages the configuration, MCP servers, and cost
 
 **Lurus Switch** is a desktop app (a single exe with zero dependencies, &lt; 15MB) that lets you manage the configuration, MCP servers, and costs of **5 mainstream AI coding CLIs: Claude Code / Codex / Gemini CLI / PicoClaw / NullClaw** from one interface. Built on **Wails** (Go 1.25 + React 18), it starts in &lt; 2 seconds and supports Windows / macOS / Linux across all platforms.
 
-Today's developers use multiple AI CLIs at once — Claude Code, Codex, Gemini CLI, and more — with configs scattered everywhere and costs tracked in isolation. Switch brings it all under centralized management.
+Today’s developers use multiple AI CLIs at once — Claude Code, Codex, Gemini CLI, and more — with configs scattered everywhere and costs tracked in isolation. Switch brings it all under centralized management.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">One interface — no more hunting for configs</p>
-    <div class="lurus-callout__body">Visual config editing, cross-tool MCP sync, and cost aggregation by tool/model — no need to open each CLI's dotfile separately.</div>
+    <div class="lurus-callout__body">Visual config editing, cross-tool MCP sync, and cost aggregation by tool/model — no need to open each CLI’s dotfile separately.</div>
   </div>
 </div>
 
@@ -75,7 +75,7 @@ Switch exposes an OpenAI-compatible API endpoint locally (default `http://localh
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="users" :size="14" /> Use Cases</span>
-  <h2 class="lurus-section-head__title">Who's using Switch</h2>
+  <h2 class="lurus-section-head__title">Who’s using Switch</h2>
 </div>
 
 <UserScenarios title="" :scenarios="[

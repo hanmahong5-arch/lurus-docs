@@ -9,7 +9,7 @@ description: The identity system shared across all Lurus product lines — log i
 
 **Log in once, access everything.** Lurus API, Lucrum, Switch, Creator, Lutu, Admin, Forge, and all other products share the same identity system — when a user logs into any product, the rest recognize them automatically; permissions and quotas are settled uniformly at the account level; and enterprise customers can integrate their own SSO to onboard employees.
 
-The system is served by `auth.lurus.cn`, built and self-hosted on top of the open-source identity infrastructure [Zitadel](https://zitadel.com). It fully implements the OIDC / OAuth2 / SAML standard protocols, and user data remains entirely within Lurus's own K8s cluster throughout.
+The system is served by `auth.lurus.cn`, built and self-hosted on top of the open-source identity infrastructure [Zitadel](https://zitadel.com). It fully implements the OIDC / OAuth2 / SAML standard protocols, and user data remains entirely within Lurus’s own K8s cluster throughout.
 
 ::: tip Quick links
 - User self-service: [auth.lurus.cn](https://auth.lurus.cn) — change password, manage Passkeys, bind MFA, view login history
@@ -30,7 +30,7 @@ The system is served by `auth.lurus.cn`, built and self-hosted on top of the ope
 | OIDC Discovery | `https://auth.lurus.cn/.well-known/openid-configuration` | Automatic SDK discovery, including all endpoints and supported capabilities |
 | OAuth2 Authorization | `https://auth.lurus.cn/oauth/v2/authorize` | Entry point for the standard authorization code / PKCE flow |
 | Token Endpoint | `https://auth.lurus.cn/oauth/v2/token` | Exchange for access token / refresh token |
-| User Info | `https://auth.lurus.cn/oidc/v1/userinfo` | Read the current user's claims |
+| User Info | `https://auth.lurus.cn/oidc/v1/userinfo` | Read the current user’s claims |
 
 ---
 
@@ -74,7 +74,7 @@ The system is served by `auth.lurus.cn`, built and self-hosted on top of the ope
 | **Project** | A collection of applications under an Organization, managing roles and grants uniformly | Each product line (Lurus API, Lucrum, Switch, Forge…) corresponds to one Project |
 | **Application** | A specific client within a Project, holding `client_id` / `client_secret` | Each frontend, desktop, and server registers a separate Application |
 | **User** | A login-capable account, either Human (a real person) or Service User (a machine) | End users are Human; backend service-to-service calls use a Service User + JWT Profile |
-| **Grant** | The binding relationship that grants a Project Role to a User | Controls a user's permission level within a specific product; the [auth.lurus.cn](https://auth.lurus.cn) (Zitadel) organization settings are authoritative |
+| **Grant** | The binding relationship that grants a Project Role to a User | Controls a user’s permission level within a specific product; the [auth.lurus.cn](https://auth.lurus.cn) (Zitadel) organization settings are authoritative |
 
 ---
 

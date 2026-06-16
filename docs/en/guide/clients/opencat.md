@@ -13,7 +13,7 @@ description: Configure the Lurus API in the OpenCat iOS/macOS client.
 <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
 <div>
 <p class="lurus-callout__title">Before you start</p>
-<div class="lurus-callout__body">Have a Lurus <Term t="API Key">API Key</Term> ready (format <code>sk-xxxxxxxxxxxxxxxx</code>). Don't have one yet? Head to <a href="/en/guide/get-api-key">Get an API Key</a>.</div>
+<div class="lurus-callout__body">Have a Lurus <Term t="API Key">API Key</Term> ready (format <code>sk-xxxxxxxxxxxxxxxx</code>). Don’t have one yet? Head to <a href="/en/guide/get-api-key">Get an API Key</a>.</div>
 </div>
 </div>
 
@@ -39,7 +39,7 @@ Replace `YOUR_API_KEY` with your own key (`sk-xxxxxxxxxxxxxxxx`) and open it in 
 
 ## Manual Configuration
 
-If the URL Scheme doesn't work (older versions of OpenCat don't support it), configure it manually:
+If the URL Scheme doesn’t work (older versions of OpenCat don’t support it), configure it manually:
 
 <ol class="lurus-steps">
 <li>
@@ -87,7 +87,7 @@ See the full list at [Supported Models](/guide/models).
 
 - Confirm the API Host has **no trailing slash** (`https://api.lurus.cn`, not `https://api.lurus.cn/`)
 - Confirm the API Key format is correct (starts with `sk-`)
-- In the [Lurus Console](https://api.lurus.cn), confirm the key's status is "Enabled"
+- In the [Lurus Console](https://api.lurus.cn), confirm the key’s status is "Enabled"
 
 </details>
 

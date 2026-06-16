@@ -129,7 +129,7 @@ Currently Python; the strategy SDK provides a technical indicator library and tr
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="mail" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Didn't find your answer?</p>
+    <p class="lurus-callout__title">Didn’t find your answer?</p>
     <div class="lurus-callout__body">Please contact <a href="mailto:support@lurus.cn">support@lurus.cn</a>.</div>
   </div>
 </div>

@@ -9,7 +9,7 @@ description: An AI memory engine built on ACE v2.0, with intelligent distillatio
 
 ## What is MemX?
 
-**MemX** is Lurus's adaptive memory engine for AI, built on **<Term t="ACE">ACE (Adaptive Context Engine)</Term> v2.0**. It provides AI agents with full knowledge lifecycle management: **<Term t="Knowledge Distillation">intelligent distillation</Term> → <Term t="Semantic Dedup">semantic deduplication</Term> → decay-based forgetting → hybrid retrieval**, giving AI a truly human-like "memory."
+**MemX** is Lurus’s adaptive memory engine for AI, built on **<Term t="ACE">ACE (Adaptive Context Engine)</Term> v2.0**. It provides AI agents with full knowledge lifecycle management: **<Term t="Knowledge Distillation">intelligent distillation</Term> → <Term t="Semantic Dedup">semantic deduplication</Term> → decay-based forgetting → hybrid retrieval**, giving AI a truly human-like "memory."
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="brain" :size="18" /></span>
@@ -67,7 +67,7 @@ Knowledge flows in from conversations and passes in turn through distillation, p
   <div class="lurus-card lurus-card--memx">
     <span class="lurus-card__icon"><Icon name="code" :size="20" /></span>
     <div class="lurus-card__title">Coding assistant</div>
-    <p class="lurus-card__body">Remembers your coding habits, the pitfalls you've hit, and project conventions.</p>
+    <p class="lurus-card__body">Remembers your coding habits, the pitfalls you’ve hit, and project conventions.</p>
   </div>
   <div class="lurus-card lurus-card--memx">
     <span class="lurus-card__icon"><Icon name="life-buoy" :size="20" /></span>

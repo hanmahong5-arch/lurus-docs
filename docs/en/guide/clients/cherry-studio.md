@@ -13,7 +13,7 @@ description: Configure Lurus API in Cherry Studio and connect to 50+ AI models i
 <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
 <div>
 <p class="lurus-callout__title">Before you start</p>
-<div class="lurus-callout__body">Have a Lurus <Term t="API Key">API Key</Term> ready (format <code>sk-xxx</code>). Don't have one yet? Head to <a href="/en/guide/get-api-key">Get an API Key</a>.</div>
+<div class="lurus-callout__body">Have a Lurus <Term t="API Key">API Key</Term> ready (format <code>sk-xxx</code>). Don’t have one yet? Head to <a href="/en/guide/get-api-key">Get an API Key</a>.</div>
 </div>
 </div>
 

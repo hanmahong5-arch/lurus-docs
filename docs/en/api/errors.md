@@ -55,7 +55,7 @@ All error responses follow a unified format:
 | `model_not_found` | `new_api_error` | No available channel for model xxx | Check the model name; confirm a channel is configured for the model; contact the administrator to enable access |
 | `insufficient_quota` | `billing_error` | Insufficient quota for this request | Check your account balance; contact the administrator to top up |
 | `rate_limit_exceeded` | `rate_limit_error` | Rate limit exceeded. Please slow down. | Lower your request rate; retry with exponential backoff; request a higher rate limit |
-| `context_length_exceeded` | `invalid_request_error` | This model's maximum context length is 8192 tokens | Reduce input length; switch to a model with a longer context; truncate history with a sliding window |
+| `context_length_exceeded` | `invalid_request_error` | This model’s maximum context length is 8192 tokens | Reduce input length; switch to a model with a longer context; truncate history with a sliding window |
 
 **model_not_found** response body (HTTP 404, `type: new_api_error`):
 

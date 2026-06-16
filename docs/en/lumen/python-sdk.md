@@ -52,7 +52,7 @@ graph = workflow.compile(callbacks=[tracer])
 
 ## LumenCheckpointer
 
-Replaces LangGraph's `SqliteSaver`:
+Replaces LangGraph’s `SqliteSaver`:
 
 ```python
 from lumen_ai import LumenCheckpointer
@@ -73,7 +73,7 @@ Compared to SqliteSaver:
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Drop-in replacement, API-compatible</p>
-    <div class="lurus-callout__body"><code>LumenCheckpointer</code> is compatible with LangGraph's <code>BaseCheckpointSaver</code> interface — just swap your existing <code>SqliteSaver</code> in a single line, with no changes to the graph structure. See <a href="/en/lumen/integration">Ecosystem Integration · LangGraph</a>.</div>
+    <div class="lurus-callout__body"><code>LumenCheckpointer</code> is compatible with LangGraph’s <code>BaseCheckpointSaver</code> interface — just swap your existing <code>SqliteSaver</code> in a single line, with no changes to the graph structure. See <a href="/en/lumen/integration">Ecosystem Integration · LangGraph</a>.</div>
   </div>
 </div>
 

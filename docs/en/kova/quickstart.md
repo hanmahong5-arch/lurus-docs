@@ -97,7 +97,7 @@ sync_mode = "normal"  # "normal" | "full" (每次写入 fsync)
   <p class="lurus-section-head__lede">Use REST, the Rust SDK, or the CLI to create an Agent, send a task, and stream its execution.</p>
 </div>
 
-Once it's running, pick the integration method you're comfortable with to create and run your first Agent (see the [API Reference](/en/kova/api) for the full endpoint list).
+Once it’s running, pick the integration method you’re comfortable with to create and run your first Agent (see the [API Reference](/en/kova/api) for the full endpoint list).
 
 :::tabs
 == REST API
@@ -192,7 +192,7 @@ curl -X POST http://localhost:8080/api/v1/workflows/content-pipeline/run \
   <p class="lurus-section-head__lede">Kill the process, and after a restart the task automatically resumes from the WAL checkpoint.</p>
 </div>
 
-Test Kova's crash-recovery capability:
+Test Kova’s crash-recovery capability:
 
 <ol class="lurus-steps">
 <li>
@@ -237,7 +237,7 @@ kova task status
   <span class="lurus-callout__icon"><Icon name="shield-check" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Why recovery works</p>
-    <div class="lurus-callout__body">Every step writes to the <Term t="WAL">WAL</Term> (with a CRC32 checksum) before it executes. When the process crashes, any step that wasn't confirmed complete is replayed from the checkpoint after restart — no re-calling the LLM, no lost progress. See <a href="/en/kova/concepts">Core Concepts</a> for details.</div>
+    <div class="lurus-callout__body">Every step writes to the <Term t="WAL">WAL</Term> (with a CRC32 checksum) before it executes. When the process crashes, any step that wasn’t confirmed complete is replayed from the checkpoint after restart — no re-calling the LLM, no lost progress. See <a href="/en/kova/concepts">Core Concepts</a> for details.</div>
   </div>
 </div>
 

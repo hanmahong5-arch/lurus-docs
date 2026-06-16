@@ -45,7 +45,7 @@ All endpoints use `https://auth.lurus.cn` as the Base URL.
 | **Discovery** | `/.well-known/openid-configuration` | GET | Service metadata; the SDK automatically reads all endpoints and algorithms |
 | **Authorization** | `/oauth/v2/authorize` | GET / POST | Start the authorization flow, redirect to the login page |
 | **Token** | `/oauth/v2/token` | POST | Exchange for `access_token` / `id_token` / `refresh_token` |
-| **UserInfo** | `/oidc/v1/userinfo` | GET | Read the current user's claims with the access token |
+| **UserInfo** | `/oidc/v1/userinfo` | GET | Read the current user’s claims with the access token |
 | **JWKS** | `/oauth/v2/keys` | GET | Fetch the JWK public key set to verify JWT signatures locally |
 | **Introspection** | `/oauth/v2/introspect` | POST | Query token validity and metadata (server-side use) |
 | **Revocation** | `/oauth/v2/revoke` | POST | Revoke an access / refresh token |
@@ -192,21 +192,21 @@ Standard OIDC scopes determine which claims are returned; Zitadel-specific scope
 | `profile` | Get `name`, `given_name`, `family_name`, `preferred_username`, `locale` | id_token, userinfo |
 | `email` | Get `email`, `email_verified` | id_token, userinfo |
 | `phone` | Get `phone_number`, `phone_number_verified` | id_token, userinfo |
-| `address` | Get the user's address information | id_token, userinfo |
+| `address` | Get the user’s address information | id_token, userinfo |
 | `offline_access` | Request a `refresh_token` (only valid in the Authorization Code flow) | — |
 
 ### Zitadel-Specific Scopes
 
 | Scope | Description | Affected Token |
 |-------|------|-------------|
-| `urn:zitadel:iam:org:project:id:{projectid}:aud` | Add the specified project ID to the access token's `aud`; server-side verification must match | access_token |
-| `urn:zitadel:iam:org:project:id:zitadel:aud` | Add Zitadel's own project ID to `aud` (used to access the Zitadel API) | access_token |
+| `urn:zitadel:iam:org:project:id:{projectid}:aud` | Add the specified project ID to the access token’s `aud`; server-side verification must match | access_token |
+| `urn:zitadel:iam:org:project:id:zitadel:aud` | Add Zitadel’s own project ID to `aud` (used to access the Zitadel API) | access_token |
 | `urn:zitadel:iam:org:projects:roles` | Include the role list of all authorized projects in the token | id_token, access_token, userinfo |
 | `urn:zitadel:iam:org:project:role:{rolekey}` | Request only a specific role claim, e.g. `...:role:admin` | id_token, access_token |
 | `urn:zitadel:iam:org:id:{orgid}` | Restrict the user to the given organization; enforce isolation for cross-org login | Validation only |
 | `urn:zitadel:iam:org:domain:primary:{domain}` | Restrict the user to the primary domain of their organization, e.g. `...:primary:lurus.cn` | Validation only |
-| `urn:zitadel:iam:user:metadata` | Include the user's custom metadata in the token (Base64 key-value pairs) | id_token, access_token, userinfo |
-| `urn:zitadel:iam:user:resourceowner` | Get the ID, name, and primary domain of the user's organization | id_token, access_token, userinfo |
+| `urn:zitadel:iam:user:metadata` | Include the user’s custom metadata in the token (Base64 key-value pairs) | id_token, access_token, userinfo |
+| `urn:zitadel:iam:user:resourceowner` | Get the ID, name, and primary domain of the user’s organization | id_token, access_token, userinfo |
 | `urn:zitadel:iam:org:idp:id:{idp_id}` | Jump directly to the specified IdP (WeCom, Feishu), skipping the IdP selection page | Behavior control |
 
 > **Common combination** (Web App): `openid profile email offline_access urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{projectid}:aud`
@@ -223,9 +223,9 @@ The table below indicates which token each claim appears in, and which scope it 
 |-------|------|:--------:|:------------:|:--------:|-----------|
 | `sub` | Unique user ID (Zitadel internal ID) | ✓ | ✓ (JWT) | ✓ | Always |
 | `iss` | Issuer, fixed as `https://auth.lurus.cn` | ✓ | ✓ | — | Always |
-| `aud` | Audience, the application's client_id | ✓ | ✓ | — | Always |
+| `aud` | Audience, the application’s client_id | ✓ | ✓ | — | Always |
 | `exp` / `iat` | Expiry / issued-at time (Unix) | ✓ | ✓ | — | Always |
-| `auth_time` | The user's actual login time | ✓ | — | — | Always |
+| `auth_time` | The user’s actual login time | ✓ | — | — | Always |
 | `nonce` | Anti-replay random value | ✓ | — | — | Always (if present) |
 | `amr` | Authentication method, e.g. `["pwd"]`, `["mfa"]` | ✓ | — | — | Always |
 | `name` / `given_name` / `family_name` | Full name / given name / family name | ✓* | — | ✓ | `profile` |
@@ -239,10 +239,10 @@ The table below indicates which token each claim appears in, and which scope it 
 
 | Claim | Description | id_token | access_token | userinfo |
 |-------|------|:--------:|:------------:|:--------:|
-| `urn:zitadel:iam:org:project:roles` | The user's project roles, structured as `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:org:domain:primary` | The primary domain of the user's organization | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:metadata` | The user's custom metadata, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:resourceowner:id` / `:name` / `:primary_domain` | The ID / name / primary domain of the user's organization | ✓ | ✓ (JWT) | ✓ |
+| `urn:zitadel:iam:org:project:roles` | The user’s project roles, structured as `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:zitadel:iam:org:domain:primary` | The primary domain of the user’s organization | ✓ | ✓ (JWT) | ✓ |
+| `urn:zitadel:iam:user:metadata` | The user’s custom metadata, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:zitadel:iam:user:resourceowner:id` / `:name` / `:primary_domain` | The ID / name / primary domain of the user’s organization | ✓ | ✓ (JWT) | ✓ |
 
 **Role claim example**:
 ```json
@@ -387,7 +387,7 @@ The most common integration errors and one-shot fixes.
 <details class="lurus-faq-item">
 <summary>audience error (<code>aud</code> claim mismatch)</summary>
 
-**Symptom**: verification reports `token audience mismatch` / `invalid audience`. **Cause**: the access token's `aud` contains only `client_id` by default. **Fix**: add `urn:zitadel:iam:org:project:id:{projectid}:aud` to the scope to explicitly write the project ID into `aud`.
+**Symptom**: verification reports `token audience mismatch` / `invalid audience`. **Cause**: the access token’s `aud` contains only `client_id` by default. **Fix**: add `urn:zitadel:iam:org:project:id:{projectid}:aud` to the scope to explicitly write the project ID into `aud`.
 
 </details>
 

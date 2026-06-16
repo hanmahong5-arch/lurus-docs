@@ -15,13 +15,13 @@ description: Day-to-day usage guide for the Switch desktop app, covering quick i
 
 ## Quick integration
 
-Once Switch starts, it exposes an OpenAI-compatible API endpoint locally at `http://localhost:19090/v1` (the Switch gateway's default port is 19090). Change your app's/SDK's `base_url` to this address and all requests are automatically routed by Switch. Set `api_key` to any value (such as `switch`); Switch uses the provider key from its configuration.
+Once Switch starts, it exposes an OpenAI-compatible API endpoint locally at `http://localhost:19090/v1` (the Switch gateway’s default port is 19090). Change your app’s/SDK’s `base_url` to this address and all requests are automatically routed by Switch. Set `api_key` to any value (such as `switch`); Switch uses the provider key from its configuration.
 
 <ol class="lurus-steps">
 
 <li>
 
-Point the client's `base_url` at the local Switch endpoint, set `api_key` to any value (such as `switch`), and make requests as usual:
+Point the client’s `base_url` at the local Switch endpoint, set `api_key` to any value (such as `switch`), and make requests as usual:
 
 ::: code-group
 
@@ -123,7 +123,7 @@ The "**Logs**" tab shows real-time request logs with the following fields: time 
 
 ## One-click provider switching
 
-Click the menu bar icon (macOS) / system tray (Windows) to: switch the "current active provider", temporarily disable a provider (for debugging), or view today's usage overview.
+Click the menu bar icon (macOS) / system tray (Windows) to: switch the "current active provider", temporarily disable a provider (for debugging), or view today’s usage overview.
 
 ## Streaming responses
 
@@ -167,7 +167,7 @@ When a model is configured with multiple providers, you can round-robin or distr
 <details class="lurus-faq-item">
 <summary>"connection refused" — the connection was refused</summary>
 
-Switch isn't running or the port is wrong. Check the process and port:
+Switch isn’t running or the port is wrong. Check the process and port:
 
 - Process: Windows `tasklist | findstr LurusSwitch` / macOS·Linux `ps aux | grep lurus-switch`
 - Port: `curl http://localhost:19090/v1/models`

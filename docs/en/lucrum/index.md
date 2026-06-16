@@ -109,7 +109,7 @@ An open quantitative-strategy ecosystem that connects strategy developers and tr
 </li>
 <li>
 
-**Redis monthly counter** — tracks this month's usage in real time.
+**Redis monthly counter** — tracks this month’s usage in real time.
 
 </li>
 <li>
@@ -142,7 +142,7 @@ An open quantitative-strategy ecosystem that connects strategy developers and tr
 ---
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="users" :size="14" /> Who It's For</span>
+  <span class="lurus-section-head__eyebrow"><Icon name="users" :size="14" /> Who It’s For</span>
   <h2 class="lurus-section-head__title">Run quant without writing code</h2>
 </div>
 

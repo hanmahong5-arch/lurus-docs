@@ -1,6 +1,6 @@
 ---
 title: Lucrum Strategy Marketplace
-description: Lucrum's open strategy ecosystem connects strategy developers and traders.
+description: Lucrum’s open strategy ecosystem connects strategy developers and traders.
 ---
 
 <div class="lucrum-page">
@@ -52,7 +52,7 @@ Every listed strategy displays verified quantitative metrics:
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">How to pick a strategy?</p>
-    <div class="lurus-callout__body">Don't just look at returns. A strategy with a Sharpe ratio of 2.0 and a max drawdown of 10% is usually a better fit for most people than one returning 50% annually with a 40% drawdown.</div>
+    <div class="lurus-callout__body">Don’t just look at returns. A strategy with a Sharpe ratio of 2.0 and a max drawdown of 10% is usually a better fit for most people than one returning 50% annually with a 40% drawdown.</div>
   </div>
 </div>
 

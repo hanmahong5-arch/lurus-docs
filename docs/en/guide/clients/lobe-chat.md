@@ -13,7 +13,7 @@ description: Configure the Lurus API as a model provider in Lobe Chat.
 <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
 <div>
 <p class="lurus-callout__title">Before you begin</p>
-<div class="lurus-callout__body">Have a Lurus <Term t="API Key">API Key</Term> ready. Don't have one yet? Head to <a href="/en/guide/get-api-key">Get an API Key</a>.</div>
+<div class="lurus-callout__body">Have a Lurus <Term t="API Key">API Key</Term> ready. Don’t have one yet? Head to <a href="/en/guide/get-api-key">Get an API Key</a>.</div>
 </div>
 </div>
 
@@ -61,7 +61,7 @@ In the OpenAI configuration, fill in:
 <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
 <div>
 <p class="lurus-callout__title">Tip</p>
-<div class="lurus-callout__body"><ul><li>Lobe Chat uses OpenAI model names by default, so you'll need to switch manually in the conversation</li><li>We recommend <code>deepseek-chat</code> for the best value for money</li></ul></div>
+<div class="lurus-callout__body"><ul><li>Lobe Chat uses OpenAI model names by default, so you’ll need to switch manually in the conversation</li><li>We recommend <code>deepseek-chat</code> for the best value for money</li></ul></div>
 </div>
 </div>
 

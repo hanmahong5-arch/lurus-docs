@@ -1,6 +1,6 @@
 ---
 title: Switch Configuration
-description: Switch's AI tool configuration, MCP server management, and cost-monitoring settings.
+description: Switch’s AI tool configuration, MCP server management, and cost-monitoring settings.
 ---
 
 <div class="switch-page">
@@ -87,7 +87,7 @@ In the "**<Term t="Provider">Provider</Term>**" tab → "**Add Provider**", ente
   <span class="lurus-callout__icon"><Icon name="alert-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Port conflict</p>
-    <div class="lurus-callout__body">The default port <code>11434</code> is the same as Ollama's default port. When both run on the same machine, change Switch to another port (such as <code>11435</code>), and update the application-side <code>base_url</code> accordingly.</div>
+    <div class="lurus-callout__body">The default port <code>11434</code> is the same as Ollama’s default port. When both run on the same machine, change Switch to another port (such as <code>11435</code>), and update the application-side <code>base_url</code> accordingly.</div>
   </div>
 </div>
 

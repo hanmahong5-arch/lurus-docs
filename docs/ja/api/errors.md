@@ -55,7 +55,7 @@ description: Lurus API のエラーレスポンス形式、HTTP ステータス�
 | `model_not_found` | `new_api_error` | 模型 xxx 无可用渠道 | モデル名を確認し、当該モデルにチャネルが設定済みであることを確認、管理者に権限の開通を依頼 |
 | `insufficient_quota` | `billing_error` | Insufficient quota for this request | アカウント残高を確認し、管理者にチャージを依頼 |
 | `rate_limit_exceeded` | `rate_limit_error` | Rate limit exceeded. Please slow down. | リクエスト頻度を下げる、指数バックオフでリトライ、レート制限の引き上げを申請 |
-| `context_length_exceeded` | `invalid_request_error` | This model's maximum context length is 8192 tokens | 入力長を減らす、より長いコンテキストのモデルに切り替える、スライディングウィンドウで履歴を切り詰める |
+| `context_length_exceeded` | `invalid_request_error` | This model’s maximum context length is 8192 tokens | 入力長を減らす、より長いコンテキストのモデルに切り替える、スライディングウィンドウで履歴を切り詰める |
 
 **model_not_found** レスポンスボディ（HTTP 404、`type: new_api_error`）：
 

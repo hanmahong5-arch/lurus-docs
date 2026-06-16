@@ -73,7 +73,7 @@ Getting a `402` / `insufficient_quota`? See the troubleshooting steps at [Troubl
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">It Won't Fail Silently</p>
+    <p class="lurus-callout__title">It Won’t Fail Silently</p>
     <div class="lurus-callout__body">When your balance runs low, you get advance warning via email plus an in-app message, so service is never interrupted without your knowledge.</div>
   </div>
 </div>

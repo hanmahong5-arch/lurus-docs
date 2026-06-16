@@ -228,7 +228,7 @@ Then upload `publickey.pem` via the Zitadel User Service API.
 | `exp` | Expiry; `iat + 300` (5 minutes) is recommended; **must not exceed 1 hour** |
 
 ::: warning Clock Synchronization
-`iat` must not be more than 1 hour earlier than the Zitadel server time, otherwise the token request is rejected. Make sure the machine's NTP synchronization is working correctly.
+`iat` must not be more than 1 hour earlier than the Zitadel server time, otherwise the token request is rejected. Make sure the machine’s NTP synchronization is working correctly.
 :::
 
 ### 4.4 Exchange for an Access Token
@@ -396,7 +396,7 @@ Same as 3.3 (access token ~12 hours). Refresh proactively before expiry (re-sign
 
 Zitadel validates the **audience (aud)** field of the access token. For different target APIs, declare the corresponding audience in the scope.
 
-**To access Zitadel's own APIs** (Management / Admin / Auth): `scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud`. This reserved scope adds the Zitadel project to the token's audience; the Management API and others will reject any token that does not include this audience.
+**To access Zitadel’s own APIs** (Management / Admin / Auth): `scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud`. This reserved scope adds the Zitadel project to the token’s audience; the Management API and others will reject any token that does not include this audience.
 
 ```bash
 curl -X POST https://auth.lurus.cn/oauth/v2/token \
@@ -414,7 +414,7 @@ curl -X POST https://auth.lurus.cn/oauth/v2/token \
 |------|------|------|
 | `403 Forbidden` | Token audience does not include the target API | Add the corresponding `urn:zitadel:iam:...` scope when exchanging for a token |
 | `401 Unauthorized` | Token expired or signature invalid | Check clock synchronization and obtain a new token |
-| `invalid_grant` | Assertion expired (>5 minutes) or `aud` incorrect | Check the assertion's `exp` and `aud` |
+| `invalid_grant` | Assertion expired (>5 minutes) or `aud` incorrect | Check the assertion’s `exp` and `aud` |
 
 ---
 

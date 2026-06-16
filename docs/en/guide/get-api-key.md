@@ -52,7 +52,7 @@ Starts with `sk-`, followed by 48 random characters: `sk-xxxxxxxxxxxxxxxxxxxxxxx
   <div class="lurus-card lurus-card--api">
     <span class="lurus-card__icon"><Icon name="bar-chart-3" :size="22" /></span>
     <div class="lurus-card__title">View usage</div>
-    <p class="lurus-card__body">The "Token Management" page shows each Key's used quota, remaining quota, and most recent call time.</p>
+    <p class="lurus-card__body">The "Token Management" page shows each Key’s used quota, remaining quota, and most recent call time.</p>
   </div>
   <div class="lurus-card lurus-card--api">
     <span class="lurus-card__icon"><Icon name="lock" :size="22" /></span>

@@ -29,7 +29,7 @@ description: One page to pinpoint high-frequency issues across all Lurus product
   </a>
   <a class="lurus-card lurus-card--api" href="/en/guide/clients/others">
     <span class="lurus-card__icon"><Icon name="plug" :size="22" /></span>
-    <div class="lurus-card__title">Client can't connect</div>
+    <div class="lurus-card__title">Client can’t connect</div>
     <p class="lurus-card__body">Integration and troubleshooting for third-party clients such as Cherry Studio / Lobe Chat / OpenCat.</p>
   </a>
   <a class="lurus-card lurus-card--api" href="/en/platform/faq">
@@ -105,7 +105,7 @@ For retry code examples, see [Error handling · Best practices](/en/api/errors#e
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- First confirm whether you've used up today's free quota (Free plan: 100 calls/day)
+- First confirm whether you’ve used up today’s free quota (Free plan: 100 calls/day)
 - Check your 鹿贝 balance: [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
 - Top up yourself or upgrade your plan; for the rules, see [Billing](/en/platform/billing)
 
@@ -118,7 +118,7 @@ For retry code examples, see [Error handling · Best practices](/en/api/errors#e
 { "error": { "code": "context_length_exceeded", "type": "invalid_request_error" } }
 ```
 
-For example `deepseek-chat` is 64K and `gemini-3-pro-preview` is 1M; when you exceed the model's limit:
+For example `deepseek-chat` is 64K and `gemini-3-pro-preview` is 1M; when you exceed the model’s limit:
 
 - Reduce the input and trim history messages
 - Use a sliding window (keep system + the most recent N turns)
@@ -132,7 +132,7 @@ For example `deepseek-chat` is 64K and `gemini-3-pro-preview` is 1M; when you ex
 1. Check network connectivity: `curl https://api.lurus.cn/v1/models`
 2. Reduce `max_tokens`
 3. Reasoning models (`deepseek-reasoner`) take a long time to think, which is normal
-4. The SDK's default timeout is about 60 seconds; you can increase `timeout`
+4. The SDK’s default timeout is about 60 seconds; you can increase `timeout`
 5. Persistent timeouts may be an upstream failure — try another model
 
 </details>
@@ -142,7 +142,7 @@ For example `deepseek-chat` is 64K and `gemini-3-pro-preview` is 1M; when you ex
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Didn't find it? Contact support@lurus.cn</p>
+    <p class="lurus-callout__title">Didn’t find it? Contact support@lurus.cn</p>
     <div class="lurus-callout__body">Please include: the full error message, the request ID (response header <code>X-Request-ID</code>), the time it occurred, and reproduction steps, so we can locate it quickly.</div>
   </div>
 </div>

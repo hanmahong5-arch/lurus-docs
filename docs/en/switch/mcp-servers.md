@@ -10,7 +10,7 @@ description: Visually configure / debug MCP servers and sync them across AI CLIs
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="plug" :size="14" /> Unified management</span>
   <h2 class="lurus-section-head__title">One central config, synced across CLIs</h2>
-  <p class="lurus-section-head__lede">Switch unifies the configs scattered across each tool's own <code>mcp_servers.json</code> — Claude Code / Codex / Gemini — and provides visual debugging.</p>
+  <p class="lurus-section-head__lede">Switch unifies the configs scattered across each tool’s own <code>mcp_servers.json</code> — Claude Code / Codex / Gemini — and provides visual debugging.</p>
 </div>
 
 ## MCP Manager
@@ -63,7 +63,7 @@ servers:
   <span class="lurus-callout__icon"><Icon name="shuffle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">visible_to drives on-demand delivery</p>
-    <div class="lurus-callout__body">When you switch to any CLI, Switch dynamically generates that CLI's <code>mcp_servers.json</code> based on <code>visible_to</code>, so each tool only sees the servers assigned to it.</div>
+    <div class="lurus-callout__body">When you switch to any CLI, Switch dynamically generates that CLI’s <code>mcp_servers.json</code> based on <code>visible_to</code>, so each tool only sees the servers assigned to it.</div>
   </div>
 </div>
 

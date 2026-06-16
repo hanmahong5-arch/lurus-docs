@@ -99,7 +99,7 @@ Some enterprises disable platform biometric authentication or WebAuthn via GPO /
 Use a TOTP app that supports cloud backup (1Password, Authy) to avoid losing access if your phone is lost. Older versions of Google Authenticator do not support migration — be sure to export before migrating.
 :::
 
-**MFA policies** (console **Security Policy**): **Not enforced** (users bind voluntarily) / **Enforced (all users)** (must register at least one second factor after first login) / **Enforced for local users only** (external IdP/SSO logins are exempt; local accounts must bind). Common enforcement scenarios: high-privilege accounts (administrators, finance) are always enforced; B2B customer organizations are configured separately by the customer's administrator; risky logins (off-site IP / new device) can trigger Step-up Auth.
+**MFA policies** (console **Security Policy**): **Not enforced** (users bind voluntarily) / **Enforced (all users)** (must register at least one second factor after first login) / **Enforced for local users only** (external IdP/SSO logins are exempt; local accounts must bind). Common enforcement scenarios: high-privilege accounts (administrators, finance) are always enforced; B2B customer organizations are configured separately by the customer’s administrator; risky logins (off-site IP / new device) can trigger Step-up Auth.
 
 **Recovery codes**: After binding MFA, a set of one-time recovery codes is generated (**Account Settings → Security → Recovery Codes**). Print them or store them in a password manager (**do not screenshot to a cloud photo album**). When you lose your MFA device, log in with any recovery code and immediately re-bind MFA. Each code becomes invalid after use; once they are all used, regenerate a new set immediately.
 
@@ -142,7 +142,7 @@ Zitadel acts as an intermediary IdP, integrating one or more **upstream external
 
 ## 7. Login Interface Customization (Branding)
 
-Customize at the **instance** or **organization** level: logo (light/dark, SVG/PNG), theme color, font, background, custom domain (`auth.yourcompany.com`, requires DNS). Lurus uses the main site's unified color scheme by default. B2B customers can configure under **Organization Settings → Appearance** without affecting other organizations.
+Customize at the **instance** or **organization** level: logo (light/dark, SVG/PNG), theme color, font, background, custom domain (`auth.yourcompany.com`, requires DNS). Lurus uses the main site’s unified color scheme by default. B2B customers can configure under **Organization Settings → Appearance** without affecting other organizations.
 
 ::: tip Custom Domains and Passkeys
 Configuring a custom login domain (`auth.client.com`) for a B2B organization **must be completed before the first Passkey is registered**. A Passkey is bound to the domain (RP ID) at registration, and changing it afterward invalidates existing Passkeys.
@@ -159,7 +159,7 @@ Configuring a custom login domain (`auth.client.com`) for a B2B organization **m
 <details class="lurus-faq-item">
 <summary>Cross-subdomain cookie invalid — still prompted to re-login on other subdomains after logging in?</summary>
 
-After logging in at `app.lurus.cn`, accessing `docs.lurus.cn` still prompts a re-login. **Cause**: the OIDC session cookie's `Domain` is incorrect, or CORS restricts cross-subdomain access. **Troubleshooting**: confirm all subdomains share the same top-level domain and the cookie is set to `Domain=.lurus.cn`; embedding the login page in an iframe requires `SameSite=None; Secure` and HTTPS.
+After logging in at `app.lurus.cn`, accessing `docs.lurus.cn` still prompts a re-login. **Cause**: the OIDC session cookie’s `Domain` is incorrect, or CORS restricts cross-subdomain access. **Troubleshooting**: confirm all subdomains share the same top-level domain and the cookie is set to `Domain=.lurus.cn`; embedding the login page in an iframe requires `SameSite=None; Secure` and HTTPS.
 
 </details>
 

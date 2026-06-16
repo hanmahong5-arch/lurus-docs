@@ -73,9 +73,9 @@ After logging in, you enter the Management Console, which is divided into three 
 
 ### 2.2 Setting the Default Organization
 
-Left-hand **Organizations** (Instance level) → the target organization row's **"..."** → **Set as default organization** (the row shows a **Default** label).
+Left-hand **Organizations** (Instance level) → the target organization row’s **"..."** → **Set as default organization** (the row shows a **Default** label).
 
-> If a user logs in without an organization context (no `urn:zitadel:iam:org:id:{id}` scope), they fall into the default Organization's policy and branding configuration.
+> If a user logs in without an organization context (no `urn:zitadel:iam:org:id:{id}` scope), they fall into the default Organization’s policy and branding configuration.
 
 ### 2.3 Domain Verification
 
@@ -156,7 +156,7 @@ Used for machine-to-machine communication (CI/CD, backend calls); does not log i
 ### 3.5 Auditing and Login History
 
 - **Login history**: details → **Login History** (time, IP, User Agent, success/failure).
-- **Resource change history**: at the bottom of any resource's details page, **Changes** (Which User / Timestamp / Field / Old → New Value).
+- **Resource change history**: at the bottom of any resource’s details page, **Changes** (Which User / Timestamp / Field / Old → New Value).
 
 ---
 
@@ -172,9 +172,9 @@ Used for machine-to-machine communication (CI/CD, backend calls); does not log i
 |--------|------|
 | **Assert Roles on Authentication** | Injects Roles into the Token and Userinfo at login; enabling recommended |
 | **Check Role Assignment on Authentication** | Requires the user to have at least one Role Grant in this Project, otherwise login is denied |
-| **Check for Project on Authentication** | Verifies whether the user's Organization has obtained a Grant for this Project |
+| **Check for Project on Authentication** | Verifies whether the user’s Organization has obtained a Grant for this Project |
 
-**Branding policy**: **Unspecified** (system default) / **Enforce project's policy** (use the branding of the project's Org throughout) / **Allow login user policy** (use the project's branding initially, then switch to the user's own Org branding once the user is identified).
+**Branding policy**: **Unspecified** (system default) / **Enforce project’s policy** (use the branding of the project’s Org throughout) / **Allow login user policy** (use the project’s branding initially, then switch to the user’s own Org branding once the user is identified).
 
 ### 4.3 Role Definition （Project Roles）
 
@@ -186,9 +186,9 @@ Details → **Authorizations → New** → search for the target user (Human / S
 
 ### 4.5 Project Grant (Cross-Organization Authorization, B2B)
 
-Authorize an entire Project to another Organization, allowing it to manage the roles its users hold in that project. Details → **Project Grants → New** → enter the partner Organization's domain to search and select → check the allowed Roles (you can limit to a subset) → **Save**.
+Authorize an entire Project to another Organization, allowing it to manage the roles its users hold in that project. Details → **Project Grants → New** → enter the partner Organization’s domain to search and select → check the allowed Roles (you can limit to a subset) → **Save**.
 
-> The granted Organization's administrator can see the project under **Granted Projects** and assign Roles to their own organization's users.
+> The granted Organization’s administrator can see the project under **Granted Projects** and assign Roles to their own organization’s users.
 
 ---
 
@@ -204,7 +204,7 @@ Details → **Applications → New Application** → choose a type:
 | **SPA（User Agent）** | Frontend single-page (React / Vue) | Authorization Code + PKCE (no Client Secret) |
 | **Native** | Desktop/mobile (Electron / iOS) | Authorization Code + PKCE |
 | **API** | Machine-to-machine communication (microservices/scripts) | Client Credentials / JWT Profile |
-| **SAML** | Enterprise integration (systems that don't support OIDC) | SAML 2.0, upload Metadata XML or enter a URL |
+| **SAML** | Enterprise integration (systems that don’t support OIDC) | SAML 2.0, upload Metadata XML or enter a URL |
 
 ### 5.2 Redirect URI Configuration
 
@@ -313,7 +313,7 @@ Configure the URLs shown in the compliance-links area of the registration/login 
 |------|------|
 | **Username must contain org domain** | The username becomes `{user}@{org}.{instance-domain}` |
 | **Validate Organization Domains** | Require DNS/HTTP verification before a domain can be used |
-| **SMTP sender address must match domain** | The notification email sender's domain must match the organization's domain |
+| **SMTP sender address must match domain** | The notification email sender’s domain must match the organization’s domain |
 | **Email as username** | Allow using the Email directly as the login username |
 
 ### 7.8 Notification （**Notifications**）
@@ -347,7 +347,7 @@ Left-hand **Actions → New Action** → fill in a name, choose the trigger Flow
 ## 9. Auditing and Logs
 
 - **Events stream**: at the Instance level, **Events** in the top bar / at the Organization level, **Events** after entering. The timeline lists all changes (Event Type / Aggregate / Editor / timestamp).
-- **Resource-level change history**: at the bottom of each resource's details page, **Changes** (Who / When / Field + Old → New Value).
+- **Resource-level change history**: at the bottom of each resource’s details page, **Changes** (Who / When / Field + Old → New Value).
 - **SIEM integration**: the **Events API** (`/v2/events`) filters by event type/time/resource ID and pushes to Elasticsearch / Loki / Splunk for compliance auditing.
 
 ---
@@ -394,12 +394,12 @@ Left-hand **Actions → New Action** → fill in a name, choose the trigger Flow
 <summary><Icon name="building-2" :size="16" /> Enterprise customer onboarding (B2B)</summary>
 
 <ol class="lurus-steps">
-<li>Instance level → <strong>Organizations → New Organization</strong>, use the customer's company name.</li>
-<li>Add an Org Owner (the customer's IT admin account).</li>
-<li>Organization → <strong>Settings → Organization Domains</strong> verify the customer's domain.</li>
+<li>Instance level → <strong>Organizations → New Organization</strong>, use the customer’s company name.</li>
+<li>Add an Org Owner (the customer’s IT admin account).</li>
+<li>Organization → <strong>Settings → Organization Domains</strong> verify the customer’s domain.</li>
 <li>If the customer has their own IdP (Azure AD): Organization → <strong>Settings → IDP</strong> add a SAML/OIDC IdP.</li>
-<li><code>lurus-api</code> project → <strong>Project Grants → New</strong> → select the customer's Organization → assign the allowed Roles.</li>
-<li>After the customer's Org Owner logs in, they assign roles to their employees under <strong>Granted Projects</strong>.</li>
+<li><code>lurus-api</code> project → <strong>Project Grants → New</strong> → select the customer’s Organization → assign the allowed Roles.</li>
+<li>After the customer’s Org Owner logs in, they assign roles to their employees under <strong>Granted Projects</strong>.</li>
 </ol>
 
 </details>

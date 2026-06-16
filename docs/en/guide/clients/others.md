@@ -11,7 +11,7 @@ Any client that supports the OpenAI API can use the Lurus API. Below are the com
 
 ## Common Configuration
 
-Just enter these two values into your client's OpenAI-compatible settings:
+Just enter these two values into your client’s OpenAI-compatible settings:
 
 | Setting | Value |
 |--------|-----|
@@ -21,7 +21,7 @@ Just enter these two values into your client's OpenAI-compatible settings:
 <div class="lurus-callout lurus-callout--info">
 <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
 <div>
-<p class="lurus-callout__title">Don't have a Key yet?</p>
+<p class="lurus-callout__title">Don’t have a Key yet?</p>
 <div class="lurus-callout__body">Go to <a href="/en/guide/get-api-key">Get an API Key</a>. You can look up model names in <a href="/guide/models">Supported Models</a>.</div>
 </div>
 </div>
