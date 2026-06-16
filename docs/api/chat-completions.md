@@ -78,6 +78,8 @@ POST https://api.lurus.cn/v1/chat/completions
 | `user` | 用户的输入 |
 | `assistant` | AI 的回复。多轮对话时需要把历史回复包含在内 |
 
+完整请求体（`ChatCompletionRequest`）与消息（`Message`）的全部字段定义见 [数据结构参考](/api/schemas)。
+
 ---
 
 ## 基础示例
@@ -424,6 +426,7 @@ print(chat("他有哪些重要成就？"))  # 模型能记住上文的"秦始皇
   title="下一步"
   :steps="[
     { text: '错误处理', link: '/api/errors', primary: true },
+    { text: '数据结构 / Schema', link: '/api/schemas' },
     { text: '认证', link: '/api/authentication' },
     { text: 'API 概述', link: '/api/overview' },
     { text: '支持的模型', link: '/guide/models' },

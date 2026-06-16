@@ -74,6 +74,18 @@ export const glossary: Record<string, GlossaryEntry> = {
     en: 'OpenTelemetry (OTel)',
     tags: ['general'],
   },
+  'OpenAPI': {
+    zh: '描述 REST API 的开放规范（原 Swagger）。Lurus 的数据结构由网关 OpenAPI 规范自动同步生成。',
+    en: 'OpenAPI Specification',
+    see: '/api/schemas',
+    tags: ['general'],
+  },
+  'Schema': {
+    zh: '数据结构定义，规定请求 / 响应中每个字段的名称、类型与是否必填。',
+    en: 'Schema',
+    see: '/api/schemas',
+    tags: ['general'],
+  },
 
   // ─── Auth ────────────────────────────────────────────────
   'OIDC': {

@@ -39,6 +39,8 @@ description: Lurus API 使用中的常见问题与解答，包括计费、兼容
 - 无多余空格/换行（重新复制）
 - 环境变量名拼写正确且已加载
 
+仍报 `401`？按检查清单逐项排查见 [故障排查 · invalid_api_key](/guide/troubleshooting#invalid-api-key)。
+
 </details>
 
 <div class="lurus-section-head">

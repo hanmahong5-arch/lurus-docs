@@ -47,7 +47,7 @@ description: 一页定位 Lurus 全产品高频问题 —— 401 / 模型无渠�
   <p class="lurus-section-head__lede">展开你遇到的报错，照着检查清单走。详细错误码见 <a href="/api/errors">错误处理</a>。</p>
 </div>
 
-<details class="lurus-faq-item">
+<details class="lurus-faq-item" id="invalid-api-key">
 <summary>返回 <code>401 Unauthorized</code> / <code>invalid_api_key</code></summary>
 
 ```json
@@ -98,7 +98,7 @@ description: 一页定位 Lurus 全产品高频问题 —— 401 / 模型无渠�
 
 </details>
 
-<details class="lurus-faq-item">
+<details class="lurus-faq-item" id="insufficient-quota">
 <summary>返回 <code>402</code> / <code>insufficient_quota</code>（配额 / 余额不足）</summary>
 
 ```json

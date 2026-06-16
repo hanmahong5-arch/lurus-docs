@@ -87,7 +87,7 @@ CRC32 校验防损坏；Power-of-2 环形缓冲高效利用存储；锁顺序 **
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="puzzle" :size="20" /></span>
     <div class="lurus-card__title">工具生态</div>
-    <p class="lurus-card__body">内置工具（文件 / HTTP / 数据库 / Shell）、<Term t="MCP">MCP</Term>（连接任何兼容 MCP 的工具服务）、<Term t="A2A">A2A</Term>（Agent 间直接通信与任务委派）、自定义工具（Rust 或 REST API 扩展）。</p>
+    <p class="lurus-card__body">内置工具（文件 / HTTP / 数据库 / Shell）、<Term t="MCP">MCP</Term>（连接任何兼容 MCP 的工具服务，见 <a href="/integrations/">集成目录</a>）、<Term t="A2A">A2A</Term>（Agent 间直接通信与任务委派）、自定义工具（Rust 或 REST API 扩展）。</p>
   </div>
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="layers" :size="20" /></span>
@@ -177,6 +177,7 @@ Kova 是 **21 个 Rust crate** 的工作空间，**178,284 行代码**，**1,565
     { text: '快速开始 — 启动你的第一个 Kova Agent', link: '/kova/quickstart', primary: true },
     { text: '核心概念 — 深入理解 WAL、Agent、Workflow', link: '/kova/concepts' },
     { text: 'API 参考 — 完整的 REST API 文档', link: '/kova/api' },
+    { text: '集成与 MCP 目录', link: '/integrations/' },
   ]"
 />
 

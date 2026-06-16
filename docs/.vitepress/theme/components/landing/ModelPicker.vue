@@ -1,23 +1,21 @@
 <script setup lang="ts">
 /**
- * ModelPicker — pick a model id and get a copy-ready, OpenAI-compatible snippet.
+ * ModelPicker — pick a model id + language, get a copy-ready, OpenAI-compatible snippet.
  *
- * Data-driven: the parent page passes `vendors` from the build-time
- * `models.data` loader (single source of truth = data/models.yaml), so the
- * dropdown always matches the live model catalog. No config generation — this
- * is a gateway, the only variable that changes is the `model` parameter.
+ * Data-driven: the dropdown iterates `modelCatalog` (generated from
+ * data/models.yaml by scripts/sync.ts — single source of truth), so it always
+ * matches the live catalog. Plain TS import (not a .data.ts loader) resolves
+ * identically at SSR and on the client, mirroring ModelTable.
  *
- * The <optgroup> list iterates the `vendors` prop directly (no computed) so it
- * renders server-side, mirroring ModelTable.
+ * The language tabs reuse CodeShowcase's pattern (an `active` ref + <button
+ * v-for>). This is a gateway, so only the `model` parameter and the host
+ * language change — the endpoint and request body stay fixed.
  */
 import { ref, computed } from 'vue'
 import { modelCatalog } from '../../../data/model-catalog'
 import Icon from '../Icon.vue'
 import CopyButton from '../CopyButton.vue'
 
-// `modelCatalog` is a plain TS module generated from data/models.yaml by
-// scripts/sync.ts (single source of truth). Plain TS — not a .data.ts loader —
-// so it resolves at both SSR and client without loader/import quirks.
 const vendors = modelCatalog
 
 const selected = ref('deepseek-chat')
@@ -25,16 +23,50 @@ const current = computed(() =>
   vendors.flatMap(v => v.models).find(m => m.id === selected.value)
 )
 
-const snippet = computed(() => `from openai import OpenAI
+const langs = [
+  { id: 'python', label: 'Python' },
+  { id: 'curl', label: 'cURL' },
+  { id: 'node', label: 'Node.js' },
+] as const
+type LangId = (typeof langs)[number]['id']
+const activeLang = ref<LangId>('python')
+
+const snippet = computed(() => {
+  const model = selected.value
+  if (activeLang.value === 'curl') {
+    return `curl https://api.lurus.cn/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer $LURUS_API_KEY" \\
+  -d '{
+    "model": "${model}",
+    "messages": [{"role": "user", "content": "你好"}]
+  }'`
+  }
+  if (activeLang.value === 'node') {
+    return `import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://api.lurus.cn/v1",
+  apiKey: process.env.LURUS_API_KEY,
+});
+
+const response = await client.chat.completions.create({
+  model: "${model}",
+  messages: [{ role: "user", content: "你好" }],
+});
+console.log(response.choices[0].message.content);`
+  }
+  return `from openai import OpenAI
 import os
 
 client = OpenAI(base_url="https://api.lurus.cn/v1", api_key=os.environ["LURUS_API_KEY"])
 
 response = client.chat.completions.create(
-    model="${selected.value}",
+    model="${model}",
     messages=[{"role": "user", "content": "你好"}],
 )
-print(response.choices[0].message.content)`)
+print(response.choices[0].message.content)`
+})
 </script>
 
 <template>
@@ -47,6 +79,17 @@ print(response.choices[0].message.content)`)
         </optgroup>
       </select>
       <span v-if="current" class="model-picker__meta">{{ current.context }} · {{ current.price }}</span>
+    </div>
+    <div class="model-picker__tabs" role="tablist">
+      <button
+        v-for="l in langs"
+        :key="l.id"
+        type="button"
+        role="tab"
+        :aria-selected="l.id === activeLang"
+        :class="['model-picker__tab', { 'is-active': l.id === activeLang }]"
+        @click="activeLang = l.id"
+      >{{ l.label }}</button>
     </div>
     <div class="model-picker__code">
       <CopyButton :content="snippet" class="model-picker__copy" />
@@ -92,6 +135,33 @@ print(response.choices[0].message.content)`)
 .model-picker__meta {
   font-size: 0.8rem;
   color: var(--vp-c-text-2);
+}
+.model-picker__tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--vp-c-bg-mute);
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+.model-picker__tab {
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+  background: transparent;
+  border: none;
+  border-radius: var(--lurus-radius-sm);
+  cursor: pointer;
+  transition: background var(--lurus-dur-fast), color var(--lurus-dur-fast);
+}
+.model-picker__tab:hover {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-1);
+}
+.model-picker__tab.is-active {
+  background: var(--vp-c-bg);
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
 }
 .model-picker__code {
   position: relative;

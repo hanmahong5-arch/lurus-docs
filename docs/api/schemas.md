@@ -7,7 +7,7 @@ description: Lurus API 请求与响应的数据结构，由 OpenAPI 规范（rel
 
 # 数据结构参考
 
-以下请求 / 响应数据结构由 newapi 的 OpenAPI 规范（`relay.json`）**自动同步生成**，始终与网关实现保持一致。完整端点列表见 [API 概述](/api/overview)，调用示例见 [Chat Completions](/api/chat-completions)。
+以下请求 / 响应数据结构由 newapi 的 <Term t="OpenAPI">OpenAPI</Term> 规范（`relay.json`）**自动同步生成**，始终与网关实现保持一致。完整端点列表见 [API 概述](/api/overview)，调用示例见 [Chat Completions](/api/chat-completions)。
 
 ::: info 如何更新
 本页 `<!-- sync:schemas -->` 标记区由 `bun run sync` 从 `2b-svc-newapi/docs/openapi/relay.json` 重新生成，请勿手动编辑该区域。
@@ -505,6 +505,7 @@ _共 35 个数据结构（由 OpenAPI 规范自动生成）。_
   :steps="[
     { text: 'API 概述', link: '/api/overview', primary: true },
     { text: 'Chat Completions', link: '/api/chat-completions' },
+    { text: '集成与 MCP 目录', link: '/integrations/' },
     { text: '错误处理', link: '/api/errors' },
   ]"
 />

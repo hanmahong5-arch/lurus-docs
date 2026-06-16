@@ -41,6 +41,14 @@ description: Lurus API 错误响应格式、HTTP 状态码和常见错误的处�
 
 ## 常见错误
 
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">按症状快速定位</p>
+    <div class="lurus-callout__body">想从"我遇到了什么报错"出发，附带逐项检查清单，见 <a href="/guide/troubleshooting">故障排查</a>。本页是完整错误码与重试策略的权威参考。</div>
+  </div>
+</div>
+
 | `code` | `type` | message（示例） | 解决方案 |
 |--------|--------|------|---------|
 | `invalid_api_key` | `authentication_error` | Invalid API key provided | 检查 Key 是否正确复制、以 `sk-` 开头、无多余空格 |

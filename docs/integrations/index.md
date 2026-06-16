@@ -12,7 +12,7 @@ import { data } from '../.vitepress/data/integrations.data'
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="puzzle" :size="14" /> 集成目录</span>
   <h1 class="lurus-section-head__title">集成与 MCP 目录</h1>
-  <p class="lurus-section-head__lede">按类别浏览：Lurus 产品 MCP、Switch 内置服务器、AI 客户端、SDK 与协议兼容。每张卡片直达接入文档。</p>
+  <p class="lurus-section-head__lede">按类别浏览：Lurus 产品 <Term t="MCP">MCP</Term>、Switch 内置服务器、AI 客户端、SDK 与协议兼容。每张卡片直达接入文档。</p>
 </div>
 
 <div class="lurus-callout lurus-callout--info">
@@ -32,6 +32,7 @@ import { data } from '../.vitepress/data/integrations.data'
   title="下一步"
   :steps="[
     { text: 'Switch — 统一管理 MCP', link: '/switch/mcp-servers', primary: true },
+    { text: '数据结构 / Schema', link: '/api/schemas' },
     { text: '快速开始', link: '/guide/quickstart' },
     { text: '客户端集成', link: '/guide/clients/cherry-studio' },
   ]"

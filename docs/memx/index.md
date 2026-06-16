@@ -111,6 +111,7 @@ description: 基于 ACE v2.0 构建的 AI 记忆引擎，智能蒸馏、仿生�
     { text: '快速开始 — 5 分钟体验核心功能', link: '/memx/quickstart', primary: true },
     { text: '核心概念 — 深入 ACE 引擎设计原理', link: '/memx/concepts' },
     { text: '架构设计 — 完整系统架构', link: '/memx/architecture' },
+    { text: '集成与 MCP 目录', link: '/integrations/' },
     { text: '常见问题', link: '/memx/faq' },
   ]"
 />

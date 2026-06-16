@@ -153,6 +153,8 @@ Authorization: Bearer sk-your-api-key
 
 ## 响应格式
 
+每个字段的类型与是否必填见 [数据结构参考 / Schema](/api/schemas)（由 OpenAPI 规范自动同步，与网关实现一致）。
+
 ### 成功响应
 
 ```json
@@ -299,6 +301,7 @@ curl https://api.lurus.cn/v1/chat/completions \
   :steps="[
     { text: '认证详解', link: '/api/authentication', primary: true },
     { text: 'Chat Completions', link: '/api/chat-completions' },
+    { text: '数据结构 / Schema', link: '/api/schemas' },
     { text: '错误处理', link: '/api/errors' },
     { text: '获取 API Key', link: '/guide/get-api-key' },
   ]"

@@ -68,6 +68,8 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 <li>余额<strong>不足</strong> → 返回 <code>402</code> 错误。</li>
 </ol>
 
+收到 `402` / `insufficient_quota`？排查步骤见 [故障排查 · 配额 / 余额不足](/guide/troubleshooting#insufficient-quota)。
+
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>

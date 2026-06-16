@@ -194,6 +194,7 @@ target = "kova"
     { text: '快速开始', link: '/lumen/quickstart', primary: true },
     { text: 'Python SDK', link: '/lumen/python-sdk' },
     { text: 'CLI 手册', link: '/lumen/cli' },
+    { text: '集成与 MCP 目录', link: '/integrations/' },
     { text: 'MCP 协议官方文档', link: 'https://modelcontextprotocol.io/', external: true },
   ]"
   title="下一步"
