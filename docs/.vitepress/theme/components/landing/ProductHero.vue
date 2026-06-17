@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useData } from 'vitepress'
 import { products } from '../../../data/products'
+import { localizeProduct } from '../../../data/i18n'
 import StatusBadge from '../StatusBadge.vue'
 import Icon from '../Icon.vue'
 
 const props = defineProps<{ productId: string }>()
+const { lang } = useData()
 
-const p = computed(() => products[props.productId])
+const p = computed(() => localizeProduct(products[props.productId], lang.value))
 const accent = computed(() => (p.value ? `var(${p.value.colorToken})` : 'var(--lurus-brand-500)'))
 </script>
 

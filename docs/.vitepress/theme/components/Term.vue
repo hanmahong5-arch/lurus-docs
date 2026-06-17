@@ -1,13 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useData } from 'vitepress'
 import { glossary } from '../../data/glossary'
+import { glossaryDef, toLocale, uiFor } from '../../data/i18n'
 
 const props = defineProps<{
   /** Glossary key — must match a key in glossary.ts */
   t: string
 }>()
 
+const { lang } = useData()
 const entry = computed(() => glossary[props.t])
+/** null on the zh source, a locale id otherwise. */
+const loc = computed(() => toLocale(lang.value))
+/** Localized definition (zh fallback). */
+const def = computed(() => (entry.value ? glossaryDef(props.t, entry.value.zh, lang.value) : ''))
+const moreLabel = computed(() => uiFor(lang.value)?.term.more || '了解更多 →')
 </script>
 
 <template>
@@ -15,10 +23,10 @@ const entry = computed(() => glossary[props.t])
     <slot />
     <span class="term-tooltip" role="tooltip">
       <span class="term-tooltip-title">{{ props.t }}</span>
-      <span class="term-tooltip-zh">{{ entry.zh }}</span>
-      <span v-if="entry.en" class="term-tooltip-en">{{ entry.en }}</span>
+      <span class="term-tooltip-zh">{{ def }}</span>
+      <span v-if="!loc && entry.en" class="term-tooltip-en">{{ entry.en }}</span>
       <a v-if="entry.see" :href="entry.see" class="term-tooltip-link">
-        了解更多 →
+        {{ moreLabel }}
       </a>
     </span>
   </span>

@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useData } from 'vitepress'
 import { products, outgoingLinks, incomingLinks } from '../../../data/products'
+import { localizeProduct, uiFor } from '../../../data/i18n'
 import Icon from '../Icon.vue'
 
 const props = defineProps<{ productId: string }>()
+const { lang } = useData()
 
 const self = computed(() => products[props.productId])
-const outgoing = computed(() => outgoingLinks(props.productId))
+const outgoing = computed(() => outgoingLinks(props.productId).map((p) => localizeProduct(p, lang.value)))
 const incoming = computed(() =>
-  incomingLinks(props.productId).filter((p) => !outgoing.value.some((o) => o.id === p.id)),
+  incomingLinks(props.productId)
+    .filter((p) => !outgoing.value.some((o) => o.id === p.id))
+    .map((p) => localizeProduct(p, lang.value)),
 )
+const ui = computed(() => uiFor(lang.value))
 </script>
 
 <template>
   <section v-if="self && (outgoing.length || incoming.length)" class="related">
-    <h2 class="related__heading">相关产品</h2>
+    <h2 class="related__heading">{{ ui ? ui.related.heading : '相关产品' }}</h2>
 
     <div v-if="outgoing.length" class="related__group">
-      <h3 class="related__group-title">通常搭配</h3>
+      <h3 class="related__group-title">{{ ui ? ui.related.paired : '通常搭配' }}</h3>
       <div class="related__grid">
         <a v-for="r in outgoing" :key="r.id" :href="r.home" class="related__card"
            :style="{ '--rc': `var(${r.colorToken})` }">
@@ -31,7 +37,7 @@ const incoming = computed(() =>
     </div>
 
     <div v-if="incoming.length" class="related__group">
-      <h3 class="related__group-title">被这些产品引用</h3>
+      <h3 class="related__group-title">{{ ui ? ui.related.referenced : '被这些产品引用' }}</h3>
       <div class="related__grid">
         <a v-for="r in incoming" :key="r.id" :href="r.home" class="related__card related__card--muted"
            :style="{ '--rc': `var(${r.colorToken})` }">

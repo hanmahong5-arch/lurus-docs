@@ -1,17 +1,37 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useData } from 'vitepress'
 import CodeShowcase from './landing/CodeShowcase.vue'
 import MetricStats from './landing/MetricStats.vue'
 import { products } from '../../data/products'
+import { uiFor, toLocale } from '../../data/i18n'
 
+const { lang } = useData()
 const root = ref<HTMLElement | null>(null)
 const tabs = products['lurus-api'].codeExamples || []
-const metrics = [
-  { label: '产品矩阵', value: '12' },
-  { label: 'AI 模型接入', value: '50+' },
-  { label: 'Kova 调度延迟', value: '3μs' },
-  { label: '免费额度', value: '100 次/天' },
-]
+
+const t = computed(() => uiFor(lang.value))
+/** Locale-prefixed path for in-set CTA targets (both are translated pages). */
+const linkPrefix = computed(() => {
+  const l = toLocale(lang.value)
+  return l ? `/${l}` : ''
+})
+// The free-quota metric value carries a CJK unit ("次/天"); localize just the unit.
+const FREE_QUOTA: Record<string, string> = {
+  en: '100/day', ja: '100 回/日', ko: '100회/일', es: '100/día', fr: '100/jour',
+}
+const metrics = computed(() => {
+  const tt = t.value
+  const labels = tt ? tt.hero.metrics : ['产品矩阵', 'AI 模型接入', 'Kova 调度延迟', '免费额度']
+  const loc = toLocale(lang.value)
+  const freeVal = (loc && FREE_QUOTA[loc]) || '100 次/天'
+  return [
+    { label: labels[0], value: '12' },
+    { label: labels[1], value: '50+' },
+    { label: labels[2], value: '3μs' },
+    { label: labels[3], value: freeVal },
+  ]
+})
 
 let frame = 0
 function onMove(e: MouseEvent) {
@@ -37,15 +57,16 @@ onBeforeUnmount(() => root.value?.removeEventListener('mousemove', onMove))
     <div class="lurus-hero__content">
       <div class="lurus-hero__text">
         <span class="lurus-hero__name">Lurus</span>
-        <h1 class="lurus-hero__title">AI 基础设施与产品平台</h1>
+        <h1 class="lurus-hero__title">{{ t ? t.hero.title : 'AI 基础设施与产品平台' }}</h1>
         <p class="lurus-hero__tagline">
-          不是又一层 SaaS。<span class="lurus-hero__accent">执行、记忆、网关、计费</span>各自能用，组合更强 —
-          像组合螺丝刀一样组合智能。
+          <template v-if="t">{{ t.hero.taglineLead }}<span class="lurus-hero__accent">{{ t.hero.taglineAccent }}</span>{{ t.hero.taglineTail }}</template>
+          <template v-else>不是又一层 SaaS。<span class="lurus-hero__accent">执行、记忆、网关、计费</span>各自能用，组合更强 —
+          像组合螺丝刀一样组合智能。</template>
         </p>
         <div class="lurus-hero__actions">
-          <a href="/guide/quickstart" class="lurus-hero__btn lurus-hero__btn--primary">3 分钟上手</a>
-          <a href="/guide/get-api-key" class="lurus-hero__btn lurus-hero__btn--alt">获取 API Key</a>
-          <a href="https://api.lurus.cn" target="_blank" rel="noopener noreferrer" class="lurus-hero__btn lurus-hero__btn--ghost">控制台 ↗</a>
+          <a :href="`${linkPrefix}/guide/quickstart`" class="lurus-hero__btn lurus-hero__btn--primary">{{ t ? t.hero.btnStart : '3 分钟上手' }}</a>
+          <a :href="`${linkPrefix}/guide/get-api-key`" class="lurus-hero__btn lurus-hero__btn--alt">{{ t ? t.hero.btnKey : '获取 API Key' }}</a>
+          <a href="https://api.lurus.cn" target="_blank" rel="noopener noreferrer" class="lurus-hero__btn lurus-hero__btn--ghost">{{ t ? t.hero.btnConsole : '控制台 ↗' }}</a>
         </div>
       </div>
       <div class="lurus-hero__code">
