@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useData } from 'vitepress'
 import type { Model } from '../../data/models.data'
+import { modelsTable } from '../../data/i18n'
 
 interface Props {
   vendor: string
@@ -7,35 +10,46 @@ interface Props {
   models: Model[]
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
+const { lang } = useData()
 
-const STATUS_LABEL: Record<string, string> = {
+// Locale overlay (null on the zh source → zh literals below win).
+const tr = computed(() => modelsTable(lang.value))
+
+const STATUS_ZH: Record<string, string> = {
   available: '可用',
   beta: 'Beta',
   deprecated: '已停用',
 }
-
 const STATUS_TYPE: Record<string, 'tip' | 'warning' | 'danger'> = {
   available: 'tip',
   beta: 'warning',
   deprecated: 'danger',
 }
+const HEADERS_ZH = { model: '模型名称', context: '上下文长度', price: '定价', status: '状态', tags: '标签' }
+
+const headers = computed(() => tr.value?.headers ?? HEADERS_ZH)
+// vendor / tagline overlays are keyed by the original zh vendor name (the prop).
+const vendorName = computed(() => tr.value?.vendorNames[props.vendor] || props.vendor)
+const vendorTagline = computed(() => (props.tagline ? tr.value?.taglines[props.vendor] || props.tagline : ''))
+const statusLabel = (s: string) => tr.value?.status[s] || STATUS_ZH[s] || s
+const tagLabel = (t: string) => tr.value?.tags[t] || t
 </script>
 
 <template>
   <div class="model-table-section">
-    <h3 class="vendor-title">{{ vendor }}</h3>
-    <p v-if="tagline" class="vendor-tagline">{{ tagline }}</p>
+    <h3 class="vendor-title">{{ vendorName }}</h3>
+    <p v-if="vendorTagline" class="vendor-tagline">{{ vendorTagline }}</p>
 
     <div class="model-table-scroll">
     <table class="model-table">
       <thead>
         <tr>
-          <th>模型名称</th>
-          <th>上下文长度</th>
-          <th>定价</th>
-          <th>状态</th>
-          <th>标签</th>
+          <th>{{ headers.model }}</th>
+          <th>{{ headers.context }}</th>
+          <th>{{ headers.price }}</th>
+          <th>{{ headers.status }}</th>
+          <th>{{ headers.tags }}</th>
         </tr>
       </thead>
       <tbody>
@@ -45,7 +59,7 @@ const STATUS_TYPE: Record<string, 'tip' | 'warning' | 'danger'> = {
           <td>{{ model.price }}</td>
           <td>
             <Badge
-              :text="STATUS_LABEL[model.status] ?? model.status"
+              :text="statusLabel(model.status)"
               :type="STATUS_TYPE[model.status] ?? 'info'"
             />
           </td>
@@ -54,7 +68,7 @@ const STATUS_TYPE: Record<string, 'tip' | 'warning' | 'danger'> = {
               v-for="tag in model.tags"
               :key="tag"
               class="model-tag"
-            >{{ tag }}</span>
+            >{{ tagLabel(tag) }}</span>
           </td>
         </tr>
       </tbody>

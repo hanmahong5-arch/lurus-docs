@@ -19,6 +19,8 @@ import InternalContent from './components/InternalContent.vue'
 import InternalSection from './components/InternalSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import Term from './components/Term.vue'
+import GlossaryView from './components/GlossaryView.vue'
+import IntegrationsView from './components/IntegrationsView.vue'
 import Breadcrumb from './components/Breadcrumb.vue'
 import Icon from './components/Icon.vue'
 import CopyButton from './components/CopyButton.vue'
@@ -64,6 +66,8 @@ export default {
     app.component('InternalSection', InternalSection)
     app.component('StatusBadge', StatusBadge)
     app.component('Term', Term)
+    app.component('GlossaryView', GlossaryView)
+    app.component('IntegrationsView', IntegrationsView)
     app.component('Icon', Icon)
     app.component('CopyButton', CopyButton)
     app.component('Hero', Hero)

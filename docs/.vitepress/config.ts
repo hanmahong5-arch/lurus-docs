@@ -23,8 +23,10 @@ const ENABLED_LOCALES = [
 const IN_SET = new Set<string>([
   '/',
   '/guide/introduction', '/guide/quickstart', '/guide/get-api-key', '/guide/faq', '/guide/troubleshooting',
+  '/guide/glossary', '/guide/models',
   '/guide/clients/cherry-studio', '/guide/clients/lobe-chat', '/guide/clients/opencat', '/guide/clients/others',
   '/api/overview', '/api/authentication', '/api/chat-completions', '/api/schemas', '/api/errors',
+  '/integrations',
   '/kova', '/kova/quickstart', '/kova/concepts', '/kova/api',
   '/memx', '/memx/quickstart', '/memx/concepts', '/memx/architecture', '/memx/faq',
   '/lumen', '/lumen/quickstart', '/lumen/python-sdk', '/lumen/cli', '/lumen/integration',

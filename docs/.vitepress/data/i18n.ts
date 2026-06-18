@@ -12,6 +12,14 @@
  */
 import type { Product } from './products'
 import { productTr, glossaryDefs, uiTr, type Locale, type UiTr } from './i18n-data'
+import {
+  glossaryPageTr,
+  integrationsPageTr,
+  modelsTableTr,
+  type GlossaryPageTr,
+  type IntegrationsPageTr,
+  type ModelsTableTr,
+} from './i18n-pages-data'
 
 const LOCALES = ['en', 'ja', 'ko', 'es', 'fr'] as const
 
@@ -54,4 +62,50 @@ export function glossaryDef(term: string, zh: string, lang: string | undefined):
 export function uiFor(lang: string | undefined): UiTr | null {
   const loc = toLocale(lang)
   return loc ? uiTr[loc] : null
+}
+
+// ── Data-driven pages (glossary / integrations / models) ──────────────────
+
+/** Glossary page overlay (group labels + UI strings), or null on the zh source. */
+export function glossaryPage(lang: string | undefined): GlossaryPageTr | null {
+  const loc = toLocale(lang)
+  return loc ? glossaryPageTr[loc] : null
+}
+
+/** Integrations page overlay (UI strings + frontmatter), or null on the zh source. */
+export function integrationsPage(lang: string | undefined): IntegrationsPageTr | null {
+  const loc = toLocale(lang)
+  return loc ? integrationsPageTr[loc] : null
+}
+
+/** Models table overlay (headers / status / vendor / tagline / tag maps), or null on the zh source. */
+export function modelsTable(lang: string | undefined): ModelsTableTr | null {
+  const loc = toLocale(lang)
+  return loc ? modelsTableTr[loc] : null
+}
+
+/** Merge the integrations overlay text positionally onto the zh base categories
+ *  (base carries icon/link/external/id; overlay carries title/lede/item text). */
+export function localizeIntegrations<T extends { title: string; lede: string; items: any[] }>(
+  baseCats: T[],
+  lang: string | undefined,
+): T[] {
+  const loc = toLocale(lang)
+  if (!loc) return baseCats
+  const tr = integrationsPageTr[loc]
+  if (!tr) return baseCats
+  return baseCats.map((c, ci) => {
+    const ct = tr.categories[ci]
+    if (!ct) return c
+    return {
+      ...c,
+      title: ct.title || c.title,
+      lede: ct.lede || c.lede,
+      items: c.items.map((it, ii) => {
+        const itt = ct.items[ii]
+        if (!itt) return it
+        return { ...it, name: itt.name || it.name, desc: itt.desc || it.desc, tag: itt.tag ?? it.tag }
+      }),
+    }
+  })
 }
