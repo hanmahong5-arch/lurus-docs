@@ -1,0 +1,33 @@
+name: i18n staleness check
+
+# Reports translations that may lag the Chinese source. Non-blocking: surfaces a
+# report in the PR checks UI without failing the build. Separate from deploy.yml
+# so it never triggers a production deploy.
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/i18n/**'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Detect stale translations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Check translation staleness
+        run: bun run i18n:check
