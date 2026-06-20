@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useData } from 'vitepress'
 import Icon from './Icon.vue'
+import { chrome } from '../../data/i18n'
 
 const props = defineProps<{ content: string }>()
+const { lang } = useData()
 const copied = ref(false)
+
+const copyLabel = computed(() => chrome('copy', lang.value, '复制'))
+const copiedLabel = computed(() => chrome('copied', lang.value, '已复制'))
+const copyAria = computed(() => chrome('copyToClipboard', lang.value, '复制到剪贴板'))
 
 async function copy() {
   try {
@@ -21,11 +28,11 @@ async function copy() {
     type="button"
     class="copy-btn"
     :class="{ 'copy-btn--ok': copied }"
-    :aria-label="copied ? '已复制' : '复制到剪贴板'"
+    :aria-label="copied ? copiedLabel : copyAria"
     @click="copy"
   >
     <Icon :name="copied ? 'check' : 'copy'" :size="14" />
-    <span>{{ copied ? '已复制' : '复制' }}</span>
+    <span>{{ copied ? copiedLabel : copyLabel }}</span>
   </button>
 </template>
 

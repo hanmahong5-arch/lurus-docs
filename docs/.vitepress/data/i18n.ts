@@ -84,6 +84,30 @@ export function modelsTable(lang: string | undefined): ModelsTableTr | null {
   return loc ? modelsTableTr[loc] : null
 }
 
+// ── Shared-component chrome strings ───────────────────────────────────────
+// Small fixed-vocabulary UI strings hardcoded in shared components (NextSteps
+// default heading, Breadcrumb home crumb, StatusBadge labels, copy buttons).
+// No overlay/translation pipeline needed — keyed by a stable id, then locale.
+const CHROME: Record<string, Record<Locale, string>> = {
+  home: { en: 'Home', ja: 'ホーム', ko: '홈', es: 'Inicio', fr: 'Accueil' },
+  nextSteps: { en: 'Next steps', ja: '次のステップ', ko: '다음 단계', es: 'Próximos pasos', fr: 'Étapes suivantes' },
+  copy: { en: 'Copy', ja: 'コピー', ko: '복사', es: 'Copiar', fr: 'Copier' },
+  copied: { en: 'Copied', ja: 'コピー済み', ko: '복사됨', es: 'Copiado', fr: 'Copié' },
+  copyToClipboard: { en: 'Copy to clipboard', ja: 'クリップボードにコピー', ko: '클립보드에 복사', es: 'Copiar al portapapeles', fr: 'Copier dans le presse-papiers' },
+  copyPath: { en: 'Click to copy path', ja: 'クリックでパスをコピー', ko: '클릭하여 경로 복사', es: 'Clic para copiar la ruta', fr: 'Cliquer pour copier le chemin' },
+  copiedExcl: { en: 'Copied!', ja: 'コピーしました！', ko: '복사됨!', es: '¡Copiado!', fr: 'Copié !' },
+  statusLive: { en: 'Live', ja: '公開中', ko: '출시됨', es: 'En producción', fr: 'En production' },
+  statusBeta: { en: 'Beta', ja: 'ベータ', ko: '베타', es: 'Beta', fr: 'Bêta' },
+  statusDev: { en: 'In development', ja: '開発中', ko: '개발 중', es: 'En desarrollo', fr: 'En développement' },
+  statusPlan: { en: 'Planned', ja: '計画中', ko: '계획됨', es: 'Planificado', fr: 'Planifié' },
+}
+
+/** Localized shared-component chrome string for `key`, or the zh fallback. */
+export function chrome(key: string, lang: string | undefined, zh: string): string {
+  const loc = toLocale(lang)
+  return (loc && CHROME[key]?.[loc]) || zh
+}
+
 /** Merge the integrations overlay text positionally onto the zh base categories
  *  (base carries icon/link/external/id; overlay carries title/lede/item text). */
 export function localizeIntegrations<T extends { title: string; lede: string; items: any[] }>(

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useData, useRoute } from 'vitepress'
+import { chrome, toLocale } from '../../data/i18n'
 
-const { theme } = useData()
+const { theme, lang } = useData()
 const route = useRoute()
 
 interface CrumbItem {
@@ -15,7 +16,8 @@ const crumbs = computed<CrumbItem[]>(() => {
   // Skip homepage
   if (path === '/' || path === '/index.html') return []
 
-  const items: CrumbItem[] = [{ text: '首页', link: '/' }]
+  const loc = toLocale(lang.value)
+  const items: CrumbItem[] = [{ text: chrome('home', lang.value, '首页'), link: loc ? `/${loc}/` : '/' }]
 
   // Find which sidebar section contains this page
   const sidebar = theme.value.sidebar

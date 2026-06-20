@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useData } from 'vitepress'
+import { chrome } from '../../data/i18n'
 
 interface Props {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
@@ -8,8 +10,12 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { lang } = useData()
 
 const copied = ref(false)
+const copyTitle = computed(() =>
+  copied.value ? chrome('copiedExcl', lang.value, '已复制！') : chrome('copyPath', lang.value, '点击复制路径'),
+)
 
 function copyPath() {
   navigator.clipboard.writeText(props.path).then(() => {
@@ -20,7 +26,7 @@ function copyPath() {
 </script>
 
 <template>
-  <div class="api-endpoint" @click="copyPath" :title="copied ? '已复制！' : '点击复制路径'">
+  <div class="api-endpoint" @click="copyPath" :title="copyTitle">
     <span class="api-method" :class="`api-method--${props.method.toLowerCase()}`">
       {{ props.method }}
     </span>

@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useData } from 'vitepress'
 import Icon from '../Icon.vue'
+import { chrome } from '../../../data/i18n'
 
 interface Step {
   text: string
@@ -8,12 +11,14 @@ interface Step {
   external?: boolean
 }
 
-defineProps<{ steps: Step[]; title?: string }>()
+const props = defineProps<{ steps: Step[]; title?: string }>()
+const { lang } = useData()
+const heading = computed(() => props.title || chrome('nextSteps', lang.value, '下一步'))
 </script>
 
 <template>
   <section class="next-steps">
-    <h2 class="next-steps__heading">{{ title || '下一步' }}</h2>
+    <h2 class="next-steps__heading">{{ heading }}</h2>
     <div class="next-steps__grid">
       <a
         v-for="s in steps"

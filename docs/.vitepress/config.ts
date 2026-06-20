@@ -34,6 +34,12 @@ const IN_SET = new Set<string>([
   '/switch', '/switch/install', '/switch/configuration', '/switch/usage', '/switch/cost-monitoring', '/switch/mcp-servers', '/switch/team-config',
   '/platform', '/platform/billing', '/platform/faq',
   '/platform/auth', '/platform/auth/concepts', '/platform/auth/login', '/platform/auth/oidc', '/platform/auth/api-auth', '/platform/auth/console',
+  '/solutions', '/solutions/why-lurus', '/solutions/enterprise-deploy', '/solutions/industry-finance', '/solutions/industry-content', '/solutions/industry-devtools', '/solutions/ai-midware',
+  '/tutorials', '/tutorials/memory-agent', '/tutorials/lumen-kova-langgraph', '/tutorials/lucrum-strategy-workflow', '/tutorials/switch-mcp-team',
+  '/migrations', '/migrations/from-openai', '/migrations/from-langgraph', '/migrations/from-self-oidc',
+  '/forge', '/forge/getting-started', '/forge/ontology', '/forge/sessions', '/forge/roadmap',
+  '/creator', '/creator/install', '/creator/usage', '/creator/use-cases',
+  '/developer/architecture',
 ])
 
 const normPath = (p: string) => (p === '/' ? '/' : p.replace(/\/$/, ''))
