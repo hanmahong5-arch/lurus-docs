@@ -76,11 +76,15 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
 
 <div class="action-grid">
   <ActionCard
-    product-id="lucrum"
+    name="Lurus Tally"
+    tagline="AI 智能进销存 · 拍照入库 · 自然语言查账 · 智能补货"
+    icon="package"
+    color="var(--lurus-color-platform)"
+    status="beta"
     :actions="[
-      { label: '快速开始', href: '/lucrum/quickstart', primary: true },
-      { label: '策略市场', href: '/lucrum/strategies' },
-      { label: '交易平台', href: 'https://lucrum.lurus.cn', external: true },
+      { label: '快速开始', href: '/tally/quickstart', primary: true },
+      { label: '产品介绍', href: '/tally/' },
+      { label: '打开 Tally', href: 'https://tally.lurus.cn', external: true },
     ]"
   />
   <ActionCard
@@ -88,13 +92,6 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
     :actions="[
       { label: '安装指南', href: '/switch/install', primary: true },
       { label: '配置说明', href: '/switch/configuration' },
-    ]"
-  />
-  <ActionCard
-    product-id="creator"
-    :actions="[
-      { label: '安装指南', href: '/creator/install', primary: true },
-      { label: '使用案例', href: '/creator/use-cases' },
     ]"
   />
   <ActionCard

@@ -316,6 +316,16 @@ const sidebarZh = {
       ]
     }
   ],
+  '/tally/': [
+    {
+      text: 'Lurus Tally',
+      collapsed: false,
+      items: [
+        { text: '简介', link: '/tally/' },
+        { text: '快速开始', link: '/tally/quickstart' },
+      ]
+    }
+  ],
   '/creator/': [
     {
       text: 'Creator 内容工厂',
