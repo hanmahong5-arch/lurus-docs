@@ -22,6 +22,7 @@ import Term from './components/Term.vue'
 import GlossaryView from './components/GlossaryView.vue'
 import IntegrationsView from './components/IntegrationsView.vue'
 import Breadcrumb from './components/Breadcrumb.vue'
+import StaleBanner from './components/StaleBanner.vue'
 import Icon from './components/Icon.vue'
 import CopyButton from './components/CopyButton.vue'
 import Hero from './components/Hero.vue'
@@ -45,7 +46,7 @@ export default {
   Layout() {
     return h(DefaultTheme.Layout, null, {
       'not-found': () => h(NotFound),
-      'doc-before': () => h(Breadcrumb),
+      'doc-before': () => [h(Breadcrumb), h(StaleBanner)],
     })
   },
   enhanceApp({ app }) {
