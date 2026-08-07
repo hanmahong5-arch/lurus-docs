@@ -1,5 +1,5 @@
 ---
-title: API 认证 | Zitadel 身份认证
+title: API 认证 | Casdoor 身份认证
 description: Service User、Personal Access Token、JWT Profile 与 Client Credentials 的完整说明，涵盖 Lurus 所有机器对机器认证场景。
 ---
 
@@ -7,7 +7,7 @@ description: Service User、Personal Access Token、JWT Profile 与 Client Crede
 
 # API 认证（机器对机器） <StatusBadge status="live" />
 
-面向 M2M 认证：与浏览器 OIDC 流程不同，M2M 用 Zitadel **Service Account**（服务账号），无需人工干预获取 access token。Zitadel 实例 `https://auth.lurus.cn`，以下端点均以此为基础。
+面向 M2M 认证：与浏览器 OIDC 流程不同，M2M 用 Casdoor **Service Account**（服务账号），无需人工干预获取 access token。Casdoor 实例 `https://auth.lurus.cn`，以下端点均以此为基础。
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">认证方式</span></div>
@@ -23,6 +23,10 @@ description: Service User、Personal Access Token、JWT Profile 与 Client Crede
     <div class="lurus-callout__body">人类用户的登录用 <a href="/platform/auth/oidc">OIDC / OAuth2 集成</a>；本页只讲<strong>机器对机器</strong>——脚本、后台任务、服务间调用。</div>
   </div>
 </div>
+
+::: tip 交互式 API 参考
+拿到 token 之后想直接试接口，用 **[交互式 API 参考](https://identity.lurus.cn/docs/api)**（`identity.lurus.cn/docs/api`）——浏览器里就能浏览全部端点、查看请求/响应结构并直接发起调用。原始 OpenAPI 3.1 描述文件在 [`/docs/openapi.yaml`](https://identity.lurus.cn/docs/openapi.yaml)，可直接喂给代码生成器。两者都无需登录即可访问。
+:::
 
 ## 三种认证方式对比
 
@@ -58,7 +62,7 @@ PAT 是**即用型 token**，直接作 Bearer token 放入 `Authorization` heade
 
 ### 1.2 使用 PAT
 
-作标准 Bearer token 附加在每个请求 header；可访问该 Service Account 被授权的所有 Zitadel API，无需额外 audience scope。
+作标准 Bearer token 附加在每个请求 header；可访问该 Service Account 被授权的所有 Casdoor API，无需额外 audience scope。
 
 ```bash
 # 查询当前账号所在组织
@@ -72,8 +76,8 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 ### 1.3 适用的 Lurus 场景
 
 - 运维脚本：通过 Management API 批量查询或修改用户
-- `2l-svc-zitadel-mcp` MCP Server 访问 Zitadel Management API
-- CI/CD Pipeline 临时管理操作；本地开发快速测试 Zitadel API
+- `2l-svc-casdoor-mcp` MCP Server 访问 Casdoor Management API
+- CI/CD Pipeline 临时管理操作；本地开发快速测试 Casdoor API
 
 ### 1.4 安全注意事项
 
@@ -103,7 +107,7 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 **命名约定** `svc-<service>-<purpose>`，示例：
 - `svc-lurus-api-platform-client` — lurus-api 调用 platform 内部接口
 - `svc-ci-deploy` — CI/CD 部署专用
-- `svc-zitadel-mcp-admin` — Zitadel MCP Server 管理用
+- `svc-casdoor-mcp-admin` — Casdoor MCP Server 管理用
 
 ### 2.2 分配权限
 
@@ -177,7 +181,7 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 
 ## 四、JWT Profile（最安全的机器认证方式） <Badge text="生产推荐" type="tip" />
 
-使用非对称密钥：Service Account 持**私钥**，Zitadel 保存对应**公钥**。客户端用私钥签名短生命周期 JWT 作 `client_assertion`，Zitadel 验签后颁发 access token。**私钥不通过网络传输**，是最安全的 M2M 方式。
+使用非对称密钥：Service Account 持**私钥**，Casdoor 保存对应**公钥**。客户端用私钥签名短生命周期 JWT 作 `client_assertion`，Casdoor 验签后颁发 access token。**私钥不通过网络传输**，是最安全的 M2M 方式。
 
 ### 4.1 生成密钥对
 
@@ -190,7 +194,7 @@ openssl genrsa -out privatekey.pem 2048
 openssl rsa -in privatekey.pem -pubout -out publickey.pem
 ```
 
-然后通过 Zitadel User Service API 上传 `publickey.pem`。
+然后通过 Casdoor User Service API 上传 `publickey.pem`。
 
 ### 4.2 JSON 密钥文件格式
 
@@ -223,12 +227,12 @@ openssl rsa -in privatekey.pem -pubout -out publickey.pem
 |-------|------|
 | `iss` | JSON 文件中的 `userId` |
 | `sub` | 同 `iss`（代表请求方即应用本身） |
-| `aud` | Zitadel 实例域名：`https://auth.lurus.cn` |
+| `aud` | Casdoor 实例域名：`https://auth.lurus.cn` |
 | `iat` | 当前 UTC Unix 时间戳 |
 | `exp` | 过期，建议 `iat + 300`（5 分钟）；**最长不超过 1 小时** |
 
 ::: warning 时钟同步
-`iat` 不得比 Zitadel 服务器时间早超过 1 小时，否则 token 请求被拒。确保机器 NTP 同步正常。
+`iat` 不得比 Casdoor 服务器时间早超过 1 小时，否则 token 请求被拒。确保机器 NTP 同步正常。
 :::
 
 ### 4.4 换取 access token
@@ -394,25 +398,25 @@ async function getToken(keyFilePath: string): Promise<string> {
 
 ## 五、请求正确的 Audience
 
-Zitadel 验证 access token 的 **audience（aud）** 字段。对不同目标 API，在 scope 中声明对应 audience。
+Casdoor 验证 access token 的 **audience（aud）** 字段。对不同目标 API，在 scope 中声明对应 audience。
 
-**访问 Zitadel 自身 API**（Management / Admin / Auth）：`scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud`。这个保留 scope 将 Zitadel 项目加入 token 的 audience，Management API 等会拒绝不含此 audience 的 token。
+**访问 Casdoor 自身 API**（Management / Admin / Auth）：`scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud`。这个保留 scope 将 Casdoor 项目加入 token 的 audience，Management API 等会拒绝不含此 audience 的 token。
 
 ```bash
 curl -X POST https://auth.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
-  --data 'scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud'
+  --data 'scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud'
 ```
 
-**访问自定义 Project 的资源服务**：`scope=openid profile urn:zitadel:iam:org:project:id:<your_project_id>:aud`（`<your_project_id>` 在控制台 Project 详情页查看）。
+**访问自定义 Project 的资源服务**：`scope=openid profile urn:casdoor:iam:org:project:id:<your_project_id>:aud`（`<your_project_id>` 在控制台 Project 详情页查看）。
 
 ### 常见错误
 
 | 现象 | 原因 | 解决 |
 |------|------|------|
-| `403 Forbidden` | token audience 不含目标 API | 换 token 时加对应 `urn:zitadel:iam:...` scope |
+| `403 Forbidden` | token audience 不含目标 API | 换 token 时加对应 `urn:casdoor:iam:...` scope |
 | `401 Unauthorized` | token 过期或签名无效 | 检查时钟同步，重新获取 token |
 | `invalid_grant` | assertion 过期（>5 分钟）或 `aud` 不正确 | 检查 assertion 的 `exp` 和 `aud` |
 
@@ -428,7 +432,7 @@ curl -X POST https://auth.lurus.cn/oauth/v2/token \
 apiVersion: v1
 kind: Secret
 metadata:
-  name: zitadel-service-account-key
+  name: idp-service-account-key
   namespace: lurus-system
 type: Opaque
 stringData:
@@ -444,18 +448,18 @@ stringData:
 ```yaml
 # Deployment 中挂载
 volumes:
-  - name: zitadel-key
+  - name: idp-key
     secret:
-      secretName: zitadel-service-account-key
+      secretName: idp-service-account-key
 containers:
   - name: app
     volumeMounts:
-      - name: zitadel-key
-        mountPath: /secrets/zitadel
+      - name: idp-key
+        mountPath: /secrets/casdoor
         readOnly: true
     env:
-      - name: ZITADEL_KEY_FILE
-        value: /secrets/zitadel/key.json
+      - name: OIDC_KEY_FILE
+        value: /secrets/casdoor/key.json
 ```
 
 ---
@@ -464,14 +468,14 @@ containers:
 
 | 服务 | 认证场景 | 推荐方式 |
 |------|---------|---------|
-| **2l-svc-zitadel-mcp** | 调用 Zitadel Management API 管理用户/权限 | PAT（运维）或 Service Account + JWT Profile |
+| **2l-svc-casdoor-mcp** | 调用 Casdoor Management API 管理用户/权限 | PAT（运维）或 Service Account + JWT Profile |
 | **2b-svc-api (Hub)** | 后端验证前端 OIDC token；调用 platform 内部接口 | 前端用户 OIDC token；平台调用用 `INTERNAL_API_KEY`（bearer_internal_key 模式） |
-| **2l-svc-platform** | 提供内部 API（`/internal/v1/...`），由 Hub 等消费 | `bearer_internal_key`（非 Zitadel，平台内部约定） |
+| **2l-svc-platform** | 提供内部 API（`/internal/v1/...`），由 Hub 等消费 | `bearer_internal_key`（非 Casdoor，平台内部约定） |
 | **CI/CD Pipeline** | 部署时查询/更新集群资源 | 独立 Service Account + PAT，每个流程独立账号 |
 | **定时后台任务** | 独立 Job，无用户上下文 | Service Account + Client Credentials 或 JWT Profile |
 
 ::: info 关于 `bearer_internal_key`
-`lurus-platform` 内部 API（service: `platform-core.lurus-platform.svc:18104`）用独立的 `INTERNAL_API_KEY` 而非 Zitadel token，该 key 通过 K8s Secret 分发给消费方。详见 `lurus.yaml` 的 `capabilities` 部分。
+`lurus-platform` 内部 API（service: `platform-core.lurus-platform.svc:18104`）用独立的 `INTERNAL_API_KEY` 而非 Casdoor token，该 key 通过 K8s Secret 分发给消费方。详见 `lurus.yaml` 的 `capabilities` 部分。
 :::
 
 ---
@@ -503,7 +507,7 @@ containers:
 
 ## 参考链接
 
-- [Zitadel：Service Account 认证概述](https://zitadel.com/docs/guides/integrate/service-accounts/authenticate-service-accounts) · [PAT](https://zitadel.com/docs/guides/integrate/service-accounts/personal-access-token) · [Client Credentials](https://zitadel.com/docs/guides/integrate/service-accounts/client-credentials) · [Private Key JWT](https://zitadel.com/docs/guides/integrate/service-accounts/private-key-jwt) · [访问 Zitadel API](https://zitadel.com/docs/guides/integrate/zitadel-apis/access-zitadel-apis)
+- [Casdoor：Service Account 认证概述](https://casdoor.com/docs/guides/integrate/service-accounts/authenticate-service-accounts) · [PAT](https://casdoor.com/docs/guides/integrate/service-accounts/personal-access-token) · [Client Credentials](https://casdoor.com/docs/guides/integrate/service-accounts/client-credentials) · [Private Key JWT](https://casdoor.com/docs/guides/integrate/service-accounts/private-key-jwt) · [访问 Casdoor API](https://casdoor.com/docs/guides/integrate/casdoor-apis/access-casdoor-apis)
 - [RFC 7523：JWT Bearer Token Grant](https://datatracker.ietf.org/doc/html/rfc7523)
 
 </div>

@@ -1,31 +1,54 @@
 /**
  * Color tokens — brand 10-level + 12 product accent + semantic states
  * Mirror values in tokens.ts. Light as default, dark overrides via `.dark`.
+ *
+ * Brand alignment (2026-08): the brand/cream/ink/status groups are anchored to
+ * the shared design package `../lurus-design/tokens.css` (--lt-* tokens, vendored
+ * via scripts/design-sync.sh). Anchor tokens reference `var(--lt-*)` directly so
+ * they can never drift; the in-between steps are derived from those anchors by
+ * the rules documented inline. Anything bound to a --lt-* var switches
+ * light/dark automatically (the package redefines them under `.dark`) and
+ * therefore needs no entry in the dark block below.
+ *
+ * Product accents (12) are intentionally NOT aligned — per-product hues are a
+ * deliberate wayfinding device, not brand drift.
  */
 
 :root {
-  /* ─── Brand (copper ochre) 10-level scale ─────────── */
-  --lurus-brand-50:  #FBF3EE;
-  --lurus-brand-100: #F5E2D4;
-  --lurus-brand-200: #ECC7AE;
-  --lurus-brand-300: #E1A986;
-  --lurus-brand-400: #D69270;
-  --lurus-brand-500: #C67B5C;
-  --lurus-brand-600: #B36A4A;
-  --lurus-brand-700: #9E5A3A;
-  --lurus-brand-800: #7F4A30;
-  --lurus-brand-900: #5A3524;
+  /* ─── Brand 10-level scale ────────────────────────────────
+   * Anchor: 500 = --lt-accent (#FF5D1F). The ladder keeps the exact lightness
+   * steps of the previous scale (96/90/80/70/64/56/50/42/34/25 %) so component
+   * contrast is unchanged — only the hue moves from copper to the brand orange.
+   * Tints (50-400) hold S=100% and drift +1..+7° toward yellow;
+   * shades (600-900) drop S to 90→80% and drift -2..-5° toward red.
+   */
+  --lurus-brand-50:  #FFF3EB;
+  --lurus-brand-100: #FFDFCC;
+  --lurus-brand-200: #FFBD99;
+  --lurus-brand-300: #FF9666;
+  --lurus-brand-400: #FF7E47;
+  --lurus-brand-500: var(--lt-accent);  /* #FF5D1F */
+  --lurus-brand-600: #F2460D;
+  --lurus-brand-700: #C9390D;
+  --lurus-brand-800: #A02D0D;
+  --lurus-brand-900: #73210D;
 
-  /* ─── Cream (warm background) ─────────────────────── */
-  --lurus-cream-50:  #F8F4F0;
-  --lurus-cream-100: #F0EAE4;
-  --lurus-cream-200: #E8E0D8;
-  --lurus-cream-300: #DDD5CC;
+  /* ─── Cream (warm background) ─────────────────────────────
+   * 50 = page surface (--lt-paper), 100 = --lt-bg, 200 = divider (--lt-rule),
+   * 300 = one further step of the 100→200 delta.
+   */
+  --lurus-cream-50:  var(--lt-paper);   /* #F5F2E8 */
+  --lurus-cream-100: var(--lt-bg);      /* #E8E4D6 */
+  --lurus-cream-200: var(--lt-rule);    /* #D6D2C2 */
+  --lurus-cream-300: #C4C0AE;
 
-  /* ─── Ink (text) ──────────────────────────────────── */
-  --lurus-ink-900: #3D3530;
-  --lurus-ink-700: #6B5E57;
-  --lurus-ink-500: #9E8E85;
+  /* ─── Ink (text) ──────────────────────────────────────────
+   * 900 = --lt-ink. 700 / 500 are that ink composited over --lt-paper at
+   * 78% / 55% opacity — the same ratios custom.css uses for --vp-c-text-2.
+   */
+  --lurus-ink-900: var(--lt-ink);       /* #14130F */
+  --lurus-ink-700: #46443F;
+  --lurus-ink-500: #797771;
 
   /* ─── Product accents (12) — one HEX per product ──── */
   --lurus-color-lurus-api:  #C67B5C;
@@ -41,11 +64,13 @@
   --lurus-color-api-ref:    #7BAFC6;
   --lurus-color-arch:       #A8C67B;
 
-  /* ─── Status ─────────────────────────────────────── */
-  --lurus-status-live: #16A34A;
-  --lurus-status-beta: #EA580C;
-  --lurus-status-dev:  #2563EB;
-  --lurus-status-plan: #9E8E85;
+  /* ─── Status ──────────────────────────────────────────────
+   * Bound to the package semantic tokens, so dark mode follows automatically.
+   */
+  --lurus-status-live: var(--lt-ok);        /* #1F7A4F */
+  --lurus-status-beta: var(--lt-warn);      /* #B8821F */
+  --lurus-status-dev:  var(--lt-info);      /* #2D4A8A */
+  --lurus-status-plan: var(--lurus-ink-500);
 
   /* ─── Semantic aliases (point to vitepress vars) ──── */
   --lurus-bg:         var(--vp-c-bg);
@@ -60,32 +85,32 @@
   --lurus-brand-soft: var(--vp-c-brand-soft);
 }
 
-/* Dark mode — only overrides where hue needs to shift */
+/* Dark mode — only overrides where hue needs to shift.
+ * Tokens bound to var(--lt-*) above (brand-500, cream-50/100/200, ink-900,
+ * all four status colors) are omitted on purpose: the design package already
+ * redefines those --lt-* values under `.dark`, so they switch themselves. */
 .dark {
-  --lurus-brand-50:  #3A2B22;
-  --lurus-brand-100: #4A382C;
-  --lurus-brand-200: #5F4938;
-  --lurus-brand-300: #7F5E46;
-  --lurus-brand-400: #A07354;
-  --lurus-brand-500: #E8A87C;
-  --lurus-brand-600: #D49060;
-  --lurus-brand-700: #C67B5C;
-  --lurus-brand-800: #B36A4A;
-  --lurus-brand-900: #9E5A3A;
+  /* Same peak-at-500 shape as before: 50→400 climb as dark surfaces,
+   * 500 is the accent, 600→900 step back down. */
+  --lurus-brand-50:  #472415;
+  --lurus-brand-100: #5C2D19;
+  --lurus-brand-200: #7A3A1F;
+  --lurus-brand-300: #A44723;
+  --lurus-brand-400: #DA511B;
+  /* --lurus-brand-500 = var(--lt-accent), unchanged in dark by design */
+  --lurus-brand-600: #EC4D13;
+  --lurus-brand-700: #C84114;
+  --lurus-brand-800: #A53512;
+  --lurus-brand-900: #842910;
 
-  --lurus-cream-50:  #1C1815;
-  --lurus-cream-100: #252018;
-  --lurus-cream-200: #2E2820;
-  --lurus-cream-300: #3D3530;
+  /* 50 = --lt-paper and 200 = --lt-rule inherit from the package;
+   * 100 is their midpoint, 300 one step beyond --lt-rule. */
+  --lurus-cream-100: #1D1B16;
+  --lurus-cream-300: #363129;
 
-  --lurus-ink-900: #F0EAE4;
-  --lurus-ink-700: #C8B8AE;
-  --lurus-ink-500: #9E8E85;
-
-  --lurus-status-live: #4ADE80;
-  --lurus-status-beta: #FB923C;
-  --lurus-status-dev:  #60A5FA;
-  --lurus-status-plan: #6B5E57;
+  /* --lt-ink over --lt-paper at 78% / 55%, dark values. */
+  --lurus-ink-700: #C0BDB5;
+  --lurus-ink-500: #8D8B84;
 
   --lurus-color-lurus-api:  #E8A87C;
   --lurus-color-kova:       #8FAD9B;

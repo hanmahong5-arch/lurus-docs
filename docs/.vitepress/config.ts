@@ -162,6 +162,7 @@ const navZh = [
       {
         text: '平台',
         items: [
+          { text: 'Hub 网关', link: '/hub/' },
           { text: '账号与计费', link: '/platform/' },
           { text: '统一身份认证', link: '/platform/auth/' },
         ]
@@ -249,6 +250,16 @@ const sidebarZh = {
         { text: '快速开始', link: '/kova/quickstart' },
         { text: '核心概念', link: '/kova/concepts' },
         { text: 'API 参考', link: '/kova/api' },
+      ]
+    }
+  ],
+  '/hub/': [
+    {
+      text: 'Hub 网关',
+      collapsed: false,
+      items: [
+        { text: '概览', link: '/hub/' },
+        { text: '快速开始', link: '/hub/quickstart' },
       ]
     }
   ],

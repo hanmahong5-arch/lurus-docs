@@ -55,7 +55,7 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
 
 **账号管理**（登录 [identity.lurus.cn](https://identity.lurus.cn) → 账号设置）：个人信息、登录历史、第三方绑定、安全设置（改密码、两步验证）。
 
-**一次登录，全站通行**：基于 OIDC 标准，登录任意产品即在所有产品间建立会话；支持 Passkey/WebAuthn 无密码、TOTP/硬件密钥 MFA、GitHub/Google 社交登录，企业可对接 Azure AD/飞书/Okta SSO。终端用户一份账号通吃 API/Lucrum/Switch/Creator/Lutu；开发者用 OIDC SDK 接入自有应用，后端用 Service User + JWT Profile；企业组织管理（成员/权限/审计）经 [auth.lurus.cn](https://auth.lurus.cn)（Zitadel 控制台）或联系商务开通。
+**一次登录，全站通行**：基于 OIDC 标准，登录任意产品即在所有产品间建立会话；支持 Passkey/WebAuthn 无密码、TOTP/硬件密钥 MFA、GitHub/Google 社交登录，企业可对接 Azure AD/飞书/Okta SSO。终端用户一份账号通吃 API/Lucrum/Switch/Creator/Lutu；开发者用 OIDC SDK 接入自有应用，后端用 Service User + JWT Profile；企业组织管理（成员/权限/审计）经 [auth.lurus.cn](https://auth.lurus.cn)（Casdoor 控制台）或联系商务开通。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -205,10 +205,27 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 
 ---
 
+## 交互式 API 参考
+
+平台的账号、钱包、订阅与组织管理接口都有一份 **在线可调试的 API 浏览器**：
+
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="book-open" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">identity.lurus.cn/docs/api</p>
+    <div class="lurus-callout__body">在浏览器里浏览全部端点、查看请求/响应结构并直接发起调用 → <a href="https://identity.lurus.cn/docs/api" target="_blank" rel="noreferrer">打开交互式 API 参考</a>。原始 OpenAPI 3.1 描述文件见 <a href="https://identity.lurus.cn/docs/openapi.yaml" target="_blank" rel="noreferrer">/docs/openapi.yaml</a>，可直接用于生成客户端 SDK。两者均无需登录。</div>
+  </div>
+</div>
+
+机器对机器的取 token 方式（PAT / Service Account / JWT Profile）见 [API 认证](/platform/auth/api-auth)。
+
+---
+
 <NextSteps
   title="下一步"
   :steps="[
-    { text: '身份认证 (Zitadel)', link: '/platform/auth/', primary: true },
+    { text: '身份认证 (Casdoor)', link: '/platform/auth/', primary: true },
+    { text: '交互式 API 参考', link: 'https://identity.lurus.cn/docs/api', external: true },
     { text: '计费详解', link: '/platform/billing' },
     { text: '常见问题', link: '/platform/faq' },
     { text: '获取 API Key', link: '/guide/get-api-key' },
