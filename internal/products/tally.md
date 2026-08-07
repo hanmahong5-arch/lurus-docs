@@ -11,6 +11,7 @@ sourcePath: 2b-svc-psi
 
 # Lurus Tally 内部员工手册
 
+<<<<<<< HEAD
 <div class="lurus-callout lurus-callout--tip"><span class="lurus-callout__icon"><Icon name="check-circle" :size="18"/></span><div><p class="lurus-callout__title">2026-05-28 状态更新</p><div class="lurus-callout__body">stage（R6），Epic 1 done，Billing 待 R6 部署；tally-mcp 仍 alpha。</div></div></div>
 
 <div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="lock" :size="18"/></span><div><p class="lurus-callout__title">仅限内部</p><div class="lurus-callout__body">仅限内部员工查阅。包含运维细节、决策档案、已知坑、未公开风险。</div></div></div>
@@ -23,6 +24,11 @@ sourcePath: 2b-svc-psi
   <div class="lurus-stat"><span class="lurus-stat__value">6</span><span class="lurus-stat__label">复用 Platform 能力</span></div>
   <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">行业 Profile</span></div>
 </div>
+=======
+> 🟢 **2026-05-28 状态更新**：stage（R6），Epic 1 done，Billing 待 R6 部署；tally-mcp 仍 alpha。
+
+> 仅限内部员工查阅。包含运维细节、决策档案、已知坑、未公开风险。
+>>>>>>> origin/main
 
 ---
 

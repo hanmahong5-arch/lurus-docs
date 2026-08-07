@@ -5,6 +5,7 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 
 <div class="billing-page">
 
+<<<<<<< HEAD
 # 计费详解 <StatusBadge status="live" />
 
 订阅计划、配额管理和鹿贝经济系统。
@@ -17,6 +18,9 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
     { label: '退款窗口', value: '7 天', hint: '首次订阅全额退' },
   ]"
 />
+=======
+订阅计划、配额管理和鹿贝经济系统。
+>>>>>>> origin/main
 
 ---
 
@@ -33,6 +37,7 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 | **Pro**（月/年付，年付享优惠） | 10,000 次/月 | 全部 | AI 助手无限；策略部署最多 3 个 | 邮件工单（24h 响应） |
 | **Enterprise**（定制） | 按需 | 全部 + 私有部署 | 团队成员无限 | SLA 99.9%；专属客户经理 + 即时响应；可指定数据中心 |
 
+<<<<<<< HEAD
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="briefcase" :size="18" /></span>
   <div>
@@ -40,6 +45,9 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
     <div class="lurus-callout__body">需要私有部署、指定数据中心或 SLA 99.9%？联系 <a href="mailto:business@lurus.cn">business@lurus.cn</a>。</div>
   </div>
 </div>
+=======
+企业方案联系 [business@lurus.cn](mailto:business@lurus.cn)。
+>>>>>>> origin/main
 
 ---
 
@@ -61,6 +69,7 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 
 ### 配额超限处理
 
+<<<<<<< HEAD
 <ol class="lurus-steps">
 <li>请求进入，先检查订阅配额。</li>
 <li>配额<strong>充足</strong> → 正常处理。</li>
@@ -77,6 +86,9 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
     <div class="lurus-callout__body">余额不足时会通过邮件 + 站内消息提前预警，不会在你不知情时中断服务。</div>
   </div>
 </div>
+=======
+请求进入 → 检查订阅配额：充足则正常处理；不足则检查鹿贝余额（余额充足自动扣费正常处理，余额不足返回 402 错误）。不会悄悄失败——余额不足时邮件 + 站内消息提前预警。
+>>>>>>> origin/main
 
 ### 配额告警
 
@@ -117,6 +129,7 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 
 ### VIP 折扣叠加
 
+<<<<<<< HEAD
 VIP 折扣在鹿贝消费时自动生效。
 
 <div class="lurus-callout lurus-callout--key">
@@ -126,6 +139,9 @@ VIP 折扣在鹿贝消费时自动生效。
     <div class="lurus-callout__body">金卡用户调用 gpt-4o（3 LB/次）实际扣费 = <code>3 × 0.9 = 2.7 LB/次</code>。</div>
   </div>
 </div>
+=======
+VIP 折扣在鹿贝消费时自动生效。例：金卡用户（9 折）调用 gpt-4o（3 LB/次）实际扣费 = `3 × 0.9 = 2.7 LB/次`。
+>>>>>>> origin/main
 
 ### 鹿贝有效期
 
