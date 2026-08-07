@@ -9,7 +9,7 @@
 | 1 | [带长期记忆的 AI 客服](#配方-1-带长期记忆的-ai-客服) | Newapi + MemX + Kova | ★★ | SaaS 客服 / 教育答疑 |
 | 2 | [可中断的多步研究 Agent](#配方-2-可中断的多步研究-agent) | Kova + Lumen + Newapi | ★★★ | 长 task / 行研报告 |
 | 3 | [量化策略 NL → 实盘全链](#配方-3-量化策略-nl-实盘全链) | Lucrum + Newapi + Platform | ★★★ | 量化客户 |
-| 4 | [企业 SSO 联邦 + 业务接入](#配方-4-企业-sso-联邦-业务接入) | Platform + zitadel + Lutu | ★★ | 企业私有化 |
+| 4 | [企业 SSO 联邦 + 业务接入](#配方-4-企业-sso-联邦-业务接入) | Platform + casdoor + Lutu | ★★ | 企业私有化 |
 | 5 | [chat 化运维（员工内部用）](#配方-5-chat-化运维) | Switch + 3 MCP servers + Tailscale | ★ | 内部运维 |
 | 6 | [内容工厂多平台分发](#配方-6-内容工厂多平台分发) | Creator + Newapi + MemX | ★★ | KOL / 自媒体 |
 | 7 | [LangGraph 项目零改动迁移到 Lurus](#配方-7-langgraph-迁移) | Lumen + Kova | ★ | 已有 LangGraph 用户 |
@@ -199,7 +199,7 @@ func RunStrategy(ctx context.Context, nl string) error {
 ```mermaid
 sequenceDiagram
   participant U as 客户员工
-  participant Z as Zitadel<br/>auth.lurus.cn
+  participant Z as Casdoor<br/>auth.lurus.cn
   participant IDP as 客户 IdP<br/>(Azure AD)
   participant LU as Lutu / 其他业务
   participant PF as Platform
@@ -220,11 +220,11 @@ sequenceDiagram
 **关键步骤（runbook）**：
 
 ```bash
-# 1. zitadel admin 加 SAML/OIDC IdP
-zitadel-admin idp create --type saml --metadata-url $CUSTOMER_IDP_URL
+# 1. casdoor admin 加 SAML/OIDC IdP
+casdoor-admin idp create --type saml --metadata-url $CUSTOMER_IDP_URL
 
 # 2. 配 SCIM 自动 provision
-zitadel-admin scim enable --provider azure-ad
+casdoor-admin scim enable --provider azure-ad
 
 # 3. 在客户 IdP 登记 Lurus SP
 # entityID: https://auth.lurus.cn/saml/v2/metadata
@@ -237,7 +237,7 @@ curl -L "https://auth.lurus.cn/oauth/v2/authorize?client_id=$CID&..."
 **部署要点**：
 
 <ol class="lurus-steps">
-<li>走 zitadel-mcp 在 Switch 里 chat 操作（<a href="/products/mcp">mcp 手册</a>）。</li>
+<li>走 casdoor-mcp 在 Switch 里 chat 操作（<a href="/products/mcp">mcp 手册</a>）。</li>
 <li>SCIM 配置变更先在 R6 staging 验证 1 周。</li>
 <li>提供 break-glass 本地账户（联邦失效兜底）。</li>
 </ol>
@@ -246,15 +246,15 @@ curl -L "https://auth.lurus.cn/oauth/v2/authorize?client_id=$CID&..."
 
 ## 配方 5: chat 化运维
 
-**业务目标**：员工在 Switch 里 chat 直接操作 zitadel/k8s/platform，比手敲命令快。
+**业务目标**：员工在 Switch 里 chat 直接操作 casdoor/k8s/platform，比手敲命令快。
 
 ```mermaid
 graph LR
   EMP[员工 chat] --> SW[Switch 桌面]
-  SW -->|MCP stdio| M1[zitadel-mcp]
+  SW -->|MCP stdio| M1[casdoor-mcp]
   SW -->|MCP stdio| M2[k8s-mcp]
   SW -->|MCP stdio| M3[platform-mcp]
-  M1 -.SSH/HTTPS.-> Z[Zitadel admin API]
+  M1 -.SSH/HTTPS.-> Z[Casdoor admin API]
   M2 -.SSH.-> K[K3s master R1]
   M3 -.HTTPS.-> PF[Platform internal API]
 
@@ -273,9 +273,9 @@ graph LR
 ```jsonc
 {
   "mcpServers": {
-    "zitadel": {
-      "command": "/usr/local/bin/zitadel-mcp",
-      "env": { "ZITADEL_PAT": "...", "READONLY": "false" }
+    "casdoor": {
+      "command": "/usr/local/bin/casdoor-mcp",
+      "env": { "OIDC_PAT": "...", "READONLY": "false" }
     },
     "k8s": {
       "command": "/usr/local/bin/k8s-mcp",
@@ -293,7 +293,7 @@ graph LR
 
 ```
 员工: 把 user@x.com 的 MFA 重置一下
-Switch: [zitadel.reset_mfa] 调用中...
+Switch: [casdoor.reset_mfa] 调用中...
         要确认对 user@x.com 操作吗？(y/n)
 员工: y
 Switch: ✓ 已重置，审计日志 audit-id=abc123

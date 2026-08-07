@@ -34,7 +34,7 @@ date: 2026-05-28
 独立运营后台 SPA 两条路线（platform-core 内嵌 `web/` React + 独立 `apps/admin/` Next.js）2026-05-19 实测均未交付。**替代**：platform-core `/admin/v1` REST API + `zita` CLI（`cmd/zita`）+ `zita-mcp` + [MCP 工具链](../products/mcp)。客户侧账号自助走 `identity.lurus.cn`，与运营后台无关。详见 [admin 手册（sunset stub）](../products/admin)。后续 2026-06-02 有"wire `web/` 或 apply `apps/admin/`"二选一决断。
 
 ### webgame — sunset 2026-05-28
-根因是 ops（Zitadel OIDC app `unused-placeholder` 未注册 → `Errors.App.NotFound`），**非代码**。`q3-survival-goal.md §2` 把 webgame 列入 90 天 0 投入。**选 sunset 而非 archive 的边界**：archive 含下架 pod / 删 DNS / repo archive / 备份等不可逆 R1 写操作，owner-gated；sunset 是诚实中间态——停止假装 prod，保留 pod（已跑 27d，0 资源压力）+ DNS，留 archive 决策窗口。
+根因是 ops（Casdoor OIDC app `unused-placeholder` 未注册 → `Errors.App.NotFound`），**非代码**。`q3-survival-goal.md §2` 把 webgame 列入 90 天 0 投入。**选 sunset 而非 archive 的边界**：archive 含下架 pod / 删 DNS / repo archive / 备份等不可逆 R1 写操作，owner-gated；sunset 是诚实中间态——停止假装 prod，保留 pod（已跑 27d，0 资源压力）+ DNS，留 archive 决策窗口。
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="eye" :size="18" /></span>
@@ -63,7 +63,7 @@ date: 2026-05-28
 
 后续重评估触发：
 - 2026-06-02 admin SPA 决断（wire / apply 二选一）落地后，admin 可能复活为 live
-- webgame：owner 决定复活 auth（注册 Zitadel OIDC app）或推进 archive（q3-goal 倾向后者）
+- webgame：owner 决定复活 auth（注册 Casdoor OIDC app）或推进 archive（q3-goal 倾向后者）
 
 ## 参考
 

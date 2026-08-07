@@ -45,7 +45,7 @@ graph TB
   end
 
   subgraph mcp["MCP 内部工具"]
-    M1[zitadel-mcp]
+    M1[casdoor-mcp]
     M2[k8s-mcp]
     M3[platform-mcp]
   end

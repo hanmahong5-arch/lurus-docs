@@ -30,7 +30,7 @@ Forge 是 Lurus 团队自用的 AI 产品开发工作台（Route C 内部工具�
 | 端口 | web :3000 / canvas :3001 / backend :8000 / kova-rest :3002 |
 | 命名空间 | lurus-forge |
 | 数据存储 | PG schema `forge`（共享集群 lurus-pg-rw:5432）；无 Redis / NATS / MinIO |
-| 关键依赖 | api.lurus.cn (LLM Gateway) / Kova (kova-rest, 可选) / Zitadel SSO (可选 flag) |
+| 关键依赖 | api.lurus.cn (LLM Gateway) / Kova (kova-rest, 可选) / Casdoor SSO (可选 flag) |
 | 部署目标 | R1（已通过 ArgoCD 管理，K8s manifest 在 deploy/k8s/） |
 | 入口控制器 | Traefik IngressRoute，TLS via letsencrypt |
 
@@ -51,7 +51,7 @@ flowchart LR
   subgraph External["外部服务"]
     Gateway["api.lurus.cn\nLLM Gateway"]
     Kova["kova-rest (Rust)\n:3002\n可选"]
-    Zitadel["auth.lurus.cn\nZitadel SSO\n可选 flag"]
+    Casdoor["auth.lurus.cn\nCasdoor SSO\n可选 flag"]
   end
 
   Web -->|"/api/** proxy"| Backend
@@ -59,7 +59,7 @@ flowchart LR
   Backend -->|SQLAlchemy asyncpg| DB
   Backend -->|GatewayClient httpx| Gateway
   Backend -->|KovaClient httpx| Kova
-  Backend -->|JWKS RS256| Zitadel
+  Backend -->|JWKS RS256| Casdoor
   Web <-->|"Socket.io /ws"| Backend
 ```
 
@@ -132,7 +132,7 @@ sequenceDiagram
 | `components/` | 11 个 Canvas 组件（5 Kova + LLM + 3 Text + Conditional） |
 | `components/executor.py` | FlowExecutor：Kahn 拓扑排序执行引擎 |
 | `kova/client.py` | KovaClient：httpx async，35+ 端点，版本协商 |
-| `adapters/oidc_adapter.py` | ZitadelJWTDecoder：JWKS RS256，1h 缓存 |
+| `adapters/oidc_adapter.py` | CasdoorJWTDecoder：JWKS RS256，1h 缓存 |
 | `sockets/` | Socket.io AsyncServer，挂载 /ws |
 | `models/` | ORM 模型（product/session/message/ontology/flow/user） |
 | `alembic/` | 数据库迁移（含 SSO migration c3d4e5f6） |
@@ -181,16 +181,16 @@ Canvas 采用轻量组件框架（`components/base.py`，约 100 行），每个
 
 ## 五、认证体系
 
-Forge 支持双模式认证，由 `FORGE_ZITADEL_ENABLED` 开关控制：
+Forge 支持双模式认证，由 `FORGE_OIDC_ENABLED` 开关控制：
 
 ```
-FORGE_ZITADEL_ENABLED=false (默认，Route C 内测)
+FORGE_OIDC_ENABLED=false (默认，Route C 内测)
   → 本地 HS256 JWT，secret = FORGE_JWT_SECRET
   → POST /api/auth/login 换 token
   → 手动创建用户：POST /api/auth/register（无邮件验证）
 
-FORGE_ZITADEL_ENABLED=true (未来 SSO 模式)
-  → 接受 Zitadel RS256 token（JWKS 1h 缓存验证）
+FORGE_OIDC_ENABLED=true (未来 SSO 模式)
+  → 接受 Casdoor RS256 token（JWKS 1h 缓存验证）
   → 本地 HS256 token 继续作为 fallback
   → 需迁移：alembic migration c3d4e5f6a7b8（users 表加 3 列）
 ```
@@ -198,8 +198,8 @@ FORGE_ZITADEL_ENABLED=true (未来 SSO 模式)
 前端用 `localStorage` 存 `forge_token`，Socket.io 连接时检测 token 变更重新认证。
 
 **LLM Gateway 密钥**：
-- `FORGE_ZITADEL_ENABLED=false`：使用共享 `FORGE_LLM_GATEWAY_KEY`
-- `FORGE_ZITADEL_ENABLED=true`：每用户独立 gateway_token（`gateway_provisioner.py` → platform `/internal/user/provision`）
+- `FORGE_OIDC_ENABLED=false`：使用共享 `FORGE_LLM_GATEWAY_KEY`
+- `FORGE_OIDC_ENABLED=true`：每用户独立 gateway_token（`gateway_provisioner.py` → platform `/internal/user/provision`）
 
 ## 六、环境变量参考
 
@@ -212,10 +212,10 @@ FORGE_ZITADEL_ENABLED=true (未来 SSO 模式)
 | `FORGE_CORS_ORIGINS` | 否 | 逗号分隔允许来源 | `https://forge.lurus.cn` |
 | `FORGE_KOVA_REST_URL` | 否 | kova-rest 地址；缺省则 Canvas 执行降级 | `http://localhost:3002` |
 | `FORGE_KOVA_REST_API_KEY` | 否 | kova-rest bearer key | |
-| `FORGE_ZITADEL_ENABLED` | 否 | 启用 SSO 模式（默认 false） | `true` |
-| `FORGE_ZITADEL_ISSUER` | SSO 时必填 | Zitadel issuer | `https://auth.lurus.cn` |
-| `FORGE_ZITADEL_JWKS_URI` | SSO 时必填 | JWKS 端点 | `https://auth.lurus.cn/oauth/v2/keys` |
-| `FORGE_ZITADEL_CLIENT_ID` | SSO 时必填 | OIDC client/audience | |
+| `FORGE_OIDC_ENABLED` | 否 | 启用 SSO 模式（默认 false） | `true` |
+| `FORGE_OIDC_ISSUER` | SSO 时必填 | Casdoor issuer | `https://auth.lurus.cn` |
+| `FORGE_OIDC_JWKS_URI` | SSO 时必填 | JWKS 端点 | `https://auth.lurus.cn/oauth/v2/keys` |
+| `FORGE_OIDC_CLIENT_ID` | SSO 时必填 | OIDC client/audience | |
 | `FORGE_API_GATEWAY_URL` | SSO 时 | 用于 provision 用户 gateway token | `https://api.lurus.cn` |
 | `FORGE_API_GATEWAY_INTERNAL_KEY` | SSO 时 | 内部 provision 调用鉴权 key | |
 
@@ -319,7 +319,7 @@ PMAgent 提取的 `OntologyOp` 结构在 Python（`agents/pm.py`）和前端 Typ
 `FORGE_KOVA_REST_URL` 在生产环境未配置，Canvas 中所有 Kova 组件执行时返回 `[kova-rest unavailable]` 降级值，不会报错但无任何实际 agent 执行。
 
 ### SSO migration 未执行
-`FORGE_ZITADEL_ENABLED=false` 时 alembic migration `c3d4e5f6a7b8_add_zitadel_sso_columns.py`（users 表 3 列）已存在于 migration 链中，`alembic upgrade head` 会执行它，但相关列在 flag=false 时无副作用——这是设计意图，无需担心。
+`FORGE_OIDC_ENABLED=false` 时 alembic migration `c3d4e5f6a7b8_add_zitadel_sso_columns.py`（users 表 3 列）已存在于 migration 链中，`alembic upgrade head` 会执行它，但相关列在 flag=false 时无副作用——这是设计意图，无需担心。
 
 ## 十、决策档案
 
@@ -462,7 +462,7 @@ Forge 提供可视化拖拽式 agent 工作流编排界面（Canvas），无需�
 当前为内部 beta（<5 人内测），部署于 R6（STAGE，`43.226.38.244`），namespace `lurus-forge`。镜像 tag 目前为 `latest`（待修正为 `main-<sha7>` sha 钉），ArgoCD 管理，kova-rest **尚未部署到 K8s**（Canvas 中 Kova 组件降级返回占位值）。⚠ 未达商业交付标准，不上 R1。关键监控缺口：无专用审计日志、flow 执行无全局超时、Socket.io 状态推送尚未实现。平台级监控（Netdata 自托管 Agent）见 [/ops/observability](/ops/observability)。
 
 **决策者视角**
-Forge 的核心价值是把 agent 开发民主化——让 PM、运营等非工程师角色也能通过可视化拖拽构建和迭代 AI 工作流，同时沉淀产品知识为结构化 Ontology，避免需求在对话中消散。短期定位是内部 R&D 活体 Demo（展示 `api.lurus.cn` LLM 路由能力），中期路线是向企业客户开放为低代码 agent 平台。当前阶段优先验证核心循环（Session → Ontology → Canvas → 执行），范围外的功能（Zitadel SSO 全量/Redis/NATS）刻意推迟。
+Forge 的核心价值是把 agent 开发民主化——让 PM、运营等非工程师角色也能通过可视化拖拽构建和迭代 AI 工作流，同时沉淀产品知识为结构化 Ontology，避免需求在对话中消散。短期定位是内部 R&D 活体 Demo（展示 `api.lurus.cn` LLM 路由能力），中期路线是向企业客户开放为低代码 agent 平台。当前阶段优先验证核心循环（Session → Ontology → Canvas → 执行），范围外的功能（Casdoor SSO 全量/Redis/NATS）刻意推迟。
 
 ---
 

@@ -45,7 +45,7 @@ export const servers: Server[] = [
     specs: '32C / 32G / 300G SSD / 三丰云',
     provider: '三丰云',
     k3s: 'none',
-    workloads: ['lurus-platform/platform-core', 'lurus-platform/zitadel', 'lucrum/lucrum-web', 'lurus-pg(local)', 'redis(local)', 'zhongtie-oa', 'kova-registry', 'lurus-docs-staging'],
+    workloads: ['lurus-platform/platform-core', 'lurus-platform/casdoor', 'lucrum/lucrum-web', 'lurus-pg(local)', 'redis(local)', 'zhongtie-oa', 'kova-registry', 'lurus-docs-staging'],
     cpuPct: 30,
     memPct: 40,
     diskPct: 25,
@@ -125,7 +125,7 @@ export function buildTopologyMermaid(): string {
     R1["R1 / 43.226.46.164 / 100.98.57.55<br/>16C 32G · k3s master<br/>www/docs/admin/webgame/tally/memorus/mail/minio/pg"]
   end
   subgraph "STAGE（三丰云）"
-    R6["R6 / 43.226.38.244 / 100.122.83.20<br/>32C 32G 300G · 多租户 cgroup<br/>platform/zitadel/lucrum/zhongtie-oa/docs-staging"]
+    R6["R6 / 43.226.38.244 / 100.122.83.20<br/>32C 32G 300G · 多租户 cgroup<br/>platform/casdoor/lucrum/zhongtie-oa/docs-staging"]
   end
   subgraph "agents"
     R2["R2 / 100.94.177.10<br/>db standby"]

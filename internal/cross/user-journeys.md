@@ -40,7 +40,7 @@ journey
 graph LR
   A1[听说 / 推荐] --> A2[访问 www.lurus.cn]
   A2 --> A3[读 docs / quickstart]
-  A3 --> A4[zitadel 注册账户]
+  A3 --> A4[casdoor 注册账户]
   A4 -->|Platform| A5[拿到 newapi token]
   A5 -->|Newapi| A6[OpenAI SDK 改 base_url 跑通]
   A6 --> A7{满意吗}
@@ -64,7 +64,7 @@ graph LR
 
 | 阶段 | 卡点 | 现在能给什么 | 缺什么 |
 |---|---|---|---|
-| 注册 | OIDC 跳转流不熟 | zitadel + PKCE quickstart | 中文上手视频 |
+| 注册 | OIDC 跳转流不熟 | casdoor + PKCE quickstart | 中文上手视频 |
 | 拿 token | 不知道哪个 model 选 | docs/api/overview 列了 50+ | 模型推荐表（按场景） |
 | 跑通调用 | 限流 429 | newapi 默认 group + 限流 | 友好的限流报错文案 |
 | 装 Switch | Win 杀软误报 | 暂无 | 代码签名 |
@@ -141,7 +141,7 @@ graph TD
 | 评估 | 客户问"你们对比 X 怎么样" | 销售有 [能力矩阵](/cross/capability-matrix) | TCO 计算器 |
 | PoC | 数据导入费力 | 各产品手册核心数据流 + 数据契约章节（端到端示例待补充） | 数据迁移工具集 |
 | 私有化 | 部署文档分散 | [ops/deploy-r6](/ops/deploy-r6) | 一键私有化脚本 |
-| SSO 联邦 | zitadel 配联邦门槛高 | [adr/0002-zitadel-as-oidc](/adr/0002-zitadel-as-oidc) | 演示视频 + 模板 |
+| SSO 联邦 | casdoor 配联邦门槛高 | [adr/0002-casdoor-as-oidc](/adr/0002-casdoor-as-oidc) | 演示视频 + 模板 |
 | 续约 | 无月用量报告自动化 | Platform 后台手查 | 自动月报推送 |
 
 <div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="activity" :size="18"/></span><div><p class="lurus-callout__title">"监控告警接通" 这一环</p><div class="lurus-callout__body">内部观测已统一到 <strong>Netdata 自托管 Agent</strong>；接入与查看入口见 <a href="/ops/observability">运维 · 可观测性</a>。</div></div></div>
@@ -173,7 +173,7 @@ journey
 
 ```mermaid
 graph LR
-  C1[入职 day-0] --> C2[zitadel 账号 + Tailscale]
+  C1[入职 day-0] --> C2[casdoor 账号 + Tailscale]
   C2 --> C3[访问 internal.lurus.cn]
   C3 --> C4[7 天 onboarding]
   C4 --> C5{选 1 产品}
@@ -193,7 +193,7 @@ graph LR
 
 | 阶段 | 卡点 | 现在能给 | 缺什么 |
 |---|---|---|---|
-| Day-0 | 账号开通慢 | 手动 zitadel + Tailscale 邀请 | 自助开通流 |
+| Day-0 | 账号开通慢 | 手动 casdoor + Tailscale 邀请 | 自助开通流 |
 | 7 天 | 不知道先看什么 | [/onboarding/](/onboarding/) 7 天计划 | 视频版 |
 | 第一周 | 本地起服务卡 | 各产品 README + ops SOP | 一键 dev container |
 | ops 学习 | SOP 散落 | [/ops/](/ops/) 12 篇集中 | 演练脚本 |
@@ -204,7 +204,7 @@ graph LR
 graph LR
   D1[GitHub / 找 Lurus API] --> D2[访问 docs.lurus.cn]
   D2 --> D3[读 api/overview]
-  D3 --> D4[zitadel 注册 + 拿 PAT]
+  D3 --> D4[casdoor 注册 + 拿 PAT]
   D4 -->|Platform| D5[内嵌登录走 OIDC]
   D5 --> D6[业务调 Newapi]
   D6 --> D7[Webhook 接 NATS 事件]
@@ -218,8 +218,8 @@ graph LR
 
 | 阶段 | 卡点 | 现在能给 | 缺什么 |
 |---|---|---|---|
-| 找 API | 看不懂三套 token（zitadel / PAT / newapi token）的区别 | docs/api/authentication 有图 | 速查决策树 |
-| 内嵌 OIDC | redirect_uri 配置错 | zitadel 客户端模板 | OAuth playground |
+| 找 API | 看不懂三套 token（casdoor / PAT / newapi token）的区别 | docs/api/authentication 有图 | 速查决策树 |
+| 内嵌 OIDC | redirect_uri 配置错 | casdoor 客户端模板 | OAuth playground |
 | Webhook | NATS 接入文档薄 | adr/0004-temporal | NATS 接入 quickstart |
 
 ## 横向对比：4 类用户的差异

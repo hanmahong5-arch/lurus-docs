@@ -169,7 +169,7 @@ export default defineConfig({
         { text: '架构决策', items: [
           { text: '索引', link: '/adr/' },
           { text: '0001 三层环境', link: '/adr/0001-three-tier-envs' },
-          { text: '0002 Zitadel OIDC', link: '/adr/0002-zitadel-as-oidc' },
+          { text: '0002 Casdoor OIDC', link: '/adr/0002-zitadel-as-oidc' },
           { text: '0003 CNPG Postgres', link: '/adr/0003-cnpg-postgres' },
           { text: '0004 Temporal 替代 cron', link: '/adr/0004-temporal-replaces-cron' },
           { text: '0005 Platform 计费源', link: '/adr/0005-platform-as-billing-source' },

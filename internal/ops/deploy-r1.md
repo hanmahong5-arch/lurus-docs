@@ -83,7 +83,7 @@ kubectl set image -n <namespace> deployment/<name> <container>=ghcr.io/.../<serv
 | CI 全绿 | ✅ |
 | 生产级 manifest（resources / probes / PDB） | ✅ |
 | README + 内部手册（在 internal/products/ 下） | ✅ |
-| 无 mock，连真实依赖（PG / Redis / Zitadel） | ✅ |
+| 无 mock，连真实依赖（PG / Redis / Casdoor） | ✅ |
 | R6 跑过 ≥ 30 天稳定 | ✅ |
 | 0 数据事故 | ✅ |
 | 已对外商业交付（有真实客户） | ✅ |
@@ -112,7 +112,7 @@ curl -sS -o /dev/null -w 'status=%{http_code}\n' https://<domain>/healthz
 | namespace | 关键服务 |
 |---|---|
 | `lurus-system` | docs / newapi / memorus |
-| `lurus-platform` | platform-core / zitadel / notification |
+| `lurus-platform` | platform-core / casdoor / notification |
 | `lurus-www` | www |
 | `lurus-webgame` | webgame |
 | `lurus-admin` | admin |

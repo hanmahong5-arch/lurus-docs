@@ -286,8 +286,8 @@ push main (lucrum-web/** 或 lurus-ai-qtrd/**) → GitHub Actions
 | `REDIS_HOST` | `redis-service.lucrum.svc.cluster.local` |
 | `REDIS_DB` | `0` (pod 内独立 Redis，非集群共享 DB 1) |
 | `NEXTAUTH_URL` | `https://lucrum.lurus.cn` |
-| `ZITADEL_ISSUER` | `https://auth.lurus.cn` |
-| `ZITADEL_CLIENT_SECRET` | `""` (PKCE 无 secret) |
+| `OIDC_ISSUER` | `https://auth.lurus.cn` |
+| `OIDC_CLIENT_SECRET` | `""` (PKCE 无 secret) |
 
 **lurus-ai-qtrd**
 
@@ -428,7 +428,7 @@ python -m uvicorn vnpy_ai_trader.src.web.app:app --host 0.0.0.0 --port 8000 --re
 
 6. **lucrum-api 资源饱和**：当前资源限额 `cpu: 1000m / memory: 2Gi`，K8s 节点 cloud-ubuntu-2-4c8g 跑满时 vnpy 回测任务会 OOMKilled。遇到大范围回测（多 symbol × 长时间段）应主动监控 pod 内存。
 
-7. **R6 部署路径变更**：2026-04-25 Lucrum 从 R1 迁移到 R6 单节点 K3s。R6 无 Traefik，通过主机 nginx (`/etc/nginx/sites-enabled/lurus-stage`) 反代 `NodePort 30300` 到 `lucrum.lurus.cn`。原先 R1 的 `hostAliases`（将 `auth.lurus.cn` 重写为内网 Traefik IP）已删除，pod 现在通过公网 DNS 解析 Zitadel。如迁回 R1，需在 Deployment 补回 `hostAliases`（见 git history）。
+7. **R6 部署路径变更**：2026-04-25 Lucrum 从 R1 迁移到 R6 单节点 K3s。R6 无 Traefik，通过主机 nginx (`/etc/nginx/sites-enabled/lurus-stage`) 反代 `NodePort 30300` 到 `lucrum.lurus.cn`。原先 R1 的 `hostAliases`（将 `auth.lurus.cn` 重写为内网 Traefik IP）已删除，pod 现在通过公网 DNS 解析 Casdoor。如迁回 R1，需在 Deployment 补回 `hostAliases`（见 git history）。
 
 8. **Secret 缺失导致 CrashLoop**：`lucrum-secrets` 中 `LURUS_IDENTITY_INTERNAL_KEY` 如果缺失，pod 会 `CreateContainerConfigError`，无法启动。`MEMORUS_API_KEY` 声明了 `optional: true` 可缺失，其他所有 key 都是硬依赖。重新部署时先 `kubectl get secret lucrum-secrets -n lucrum` 确认所有 key 存在。
 
@@ -444,7 +444,7 @@ python -m uvicorn vnpy_ai_trader.src.web.app:app --host 0.0.0.0 --port 8000 --re
 | 2026-01-23 | Drizzle ORM 接管 DB 层 | Prisma 构建体积过大；Drizzle 零运行时、type-safe、适合 Edge 部署 |
 | 2026-01-23 | Broker 接口层预留四家券商 | 实盘接入计划东方财富 QMT；IBrokerAdapter 接口解耦，Mock 完整实现 A 股规则 |
 | 2026-04-25 | Lucrum 从 R1 迁移到 R6 | R1 资源紧张（磁盘 96% 已用）；Lucrum 尚在 stage 阶段，符合 R6 准入条件 |
-| 持续 | 不引入独立 users 表 | 用户身份全部由 Zitadel 管理，避免重复维护；代码里 `userId` 均为 Zitadel sub (snowflake string) |
+| 持续 | 不引入独立 users 表 | 用户身份全部由 Casdoor 管理，避免重复维护；代码里 `userId` 均为 Casdoor sub (snowflake string) |
 
 ## TODO / Roadmap
 
@@ -514,7 +514,7 @@ ssh root@100.98.57.55 "kubectl get secret lucrum-secrets -n lucrum -o jsonpath='
 
 # 3. 手动查询用户记忆（调试用）
 ssh root@100.98.57.55 "kubectl exec -n lucrum deploy/lucrum-web -- \
-  wget -qO- 'http://memorus.lurus-system.svc.cluster.local:8880/memories/search?user_id=<zitadel_sub>&query=投资风格&limit=5' \
+  wget -qO- 'http://memorus.lurus-system.svc.cluster.local:8880/memories/search?user_id=<idp_subject>&query=投资风格&limit=5' \
   -H 'X-API-Key: <key>'"
 
 # 4. 如果 Memorus pod 挂了

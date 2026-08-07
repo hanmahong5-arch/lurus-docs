@@ -20,7 +20,7 @@ date: 2026-04-24
 2026 年 4 月，R1（cloud-ubuntu-1, 16C/32G）已经承担：
 - 已交付客户的商业服务（miaoda-oa、tally）
 - 还在迭代但被外部使用的服务（newapi、memorus、www、docs）
-- 仍在测试的服务（platform、zitadel、lucrum、lutu）
+- 仍在测试的服务（platform、casdoor、lucrum、lutu）
 
 混在一台机器上的后果：
 - 一次重启 PG → 所有客户感知

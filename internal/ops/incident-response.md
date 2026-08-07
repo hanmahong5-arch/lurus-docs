@@ -67,7 +67,7 @@ curl -sS -o /dev/null -w 'auth=%{http_code}\n' https://auth.lurus.cn/.well-known
 | ArgoCD app OutOfSync 红 | manifest 改坏 → 回滚最近一次提交 |
 | pod `ImagePullBackOff` | GHCR 拉镜像问题（见下） |
 | 钱包扣款异常 | platform billing schema → 立刻只读 |
-| Zitadel 登录死循环 | OIDC redirect_uri / cookie domain |
+| Casdoor 登录死循环 | OIDC redirect_uri / cookie domain |
 
 ### GHCR 拉镜像失败
 
@@ -122,4 +122,4 @@ S0/S1 事故对外沟通用模板（写在 admin 后台公告 / 邮件给受影�
 
 ## bus factor = 1 的兜底
 
-<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="users" :size="18"/></span><div><p class="lurus-callout__title">"marvin 失联"应急路径</p><div class="lurus-callout__body">只有 marvin 在的当下，必须有失联兜底：<ul><li>关键凭证（Tailscale auth key / Zitadel admin / GHCR PAT / SSH key）写一份在密码管理器，配偶 / 信任的合作者掌握主密码。</li><li>三丰云 / 阿里云控制台账号有备用人员可登录。</li><li>这份 internal docs 是非 marvin 上手的入口。</li></ul></div></div></div>
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="users" :size="18"/></span><div><p class="lurus-callout__title">"marvin 失联"应急路径</p><div class="lurus-callout__body">只有 marvin 在的当下，必须有失联兜底：<ul><li>关键凭证（Tailscale auth key / Casdoor admin / GHCR PAT / SSH key）写一份在密码管理器，配偶 / 信任的合作者掌握主密码。</li><li>三丰云 / 阿里云控制台账号有备用人员可登录。</li><li>这份 internal docs 是非 marvin 上手的入口。</li></ul></div></div></div>

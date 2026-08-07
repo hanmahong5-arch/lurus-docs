@@ -1,12 +1,12 @@
 ---
-title: MCP 工具链（zitadel-mcp / k8s-mcp / platform-mcp）
+title: MCP 工具链（casdoor-mcp / k8s-mcp / platform-mcp）
 id: mcp
 group: platform
 priority: P2
 status: live
 owner: marvin (+ AI assist)
 lastReviewed: 2026-05-28
-sourcePath: 2l-svc-zitadel-mcp, 2l-svc-k8s-mcp, 2l-svc-platform-mcp
+sourcePath: 2l-svc-casdoor-mcp, 2l-svc-k8s-mcp, 2l-svc-platform-mcp
 ---
 
 # MCP 工具链 内部手册
@@ -21,7 +21,7 @@ sourcePath: 2l-svc-zitadel-mcp, 2l-svc-k8s-mcp, 2l-svc-platform-mcp
 </div>
 
 <p>
-  <span class="lurus-tag">zitadel-mcp · prod</span>
+  <span class="lurus-tag">casdoor-mcp · prod</span>
   <span class="lurus-tag">k8s-mcp · prod</span>
   <span class="lurus-tag">platform-mcp · prod</span>
   <span class="lurus-tag lurus-tag--muted">tally-mcp · alpha</span>
@@ -29,14 +29,14 @@ sourcePath: 2l-svc-zitadel-mcp, 2l-svc-k8s-mcp, 2l-svc-platform-mcp
 
 ## 一句话定位
 
-三个 MCP Server 共同构成 Lurus 的 **AI Agent 运维工具链**：让 Claude Code 等 AI agent 通过 Model Context Protocol (MCP) 直接执行 Zitadel IAM 操作、K3s 集群运维和 Platform 业务查询，取代手工敲 kubectl / psql / curl 的低效运维模式。三者互补，分别对应 IAM 面（zitadel-mcp）、运行时面（k8s-mcp）和业务面（platform-mcp）。
+三个 MCP Server 共同构成 Lurus 的 **AI Agent 运维工具链**：让 Claude Code 等 AI agent 通过 Model Context Protocol (MCP) 直接执行 Casdoor IAM 操作、K3s 集群运维和 Platform 业务查询，取代手工敲 kubectl / psql / curl 的低效运维模式。三者互补，分别对应 IAM 面（casdoor-mcp）、运行时面（k8s-mcp）和业务面（platform-mcp）。
 
 ## 速查
 
-| 项 | zitadel-mcp | k8s-mcp | platform-mcp |
+| 项 | casdoor-mcp | k8s-mcp | platform-mcp |
 |---|---|---|---|
-| 仓库 | hanmahong5-arch/lurus-zitadel-mcp | hanmahong5-arch/lurus-k8s-mcp | hanmahong5-arch/lurus-platform-mcp |
-| 目录 | `2l-svc-zitadel-mcp` | `2l-svc-k8s-mcp` | `2l-svc-platform-mcp` |
+| 仓库 | hanmahong5-arch/lurus-casdoor-mcp | hanmahong5-arch/lurus-k8s-mcp | hanmahong5-arch/lurus-platform-mcp |
+| 目录 | `2l-svc-casdoor-mcp` | `2l-svc-k8s-mcp` | `2l-svc-platform-mcp` |
 | 传输协议 | stdio（无网络端口） | stdio（无网络端口） | stdio（无网络端口） |
 | 鉴权方式 | Service Account JWT-bearer | SSH key（host 继承） | INTERNAL_API_KEY bearer |
 | 后端目标 | `https://auth.lurus.cn` | `root@100.98.57.55` (SSH) | `https://identity.lurus.cn` |
@@ -52,14 +52,14 @@ flowchart LR
     subgraph host["开发者本机 (Claude Code Host)"]
         CC["MCP Host\n(Claude Code)"]
         subgraph stdio["stdio transport (JSON-RPC / line)"]
-            ZM["zitadel-mcp\nbinary"]
+            ZM["casdoor-mcp\nbinary"]
             KM["k8s-mcp\nbinary"]
             PM["platform-mcp\nbinary"]
         end
     end
 
     subgraph backends["后端目标"]
-        ZA["Zitadel\nauth.lurus.cn\n(Management + Admin API)"]
+        ZA["Casdoor\nauth.lurus.cn\n(Management + Admin API)"]
         K3S["K3s Master\n100.98.57.55\n(kubectl + psql via SSH)"]
         PL["Platform Internal API\nidentity.lurus.cn\n/internal/v1/*"]
     end
@@ -81,7 +81,7 @@ sequenceDiagram
     participant U as 工程师
     participant CC as Claude Code (MCP Host)
     participant MCP as MCP Server (stdio)
-    participant BE as 后端 (Zitadel / SSH / Platform)
+    participant BE as 后端 (Casdoor / SSH / Platform)
 
     U->>CC: 自然语言指令\n(e.g. "给 billing-scanner 分配 IAM_LOGIN_USER")
     CC->>MCP: JSON-RPC tools/call\n{"name":"create_machine_user","arguments":{...}}
@@ -100,24 +100,24 @@ sequenceDiagram
 
 ---
 
-## 子系统一：zitadel-mcp — IAM 面
+## 子系统一：casdoor-mcp — IAM 面
 
 ### 功能定位
 
-把 Zitadel 的 Management API + Admin API 操作（建服务用户、授 IAM 角色、签发 PAT）暴露给 agent。典型用途：新服务上线自动化 bootstrap、PAT 轮换。
+把 Casdoor 的 Management API + Admin API 操作（建服务用户、授 IAM 角色、签发 PAT）暴露给 agent。典型用途：新服务上线自动化 bootstrap、PAT 轮换。
 
 ### 鉴权机制
 
 ```mermaid
 sequenceDiagram
-    participant BIN as zitadel-mcp binary
+    participant BIN as casdoor-mcp binary
     participant FS as 本机文件系统
     participant ZA as auth.lurus.cn /oauth/v2/token
-    participant API as Zitadel Management/Admin API
+    participant API as Casdoor Management/Admin API
 
-    BIN->>FS: 读取 SA JSON key\n(ZITADEL_SA_JSON 或 /etc/lurus/zitadel-admin-sa.json)
+    BIN->>FS: 读取 SA JSON key\n(OIDC_SA_JSON 或 /etc/lurus/casdoor-admin-sa.json)
     BIN->>BIN: RSA-SHA256 签名\n自建 JWT assertion\n(iss=userId, aud=issuer, exp=+1h)
-    BIN->>ZA: POST /oauth/v2/token\ngrant_type=jwt-bearer\nscope=openid urn:zitadel:iam:...
+    BIN->>ZA: POST /oauth/v2/token\ngrant_type=jwt-bearer\nscope=openid urn:casdoor:iam:...
     ZA-->>BIN: access_token (cached, 30s 余量前刷新)
     BIN->>API: Bearer access_token\nGET/POST /management/v1/* or /admin/v1/*
 ```
@@ -140,10 +140,10 @@ sequenceDiagram
 
 | 变量 | 默认值 | 说明 |
 |---|---|---|
-| `ZITADEL_ISSUER` | `https://auth.lurus.cn` | OAuth issuer，同时作为 JWT `aud` 和 token endpoint |
-| `ZITADEL_SA_JSON` | `/etc/lurus/zitadel-admin-sa.json` | SA 私钥 JSON 路径 |
+| `OIDC_ISSUER` | `https://auth.lurus.cn` | OAuth issuer，同时作为 JWT `aud` 和 token endpoint |
+| `OIDC_SA_JSON` | `/etc/lurus/casdoor-admin-sa.json` | SA 私钥 JSON 路径 |
 
-SA JSON 文件格式（Zitadel 下载的 machine key）：
+SA JSON 文件格式（Casdoor 下载的 machine key）：
 ```json
 {
   "type": "serviceaccount",
@@ -159,7 +159,7 @@ SA JSON 文件格式（Zitadel 下载的 machine key）：
 |---|---|
 | `main.go` | 入口：读 SA JSON、建 TokenSource、注册 5 个工具、ServeStdio |
 | `internal/jwtbearer/jwtbearer.go` | RFC 7523 JWT-bearer grant；RSA-SHA256 签名；token cache |
-| `internal/mgmtapi/mgmtapi.go` | Zitadel Management + Admin API 最小客户端 |
+| `internal/mgmtapi/mgmtapi.go` | Casdoor Management + Admin API 最小客户端 |
 | `internal/mcp/mcp.go` | 共享 MCP stdio server 实现 |
 
 ---
@@ -261,7 +261,7 @@ ssh root@100.98.57.55 "kubectl get secret platform-core-secrets \
 
 | 工具 | HTTP | 关键参数 | 说明 |
 |---|---|---|---|
-| `account_lookup` | GET `/internal/v1/accounts/by-{id,email,phone,zitadel-sub,oauth}/*` | `account_id` / `email` / `phone` / `zitadel_sub` / `oauth` | 七选一，路径参数 percent-encoded |
+| `account_lookup` | GET `/internal/v1/accounts/by-{id,email,phone,idp_subject,oauth}/*` | `account_id` / `email` / `phone` / `idp_subject` / `oauth` | 七选一，路径参数 percent-encoded |
 | `account_overview` | GET `/internal/v1/accounts/{id}/overview` | `account_id`, `product_id`(选) | 聚合：profile + wallet + subs + entitlements |
 | `wallet_balance` | GET `/internal/v1/accounts/{id}/wallet/balance` | `account_id` | 当前余额 |
 | `wallet_transactions` | POST `/internal/v1/accounts/{id}/wallet/transactions` | `account_id`, `page`(默 1), `page_size`(默 20 max 100) | 分页流水 |
@@ -305,7 +305,7 @@ ssh root@100.98.57.55 "kubectl get secret platform-core-secrets \
 ### 构建
 
 ```bash
-cd 2l-svc-zitadel-mcp && go build -o zitadel-mcp .
+cd 2l-svc-casdoor-mcp && go build -o casdoor-mcp .
 cd 2l-svc-k8s-mcp     && go build -o k8s-mcp .
 cd 2l-svc-platform-mcp && go build -o platform-mcp .
 ```
@@ -319,11 +319,11 @@ cd 2l-svc-platform-mcp && go build -o platform-mcp .
 ```json
 {
   "mcpServers": {
-    "zitadel": {
-      "command": "/path/to/zitadel-mcp",
+    "casdoor": {
+      "command": "/path/to/casdoor-mcp",
       "env": {
-        "ZITADEL_ISSUER": "https://auth.lurus.cn",
-        "ZITADEL_SA_JSON": "/etc/lurus/zitadel-admin-sa.json"
+        "OIDC_ISSUER": "https://auth.lurus.cn",
+        "OIDC_SA_JSON": "/etc/lurus/casdoor-admin-sa.json"
       }
     },
     "k8s": {
@@ -345,9 +345,9 @@ cd 2l-svc-platform-mcp && go build -o platform-mcp .
 }
 ```
 
-### SA JSON Bootstrap（zitadel-mcp 一次性）
+### SA JSON Bootstrap（casdoor-mcp 一次性）
 
-见 `2l-svc-platform/docs/zitadel-bootstrap.md`。产物：`/etc/lurus/zitadel-admin-sa.json`，文件权限 `chmod 600`。
+见 `2l-svc-platform/docs/casdoor-bootstrap.md`。产物：`/etc/lurus/casdoor-admin-sa.json`，文件权限 `chmod 600`。
 
 ---
 
@@ -355,11 +355,11 @@ cd 2l-svc-platform-mcp && go build -o platform-mcp .
 
 ```mermaid
 flowchart TD
-    subgraph Z["zitadel-mcp"]
+    subgraph Z["casdoor-mcp"]
         ZW["write tools\n(grant_iam_role / save_pat_to_secret)"]
         ZSA["SA JWT (IAM admin)"]
         ZW --> ZSA
-        ZSA -- "无 allowlist\n但需 SA 有足够权限" --> ZAPI["Zitadel API"]
+        ZSA -- "无 allowlist\n但需 SA 有足够权限" --> ZAPI["Casdoor API"]
     end
 
     subgraph K["k8s-mcp"]
@@ -378,7 +378,7 @@ flowchart TD
     end
 ```
 
-<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield" :size="18"/></span><div><p class="lurus-callout__title">关键差异：写工具安全边界</p><div class="lurus-callout__body"><ul><li><strong>zitadel-mcp</strong>：无 allowlist，安全边界在 SA 本身的 Zitadel 权限；误用 <code>grant_iam_role</code> 可能提权。</li><li><strong>k8s-mcp</strong>：allowlist 编译进二进制，写目标有限，但 <code>pg_query allow_write=true</code> 仍是 superuser 执行。</li><li><strong>platform-mcp</strong>：v0.1 写工具只有 <code>checkout_create</code>（生成支付链接），不改数据状态。</li></ul></div></div></div>
+<div class="lurus-callout lurus-callout--key"><span class="lurus-callout__icon"><Icon name="shield" :size="18"/></span><div><p class="lurus-callout__title">关键差异：写工具安全边界</p><div class="lurus-callout__body"><ul><li><strong>casdoor-mcp</strong>：无 allowlist，安全边界在 SA 本身的 Casdoor 权限；误用 <code>grant_iam_role</code> 可能提权。</li><li><strong>k8s-mcp</strong>：allowlist 编译进二进制，写目标有限，但 <code>pg_query allow_write=true</code> 仍是 superuser 执行。</li><li><strong>platform-mcp</strong>：v0.1 写工具只有 <code>checkout_create</code>（生成支付链接），不改数据状态。</li></ul></div></div></div>
 
 ---
 
@@ -386,9 +386,9 @@ flowchart TD
 
 1. **stdio 阻塞风险**：MCP server 的 `bufio.Scanner` 读 stdin，若 host 进程关闭 stdin 但不发 EOF（pipe 半关），server 会永久阻塞不退出。通常 Claude Code 正确关闭，但异常崩溃时需手工 kill。
 2. **SSH 长连断**：k8s-mcp 每次工具调用建一条新 SSH 连接，不复用。K3s master 网络抖动会导致单次工具调用挂起 60s（ConnectTimeout=10 + exec 超时）。密集操作时延迟累加明显。
-3. **Zitadel JWT 过期**：`TokenSource` 会在过期前 30s 刷新，正常情况透明。但若 host 机器时钟偏差 > 5min，Zitadel 会拒绝 JWT（`clock skew`）。本机 NTP 对齐是前置条件。
+3. **Casdoor JWT 过期**：`TokenSource` 会在过期前 30s 刷新，正常情况透明。但若 host 机器时钟偏差 > 5min，Casdoor 会拒绝 JWT（`clock skew`）。本机 NTP 对齐是前置条件。
 4. **白名单维护开销**：k8s-mcp 的写工具白名单硬编码在 `main.go`，每新增一个部署目标需要 rebuild + 重新分发二进制。现有白名单未包含 `lurus-docs` / `lurus-tally` / `lucrum` 等命名空间下的所有 deployment。
-5. **`save_pat_to_secret` 双向依赖**：该工具在 zitadel-mcp 进程内执行 `kubectl`，需要本机安装 kubectl 且 `~/.kube/config` 指向生产集群。在没有 kubeconfig 的机器上调用会静默失败（`kubectl not found` 或权限拒绝）。
+5. **`save_pat_to_secret` 双向依赖**：该工具在 casdoor-mcp 进程内执行 `kubectl`，需要本机安装 kubectl 且 `~/.kube/config` 指向生产集群。在没有 kubeconfig 的机器上调用会静默失败（`kubectl not found` 或权限拒绝）。
 6. **pg_query 写动词过滤误判**：`containsDestructiveVerb` 是大写字符串扫描，注释剥除不完整（只处理 `--` 单行注释，不处理 `/* */` 块注释）。构造型注入如 `SELECT 1; /* UPDATE ... */` 可绕过检测，真正防线依赖 Postgres 用户权限。
 7. **kubectl 跨集群上下文**：`save_pat_to_secret` 的 kubectl 使用 host 默认 kubeconfig，若 host 有多个 context（R1 + R6）且当前 context 不是 R1，会把 PAT 写进错误集群的 secret。操作前检查 `kubectl config current-context`。
 8. **INTERNAL_API_KEY 不可轮换**：platform-mcp 每次启动读取 env 变量，key 轮换需要重启进程（杀掉 server 进程，Claude Code 会自动重启）。
@@ -412,7 +412,7 @@ flowchart TD
 - [ ] k8s-mcp：支持 `lurus-docs` / `lurus-tally` rollout restart — 当前白名单未覆盖
 - [ ] k8s-mcp：支持 `crictl_pull` 的 registry mirror 地址（GHCR 国内慢）
 - [ ] k8s-mcp：SSH 连接池或 ControlMaster，减少密集操作延迟
-- [ ] zitadel-mcp：`grant_iam_role` 加操作确认机制（返回 dry-run 预览，需二次 confirm tool 才执行）
+- [ ] casdoor-mcp：`grant_iam_role` 加操作确认机制（返回 dry-run 预览，需二次 confirm tool 才执行）
 - [ ] platform-mcp：wallet 人工调账 / 订阅取消退款工具（需独立 admin-JWT + 审计日志）
 - [ ] 统一 `~/.claude/mcp.json` 模板写入 onboarding 文档
 - [ ] CI：build + `go vet ./...` 检查；当前三个 repo 均无 GitHub Actions
@@ -427,7 +427,7 @@ flowchart TD
 
 ```bash
 # 找到 MCP server 进程
-ps aux | grep -E "zitadel-mcp|k8s-mcp|platform-mcp"
+ps aux | grep -E "casdoor-mcp|k8s-mcp|platform-mcp"
 
 # 强制终止，Claude Code 会自动重启
 kill -9 <PID>
@@ -460,7 +460,7 @@ ssh root@100.98.57.55 "systemctl status k3s"
 
 常见原因：Tailscale 断连（重连 Tailscale）；SSH 密钥未添加到 ssh-agent（`ssh-add ~/.ssh/id_rsa`）。
 
-### Zitadel JWT 过期 / 拒绝（zitadel-mcp）
+### Casdoor JWT 过期 / 拒绝（casdoor-mcp）
 
 现象：tool call 返回 `token endpoint HTTP 401` 或 `clock skew`。
 
@@ -473,10 +473,10 @@ w32tm /resync  # Windows
 # 或 ntpdate pool.ntp.org（Linux）
 
 # 验证 SA JSON 有效性
-cat /etc/lurus/zitadel-admin-sa.json | python3 -c "import sys,json; d=json.load(sys.stdin); print('userId:', d.get('userId','MISSING'))"
+cat /etc/lurus/casdoor-admin-sa.json | python3 -c "import sys,json; d=json.load(sys.stdin); print('userId:', d.get('userId','MISSING'))"
 
 # 测试 JWT 换 token
-./zitadel-mcp  # 启动时会打印 "ready (issuer=... user=...)"，失败则 fatal
+./casdoor-mcp  # 启动时会打印 "ready (issuer=... user=...)"，失败则 fatal
 ```
 
 ### 误操作写工具（通用）
@@ -520,7 +520,7 @@ ssh root@100.98.57.55 "kubectl exec -i -n database lurus-pg-1 -- \
 
 员工无需登录任何后台控制台，直接在 **Switch 桌面客户端** 或 **Claude Desktop** 的 chat 界面用自然语言操作：
 
-- "把用户 alice@lurus.cn 的 MFA 重置" → zitadel-mcp 调 Zitadel Admin API 完成
+- "把用户 alice@lurus.cn 的 MFA 重置" → casdoor-mcp 调 Casdoor Admin API 完成
 - "看一下 lurus-platform 命名空间里的 pod 状态" → k8s-mcp 通过 SSH 执行 kubectl 返回
 - "帮我查 account 10086 的钱包余额和最近 5 条流水" → platform-mcp 调 `/internal/v1/*` 返回
 
@@ -537,7 +537,7 @@ ssh root@100.98.57.55 "kubectl exec -i -n database lurus-pg-1 -- \
 - 共享 `internal/mcp/mcp.go` 实现协议层，各子系统只实现 tool handler
 - 新增工具：实现 handler → 在 `main.go` 的 `tools` slice 追加 `Tool{Name, Description, InputSchema, Handler}` → 重新编译
 
-源码路径：`2l-svc-zitadel-mcp/` · `2l-svc-k8s-mcp/` · `2l-svc-platform-mcp/`
+源码路径：`2l-svc-casdoor-mcp/` · `2l-svc-k8s-mcp/` · `2l-svc-platform-mcp/`
 
 ### 运维视角（进程管理与部署）
 
@@ -554,7 +554,7 @@ ssh root@100.98.57.55 "kubectl exec -i -n database lurus-pg-1 -- \
 
 | 维度 | 传统方式 | MCP 工具链之后 |
 |------|---------|---------------|
-| 执行门槛 | 需要熟悉 kubectl / psql / Zitadel Admin UI | 自然语言描述意图，agent 自动选工具 |
+| 执行门槛 | 需要熟悉 kubectl / psql / Casdoor Admin UI | 自然语言描述意图，agent 自动选工具 |
 | Bus Factor | 运维知识集中在 1-2 人 | chat 历史 + tool 定义即文档，可复现 |
 | 审计 | 分散在各系统日志，难关联 | 每次 tool call 有 MCP 层 stderr 日志，可聚合 |
 | 误操作风险 | 手工命令无 guardrail | 白名单编译进二进制，写工具需显式参数，可加二次确认 |
@@ -569,7 +569,7 @@ ssh root@100.98.57.55 "kubectl exec -i -n database lurus-pg-1 -- \
 ```mermaid
 graph TD
     START([运维需求]) --> Q1{涉及用户身份 / IAM？\n如重置 MFA、分配角色、签发 PAT}
-    Q1 -- 是 --> ZITADEL[使用 zitadel-mcp\n2l-svc-zitadel-mcp]
+    Q1 -- 是 --> CASDOOR[使用 casdoor-mcp\n2l-svc-casdoor-mcp]
     Q1 -- 否 --> Q2{涉及 K8s 集群 / 数据库？\n如查 pod、重启 deployment、执行 SQL}
     Q2 -- 是 --> Q3{是否只读操作？\n如 logs / describe / SELECT}
     Q3 -- 只读 --> K8S_RO[k8s-mcp\nK8S_MCP_READONLY=1\n2l-svc-k8s-mcp]
@@ -581,7 +581,7 @@ graph TD
     Q4 -- 否 --> MANUAL[⚠ 手工操作\n当前 MCP 工具链未覆盖]
     Q1 -- 是 --> AUDIT{⚠ 高危操作？\n如 grant_iam_role IAM_OWNER}
     AUDIT -- 是 --> CONFIRM[先 dry-run 预览\n二次确认后执行\n见最佳实践]
-    AUDIT -- 否 --> ZITADEL
+    AUDIT -- 否 --> CASDOOR
 ```
 
 选择要点：
@@ -597,10 +597,10 @@ graph TD
 sequenceDiagram
     participant E as 员工
     participant SW as Switch / Claude Desktop\n(MCP Host)
-    participant ZM as zitadel-mcp\n(stdio)
+    participant ZM as casdoor-mcp\n(stdio)
     participant KM as k8s-mcp\n(stdio)
     participant PM as platform-mcp\n(stdio)
-    participant ZA as Zitadel Admin API\nauth.lurus.cn
+    participant ZA as Casdoor Admin API\nauth.lurus.cn
     participant K3S as K3s Master\n100.98.57.55 (SSH)
     participant PL as Platform Internal API\nidentity.lurus.cn
 
@@ -638,16 +638,16 @@ sequenceDiagram
 
 场景：员工发现用户 X 无法登录，怀疑 MFA 绑定异常，需要重置其 MFA 并验证操作成功。
 
-### 第一步：安装 Switch 并挂载 zitadel-mcp
+### 第一步：安装 Switch 并挂载 casdoor-mcp
 
 ```bash
-# 1. 构建 zitadel-mcp（开发机上执行）
-cd 2l-svc-zitadel-mcp
-go build -o ~/bin/zitadel-mcp .
+# 1. 构建 casdoor-mcp（开发机上执行）
+cd 2l-svc-casdoor-mcp
+go build -o ~/bin/casdoor-mcp .
 
 # 2. 确保 SA JSON 已就绪（一次性 bootstrap）
-# 参考 2l-svc-platform/docs/zitadel-bootstrap.md
-ls -la /etc/lurus/zitadel-admin-sa.json   # 应输出 -rw------- (600)
+# 参考 2l-svc-platform/docs/casdoor-bootstrap.md
+ls -la /etc/lurus/casdoor-admin-sa.json   # 应输出 -rw------- (600)
 ```
 
 ### 第二步：配置 mcp.json
@@ -657,25 +657,25 @@ ls -la /etc/lurus/zitadel-admin-sa.json   # 应输出 -rw------- (600)
 ```json
 {
   "mcpServers": {
-    "zitadel": {
-      "command": "/Users/you/bin/zitadel-mcp",
+    "casdoor": {
+      "command": "/Users/you/bin/casdoor-mcp",
       "env": {
-        "ZITADEL_ISSUER": "https://auth.lurus.cn",
-        "ZITADEL_SA_JSON": "/etc/lurus/zitadel-admin-sa.json"
+        "OIDC_ISSUER": "https://auth.lurus.cn",
+        "OIDC_SA_JSON": "/etc/lurus/casdoor-admin-sa.json"
       }
     }
   }
 }
 ```
 
-重启 Switch / Claude Desktop，确认 MCP 连接成功（Switch 状态栏显示 `zitadel ✓`）。
+重启 Switch / Claude Desktop，确认 MCP 连接成功（Switch 状态栏显示 `casdoor ✓`）。
 
 ### 第三步：chat 操作
 
 ```
 员工：把用户 X（user_id: usr_01J9XXXX）的 MFA 重置
 
-Agent：我将调用 zitadel-mcp 的 remove_user_mfa 工具来重置该用户的 MFA。
+Agent：我将调用 casdoor-mcp 的 remove_user_mfa 工具来重置该用户的 MFA。
        操作摘要：
        - 目标：usr_01J9XXXX
        - 操作：删除所有已注册的 MFA 因素（TOTP / WebAuthn）
@@ -691,10 +691,10 @@ Agent：[调用 tools/call remove_user_mfa {"user_id":"usr_01J9XXXX"}]
 
 ### 底层 Go MCP tool 定义片段
 
-以下是 zitadel-mcp `main.go` 中 tool 注册方式（示意，以实际源码为准）：
+以下是 casdoor-mcp `main.go` 中 tool 注册方式（示意，以实际源码为准）：
 
 ```go
-// 2l-svc-zitadel-mcp/main.go
+// 2l-svc-casdoor-mcp/main.go
 tools := []mcp.Tool{
     {
         Name:        "whoami",
@@ -704,7 +704,7 @@ tools := []mcp.Tool{
     },
     {
         Name:        "create_machine_user",
-        Description: "Create a Zitadel machine user (service account)",
+        Description: "Create a Casdoor machine user (service account)",
         InputSchema: mcp.Schema{
             Type:     "object",
             Required: []string{"name"},
@@ -741,11 +741,11 @@ mcp.ServeStdio(tools)
 
 | # | 实践 | 说明 |
 |---|------|------|
-| 1 | ✓ 高危操作走二次确认 | `grant_iam_role` / `rollout_restart` 执行前 agent 应输出操作摘要，员工明确"确认"后再调 tool。当前 zitadel-mcp Roadmap 中有 dry-run 确认机制，v0.1 需在 chat prompt 中手工约束。 |
+| 1 | ✓ 高危操作走二次确认 | `grant_iam_role` / `rollout_restart` 执行前 agent 应输出操作摘要，员工明确"确认"后再调 tool。当前 casdoor-mcp Roadmap 中有 dry-run 确认机制，v0.1 需在 chat prompt 中手工约束。 |
 | 2 | ✗ 不要直接执行无摘要的写操作 | agent 直接无提示执行写工具，员工无法在 chat 记录中还原"谁批准了什么操作"，审计链路断裂。 |
 | 3 | ✓ 每个 tool call 写审计日志 | 三个 server 均将 tool 名称、参数摘要、执行结果输出到 `stderr`。运维机器上收集 `~/.claude/logs/mcp-*.log` 即可形成操作日志。建议定期归档。 |
 | 4 | ✗ 不要静默吞掉 tool call 结果 | agent 收到 `"isError":true` 的响应应立即停止后续关联操作并告知员工，不要继续用错误数据执行下一步。 |
-| 5 | ✓ MCP server 只暴露给受信内网（Tailscale） | zitadel-mcp / k8s-mcp 的目标均为 Tailscale 内网地址（`100.98.57.55` / `auth.lurus.cn`）；二进制本身不开端口。确保 Tailscale 在线，不要把 MCP server 的 SA 凭证或 INTERNAL_API_KEY 暴露在公网可达位置。 |
+| 5 | ✓ MCP server 只暴露给受信内网（Tailscale） | casdoor-mcp / k8s-mcp 的目标均为 Tailscale 内网地址（`100.98.57.55` / `auth.lurus.cn`）；二进制本身不开端口。确保 Tailscale 在线，不要把 MCP server 的 SA 凭证或 INTERNAL_API_KEY 暴露在公网可达位置。 |
 | 6 | ✗ 不要在公网或共享环境中运行 MCP server | stdio 模式天然绑定本机进程，但若误用 SSE 模式并暴露端口到公网，任何可连接该端口的客户端均可执行所有 tool，包括写操作。 |
 | 7 | ✓ 只读场景启用 READONLY 开关 | 客服查询场景、新员工上手阶段，设置 `K8S_MCP_READONLY=1` 和 `PLATFORM_MCP_READONLY=1`，彻底排除误触写工具的可能。 |
 | 8 | ✗ 不要一个 server 开放全权限 | 写工具与读工具混在一起且无 READONLY 开关时，agent 的任何误判都可能触发写操作。只读 vs 写操作应当在配置层面分离。 |
@@ -760,7 +760,7 @@ mcp.ServeStdio(tools)
 
 ### 场景一：Switch + 三个 MCP server——运维全栈 chat
 
-Switch 桌面客户端同时挂载 `zitadel` / `k8s` / `platform` 三个 MCP server，形成**单一入口运维工作台**：
+Switch 桌面客户端同时挂载 `casdoor` / `k8s` / `platform` 三个 MCP server，形成**单一入口运维工作台**：
 
 ```
 运维工程师 chat："部署 platform-core v2.3 镜像，完成后验证 billing 接口正常"
@@ -783,14 +783,14 @@ Agent 自动编排：
 
 ### 场景二：Lutu APP / admin 后台——紧急用户操作 fallback
 
-当 `2l-bs-admin`（Elixir/Phoenix 管理后台）因版本问题无法处理某类 IAM 操作，或 Lutu APP 客服需要紧急处理用户 MFA 锁定时，**zitadel-mcp 作为 fallback 通道**：
+当 `2l-bs-admin`（Elixir/Phoenix 管理后台）因版本问题无法处理某类 IAM 操作，或 Lutu APP 客服需要紧急处理用户 MFA 锁定时，**casdoor-mcp 作为 fallback 通道**：
 
 ```
 客服 chat（通过 Claude Desktop）："用户手机丢失，TOTP 无法使用，需要临时关闭 MFA 让他重新登录"
 
 Agent：
-① zitadel-mcp: whoami() → 验证 SA 凭证有效
-② zitadel-mcp: create_pat(user_id=usr_xxx, expiration_days=1) → 生成临时 1 天 PAT
+① casdoor-mcp: whoami() → 验证 SA 凭证有效
+② casdoor-mcp: create_pat(user_id=usr_xxx, expiration_days=1) → 生成临时 1 天 PAT
    (若 admin 后台有 disable_mfa 工具则优先使用)
 ③ 告知客服：已为用户生成临时登录令牌，有效期 24h，请通过安全渠道发送给用户
 ```
@@ -805,13 +805,13 @@ Agent：
 flowchart TD
     START([MCP 工具链故障]) --> S1{哪个 server 报错？}
 
-    S1 -- zitadel-mcp --> Z1{错误类型}
+    S1 -- casdoor-mcp --> Z1{错误类型}
     Z1 -- "HTTP 401 / clock skew" --> Z2[检查本机时钟\nw32tm /resync\n或 ntpdate pool.ntp.org]
-    Z2 --> Z3{SA JSON 有效？\ncat /etc/lurus/zitadel-admin-sa.json\n检查 userId / key 字段}
-    Z3 -- 无效 --> Z4[重新从 Zitadel 下载 SA JSON\n见 zitadel-bootstrap.md\nchmod 600]
+    Z2 --> Z3{SA JSON 有效？\ncat /etc/lurus/casdoor-admin-sa.json\n检查 userId / key 字段}
+    Z3 -- 无效 --> Z4[重新从 Casdoor 下载 SA JSON\n见 casdoor-bootstrap.md\nchmod 600]
     Z3 -- 有效 --> Z5[重启 Claude Desktop\nMCP server 自动 respawn\nToken cache 重置]
 
-    Z1 -- "binary not found / spawn 失败" --> Z6[检查 mcp.json command 路径\n确认 zitadel-mcp 二进制存在且可执行\nls -la ~/bin/zitadel-mcp]
+    Z1 -- "binary not found / spawn 失败" --> Z6[检查 mcp.json command 路径\n确认 casdoor-mcp 二进制存在且可执行\nls -la ~/bin/casdoor-mcp]
 
     S1 -- k8s-mcp --> K1{错误类型}
     K1 -- "exit status 255 / SSH 超时" --> K2[测试 Tailscale 连通性\ntailscale status\nssh root@100.98.57.55 echo ok]
@@ -829,7 +829,7 @@ flowchart TD
     P1 -- "tool 不存在 / readonly 模式" --> P4[检查 PLATFORM_MCP_READONLY 设置\nREADONLY=1 时写工具不注册]
 
     S1 -- 所有 server --> ALL1{stdio 死锁\nchat 无响应 > 30s}
-    ALL1 --> ALL2[ps aux grep -E zitadel-mcp k8s-mcp platform-mcp\nkill -9 对应 PID\nClaude Desktop 重启后自动 respawn]
+    ALL1 --> ALL2[ps aux grep -E casdoor-mcp k8s-mcp platform-mcp\nkill -9 对应 PID\nClaude Desktop 重启后自动 respawn]
 
     ALL1 --> ALL3{误操作写工具已执行}
     ALL3 -- rollout_restart 错误目标 --> ALL4[ssh root@100.98.57.55\nkubectl rollout undo deployment/<name> -n <ns>]
@@ -847,22 +847,22 @@ appended 253 lines, 4 mermaid charts to mcp.md
 
 > Originally from internal/products/admin.md before sunset 2026-05-10.
 
-### ② Admin + zitadel-mcp：Chat 界面改用户的 Fallback 通道
+### ② Admin + casdoor-mcp：Chat 界面改用户的 Fallback 通道
 
-当运营人员通过 AI Chat 工具（接入 `2l-svc-zitadel-mcp`）执行用户管理操作时，如果 MCP tool 调用失败（Zitadel API 超时、权限不足等），fallback 策略是：
+当运营人员通过 AI Chat 工具（接入 `2l-svc-casdoor-mcp`）执行用户管理操作时，如果 MCP tool 调用失败（Casdoor API 超时、权限不足等），fallback 策略是：
 
 ```
 AI Chat 工具
-  → zitadel-mcp (MCP server, 调 Zitadel Admin API)
+  → casdoor-mcp (MCP server, 调 Casdoor Admin API)
   → [失败] → fallback 提示员工
   → 员工经 identity.lurus.cn 或 zita CLI 操作（admin.lurus.cn 已 SUNSET 2026-05-10）
-  → Zitadel 控制台 / platform-core /admin SPA 执行相同操作
+  → Casdoor 控制台 / platform-core /admin SPA 执行相同操作
   → 写审计日志
 ```
 
 **适用场景**：
-- 批量角色授予（zitadel-mcp 支持批量，Admin 只能单条）
-- 紧急改密/锁号（zitadel-mcp 直接操作 Zitadel，Admin 经 platform-core 中转）
+- 批量角色授予（casdoor-mcp 支持批量，Admin 只能单条）
+- 紧急改密/锁号（casdoor-mcp 直接操作 Casdoor，Admin 经 platform-core 中转）
 - Chat MCP 失败的降级路径（保证任何情况下都有 Web 界面兜底）
 
-<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="git-merge" :size="18"/></span><div><p class="lurus-callout__title">两个通道写同一数据</p><div class="lurus-callout__body">zitadel-mcp 直接操作 Zitadel 用户数据，Admin 经 platform-core 操作 platform DB。确保两者操作的是同一 <code>user_id</code>（Zitadel sub），避免数据不一致。</div></div></div>
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="git-merge" :size="18"/></span><div><p class="lurus-callout__title">两个通道写同一数据</p><div class="lurus-callout__body">casdoor-mcp 直接操作 Casdoor 用户数据，Admin 经 platform-core 操作 platform DB。确保两者操作的是同一 <code>user_id</code>（Casdoor sub），避免数据不一致。</div></div></div>

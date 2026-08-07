@@ -29,7 +29,7 @@ owner: marvin
 | # | 决策 | 状态 | 写于 |
 |---|---|---|---|
 | [0001](./0001-three-tier-envs) | PROD/STAGE/DEV 三层环境划分 | ✅ 实施中 | 2026-04-24 |
-| [0002](./0002-zitadel-as-oidc) | Zitadel 作为统一 OIDC Provider | ✅ live | 2025-09 |
+| [0002](./0002-zitadel-as-oidc) | Casdoor 作为统一 OIDC Provider（原 Zitadel，历史档案） | ✅ live | 2025-09 |
 | [0003](./0003-cnpg-postgres) | PG 用 CNPG operator 而非 RDS | ✅ live | 2025-08 |
 | [0004](./0004-temporal-replaces-cron) | Temporal 替代 cron + outbox | ✅ live | 2026-02 |
 | [0005](./0005-platform-as-billing-source) | 所有付费功能必须经 Platform 计费 | ✅ live | 2025-12 |

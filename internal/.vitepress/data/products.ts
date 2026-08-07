@@ -291,7 +291,7 @@ export const products: InternalProduct[] = [
     consumers: [],
     busFactor: 1,
     owner: 'marvin',
-    // zitadel-mcp / k8s-mcp / platform-mcp 三件 prod + tally-mcp（alpha，binary 待首发；决策见 lurus.yaml lifecycle_index tally-mcp 注 ADR-0011）
+    // casdoor-mcp / k8s-mcp / platform-mcp 三件 prod + tally-mcp（alpha，binary 待首发；决策见 lurus.yaml lifecycle_index tally-mcp 注 ADR-0011）
     riskFlags: [],
     lastReviewed: '2026-05-28',
   },

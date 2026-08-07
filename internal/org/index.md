@@ -53,7 +53,7 @@ ssh root@100.98.57.55 "kubectl get pods -A | grep -v Running | grep -v Completed
 </li>
 <li>
 
-**找凭证。** 1 Password / Bitwarden 共享 vault：marvin 配偶 / 合伙人持有主密码。vault 里包含：Tailscale auth key / Zitadel admin / GHCR PAT / 三丰云 console / 阿里云 / Cloudflare API token。
+**找凭证。** 1 Password / Bitwarden 共享 vault：marvin 配偶 / 合伙人持有主密码。vault 里包含：Tailscale auth key / Casdoor admin / GHCR PAT / 三丰云 console / 阿里云 / Cloudflare API token。
 
 </li>
 <li>

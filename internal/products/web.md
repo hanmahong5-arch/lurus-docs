@@ -38,7 +38,7 @@ Web 产品组下辖两个独立服务，共用一个代码仓库（历史原因�
 | 端口 | 3000 | 4000 |
 | 命名空间 | `lurus-www` | `lurus-webgame` |
 | 数据存储 | 无状态 (纯静态渲染) | PG schema `webgame`（player_scores） |
-| 关键依赖 | 无后端依赖（外链 api/auth/docs） | Platform identity (Zitadel OAuth)、PostgreSQL lurus-pg-rw |
+| 关键依赖 | 无后端依赖（外链 api/auth/docs） | Platform identity (Casdoor OAuth)、PostgreSQL lurus-pg-rw |
 | 部署节点 | cloud-ali-4-2c2g (Aliyun, ICP 备案节点) | cloud-ubuntu-1-16c32g (R1 master, 与 Traefik 同机) |
 | ICP 备案 | 是（阿里云备案 IP 123.57.143.63） | 否（直接走三丰云 43.226.46.164） |
 | 部署策略 | Recreate (ResourceQuota 只允许 1 Pod) | RollingUpdate (maxSurge=1, maxUnavailable=0) |
@@ -327,8 +327,8 @@ push main → test (ExUnit) → build (Elixir mix release)
 | `PHX_HOST` | 硬编码 `webgame.lurus.cn` | LiveView WebSocket host + CORS |
 | `PORT` | 硬编码 `4000` | Bandit 监听端口 |
 | `DATABASE_URL` | 硬编码（含密码） | PG `webgame` schema，**明文在 manifest 中** |
-| `ZITADEL_CLIENT_ID` | Secret `webgame-secret` | OIDC 登录（可选，当前可无账号匿名玩） |
-| `ZITADEL_ISSUER` | 硬编码 `https://auth.lurus.cn` | — |
+| `OIDC_CLIENT_ID` | Secret `webgame-secret` | OIDC 登录（可选，当前可无账号匿名玩） |
+| `OIDC_ISSUER` | 硬编码 `https://auth.lurus.cn` | — |
 | `CHAT_ENABLED` | `false` | 聊天功能关闭 |
 | `RELEASE_TMP` | `/tmp` | BEAM release 临时目录（rootfs 只读时必须指向 emptyDir） |
 
@@ -578,7 +578,7 @@ graph TD
     D -->|否| H{是否特定产品功能？}
 
     H -->|Lucrum 量化| I[放 lucrum.lurus.cn\nGo+Next.js]
-    H -->|平台账户 / 计费| J[放 auth.lurus.cn / api.lurus.cn\nZitadel + Platform]
+    H -->|平台账户 / 计费| J[放 auth.lurus.cn / api.lurus.cn\nCasdoor + Platform]
     H -->|Admin 后台| K[放 admin.lurus.cn\nElixir/Phoenix Admin]
     H -->|其他新产品| L[申请新子域\n遵循 lurus.yaml 注册]
 
@@ -627,7 +627,7 @@ sequenceDiagram
 sequenceDiagram
     participant U as 用户浏览器
     participant WWW as www.lurus.cn<br/>Next.js
-    participant AUTH as auth.lurus.cn<br/>Zitadel OIDC
+    participant AUTH as auth.lurus.cn<br/>Casdoor OIDC
     participant PLAT as api.lurus.cn<br/>Platform
 
     U->>WWW: GET /pricing → 点击"免费注册"
@@ -832,14 +832,14 @@ curl -s -o /dev/null -w "%{http_code}" https://www.lurus.cn/ai-assistant
 
 ## 跨产品集成场景
 
-### ① www + Platform：注册 / 登录跳转 Zitadel
+### ① www + Platform：注册 / 登录跳转 Casdoor
 
-用户在 `www.lurus.cn/pricing` 点击"免费注册"，前端构造 OIDC Authorization Code 请求跳转至 `auth.lurus.cn`（Zitadel），登录/注册完成后携带 code 回调到 `www.lurus.cn/auth/callback`。www 后端用 code 换取 `access_token`，再调用 Platform 内部接口 `GET /v1/user/me`（Bearer token）获取账户信息。全链路无跨域 cookie 共享，所有鉴权通过 OIDC 标准 code flow 完成。
+用户在 `www.lurus.cn/pricing` 点击"免费注册"，前端构造 OIDC Authorization Code 请求跳转至 `auth.lurus.cn`（Casdoor），登录/注册完成后携带 code 回调到 `www.lurus.cn/auth/callback`。www 后端用 code 换取 `access_token`，再调用 Platform 内部接口 `GET /v1/user/me`（Bearer token）获取账户信息。全链路无跨域 cookie 共享，所有鉴权通过 OIDC 标准 code flow 完成。
 
 **关键配置约束**：
 - `auth.lurus.cn` 的 OIDC client 须将 `https://www.lurus.cn/auth/callback` 加入 `redirect_uris` 白名单
 - www 不存储用户密码，session cookie `SameSite=Lax; Secure; HttpOnly`
-- webgame 匿名模式不走此流程；账号绑定是可选项（`ZITADEL_CLIENT_ID` 已配置但 OIDC 登录非强制）
+- webgame 匿名模式不走此流程；账号绑定是可选项（`OIDC_CLIENT_ID` 已配置但 OIDC 登录非强制）
 
 ### ② www + Docs：产品页跳转 docs.lurus.cn
 

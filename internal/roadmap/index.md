@@ -36,7 +36,7 @@ owner: marvin
   - 14 产品手册 ✅
   - 12 SOP ✅
   - ADR / Postmortem 框架 ✅
-  - oauth2-proxy + Zitadel 边缘鉴权 — 5 月初
+  - oauth2-proxy + Casdoor 边缘鉴权 — 5 月初
   - 部署到 R6 → 6 周打磨 → R1
 - **Lutu enterprise demo phase**
   - 当前 internal-tool（dogfood）→ 可向潜在企业客户演示的状态
@@ -67,7 +67,7 @@ owner: marvin
   - 完整 vault + 应急流程文档
   - DR 演练（R1 → R6 切流量）
 - **第一次正式事故复盘**（如果发生 S0/S1）
-- **Zitadel 升级到最新 LTS**
+- **Casdoor 升级到最新 LTS**
 - **MinIO 加 R6 二次备份**（解决 office-win-1 单点）
 
 ### 🌱 意向

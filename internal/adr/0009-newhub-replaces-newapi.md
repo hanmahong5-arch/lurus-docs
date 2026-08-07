@@ -16,7 +16,7 @@ ADR-0006 后，`newapi.lurus.cn`（QuantumNous/new-api fork）成为唯一 LLM �
 
 但 newapi 是**单租户**架构。随着 Switch 演进出三模式（Personal / Reseller / EndUser）、Tally 等需要按租户隔离计费与治理，newapi 缺的能力越来越硬：
 
-- 多租户认证（`tenant_slug` 维度的 Zitadel OIDC）
+- 多租户认证（`tenant_slug` 维度的 Casdoor OIDC）
 - Platform gRPC 计费集成（`ReportUsage` / `WalletDebit`）
 - 日志全文检索（Meilisearch）、Prometheus-format `/metrics` + OTel 一等可观测性（平台侧监控见 [可观测性手册](/ops/observability)）
 - `governance/` / `hub/` / `openrouter_pool/` / `nats/` 等护城河模块（newhub 独有 ~2,183 LOC）

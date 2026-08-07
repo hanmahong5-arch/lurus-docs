@@ -32,7 +32,7 @@ sourcePath: 2l-bs-admin (archived)
 |---|---|
 | 账户 / 渠道 / 用量 / 计费查询与管理 | platform-core **`/admin/v1/*` REST API**（`identity.lurus.cn`，bearer `INTERNAL_API_KEY`）|
 | 命令行运维 | **`zita` CLI**（`cmd/zita`，6 命令组：account / app / audit / dlq / health / tenant）|
-| AI agent 运维 | **`zita-mcp`**（`cmd/zita-mcp`）+ 工具链 [MCP Servers](/products/mcp)（zitadel-mcp / platform-mcp / k8s-mcp）|
+| AI agent 运维 | **`zita-mcp`**（`cmd/zita-mcp`）+ 工具链 [MCP Servers](/products/mcp)（casdoor-mcp / platform-mcp / k8s-mcp）|
 | LLM 渠道 / Token / 日志后台 | newapi 自带 Web Admin（`newapi.lurus.cn`）→ 整合后并入 [newhub](/products/newhub)（`hub.lurus.cn`）|
 
 > **客户侧账号自助**（个人信息 / 钱包 / 订阅）走 `identity.lurus.cn` 控制台，与本运营后台无关——客户**无权**进 `/admin`。

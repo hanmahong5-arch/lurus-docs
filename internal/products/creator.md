@@ -28,7 +28,7 @@ sourcePath: 2c-gui-creator
 
 ## 一句话定位
 
-桌面 AI 内容工厂，单 `.exe` 分发，零外部运行时依赖。用户粘贴一条视频链接，Creator 自动调用 yt-dlp 下载、Whisper 转写、接 Newapi（`api.lurus.cn/v1`）驱动 LLM 改写，最终通过 chromedp 将草稿投递到微信公众号、抖音、小红书等平台。不运行在 K8s，所有数据存本地 SQLite；平台计费通过 Zitadel JWT 调用 `identity.lurus.cn`。
+桌面 AI 内容工厂，单 `.exe` 分发，零外部运行时依赖。用户粘贴一条视频链接，Creator 自动调用 yt-dlp 下载、Whisper 转写、接 Newapi（`api.lurus.cn/v1`）驱动 LLM 改写，最终通过 chromedp 将草稿投递到微信公众号、抖音、小红书等平台。不运行在 K8s，所有数据存本地 SQLite；平台计费通过 Casdoor JWT 调用 `identity.lurus.cn`。
 
 ## 速查
 
@@ -40,7 +40,7 @@ sourcePath: 2c-gui-creator
 | 数据目录 | `%APPDATA%\lurus-creator\` |
 | LLM 网关 | `https://api.lurus.cn/v1`（默认，用户可覆盖） |
 | 平台计费 | `https://identity.lurus.cn` (user JWT，`/api/v1/wallet`) |
-| Auth | Zitadel OIDC PKCE → `auth.lurus.cn`，本地 callback `:31415` |
+| Auth | Casdoor OIDC PKCE → `auth.lurus.cn`，本地 callback `:31415` |
 | 关键依赖 | yt-dlp, ffmpeg (懒下载至 `%APPDATA%\lurus-creator\bin\`)，chromedp，Chrome/Edge |
 | 部署目标 | 桌面 Windows，无 K8s，无容器 |
 | 命名空间 | 无（桌面进程） |
@@ -62,7 +62,7 @@ flowchart TB
     subgraph External["外部服务"]
         GW["Lurus Gateway\napi.lurus.cn/v1\n(Newapi 中转)"]
         PLT["Platform\nidentity.lurus.cn\n/api/v1/wallet"]
-        AUTH["Zitadel OIDC\nauth.lurus.cn"]
+        AUTH["Casdoor OIDC\nauth.lurus.cn"]
     end
 
     subgraph LocalProc["本地子进程 (懒启动)"]
@@ -237,7 +237,7 @@ cd frontend && bun install && bun run build && bunx tsc --noEmit
 ```
 %APPDATA%\lurus-creator\
 ├── settings.json          # 全局设置（线程安全 JSON store）
-├── auth.enc               # AES-256 加密 Zitadel tokens + gateway_token
+├── auth.enc               # AES-256 加密 Casdoor tokens + gateway_token
 ├── bin\                   # 懒下载二进制：yt-dlp.exe, ffmpeg.exe, ffprobe.exe
 ├── devfactory\
 │   ├── devfactory.db      # 项目/Epic/Story/PipelineRun/BudgetLedger

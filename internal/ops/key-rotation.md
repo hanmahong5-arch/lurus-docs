@@ -12,8 +12,8 @@ owner: marvin
 
 | 类别 | 名称 | 用途 | 上次轮换 | 周期 |
 |---|---|---|---|---|
-| 认证 | Zitadel admin | 管理用户、应用注册 | ? | 90 天 |
-| 认证 | Zitadel SA JWT (各 MCP) | MCP server 调 Zitadel API | ? | 180 天 |
+| 认证 | Casdoor admin | 管理用户、应用注册 | ? | 90 天 |
+| 认证 | Casdoor SA JWT (各 MCP) | MCP server 调 Casdoor API | ? | 180 天 |
 | 内部 API | `INTERNAL_API_KEY` | platform 内部 API 鉴权 | ? | 90 天 |
 | GitHub | GHCR push PAT | CI 推镜像 | ? | 180 天 |
 | GitHub | repo deploy key | CI checkout | ? | 不轮换（可读） |
@@ -43,12 +43,12 @@ owner: marvin
 
 ## 各类型的具体步骤
 
-### Zitadel Service Account JWT
+### Casdoor Service Account JWT
 
 <ol class="lurus-steps">
 <li>
 
-在 Zitadel UI 新建 SA（或用 zitadel-mcp tool `create_service_account`），拿到 new SA JSON：
+在 Casdoor UI 新建 SA（或用 casdoor-mcp tool `create_service_account`），拿到 new SA JSON：
 
 ```bash
 ssh root@100.98.57.55
@@ -60,7 +60,7 @@ ssh root@100.98.57.55
 把 new SA JSON 注入到 K8s secret（增量加，旧的还在；新 key 名加 `-new` 后缀）：
 
 ```bash
-kubectl get secret zitadel-sa -n <ns> -o yaml > /tmp/old.yaml
+kubectl get secret casdoor-sa -n <ns> -o yaml > /tmp/old.yaml
 # 编辑加入新 key（key 名加 -new 后缀）
 kubectl apply -f /tmp/new.yaml
 ```
@@ -75,7 +75,7 @@ kubectl rollout restart deployment/<name> -n <ns>
 ```
 
 </li>
-<li>24 小时后 Zitadel UI 删旧 SA。</li>
+<li>24 小时后 Casdoor UI 删旧 SA。</li>
 <li>K8s secret 删旧 key 字段。</li>
 </ol>
 
@@ -159,7 +159,7 @@ ssh root@100.98.57.55 "kubectl annotate certificate lurus-cn-wildcard-tls cert-m
 | 月份 | 演练目标 |
 |---|---|
 | 1 月 | INTERNAL_API_KEY |
-| 4 月 | Zitadel SA + GHCR PAT |
+| 4 月 | Casdoor SA + GHCR PAT |
 | 7 月 | MinIO + PG passwords |
 | 10 月 | Cloudflare + Tailscale + Stalwart |
 
@@ -167,4 +167,4 @@ ssh root@100.98.57.55 "kubectl annotate certificate lurus-cn-wildcard-tls cert-m
 
 ## 已知坑
 
-<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">轮换陷阱</p><div class="lurus-callout__body"><ul><li>部分服务的 secret 是<strong>写死在 manifest</strong> 而不是 K8s secret 引用 — 改这类 secret 要直接改 manifest，git push。</li><li>Zitadel SA 删除后已签发的 JWT 还有效到 exp（默认 1 小时）— 不算严重但影响"立即吊销"。</li><li>Cloudflare API token 不轮换会逐渐积累 — token 列表 UI 一年看一次。</li></ul></div></div></div>
+<div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18"/></span><div><p class="lurus-callout__title">轮换陷阱</p><div class="lurus-callout__body"><ul><li>部分服务的 secret 是<strong>写死在 manifest</strong> 而不是 K8s secret 引用 — 改这类 secret 要直接改 manifest，git push。</li><li>Casdoor SA 删除后已签发的 JWT 还有效到 exp（默认 1 小时）— 不算严重但影响"立即吊销"。</li><li>Cloudflare API token 不轮换会逐渐积累 — token 列表 UI 一年看一次。</li></ul></div></div></div>

@@ -17,7 +17,7 @@
 | 中小商户进销存 / 自动开单 | [Tally](/products/tally) |
 | 做 iOS/Android 端用户入口 | [Lutu](/products/lutu) |
 | 用户身份 / 钱包 / 订阅 / 计费 | [Platform](/products/platform) |
-| 内部 chat 化运维 zitadel/k8s/platform | [MCP servers](/products/mcp) |
+| 内部 chat 化运维 casdoor/k8s/platform | [MCP servers](/products/mcp) |
 | 内部业务后台管账 / 退款 / 审计 | [Admin](/products/admin) |
 | 公网门面页 / 落地页 / 游戏 | [Web](/products/web) |
 
@@ -76,7 +76,7 @@ graph TD
 | "做短视频内容批量生产" | Creator + Newapi + MemX | 配方 #6 |
 | "我们已经有 LangGraph 项目" | Lumen 替换 checkpointer | 配方 #7 |
 | "我自己卖 AI 服务给客户，要计费" | Newapi + Platform | 配方 #8 |
-| "客户公司用 Azure AD，能接吗" | Platform + zitadel 联邦 | 配方 #4 |
+| "客户公司用 Azure AD，能接吗" | Platform + casdoor 联邦 | 配方 #4 |
 | "想做 AI app，最好 iOS / 安卓都有" | Lutu（Flutter）+ Platform | 单移动栈 |
 | "中后台管理用什么" | Admin（内部用）/ 客户自建 | Admin 不开放 |
 
@@ -94,7 +94,7 @@ graph LR
 
   Start3[已有 LangGraph] --> Add3[换 LumenCheckpointer<br/>0 改动迁移]
 
-  Start4[企业 SSO 已有] --> Add4a[zitadel 联邦]
+  Start4[企业 SSO 已有] --> Add4a[casdoor 联邦]
   Start4 --> Add4b[全产品 SSO]
 
   classDef start fill:#fef0e8,stroke:#C67B5C
@@ -135,7 +135,7 @@ graph TD
 |---|---|
 | 自建 vs Lurus 总成本 (TCO) | [能力矩阵](/cross/capability-matrix) + [集成配方](/cross/integration-recipes) |
 | 数据私有化合规 | [adr/0001-three-tier-envs](/adr/0001-three-tier-envs) |
-| SSO 联邦 | 配方 #4 + [adr/0002-zitadel-as-oidc](/adr/0002-zitadel-as-oidc) |
+| SSO 联邦 | 配方 #4 + [adr/0002-casdoor-as-oidc](/adr/0002-casdoor-as-oidc) |
 | 24/7 可用性 | [ops/incident-response](/ops/incident-response) |
 | 数据备份 | [ops/db-backup](/ops/db-backup) |
 | 升级路径 / roadmap | [/roadmap/](/roadmap/) |
@@ -152,7 +152,7 @@ graph TD
 | Buffer / Zenscape | Creator | AI 原生 pipeline + 多平台 |
 | 米筐 / 聚宽 | Lucrum | 自托管 + AI 原生策略生成 |
 | 金蝶 / 管家婆 | Tally（规划） | AI-native + 拍照入库 |
-| Auth0 / Keycloak | Platform Auth (zitadel) | 内嵌钱包/订阅，统一身份+计费 |
+| Auth0 / Keycloak | Platform Auth (casdoor) | 内嵌钱包/订阅，统一身份+计费 |
 | Retool / Forest Admin | Admin（内部不开放） | 客户应自建 |
 
 ## 用法

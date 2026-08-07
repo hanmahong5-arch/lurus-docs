@@ -21,7 +21,7 @@ owner: marvin
 
 由现有员工准备：
 
-- [ ] Zitadel 加用户到 `lurus-staff` 组
+- [ ] Casdoor 加用户到 `lurus-staff` 组
 - [ ] Tailscale 邀请到 `lurus.cn` 网络
 - [ ] GitHub 加到 `hanmahong5-arch` org（read 权限）
 - [ ] 邮箱 `<name>@lurus.cn`（自动 provision via Stalwart）
@@ -35,8 +35,8 @@ owner: marvin
 ### 检查清单
 
 - [ ] 公司邮箱可收发（`<name>@lurus.cn`）
-- [ ] Zitadel 登录通：访问 `auth.lurus.cn` 应能用公司邮箱登录
-- [ ] 用 Zitadel 单点登录 `identity.lurus.cn`（账号中心，原 admin.lurus.cn 已 SUNSET 2026-05-10）/ `forge.lurus.cn` / `internal.lurus.cn`（本站）
+- [ ] Casdoor 登录通：访问 `auth.lurus.cn` 应能用公司邮箱登录
+- [ ] 用 Casdoor 单点登录 `identity.lurus.cn`（账号中心，原 admin.lurus.cn 已 SUNSET 2026-05-10）/ `forge.lurus.cn` / `internal.lurus.cn`（本站）
 - [ ] Tailscale 装好：`100.122.83.20`（R6）和 `100.98.57.55`（R1 master，read 权限可 ping）能访问
 - [ ] GitHub 二次验证 + SSH key 已绑定
 - [ ] 本地装好 Bun（**禁用 npm/yarn**）、Go 1.25、Rust stable、Python 3.12
@@ -173,7 +173,7 @@ ArgoCD 同步到 R1（如果是 PROD 服务）/ docker compose redeploy 到 R6�
 
 - [ ] 移交对应产品的 owner
 - [ ] 文档里你的名字替换为新 owner
-- [ ] Zitadel 移除 `lurus-staff` 组
+- [ ] Casdoor 移除 `lurus-staff` 组
 - [ ] GitHub 移除 org
 - [ ] Tailscale 移除节点 + 自动注销 device
 - [ ] 邮箱保留 30 天 forwarding 后归档

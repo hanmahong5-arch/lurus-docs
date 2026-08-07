@@ -321,7 +321,7 @@ final_score = (keyword_weight * 0.6 + semantic_weight * 0.4)
 ### Lucrum（advisor 持久记忆）
 
 ```
-user_id = Zitadel sub (UUID 格式)
+user_id = Casdoor sub (UUID 格式)
 接入方式: REST API，X-API-Key 在平台内部共享 Secret
 用途: AI advisor 记住用户的交易偏好、止损策略、过往对话摘要
 ```
@@ -575,7 +575,7 @@ print("所有记忆已清除")
 Kova 执行长任务时，每个 agent step 完成后将关键发现写入 Memorus（`agent_id=kova_{task_id}`）；下一轮任务启动前，先 `search_memory` 召回历史经验注入 system prompt。
 
 - 接入方式：kova-memory（Rust `MemoryProvider` trait）→ 委托 Memorus REST（有 K8s 时）或进程内 SQLite（无 K8s 时）
-- `user_id`：Zitadel sub；`agent_id`：`kova_{task_type}`
+- `user_id`：Casdoor sub；`agent_id`：`kova_{task_type}`
 - 典型写入：工具调用结果、错误修复路径、用户纠正行为（ACE Reflector `error_fix` / `retry_success` 规则自动捕获）
 - ⚠ ACE hybrid 写入延迟 ~21s，建议 Kova step 异步写入（fire-and-forget），不阻塞主流程
 
@@ -583,7 +583,7 @@ Kova 执行长任务时，每个 agent step 完成后将关键发现写入 Memor
 
 Lucrum AI advisor 在用户明确表达风险偏好时（如"我只做低风险"、"止损改成 8%"），调用 `POST /memories` 写入偏好记忆。
 
-- `user_id`：Zitadel sub；`metadata.category`：`trading_preference`
+- `user_id`：Casdoor sub；`metadata.category`：`trading_preference`
 - 后续每次对话：`GET /memories/search?query=风险偏好&user_id=...` 召回，注入 advisor prompt
 - 偏好变更：先 `DELETE` 旧记忆，再写入新记忆（带 `is_correction: true`），ACE Curator 不会残留冲突条目
 - 合规要求：用户注销时调用 `GET /memories?user_id=...` 列举后批量 `DELETE`（GDPR right to erasure）

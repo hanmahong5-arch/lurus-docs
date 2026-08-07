@@ -39,7 +39,7 @@ Lurus Switch 是一款面向开发者的桌面 AI 网关应用（Wails Go + Reac
 | 发行方式 | GitHub Releases 自更新（`lurus-dev/lurus-switch`）|
 | 部署目标 | 用户本机（Windows / macOS / Linux），无 K8s |
 | 数据存储 | 本地 SQLite（`modernc.org/sqlite`）+ 本机文件系统 JSON |
-| 关键依赖 | Lurus API Hub `api.lurus.cn/api/v2/*`，Zitadel OIDC PKCE（port 31416）|
+| 关键依赖 | Lurus API Hub `api.lurus.cn/api/v2/*`，Casdoor OIDC PKCE（port 31416）|
 | App 数据目录 | Windows: `%APPDATA%\lurus-switch\`，macOS: `~/Library/Application Support/lurus-switch/`，Linux: `~/.lurus-switch/` |
 | 本地网关端口 | 19090（默认，可配置）|
 | 版本注入 | `-ldflags "-X main.AppVersion=x.y.z"` |
@@ -69,7 +69,7 @@ flowchart TB
 
     GW -->|"HTTP 代理\nBearer token"| Cloud["Lurus Cloud\napi.lurus.cn"]
     BE -->|"账单 / 配额查询\n/api/v2/*"| Cloud
-    BE -->|"OIDC PKCE\n:31416 回调"| Zitadel["auth.lurus.cn\n(Zitadel)"]
+    BE -->|"OIDC PKCE\n:31416 回调"| Casdoor["auth.lurus.cn\n(Casdoor)"]
     BE -->|"版本检查\nGitHub Releases"| GitHub["github.com\nlurus-dev/lurus-switch"]
 
     subgraph Tools["本地 AI CLI 工具（被管理对象）"]
@@ -146,7 +146,7 @@ sequenceDiagram
 | `internal/analytics/` | 用户行为事件记录（JSONL，`analytics.jsonl`）|
 | `internal/billing/` | Lurus Cloud 账单客户端（`/api/v2/user/info`、充值、订阅、兑换码）|
 | `internal/relay/` | Relay 端点管理（lurus / third_party / custom），含健康检查 latency |
-| `internal/auth/` | Zitadel OIDC PKCE 会话（AES-GCM 加密 token，存 `auth.enc`）|
+| `internal/auth/` | Casdoor OIDC PKCE 会话（AES-GCM 加密 token，存 `auth.enc`）|
 | `internal/updater/` | 自更新（GitHub Releases），Windows BAT 延迟替换，校验文件 checksum |
 | `internal/envmgr/` | API Key 扫描与更新（跨工具，脱敏显示 `xxxx****`）|
 | `internal/toolhealth/` | 工具配置健康检查（green / yellow / red）|
@@ -249,7 +249,7 @@ wails build -ldflags "-X main.AppVersion=1.2.3"
 
 Token 注入到 billingClient 的优先级：
 
-1. **OIDC session gateway token**：Zitadel PKCE 登录后，AES-GCM 加密存储于 `auth.enc`，启动时自动加载
+1. **OIDC session gateway token**：Casdoor PKCE 登录后，AES-GCM 加密存储于 `auth.enc`，启动时自动加载
 2. **手动 UserToken**：用户在 Proxy Settings 页面粘贴的 Bearer token
 
 ### 本地 API 网关
@@ -380,7 +380,7 @@ SelfUpdater.ApplyUpdate()
 | 2025-Q3 | 选 Wails v2 而非 Electron | 单 exe 发行，内存占用更低，Go 后端复用现有工具链 |
 | 2025-Q3 | 本地 SQLite 使用 `modernc.org/sqlite`（纯 Go）| 避免 CGO 跨平台编译复杂性；Wails 本身已强制 CGO，但 DB 层保持独立 |
 | 2025-Q4 | 双网关架构（`gateway.Server` + `serverctl.Manager` legacy）| 新架构渐进替换，旧 newapi 二进制提供完整管理 UI，新架构专注计量与代理 |
-| 2026-Q1 | OIDC PKCE 认证（Zitadel，port 31416）| 统一 Lurus 平台身份，无需用户手动管理 API Key；gateway token 自动注入 |
+| 2026-Q1 | OIDC PKCE 认证（Casdoor，port 31416）| 统一 Lurus 平台身份，无需用户手动管理 API Key；gateway token 自动注入 |
 | 2026-Q1 | analytics 用 JSONL 而非 SQLite | 写入简单（append-only），无需 schema，方便日志轮转；Agent 数据才上 SQLite |
 
 ## TODO / Roadmap
@@ -546,7 +546,7 @@ Switch 是纯桌面端应用，不部署到 K8s，无 Pod、无 Ingress、无 PV
 
 ### 决策者视角
 
-Switch 整合了 ChatGPT 桌面客户端、Aider、Claude Code CLI、Codex CLI 等多个工具的功能入口，用一个 GUI 统一管理。同时内置 MCP Server 配置能力，让非工程师也能通过对话界面使用 zitadel-mcp（管理用户）、k8s-mcp（排查 pod）等运维工具。成本监控和配额管理集成在同一界面，避免多工具账单分散。
+Switch 整合了 ChatGPT 桌面客户端、Aider、Claude Code CLI、Codex CLI 等多个工具的功能入口，用一个 GUI 统一管理。同时内置 MCP Server 配置能力，让非工程师也能通过对话界面使用 casdoor-mcp（管理用户）、k8s-mcp（排查 pod）等运维工具。成本监控和配额管理集成在同一界面，避免多工具账单分散。
 
 ---
 
@@ -618,20 +618,20 @@ sequenceDiagram
     participant Gen as generator.claude_generator
     participant Cfg as ~/.claude/settings.json
     participant Tool as Claude Code
-    participant MCP as MCP Server 子进程<br/>(zitadel-mcp / k8s-mcp)
+    participant MCP as MCP Server 子进程<br/>(casdoor-mcp / k8s-mcp)
 
-    User->>SW: 选择 MCP Preset "zitadel-mcp"\n点击"应用到 Claude"
+    User->>SW: 选择 MCP Preset "casdoor-mcp"\n点击"应用到 Claude"
     SW->>Gen: GenerateConfig(preset)
-    Gen->>Cfg: 写入 mcpServers.zitadel-mcp\n{command, args, env}
+    Gen->>Cfg: 写入 mcpServers.casdoor-mcp\n{command, args, env}
     SW-->>User: ✓ 配置已写入，请重启 Claude Code
 
     User->>Tool: 重启 Claude Code
-    Tool->>MCP: stdio 启动 zitadel-mcp 子进程
+    Tool->>MCP: stdio 启动 casdoor-mcp 子进程
     MCP-->>Tool: 返回 tools list\n(list-users, create-user, reset-password…)
 
     User->>Tool: "帮我禁用用户 alice@lurus.cn"
     Tool->>MCP: call tool: disable-user\n{email: "alice@lurus.cn"}
-    MCP->>MCP: 调用 Zitadel Admin API\n(bearer ZITADEL_PAT)
+    MCP->>MCP: 调用 Casdoor Admin API\n(bearer OIDC_PAT)
     MCP-->>Tool: 执行结果: success
     Tool-->>User: "已禁用 alice@lurus.cn"
 ```
@@ -712,7 +712,7 @@ Claude Code 会调用 k8s-mcp 的 `kubectl-get-pods` 工具，返回真实 pod �
 | ✗ | 所有对话全部存 SQLite | 本地数据积累，存在合规风险；SQLite 增大也影响启动性能 |
 | ✓ | 使用 Group Token 并限流 | 在 newapi 后台按项目/团队创建 Group Token，设置 RPM/TPM 上限，防止单点超支 |
 | ✗ | 直接用 root token 配置所有工具 | root token 泄露影响全账户；无法按项目追踪成本 |
-| ✓ | MCP Server 配合 zitadel auth 鉴权 | zitadel-mcp / k8s-mcp 均支持 bearer token 校验，不要暴露无鉴权的 MCP endpoint |
+| ✓ | MCP Server 配合 casdoor auth 鉴权 | casdoor-mcp / k8s-mcp 均支持 bearer token 校验，不要暴露无鉴权的 MCP endpoint |
 | ✗ | MCP Server 直接公网无鉴权暴露 | 任何人可调用 admin 操作，极高安全风险 |
 | ✓ | 定期查看 Switch Insights 的成本监控 | 关注 DailySummary / ModelSummary，及时发现异常调用量 |
 | ✗ | 不看账单，月底才发现超支 | token 成本无感知累积，难以追溯到具体工具或任务 |
@@ -723,17 +723,17 @@ Claude Code 会调用 k8s-mcp 的 `kubectl-get-pods` 工具，返回真实 pod �
 
 ## 跨产品集成场景
 
-### 场景 ①：Switch + zitadel-mcp — 运维直接通过对话管理用户
+### 场景 ①：Switch + casdoor-mcp — 运维直接通过对话管理用户
 
-**背景**：运营同学需要临时禁用某个企业账户，但没有 Zitadel 后台权限，且走工单流程慢。
+**背景**：运营同学需要临时禁用某个企业账户，但没有 Casdoor 后台权限，且走工单流程慢。
 
 **接入方式**：
-1. 工程师在 Switch 中配置 `zitadel-mcp` preset（见"端到端完整例子"），将 `ZITADEL_PAT`（Personal Access Token，具有 Organization Admin 权限）写入 env。
+1. 工程师在 Switch 中配置 `casdoor-mcp` preset（见"端到端完整例子"），将 `OIDC_PAT`（Personal Access Token，具有 Organization Admin 权限）写入 env。
 2. 运营同学在自己机器上通过 Switch 导入同一 preset（从 git repo pull），应用到 Claude Code。
 3. 运营打开 Claude Code，直接输入：`"帮我把 alice@example.com 的账户状态改为 inactive"`。
-4. Claude Code 通过 zitadel-mcp 调用 Zitadel Admin API，返回操作结果。
+4. Claude Code 通过 casdoor-mcp 调用 Casdoor Admin API，返回操作结果。
 
-**安全边界**：`ZITADEL_PAT` 权限最小化（仅 org 级别，不授 instance admin）；Switch env 字段在本地加密存储，不明文出现在 `settings.json`。
+**安全边界**：`OIDC_PAT` 权限最小化（仅 org 级别，不授 instance admin）；Switch env 字段在本地加密存储，不明文出现在 `settings.json`。
 
 ### 场景 ②：Switch + k8s-mcp — 开发者通过对话排查 K3s pod
 
@@ -745,7 +745,7 @@ Claude Code 会调用 k8s-mcp 的 `kubectl-get-pods` 工具，返回真实 pod �
 3. k8s-mcp 通过 SSH 执行 `kubectl logs`，返回真实日志内容。
 4. 进一步追问："pod 的 CPU/Memory limit 是多少？目前用了多少？"—— k8s-mcp 调用 `kubectl top pod` 和 `kubectl describe pod` 返回资源使用情况。
 
-**注意**：k8s-mcp 操作直接影响生产集群，`ZITADEL_PAT` / `K8S_MCP_AUTH_TOKEN` 等敏感 env 不要提交到公共 repo；团队内部 git repo 配合 `.gitignore` 或 secret 管理工具存储。
+**注意**：k8s-mcp 操作直接影响生产集群，`OIDC_PAT` / `K8S_MCP_AUTH_TOKEN` 等敏感 env 不要提交到公共 repo；团队内部 git repo 配合 `.gitignore` 或 secret 管理工具存储。
 
 ---
 

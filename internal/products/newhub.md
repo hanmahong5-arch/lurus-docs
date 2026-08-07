@@ -26,7 +26,7 @@ sourcePath: 2b-svc-newhub
 
 ## 一句话定位
 
-Newhub 是 Lurus 新一代**多租户 LLM 网关 / AI 数据处理枢纽**，叠在 newapi 的中转能力之上，补齐了 newapi 缺失的多租户能力：Zitadel OIDC 租户认证（`tenant_slug`）、Platform gRPC 计费集成（`ReportUsage` / `WalletDebit`）、Meilisearch 日志全文检索、可观测性。它是 **Switch 三模式（Personal / Reseller / EndUser）的远端后端**，也是 newapi（ADR D1）退役后的归宿——`hub.lurus.cn` 将取代 `newapi.lurus.cn` 成为唯一对外网关。
+Newhub 是 Lurus 新一代**多租户 LLM 网关 / AI 数据处理枢纽**，叠在 newapi 的中转能力之上，补齐了 newapi 缺失的多租户能力：Casdoor OIDC 租户认证（`tenant_slug`）、Platform gRPC 计费集成（`ReportUsage` / `WalletDebit`）、Meilisearch 日志全文检索、可观测性。它是 **Switch 三模式（Personal / Reseller / EndUser）的远端后端**，也是 newapi（ADR D1）退役后的归宿——`hub.lurus.cn` 将取代 `newapi.lurus.cn` 成为唯一对外网关。
 
 <div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="gauge" :size="18"/></span><div><p class="lurus-callout__title">监控</p><div class="lurus-callout__body">平台监控统一走 <strong>Netdata 自托管 Agent</strong>（服务侧继续以 prometheus-format <code>/metrics</code> 暴露 OTel 指标，由 Netdata go.d 主动抓取），详见 <a href="/ops/observability">/ops/observability</a>。</div></div></div>
 
@@ -41,7 +41,7 @@ Newhub 是 Lurus 新一代**多租户 LLM 网关 / AI 数据处理枢纽**，叠
 | 端口 | pod:3000 / svc:8850 |
 | 命名空间 | lurus-system |
 | 数据存储 | PG schema `lurus_api`（GORM auto-migrate）+ Redis DB 0（`redis.lurus-system.svc:6379/0`）|
-| 关键依赖 | Platform gRPC（`IDENTITY_GRPC_ADDR`）· Zitadel（`auth.lurus.cn`）· Meilisearch（日志检索）· newapi（整合并入中）|
+| 关键依赖 | Platform gRPC（`IDENTITY_GRPC_ADDR`）· Casdoor（`auth.lurus.cn`）· Meilisearch（日志检索）· newapi（整合并入中）|
 | 部署目标 | **R6 stage**（`100.122.83.20` Tailscale）|
 | 角色 | `multi-tenant-hub-layer` |
 
@@ -55,7 +55,7 @@ flowchart TB
   end
 
   subgraph hub["lurus-newhub (hub.lurus.cn · svc:8850)"]
-    AUTH["Zitadel OIDC\n多租户认证 (tenant_slug)"]
+    AUTH["Casdoor OIDC\n多租户认证 (tenant_slug)"]
     V2["V2 多租户 API\n/api/v2/:tenant_slug/* + /api/v2/switch/*"]
     V1["V1 兼容管理 API\n/api/{token,channel,redemption,log,...}/*"]
     RELAY["Relay 层\n(并入 newapi 中转能力)"]
@@ -91,7 +91,7 @@ flowchart TB
 
 ## 数据契约
 
-- **上游能力**：Platform gRPC（`ReportUsage` 计量 / `WalletDebit` 扣款，经 `IDENTITY_GRPC_ADDR`）；Zitadel OIDC（`tenant_slug` 解析）。
+- **上游能力**：Platform gRPC（`ReportUsage` 计量 / `WalletDebit` 扣款，经 `IDENTITY_GRPC_ADDR`）；Casdoor OIDC（`tenant_slug` 解析）。
 - **整合对象**：newapi —— ADR D1 退役并入，**非长期 fork 同步**。
 - **下游消费者**：Switch（三模式消费 V2 + V1 admin endpoints）。
 - **NATS**：在 `LLM_EVENTS` 上发布调用事件（publisher 已 live——这是 newapi 长期缺失的能力）。

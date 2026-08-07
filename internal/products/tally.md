@@ -49,7 +49,7 @@ Lurus Tally 是一款 AI-native 智能进销存 SaaS，通过**行业 Profile �
 | Redis DB | 5 |
 | NATS stream | `PSI_EVENTS` |
 | Migration head | 12（27 张表 + 1 MV + 11 RLS policies）；计划扩展到 migration 000021 |
-| 关键依赖 | platform :18104 · Hub · Kova · Memorus :8880 · notification :18900 · Zitadel |
+| 关键依赖 | platform :18104 · Hub · Kova · Memorus :8880 · notification :18900 · Casdoor |
 | 部署目标 | Stage → R6（43.226.38.244）；Prod → R1（100.98.57.55，满足毕业门槛后） |
 | 源码目录 | `2b-svc-psi/` |
 
@@ -144,7 +144,7 @@ flowchart TB
         KV["2b-svc-kova\nAgent 引擎"]
         MEM["2b-svc-memorus\n:8880 RAG"]
         NOTIF["notification\n:18900"]
-        ZIT["Zitadel\nauth.lurus.cn\nOIDC/PKCE"]
+        ZIT["Casdoor\nauth.lurus.cn\nOIDC/PKCE"]
     end
 
     UA -->|HTTPS tally.lurus.cn| WEB
@@ -375,7 +375,7 @@ graph LR
     T -->|Kova REST API Key| KV["2b-svc-kova\nAgent 持久执行引擎"]
     T -->|MEMORUS_API_KEY\nHTTP REST| MEM["2b-svc-memorus :8880\nRAG 历史记忆"]
     T -->|bearer INTERNAL_API_KEY\nPOST /internal/v1/notify| NOTIF["notification :18900\nWebSocket/邮件/FCM"]
-    T <-->|OIDC/PKCE JWT| ZIT["Zitadel\nauth.lurus.cn"]
+    T <-->|OIDC/PKCE JWT| ZIT["Casdoor\nauth.lurus.cn"]
 ```
 
 | 能力 | 提供者 | Tally 使用方式 | 节省建设成本估算 |
@@ -386,7 +386,7 @@ graph LR
 | memory | Memorus :8880 | retail：记录客户购买历史；cross_border：B2B 采购偏好 RAG | 3-6 个月 |
 | agent-execution | Kova REST :3002 | 补货 Agent、滞销预警 Agent 注册与触发 | 6-9 个月 |
 | notification | notification :18900 | 库存预警、补货建议、单据状态推送 | 1 个月 |
-| auth | Zitadel (auth.lurus.cn) | OIDC/PKCE，Next.js BFF callback，JWT 验证 | 2-3 个月 |
+| auth | Casdoor (auth.lurus.cn) | OIDC/PKCE，Next.js BFF callback，JWT 验证 | 2-3 个月 |
 
 ### 6.1 Kova 补货 Agent 工作流
 
@@ -574,7 +574,7 @@ ArgoCD auto-sync → lurus-tally namespace
 
 | 路径 | 职责 |
 |---|---|
-| `app/(auth)/` | Zitadel OIDC callback、登录页 |
+| `app/(auth)/` | Casdoor OIDC callback、登录页 |
 | `app/(dashboard)/` | 主应用路由 |
 | `app/(dashboard)/pos/page.tsx` | POS 收银台（retail profile） |
 | `app/(dashboard)/sync-conflicts/` | 离线冲突裁决（V2） |
@@ -886,7 +886,7 @@ sequenceDiagram
 
 **第一步：开通 Tally 订阅**
 
-商户在 `tally.lurus.cn` 注册，Zitadel OIDC 完成身份验证后，系统自动调用 Platform 创建租户并激活免费试用：
+商户在 `tally.lurus.cn` 注册，Casdoor OIDC 完成身份验证后，系统自动调用 Platform 创建租户并激活免费试用：
 
 ```go
 // tally-backend: internal/app/billing/activate.go
@@ -973,7 +973,7 @@ export function QuickCreateDialog() {
 ```bash
 # 真实 API 调用示例
 curl -X POST https://tally.lurus.cn/api/v1/sales-orders \
-  -H "Authorization: Bearer <zitadel_access_token>" \
+  -H "Authorization: Bearer <oidc_access_token>" \
   -H "Content-Type: application/json" \
   -d '{
     "customer_id": "01HZ3KPARTNER001",

@@ -44,11 +44,11 @@ Lurus Platform 是全公司唯一的账号、钱包、计费、订阅、通知�
 | NATS Stream | `IDENTITY_EVENTS` |
 | Temporal Workflows | `SubscriptionRenewal`, `PaymentCompletion`, `SubscriptionLifecycle`, `ExpiryScanner` |
 | Temporal Namespace | 默认 (同 cluster Temporal server) |
-| 关键依赖 | Zitadel (auth.lurus.cn), PostgreSQL (lurus-pg-rw.database.svc:5432), Redis, NATS, Temporal |
+| 关键依赖 | Casdoor (auth.lurus.cn), PostgreSQL (lurus-pg-rw.database.svc:5432), Redis, NATS, Temporal |
 | 子模块 Notification | `lurus-notification.lurus-platform.svc:18900` |
 | 子模块 Mail | Stalwart SMTP/JMAP + Roundcube webmail |
 | 部署目标 | R1 PROD (43.226.46.164) — 已对外商业交付 |
-| 前端 Apps | `login.lurus.cn` (Zitadel 自定义登录), ~~admin.lurus.cn~~ (**SUNSET 2026-05-10**，见 [/products/admin](/products/admin)；由 platform-core `/admin` 嵌入 SPA 替代，SPA 尚未完全部署) |
+| 前端 Apps | `login.lurus.cn` (Casdoor 自定义登录), ~~admin.lurus.cn~~ (**SUNSET 2026-05-10**，见 [/products/admin](/products/admin)；由 platform-core `/admin` 嵌入 SPA 替代，SPA 尚未完全部署) |
 
 ## 架构图
 
@@ -75,7 +75,7 @@ flowchart TD
     subgraph app["internal/app — 用例层"]
         WALLETSVC["WalletService\n充值/扣款/预授权/对账"]
         SUBSVC["SubscriptionService\n订阅激活/到期/宽限期"]
-        ACCSVC["AccountService\nZitadel sub → account_id 映射"]
+        ACCSVC["AccountService\nCasdoor sub → account_id 映射"]
         ENTSVC["EntitlementService\n权益快照 (Redis 缓存)"]
         REGSVC["RegistrationService\n注册/SMS/Email验证"]
         RECSVC["ReconciliationWorker\n每5分钟 stale 订单核查"]
@@ -101,7 +101,7 @@ flowchart TD
     end
 
     subgraph ext["外部基础设施"]
-        ZIT["Zitadel\nOIDC / JWKS / Service Account"]
+        ZIT["Casdoor\nOIDC / JWKS / Service Account"]
         PG["PostgreSQL\nschema: identity / billing / notification"]
         REDIS["Redis DB=3\n幂等锁 / 权益缓存 / DLQ outbox"]
         NATS["NATS JetStream\nIDENTITY_EVENTS stream"]
@@ -218,7 +218,7 @@ sequenceDiagram
 | `internal/app/wallet_service.go` | 钱包用例：Topup / Debit / Credit / PreAuthorize / SettlePreAuth / ReleasePreAuth / CreateCheckoutSession |
 | `internal/app/subscription_service.go` | 订阅生命周期：Activate / Expire / Grace / Cancel |
 | `internal/app/entitlement_service.go` | 权益快照计算 + Redis 缓存（TTL 5min，ConfigMap 可调） |
-| `internal/app/account_service.go` | 账号 CRUD + `UpsertByZitadelSub`（首次登录自动建账） |
+| `internal/app/account_service.go` | 账号 CRUD + `UpsertByCasdoorSub`（首次登录自动建账） |
 | `internal/app/registration_service.go` | 注册 + Email/SMS 验证 + 推荐码奖励钩子 |
 | `internal/app/reconciliation_worker.go` | 每5分钟：stale pending orders / 已付但未入账的订单扫描 |
 | `internal/app/refund_service.go` | 退款：小额直接审批，大额走 QR-delegate Boss 扫码 |
@@ -230,7 +230,7 @@ sequenceDiagram
 | `internal/adapter/handler/qr_handler.go` | QR 登录 / 加入组织 / QR-delegate 危险操作（删账号、大额退款、OIDC App 删除） |
 | `internal/adapter/payment/` | 支付提供商适配：Stripe / Alipay / WeChat / Epay / Creem / WorldFirst；主提供商熔断后自动 fallback 到 Epay |
 | `internal/adapter/nats/` | NATS 发布者 + 消费者（VIP 事件） |
-| `internal/pkg/auth/` | Zitadel JWKS JWT 验证 + Redis 缓存 sub→account_id（TTL 10min） |
+| `internal/pkg/auth/` | Casdoor JWKS JWT 验证 + Redis 缓存 sub→account_id（TTL 10min） |
 | `internal/pkg/outbox/` | DLQ 包装：NATS 发布失败 → Redis list `outbox:dlq`（7天TTL），Prometheus 计数器 |
 | `internal/pkg/idempotency/` | Webhook 幂等去重（Redis SET NX，TTL 24h） |
 | `internal/temporal/workflows/subscription_renewal.go` | Saga 工作流：Debit → Activate → 补偿性 Credit（Disconnected Context 保证执行） |
@@ -241,7 +241,7 @@ sequenceDiagram
 | `modules/notification/` | 独立子模块：WS + Email + FCM 三通道分发，NATS 消费 IDENTITY_EVENTS，Digest Worker，模板引擎 |
 | `modules/mail/stalwart/` | Stalwart 部署配置（SMTP/IMAP/JMAP） |
 | `modules/mail/webmail/` | Roundcube/JMAP 前端 + Worker |
-| `apps/login/` | Next.js 15，Zitadel 自定义登录 UI（login.lurus.cn） |
+| `apps/login/` | Next.js 15，Casdoor 自定义登录 UI（login.lurus.cn） |
 | `apps/admin/` | Next.js 15 + shadcn/ui，管理后台（~~admin.lurus.cn~~ 已 SUNSET；SPA 代码存在但未完整部署，admin 能力经 `/admin/*` 路由由 platform-core go:embed 提供） |
 | `deploy/k8s/base/` | Deployment + Service + IngressRoute + HPA + PDB + ConfigMap + Secrets + RBAC + ServiceMonitor |
 | `deploy/k8s/overlays/` | Kustomize overlays：with-notification / with-mail / full |
@@ -280,7 +280,7 @@ deployment.yaml 中 `rollout.lurus.cn/revision` annotation 用于强制 ArgoCD �
 ### 环境变量注入
 
 - **ConfigMap** `platform-core-config`：PORT/GRPC_PORT/TZ/ENV/REDIS_ADDR/REDIS_DB/NATS_ADDR/GRACE_PERIOD_DAYS/OTEL_*/RATE_LIMIT_*/各支付 URL
-- **Secret** `platform-core-secrets`：DATABASE_DSN / INTERNAL_API_KEY / ZITADEL_ISSUER + JWKS_URL + AUDIENCE + SERVICE_ACCOUNT_PAT / REDIS_PASSWORD / 各支付密钥（STRIPE / EPAY / CREEM / ALIPAY / WECHAT / WORLDFIRST）/ SMS 密钥（ALIYUN / TENCENT）/ STALWART_ADMIN_PASSWORD / SESSION_SECRET
+- **Secret** `platform-core-secrets`：DATABASE_DSN / INTERNAL_API_KEY / OIDC_ISSUER + JWKS_URL + AUDIENCE + SERVICE_ACCOUNT_PAT / REDIS_PASSWORD / 各支付密钥（STRIPE / EPAY / CREEM / ALIPAY / WECHAT / WORLDFIRST）/ SMS 密钥（ALIYUN / TENCENT）/ STALWART_ADMIN_PASSWORD / SESSION_SECRET
 
 ### ArgoCD
 
@@ -360,7 +360,7 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/platform-core -n lurus-
 | `GetEntitlements` | kova, lucrum, newapi — 查权益 |
 | `WalletDebit` / `WalletCredit` | kova（LLM 调用计费）, lucrum |
 | `WalletPreAuthorize` / `WalletSettlePreAuth` / `WalletReleasePreAuth` | kova streaming（预授权流控） |
-| `UpsertAccount` / `GetAccountByZitadelSub` | 所有需要身份解析的服务 |
+| `UpsertAccount` / `GetAccountByCasdoorSub` | 所有需要身份解析的服务 |
 | `GetAccountOverview` | admin 后台 |
 
 ### HTTP Internal API（:18104）— 下游消费者
@@ -372,7 +372,7 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/platform-core -n lurus-
 | `POST /internal/v1/subscriptions/checkout` | 外部服务发起订阅购买（Wallet 扣款 or 外部支付） |
 | `POST /internal/v1/accounts/:id/wallet/topup` | 管理员给账户充值 |
 | `GET /internal/v1/accounts/:id/wallet/transactions` | 交易流水 |
-| `POST /internal/v1/sms/relay` | Zitadel webhook → Aliyun/Tencent SMS 中继 |
+| `POST /internal/v1/sms/relay` | Casdoor webhook → Aliyun/Tencent SMS 中继 |
 
 ### NATS 事件（IDENTITY_EVENTS stream）
 
@@ -390,7 +390,7 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/platform-core -n lurus-
 
 | 表 | 说明 |
 |----|------|
-| `identity.accounts` | 主账号表，`zitadel_sub` unique，`lurus_id` UUID |
+| `identity.accounts` | 主账号表，`zitadel_sub` unique（物理列名待迁移，见 TODO(idp-migration)），`lurus_id` UUID |
 | `identity.subscriptions` | 订阅状态机（pending/trial/active/grace/expired/cancelled/suspended） |
 | `identity.account_entitlements` | 权益快照，source: subscription/admin_grant/promo |
 | `identity.vip_records` | VIP 等级记录 |
@@ -416,7 +416,7 @@ ssh root@100.98.57.55 "kubectl rollout status deployment/platform-core -n lurus-
 | 支付订单 | `billing.payment_orders.idempotency_key` DB unique index |
 | 通知去重 | `notif:{event_id}:{channel}` DB unique index（notification schema） |
 | NATS DLQ | Redis list `outbox:dlq`，JSON 序列化 IdentityEvent，TTL 7天 |
-| Zitadel sub → account_id | Redis `sub:id:{sub}` TTL 10min |
+| Casdoor sub → account_id | Redis `sub:id:{sub}` TTL 10min |
 
 ## 已知坑
 
@@ -527,22 +527,22 @@ curl -s -X POST https://identity.lurus.cn/admin/v1/subscriptions/{sub_id}/renew 
   -H "Authorization: Bearer <admin_jwt>"
 ```
 
-### 场景三：Zitadel 挂了（全站无法登录）
+### 场景三：Casdoor 挂了（全站无法登录）
 
 ```bash
-# 1. 确认 Zitadel pod 状态
-ssh root@100.98.57.55 "kubectl get pods -n lurus-platform | grep zitadel"
-ssh root@100.98.57.55 "kubectl logs -n lurus-platform deploy/zitadel --tail=50"
+# 1. 确认 Casdoor pod 状态
+ssh root@100.98.57.55 "kubectl get pods -n lurus-platform | grep casdoor"
+ssh root@100.98.57.55 "kubectl logs -n lurus-platform deploy/casdoor --tail=50"
 
-# 2. Platform 本身不依赖 Zitadel 处理已登录请求（JWT 验证用 JWKS，有 Redis 缓存 1小时）
+# 2. Platform 本身不依赖 Casdoor 处理已登录请求（JWT 验证用 JWKS，有 Redis 缓存 1小时）
 # → 已登录用户短时间内 (1h) 不受影响，新登录和 token 刷新失败
 
 # 3. JWKS 缓存 TTL = 1h（ValidatorConfig.JWKSTTL），到期前平台功能正常
 # 如需延长，临时调高 CACHE_ENTITLEMENT_TTL 并重启 pod（仅为应急，不是长期措施）
 
-# 4. Zitadel 重启
-ssh root@100.98.57.55 "kubectl rollout restart deployment/zitadel -n lurus-platform"
-ssh root@100.98.57.55 "kubectl rollout status deployment/zitadel -n lurus-platform"
+# 4. Casdoor 重启
+ssh root@100.98.57.55 "kubectl rollout restart deployment/casdoor -n lurus-platform"
+ssh root@100.98.57.55 "kubectl rollout status deployment/casdoor -n lurus-platform"
 
 # 5. 确认 Platform 日志中 JWKS 刷新成功
 ssh root@100.98.57.55 "kubectl logs -n lurus-platform deploy/platform-core --tail=50 | grep -i jwks"
@@ -592,7 +592,7 @@ graph TD
     B -->|否| Z1[不接 Platform，自行处理]
     B -->|是| C{用户身份来源}
 
-    C -->|浏览器端 OIDC 登录| D[接 Zitadel OIDC\nlogin.lurus.cn\n标准 code flow]
+    C -->|浏览器端 OIDC 登录| D[接 Casdoor OIDC\nlogin.lurus.cn\n标准 code flow]
     C -->|服务间 M2M 调用| E[用 INTERNAL_API_KEY\nBearer auth → /internal/v1]
 
     D --> F{需要钱包/计费?}
@@ -625,7 +625,7 @@ graph TD
 
 | 场景 | 推荐传输 | 端点 |
 |------|---------|------|
-| 浏览器端用户登录 / OIDC 授权码流 | Zitadel OIDC (`auth.lurus.cn`) | 标准 code flow |
+| 浏览器端用户登录 / OIDC 授权码流 | Casdoor OIDC (`auth.lurus.cn`) | 标准 code flow |
 | 服务间 M2M 调用（身份/计费） | gRPC `:18105` | `IdentityService.*` |
 | 订阅购买 / 管理员操作 | HTTP `:18104` | `/internal/v1/*` |
 
@@ -752,12 +752,12 @@ ssh root@100.98.57.55 "kubectl get pods -n lurus-platform -l app=platform-core"
 ### Step 1：创建账户（首次登录自动 upsert）
 
 ```bash
-# 模拟 Zitadel OIDC 首次登录后，服务调用 UpsertAccount
+# 模拟 Casdoor OIDC 首次登录后，服务调用 UpsertAccount
 curl -s -X POST "$PLATFORM_HTTP/internal/v1/accounts/upsert" \
   -H "Authorization: Bearer $INTERNAL_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "zitadel_sub": "231987654321000001",
+    "idp_subject": "231987654321000001",
     "email": "testuser@lurus.cn",
     "display_name": "测试用户"
   }'
@@ -777,7 +777,7 @@ curl -s -X POST "$PLATFORM_HTTP/internal/v1/accounts/upsert" \
 }
 ```
 
-> 这证明了：zitadel_sub → account_id 映射已建立，billing.wallets 零余额账本已初始化，Redis sub:id 缓存已写入。
+> 这证明了：idp_subject → account_id 映射已建立，billing.wallets 零余额账本已初始化，Redis sub:id 缓存已写入。
 
 ### Step 2：充值（模拟支付回调已确认）
 
