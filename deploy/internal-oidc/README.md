@@ -1,18 +1,18 @@
-# internal.lurus.cn → Lurus Identity (Zitadel) OIDC
+# internal.lurus.cn → Lurus Identity (Casdoor) OIDC
 
 > 🛑 **未部署 — 现状是 BasicAuth(决策 2026-06-13:暂不迁 OIDC)**
 >
 > 本目录(`oauth2-proxy.yaml` + `middleware.yaml` + `ingressroute.yaml`)是**设计完整但从未上线**的迁移方案。
 > `internal.lurus.cn` 实测仍走 **HTTP Basic Auth**(`www-authenticate: Basic realm="Lurus Internal"`,R1 edge `43.226.46.164` → R6:8881 后端),即下文所谓 "original path"。
-> 下面"你需要做的(一次性~3分钟)"**从未执行**——Zitadel OIDC client 未创建(同 lutu/webgame 的 OIDC app 未注册通病)。
+> 下面"你需要做的(一次性~3分钟)"**从未执行**——Casdoor OIDC client 未创建(同 lutu/webgame 的 OIDC app 未注册通病)。
 >
-> **决策依据(生存优先)**: 团队内部静态文档站,BasicAuth 已够用;不值得为它常驻 oauth2-proxy + Traefik ForwardAuth 中间件 + 维护一个 Zitadel client。本方案**保留备查、可逆**——若将来 S3 issuer rebrand 落地、或团队扩张需要 SSO 审计粒度,再启用。**当前它既不是现状、也不是待办,别照着它调研。**
+> **决策依据(生存优先)**: 团队内部静态文档站,BasicAuth 已够用;不值得为它常驻 oauth2-proxy + Traefik ForwardAuth 中间件 + 维护一个 Casdoor client。本方案**保留备查、可逆**——若将来 S3 issuer rebrand 落地、或团队扩张需要 SSO 审计粒度,再启用。**当前它既不是现状、也不是待办,别照着它调研。**
 >
-> 重启前必须先解决文末「已知约束」(Zitadel System API SA 私钥未挂载,client 只能手动建);并**重新生成**下文示例里的 `cookie-secret`(已暴露在 git 历史)。
+> 重启前必须先解决文末「已知约束」(Casdoor System API SA 私钥未挂载,client 只能手动建);并**重新生成**下文示例里的 `cookie-secret`(已暴露在 git 历史)。
 >
 > ---
 
-把内部站从 BasicAuth 切到 Zitadel OIDC SSO。
+把内部站从 BasicAuth 切到 Casdoor OIDC SSO。
 
 ## 架构
 
@@ -26,7 +26,7 @@ Traefik (R1)
 oauth2-proxy
   │ 3. 302 → auth.lurus.cn/oauth/v2/authorize
   ▼
-Zitadel (auth.lurus.cn)
+Casdoor (auth.lurus.cn)
   │ 4. login → 302 → internal.lurus.cn/oauth2/callback
   ▼
 oauth2-proxy
@@ -37,11 +37,11 @@ Traefik
 ```
 
 Break-glass：`internal-fallback.lurus.cn`（不挂 DNS，仅 /etc/hosts 覆盖访问），保留 BasicAuth，
-万一 Zitadel 挂了能进去。
+万一 Casdoor 挂了能进去。
 
 ## 你需要做的（一次性，~3 分钟）
 
-### 1. 在 Zitadel 控制台创建 OIDC 客户端
+### 1. 在 Casdoor 控制台创建 OIDC 客户端
 
 打开 https://auth.lurus.cn/ui/console，登录账号：
 
@@ -116,12 +116,12 @@ kubectl delete -f oauth2-proxy.yaml middleware.yaml
 - Discovery / JWKS 公网可达性
 - Auth code + PKCE flow 端到端延迟
 - Refresh token 寿命（90d 配置 vs 实际）
-- backchannel logout 传播（Zitadel 撤销 → oauth2-proxy 失效 cookie）
+- backchannel logout 传播（Casdoor 撤销 → oauth2-proxy 失效 cookie）
 - CN 浏览器（QQ/UC/360）的 cookie SameSite=Lax 兼容性
-- lurus-pg 在 zitadel 低频读下的稳定性
+- lurus-pg 在 casdoor 低频读下的稳定性
 
 ## 已知约束
 
-- Zitadel **System API 服务账号当前不可用**（`zitadel-machinekey` secret 仅有公钥 PEM，对应私钥未挂载到 pod；建议后续修复 bootstrap，把完整 SA JSON 通过环境变量或 init container 拉到 `/machinekey/`）。
+- Casdoor **System API 服务账号当前不可用**（`casdoor-machinekey` secret 仅有公钥 PEM，对应私钥未挂载到 pod；建议后续修复 bootstrap，把完整 SA JSON 通过环境变量或 init container 拉到 `/machinekey/`）。
 - 所以 OIDC client 注册只能走控制台 UI。
 - 如果将来要全自动化（IaC），先修上面这条。

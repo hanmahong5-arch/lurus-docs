@@ -1,5 +1,5 @@
 ---
-title: コンソール管理 | Zitadel ID 認証
+title: コンソール管理 | Casdoor ID 認証
 description: auth.lurus.cn コンソールを使って組織・ユーザー・プロジェクト・アプリケーション・ID ポリシーを管理する完全操作マニュアル。
 ---
 
@@ -7,7 +7,7 @@ description: auth.lurus.cn コンソールを使って組織・ユーザー・�
 
 # コンソール管理
 
-Lurus は [Zitadel](https://zitadel.com) を統一 ID 認証プラットフォームとして採用しており、コンソールの入口は [auth.lurus.cn](https://auth.lurus.cn) です。本記事は**組織管理者 / IT 運用担当**を対象とし、日常操作の完全なフローを網羅します。
+Lurus は [Casdoor](https://casdoor.com) を統一 ID 認証プラットフォームとして採用しており、コンソールの入口は [auth.lurus.cn](https://auth.lurus.cn) です。本記事は**組織管理者 / IT 運用担当**を対象とし、日常操作の完全なフローを網羅します。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -75,16 +75,16 @@ Lurus は [Zitadel](https://zitadel.com) を統一 ID 認証プラットフォ�
 
 左側 **Organizations**（Instance レベル）→ 対象組織の行の **「...」** → **Set as default organization**（行に **Default** ラベルが表示されます）。
 
-> ユーザーログイン時に組織コンテキストを伴っていない場合（`urn:zitadel:iam:org:id:{id}` scope がない場合）、デフォルト Organization のポリシーとブランディング設定が適用されます。
+> ユーザーログイン時に組織コンテキストを伴っていない場合（`urn:casdoor:iam:org:id:{id}` scope がない場合）、デフォルト Organization のポリシーとブランディング設定が適用されます。
 
 ### 2.3 ドメイン検証
 
 会社のメールドメインを Organization に紐付けると、ドメインによるログインルーティングとシングルサインオン直行を有効化できます。
 
-対象 Organization → **Settings → Organization Domains → Add Domain** → ドメインを入力（例 `lurus.cn`）→ 検証方式を選択（**DNS Challenge**：DNS に TXT レコードを追加、値は Zitadel が生成 / **HTTP Challenge**：Web の指定パスに検証ファイルを配置）→ **Verify** → 通過後に **Set as primary** でプライマリドメインに設定できます。
+対象 Organization → **Settings → Organization Domains → Add Domain** → ドメインを入力（例 `lurus.cn`）→ 検証方式を選択（**DNS Challenge**：DNS に TXT レコードを追加、値は Casdoor が生成 / **HTTP Challenge**：Web の指定パスに検証ファイルを配置）→ **Verify** → 通過後に **Set as primary** でプライマリドメインに設定できます。
 
 ::: warning
-DNS TXT レコードは検証後**削除しないでください**。Zitadel が定期的に再検証します。削除するとドメインの状態が無効になります。
+DNS TXT レコードは検証後**削除しないでください**。Casdoor が定期的に再検証します。削除するとドメインの状態が無効になります。
 :::
 
 ### 2.4 メンバー管理（Organization Members）
@@ -301,7 +301,7 @@ Organization は Instance のデフォルトポリシーを上書きできます
 
 ### 7.5 Branding（**Branding**）
 
-Logo/Icon（ライト/ダーク各 1 セット）、Primary Color、Background Color、Warning Color、Font、**Hide Watermark**（"Powered by ZITADEL" を非表示）、**Login Name Suffix**（ログイン名サフィックスの表示有無）。
+Logo/Icon（ライト/ダーク各 1 セット）、Primary Color、Background Color、Warning Color、Font、**Hide Watermark**（"Powered by Casdoor" を非表示）、**Login Name Suffix**（ログイン名サフィックスの表示有無）。
 
 ### 7.6 Privacy Policy（**Privacy Policy**）
 
@@ -325,7 +325,7 @@ Logo/Icon（ライト/ダーク各 1 セット）、Primary Color、Background C
 ## 8. Actions（カスタムコード拡張）
 
 ::: info
-Actions はログイン/登録/ユーザー作成などの重要イベントのトリガーポイントで **JavaScript**（Zitadel サーバー側サンドボックス）を実行し、実行結果はフローの継続または中断に影響を与えられます。
+Actions はログイン/登録/ユーザー作成などの重要イベントのトリガーポイントで **JavaScript**（Casdoor サーバー側サンドボックス）を実行し、実行結果はフローの継続または中断に影響を与えられます。
 :::
 
 左側 **Actions → New Action** → 名称を入力、トリガーする Flow と Trigger Type を選択 → JS 処理関数を記述 → 有効化して Flow にバインド。
@@ -414,7 +414,7 @@ Actions はログイン/登録/ユーザー作成などの重要イベントの�
   </div>
 </div>
 
-*Zitadel セルフホストインスタンス（`auth.lurus.cn`）に基づきます。インターフェースの詳細は実際のバージョンを基準としてください。ポリシー変更時は本ドキュメントを同期してください。*
+*Casdoor セルフホストインスタンス（`auth.lurus.cn`）に基づきます。インターフェースの詳細は実際のバージョンを基準としてください。ポリシー変更時は本ドキュメントを同期してください。*
 
 </div>
 

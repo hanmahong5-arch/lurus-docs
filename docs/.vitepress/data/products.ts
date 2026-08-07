@@ -540,7 +540,7 @@ graph = workflow.compile(
     highlights: [
       { title: '全产品 SSO', body: '一次登录，所有 Lurus 产品畅通', icon: 'key-round' },
       { title: 'Passkey + MFA', body: 'WebAuthn / TOTP / 备份码多因素组合', icon: 'shield' },
-      { title: 'OIDC / OAuth2', body: '标准协议，Zitadel 实现，第三方接入无障碍', icon: 'link' },
+      { title: 'OIDC / OAuth2', body: '标准协议，Casdoor 实现，第三方接入无障碍', icon: 'link' },
       { title: '企业 SSO 联邦', body: '接入企业 IdP（Okta / Azure AD / 自建 Keycloak）', icon: 'building-2' },
     ],
     relatedProducts: ['platform', 'lurus-api', 'lucrum'],

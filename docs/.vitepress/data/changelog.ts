@@ -39,7 +39,7 @@ export const changelog: ChangelogEntry[] = [
     productColor: 'var(--lurus-color-platform)',
     publishedAt: '2026-05-28',
     isMajor: false,
-    content: '<p>账号 / 计费 / 订阅自助操作统一收敛到 <code>identity.lurus.cn</code>；<strong>原 admin.lurus.cn 入口已退役</strong>。企业组织成员 / 权限 / 审计经 auth.lurus.cn（Zitadel）管理。</p>',
+    content: '<p>账号 / 计费 / 订阅自助操作统一收敛到 <code>identity.lurus.cn</code>；<strong>原 admin.lurus.cn 入口已退役</strong>。企业组织成员 / 权限 / 审计经 auth.lurus.cn（Casdoor）管理。</p>',
   },
   {
     id: 'lucrum-pricing',

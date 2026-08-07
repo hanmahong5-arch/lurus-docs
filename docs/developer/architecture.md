@@ -112,7 +112,7 @@ API Gateway 根据模型名称自动匹配可用渠道，支持优先级排序�
 | 缓存 | Redis，按服务 DB 隔离 |
 | 消息 | NATS JetStream (事件广播) |
 | 工作流 | Temporal (订阅续费/定时任务) |
-| 身份认证 | Zitadel (OIDC) |
+| 身份认证 | Casdoor (OIDC) |
 | 容器 | scratch/alpine 最小镜像，多阶段构建 |
 | 安全 | Kyverno 策略引擎 + NetworkPolicy + Trivy 容器扫描 |
 

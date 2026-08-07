@@ -1,5 +1,5 @@
 ---
-title: API Authentication | Zitadel Identity Authentication
+title: API Authentication | Casdoor Identity Authentication
 description: Complete guide to Service Users, Personal Access Tokens, JWT Profile, and Client Credentials, covering all machine-to-machine authentication scenarios in Lurus.
 ---
 
@@ -7,7 +7,7 @@ description: Complete guide to Service Users, Personal Access Tokens, JWT Profil
 
 # API Authentication (Machine-to-Machine) <StatusBadge status="live" />
 
-For M2M authentication: unlike the browser OIDC flow, M2M uses a Zitadel **Service Account**, obtaining an access token without human intervention. The Zitadel instance is `https://auth.lurus.cn`, and all endpoints below are relative to it.
+For M2M authentication: unlike the browser OIDC flow, M2M uses a Casdoor **Service Account**, obtaining an access token without human intervention. The Casdoor instance is `https://auth.lurus.cn`, and all endpoints below are relative to it.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">authentication methods</span></div>
@@ -58,7 +58,7 @@ A PAT is a **ready-to-use token** that you place directly into the `Authorizatio
 
 ### 1.2 Use a PAT
 
-Attach it to every request header as a standard Bearer token; it can access all Zitadel APIs that the Service Account is authorized for, with no extra audience scope required.
+Attach it to every request header as a standard Bearer token; it can access all Casdoor APIs that the Service Account is authorized for, with no extra audience scope required.
 
 ```bash
 # Query the organization the current account belongs to
@@ -72,8 +72,8 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 ### 1.3 Applicable Lurus Scenarios
 
 - Ops scripts: bulk-query or modify users via the Management API
-- `2l-svc-zitadel-mcp` MCP Server accessing the Zitadel Management API
-- Temporary management operations in CI/CD pipelines; quick local testing of the Zitadel API during development
+- `2l-svc-casdoor-mcp` MCP Server accessing the Casdoor Management API
+- Temporary management operations in CI/CD pipelines; quick local testing of the Casdoor API during development
 
 ### 1.4 Security Considerations
 
@@ -103,7 +103,7 @@ In the console, go to the target Organization → **Users → Service Accounts �
 **Naming convention** `svc-<service>-<purpose>`, for example:
 - `svc-lurus-api-platform-client` — lurus-api calling platform internal interfaces
 - `svc-ci-deploy` — dedicated to CI/CD deployment
-- `svc-zitadel-mcp-admin` — for Zitadel MCP Server management
+- `svc-casdoor-mcp-admin` — for Casdoor MCP Server management
 
 ### 2.2 Assign Permissions
 
@@ -177,7 +177,7 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 
 ## 4. JWT Profile (The Most Secure Machine Authentication Method) <Badge text="Recommended for Production" type="tip" />
 
-Uses an asymmetric key pair: the Service Account holds the **private key**, and Zitadel stores the corresponding **public key**. The client signs a short-lived JWT with the private key as a `client_assertion`; Zitadel verifies the signature and issues an access token. **The private key is never transmitted over the network**, making this the most secure M2M method.
+Uses an asymmetric key pair: the Service Account holds the **private key**, and Casdoor stores the corresponding **public key**. The client signs a short-lived JWT with the private key as a `client_assertion`; Casdoor verifies the signature and issues an access token. **The private key is never transmitted over the network**, making this the most secure M2M method.
 
 ### 4.1 Generate a Key Pair
 
@@ -190,7 +190,7 @@ openssl genrsa -out privatekey.pem 2048
 openssl rsa -in privatekey.pem -pubout -out publickey.pem
 ```
 
-Then upload `publickey.pem` via the Zitadel User Service API.
+Then upload `publickey.pem` via the Casdoor User Service API.
 
 ### 4.2 JSON Key File Format
 
@@ -223,12 +223,12 @@ Then upload `publickey.pem` via the Zitadel User Service API.
 |-------|------|
 | `iss` | The `userId` from the JSON file |
 | `sub` | Same as `iss` (represents the requester, i.e., the application itself) |
-| `aud` | The Zitadel instance domain: `https://auth.lurus.cn` |
+| `aud` | The Casdoor instance domain: `https://auth.lurus.cn` |
 | `iat` | The current UTC Unix timestamp |
 | `exp` | Expiry; `iat + 300` (5 minutes) is recommended; **must not exceed 1 hour** |
 
 ::: warning Clock Synchronization
-`iat` must not be more than 1 hour earlier than the Zitadel server time, otherwise the token request is rejected. Make sure the machine’s NTP synchronization is working correctly.
+`iat` must not be more than 1 hour earlier than the Casdoor server time, otherwise the token request is rejected. Make sure the machine’s NTP synchronization is working correctly.
 :::
 
 ### 4.4 Exchange for an Access Token
@@ -394,25 +394,25 @@ Same as 3.3 (access token ~12 hours). Refresh proactively before expiry (re-sign
 
 ## 5. Requesting the Correct Audience
 
-Zitadel validates the **audience (aud)** field of the access token. For different target APIs, declare the corresponding audience in the scope.
+Casdoor validates the **audience (aud)** field of the access token. For different target APIs, declare the corresponding audience in the scope.
 
-**To access Zitadel’s own APIs** (Management / Admin / Auth): `scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud`. This reserved scope adds the Zitadel project to the token’s audience; the Management API and others will reject any token that does not include this audience.
+**To access Casdoor’s own APIs** (Management / Admin / Auth): `scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud`. This reserved scope adds the Casdoor project to the token’s audience; the Management API and others will reject any token that does not include this audience.
 
 ```bash
 curl -X POST https://auth.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
-  --data 'scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud'
+  --data 'scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud'
 ```
 
-**To access a resource service of a custom Project**: `scope=openid profile urn:zitadel:iam:org:project:id:<your_project_id>:aud` (find `<your_project_id>` on the Project details page in the console).
+**To access a resource service of a custom Project**: `scope=openid profile urn:casdoor:iam:org:project:id:<your_project_id>:aud` (find `<your_project_id>` on the Project details page in the console).
 
 ### Common Errors
 
 | Symptom | Cause | Resolution |
 |------|------|------|
-| `403 Forbidden` | Token audience does not include the target API | Add the corresponding `urn:zitadel:iam:...` scope when exchanging for a token |
+| `403 Forbidden` | Token audience does not include the target API | Add the corresponding `urn:casdoor:iam:...` scope when exchanging for a token |
 | `401 Unauthorized` | Token expired or signature invalid | Check clock synchronization and obtain a new token |
 | `invalid_grant` | Assertion expired (>5 minutes) or `aud` incorrect | Check the assertion’s `exp` and `aud` |
 
@@ -428,7 +428,7 @@ curl -X POST https://auth.lurus.cn/oauth/v2/token \
 apiVersion: v1
 kind: Secret
 metadata:
-  name: zitadel-service-account-key
+  name: idp-service-account-key
   namespace: lurus-system
 type: Opaque
 stringData:
@@ -444,18 +444,18 @@ stringData:
 ```yaml
 # Mount in the Deployment
 volumes:
-  - name: zitadel-key
+  - name: idp-key
     secret:
-      secretName: zitadel-service-account-key
+      secretName: idp-service-account-key
 containers:
   - name: app
     volumeMounts:
-      - name: zitadel-key
-        mountPath: /secrets/zitadel
+      - name: idp-key
+        mountPath: /secrets/casdoor
         readOnly: true
     env:
-      - name: ZITADEL_KEY_FILE
-        value: /secrets/zitadel/key.json
+      - name: OIDC_KEY_FILE
+        value: /secrets/casdoor/key.json
 ```
 
 ---
@@ -464,14 +464,14 @@ containers:
 
 | Service | Authentication scenario | Recommended method |
 |------|---------|---------|
-| **2l-svc-zitadel-mcp** | Calling the Zitadel Management API to manage users/permissions | PAT (ops) or Service Account + JWT Profile |
+| **2l-svc-casdoor-mcp** | Calling the Casdoor Management API to manage users/permissions | PAT (ops) or Service Account + JWT Profile |
 | **2b-svc-api (Hub)** | Backend verifying frontend OIDC tokens; calling platform internal interfaces | Frontend users use OIDC tokens; platform calls use `INTERNAL_API_KEY` (bearer_internal_key mode) |
-| **2l-svc-platform** | Providing internal APIs (`/internal/v1/...`), consumed by the Hub and others | `bearer_internal_key` (not Zitadel; a platform-internal convention) |
+| **2l-svc-platform** | Providing internal APIs (`/internal/v1/...`), consumed by the Hub and others | `bearer_internal_key` (not Casdoor; a platform-internal convention) |
 | **CI/CD Pipeline** | Querying/updating cluster resources during deployment | Dedicated Service Account + PAT, a separate account per pipeline |
 | **Scheduled background jobs** | Standalone Jobs with no user context | Service Account + Client Credentials or JWT Profile |
 
 ::: info About `bearer_internal_key`
-The `lurus-platform` internal API (service: `platform-core.lurus-platform.svc:18104`) uses a dedicated `INTERNAL_API_KEY` rather than a Zitadel token; this key is distributed to consumers via a K8s Secret. See the `capabilities` section of `lurus.yaml` for details.
+The `lurus-platform` internal API (service: `platform-core.lurus-platform.svc:18104`) uses a dedicated `INTERNAL_API_KEY` rather than a Casdoor token; this key is distributed to consumers via a K8s Secret. See the `capabilities` section of `lurus.yaml` for details.
 :::
 
 ---
@@ -503,7 +503,7 @@ The `lurus-platform` internal API (service: `platform-core.lurus-platform.svc:18
 
 ## Reference Links
 
-- [Zitadel: Service Account Authentication Overview](https://zitadel.com/docs/guides/integrate/service-accounts/authenticate-service-accounts) · [PAT](https://zitadel.com/docs/guides/integrate/service-accounts/personal-access-token) · [Client Credentials](https://zitadel.com/docs/guides/integrate/service-accounts/client-credentials) · [Private Key JWT](https://zitadel.com/docs/guides/integrate/service-accounts/private-key-jwt) · [Accessing Zitadel APIs](https://zitadel.com/docs/guides/integrate/zitadel-apis/access-zitadel-apis)
+- [Casdoor: Service Account Authentication Overview](https://casdoor.com/docs/guides/integrate/service-accounts/authenticate-service-accounts) · [PAT](https://casdoor.com/docs/guides/integrate/service-accounts/personal-access-token) · [Client Credentials](https://casdoor.com/docs/guides/integrate/service-accounts/client-credentials) · [Private Key JWT](https://casdoor.com/docs/guides/integrate/service-accounts/private-key-jwt) · [Accessing Casdoor APIs](https://casdoor.com/docs/guides/integrate/casdoor-apis/access-casdoor-apis)
 - [RFC 7523: JWT Bearer Token Grant](https://datatracker.ietf.org/doc/html/rfc7523)
 
 </div>

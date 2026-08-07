@@ -9,11 +9,11 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 
 **一次登录，全站通行。** Lurus API、Lucrum、Switch、Creator、Lutu、Admin、Forge 等所有产品共享同一身份体系——用户在任意产品登录，其余产品自动识别；权限与配额在账户维度统一结算；企业客户可对接自家 SSO 完成员工接入。
 
-该体系由 `auth.lurus.cn` 提供服务，底层基于开源身份基础设施 [Zitadel](https://zitadel.com) 自建部署，完整实现 OIDC / OAuth2 / SAML 标准协议，用户数据全程保留在 Lurus 自有 K8s 集群内。
+该体系由 `auth.lurus.cn` 提供服务，底层基于开源身份基础设施 [Casdoor](https://casdoor.com) 自建部署，完整实现 OIDC / OAuth2 / SAML 标准协议，用户数据全程保留在 Lurus 自有 K8s 集群内。
 
 ::: tip 快速入口
 - 用户自助管理：[auth.lurus.cn](https://auth.lurus.cn) — 修改密码、管理 Passkey、绑定 MFA、查看登录历史
-- 组织/项目管理：[auth.lurus.cn](https://auth.lurus.cn)（Zitadel 组织控制台）— 企业客户成员邀请、权限分配、审计；或联系商务开通企业组织管理
+- 组织/项目管理：[auth.lurus.cn](https://auth.lurus.cn)（Casdoor 组织控制台）— 企业客户成员邀请、权限分配、审计；或联系商务开通企业组织管理
 :::
 
 ---
@@ -50,7 +50,7 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
     { title: 'B2B 多租户', body: 'Instance 下可建立多个 Organization，天然支持企业客户隔离；每个组织可独立配置品牌、登录策略和 IdP 联邦。', icon: 'building-2' },
     { title: 'OIDC / OAuth2 / SAML', body: '完整实现三大标准协议，兼容市面主流 SDK 与框架，无缝集成 Go、Rust、TypeScript、Flutter 应用。', icon: 'link' },
     { title: '审计日志', body: '登录、MFA 变更、权限授予、密码重置等关键操作均记录可查询的不可变日志，满足合规要求。', icon: 'history' },
-    { title: 'Actions 扩展', body: '在身份验证流程的关键节点注入自定义逻辑（如同步用户属性、限制登录条件），无需 fork Zitadel 本体。', icon: 'workflow' },
+    { title: 'Actions 扩展', body: '在身份验证流程的关键节点注入自定义逻辑（如同步用户属性、限制登录条件），无需 fork Casdoor 本体。', icon: 'workflow' },
   ]"
 />
 
@@ -74,7 +74,7 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 | **Project** | Organization 下的应用集合，统一管理 roles 和 grants | 每个产品线（Lurus API、Lucrum、Switch、Forge…）对应一个 Project |
 | **Application** | Project 内的具体客户端，持有 `client_id` / `client_secret` | 每个前端、桌面端、服务端分别注册一个 Application |
 | **User** | 可登录账号，分 Human（真人）与 Service User（机器） | 终端用户为 Human；后端服务间调用使用 Service User + JWT Profile |
-| **Grant** | 将 Project Role 授予某 User 的绑定关系 | 控制用户在具体产品内的权限等级；以 [auth.lurus.cn](https://auth.lurus.cn)（Zitadel）组织设置为准 |
+| **Grant** | 将 Project Role 授予某 User 的绑定关系 | 控制用户在具体产品内的权限等级；以 [auth.lurus.cn](https://auth.lurus.cn)（Casdoor）组织设置为准 |
 
 ---
 
@@ -128,11 +128,11 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 
 ## 延伸阅读
 
-底层基于开源身份基础设施 Zitadel 构建，如需深入底层机制或 SDK 细节，可参考上游文档：
+底层基于开源身份基础设施 Casdoor 构建，如需深入底层机制或 SDK 细节，可参考上游文档：
 
-- [Zitadel 文档主页](https://zitadel.com/docs) — 快速上手、部署模式、SDK 集成指南
-- [核心概念](https://zitadel.com/docs/concepts) — Instance、Organization、Project、User、Grant 原理说明
-- [API 参考](https://zitadel.com/docs/apis) — Management API、Auth API、Admin API 的 REST / gRPC 端点文档
+- [Casdoor 文档主页](https://casdoor.com/docs) — 快速上手、部署模式、SDK 集成指南
+- [核心概念](https://casdoor.com/docs/concepts) — Instance、Organization、Project、User、Grant 原理说明
+- [API 参考](https://casdoor.com/docs/apis) — Management API、Auth API、Admin API 的 REST / gRPC 端点文档
 
 <RelatedProducts product-id="auth" />
 

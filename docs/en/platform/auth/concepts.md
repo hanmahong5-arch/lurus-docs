@@ -1,13 +1,13 @@
 ---
-title: Core Concepts | Zitadel Identity Authentication
-description: A detailed walkthrough of the Zitadel object model — Instance / Organization / Project / Application / User / Grant / Administrator — explained alongside the actual Lurus deployment.
+title: Core Concepts | Casdoor Identity Authentication
+description: A detailed walkthrough of the Casdoor object model — Instance / Organization / Project / Application / User / Grant / Administrator — explained alongside the actual Lurus deployment.
 ---
 
 <div class="auth-concepts">
 
 # Core Concepts
 
-Lurus uses [Zitadel](https://zitadel.com) as its unified OIDC identity provider (IdP), with the public entry point `auth.lurus.cn`. This page lays out the object model hierarchy.
+Lurus uses [Casdoor](https://casdoor.com) as its unified OIDC identity provider (IdP), with the public entry point `auth.lurus.cn`. This page lays out the object model hierarchy.
 
 ---
 
@@ -18,7 +18,7 @@ Lurus uses [Zitadel](https://zitadel.com) as its unified OIDC identity provider 
 </div>
 
 <ArchitectureDiagram
-  title="Zitadel Object Model Hierarchy"
+  title="Casdoor Object Model Hierarchy"
   chart="graph TD; Instance[Instance · lurus-prod] --> Org[Organization · lurus.cn]; Org --> User[User · Employee / Customer / Service Account]; Org --> Project[Project · lurus-api / lucrum / switch …]; Org --> OrgGrant[Grant · Grant a Project to another Org]; Project --> App[Application · Web / SPA / Native / API / SAML]; Project --> Role[Role · e.g. lucrum:admin]; User -. User Grant .-> Role"
 />
 
@@ -55,7 +55,7 @@ The current primary organization is **`lurus.cn`**, which hosts internal employe
 
 ## Project
 
-A **logical product grouping**, where each Project corresponds to a software product or service boundary. All Applications under the same Project share the same Role definitions. Composition: Application (login client), Role (role strings such as `admin`/`viewer`), User Grant (assign roles to a User), Granted Organization (grant the entire Project to another Org). Project-level settings include: whether logins are required to carry role claims (`urn:zitadel:iam:org:project:roles`), whether external IdP login is allowed, and so on.
+A **logical product grouping**, where each Project corresponds to a software product or service boundary. All Applications under the same Project share the same Role definitions. Composition: Application (login client), Role (role strings such as `admin`/`viewer`), User Grant (assign roles to a User), Granted Organization (grant the entire Project to another Org). Project-level settings include: whether logins are required to carry role claims (`urn:casdoor:iam:org:project:roles`), whether external IdP login is allowed, and so on.
 
 ::: tip In the Lurus context
 Each product line corresponds to a dedicated Project; for naming, see the `lurus.yaml` `capabilities:` registry. Role conventions are defined by each product team.
@@ -103,7 +103,7 @@ Each User belongs strictly to **exactly one Organization**. Cross-organization a
 Based on RBAC, with Project Role, User Grant, and Project Grant at its core.
 
 - **Project Role**: a role string within a Project, with three fields — Key (code identifier, such as `admin`), Display Name (shown in the console, such as "Administrator"), and Group (optional grouping, such as `management`). Shared by all Applications under the same Project.
-- **User Grant** = `User + Project + Role[]`: after login, the access token’s `urn:zitadel:iam:org:project:roles` claim carries all roles the user has been granted in the target Project. The back-end parses this claim for authorization, with no need to make additional API calls.
+- **User Grant** = `User + Project + Role[]`: after login, the access token’s `urn:casdoor:iam:org:project:roles` claim carries all roles the user has been granted in the target Project. The back-end parses this claim for authorization, with no need to make additional API calls.
 - **Project Grant** = `Project (source Org) → Organization (target Org)`: grants management rights over the entire Project to another Organization. The core of B2B multi-tenancy: Lurus does not need to create accounts for customer employees; instead, customers self-manage users and permissions within their own Organization.
 
 ---
@@ -140,7 +140,7 @@ The Instance layer defines defaults, and the Organization layer overrides them a
 | **Privacy Policy** | Privacy statement URL, ToS URL |
 | **Branding** | Login page logo, color scheme, custom CSS (can be customized independently at the Organization level) |
 
-The specific policies for the primary organization `lurus.cn` are managed by platform operations in the Zitadel Console and are not hardcoded here.
+The specific policies for the primary organization `lurus.cn` are managed by platform operations in the Casdoor Console and are not hardcoded here.
 
 ---
 
@@ -148,7 +148,7 @@ The specific policies for the primary organization `lurus.cn` are managed by pla
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Aligned with the Actual Lurus Deployment</p>
-    <div class="lurus-callout__body"><ul><li><strong>Project naming</strong>: each product corresponds to one Project (<code>lurus-api</code>, <code>lucrum</code>, <code>switch</code>, <code>lutu</code>, <code>admin</code>, <code>forge</code>); the Zitadel Console is authoritative.</li><li><strong>Role conventions</strong>: role strings are defined by the service-level CLAUDE.md or the <code>lurus.yaml</code> <code>capabilities:</code> registry, not hardcoded here.</li><li><strong>Machine User scenario</strong>: M2M calls uniformly use a Machine User + JWT Profile, avoiding shared human accounts.</li><li><strong>PAT scenario</strong>: CI/CD and scripts can use a PAT, which must be given the shortest possible validity period and rotated regularly.</li><li><strong>Full configuration reference</strong>: the <code>lurus.yaml</code> <code>capabilities:</code> section is the single entry point for architecture changes.</li></ul></div>
+    <div class="lurus-callout__body"><ul><li><strong>Project naming</strong>: each product corresponds to one Project (<code>lurus-api</code>, <code>lucrum</code>, <code>switch</code>, <code>lutu</code>, <code>admin</code>, <code>forge</code>); the Casdoor Console is authoritative.</li><li><strong>Role conventions</strong>: role strings are defined by the service-level CLAUDE.md or the <code>lurus.yaml</code> <code>capabilities:</code> registry, not hardcoded here.</li><li><strong>Machine User scenario</strong>: M2M calls uniformly use a Machine User + JWT Profile, avoiding shared human accounts.</li><li><strong>PAT scenario</strong>: CI/CD and scripts can use a PAT, which must be given the shortest possible validity period and rotated regularly.</li><li><strong>Full configuration reference</strong>: the <code>lurus.yaml</code> <code>capabilities:</code> section is the single entry point for architecture changes.</li></ul></div>
   </div>
 </div>
 

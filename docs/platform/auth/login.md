@@ -1,5 +1,5 @@
 ---
-title: 登录与多因素认证 | Zitadel 身份认证
+title: 登录与多因素认证 | Casdoor 身份认证
 description: Lurus 支持的登录方式（密码、Passkey、社交登录、企业 SSO）与多因素认证策略。
 ---
 
@@ -7,7 +7,7 @@ description: Lurus 支持的登录方式（密码、Passkey、社交登录、企
 
 # 登录与多因素认证
 
-Lurus 所有产品共用同一套身份认证基础设施（**Zitadel**，对外 `auth.lurus.cn`）。无论用 Lurus API、Switch、Lucrum 还是 Forge，登录都经同一入口，一次登录全线贯通。
+Lurus 所有产品共用同一套身份认证基础设施（**Casdoor**，对外 `auth.lurus.cn`）。无论用 Lurus API、Switch、Lucrum 还是 Forge，登录都经同一入口，一次登录全线贯通。
 
 ---
 
@@ -107,7 +107,7 @@ Passkey > 社交登录 > 邮箱密码。Passkey 无需记忆密码、抗钓鱼�
 
 ## 5. 密码策略 (Password Policy)
 
-以下为 Zitadel 实例默认基准，管理员可在控制台调整；实际要求会在注册/改密码时实时提示。
+以下为 Casdoor 实例默认基准，管理员可在控制台调整；实际要求会在注册/改密码时实时提示。
 
 **复杂度**（默认值）：最小长度 8 字符；大写、小写、数字、特殊字符（`!@#$%^&*` 等）各至少 1 个。
 
@@ -123,11 +123,11 @@ Passkey > 社交登录 > 邮箱密码。Passkey 无需记忆密码、抗钓鱼�
 
 ## 6. 身份代理 / Identity Brokering
 
-Zitadel 作中间 IdP，对接一个或多个**上游外部 IdP**（企业 Azure AD/Okta，或社交 GitHub/Google）。用户点"使用 XXX 登录" → 跳上游 IdP 验证 → Zitadel 接收结果 → 颁发 Lurus 统一 token。
+Casdoor 作中间 IdP，对接一个或多个**上游外部 IdP**（企业 Azure AD/Okta，或社交 GitHub/Google）。用户点"使用 XXX 登录" → 跳上游 IdP 验证 → Casdoor 接收结果 → 颁发 Lurus 统一 token。
 
 <ArchitectureDiagram
   title="Identity Brokering 链路"
-  chart="graph LR; P[Lurus 产品] --> Z[auth.lurus.cn · Zitadel]; Z --> U[上游 IdP · Azure AD / Okta / GitHub …]; U -. 用户身份断言 OIDC/SAML .-> Z; Z -. 颁发 Lurus access_token / id_token .-> P"
+  chart="graph LR; P[Lurus 产品] --> Z[auth.lurus.cn · Casdoor]; Z --> U[上游 IdP · Azure AD / Okta / GitHub …]; U -. 用户身份断言 OIDC/SAML .-> Z; Z -. 颁发 Lurus access_token / id_token .-> P"
 />
 
 **何时使用**：企业客户 B2B SSO（员工用自家 Azure AD/Okta 直接登录，无需注册）；域名自动路由（输企业邮箱后按域名跳对应 IdP，Domain Discovery）；账号关联（已有 Lurus 账号关联 GitHub/Google）；Just-in-Time 创建（首次外部 IdP 登录自动建账号并分配默认角色）。
@@ -197,7 +197,7 @@ Zitadel 作中间 IdP，对接一个或多个**上游外部 IdP**（企业 Azure
   ]"
 />
 
-- [账单与订阅](../billing.md) · [平台常见问题](../faq.md) · [Lurus API 接入指南](/api/overview) · [Zitadel 官方文档](https://zitadel.com/docs)（英文）
+- [账单与订阅](../billing.md) · [平台常见问题](../faq.md) · [Lurus API 接入指南](/api/overview) · [Casdoor 官方文档](https://casdoor.com/docs)（英文）
 
 </div>
 

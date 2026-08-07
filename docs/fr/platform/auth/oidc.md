@@ -1,5 +1,5 @@
 ---
-title: Intégration OIDC / OAuth2 | Authentification d’identité Zitadel
+title: Intégration OIDC / OAuth2 | Authentification d’identité Casdoor
 description: Guide complet pour connecter votre propre application au SSO Lurus — endpoints, Scopes, Claims, PKCE, Device Flow.
 ---
 
@@ -7,7 +7,7 @@ description: Guide complet pour connecter votre propre application au SSO Lurus 
 
 # Intégration OIDC / OAuth2 <StatusBadge status="live" />
 
-L’authentification d’identité unifiée de Lurus repose sur [Zitadel](https://zitadel.com) et expose des interfaces OIDC / OAuth2 standard. Toute application prenant en charge OIDC standard peut se connecter directement au SSO Lurus, sans modifier sa logique d’authentification centrale.
+L’authentification d’identité unifiée de Lurus repose sur [Casdoor](https://casdoor.com) et expose des interfaces OIDC / OAuth2 standard. Toute application prenant en charge OIDC standard peut se connecter directement au SSO Lurus, sans modifier sa logique d’authentification centrale.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">1</span><span class="lurus-stat__label">URL de Discovery à découverte automatique</span></div>
@@ -49,7 +49,7 @@ Tous les endpoints utilisent `https://auth.lurus.cn` comme Base URL.
 | **JWKS** | `/oauth/v2/keys` | GET | Récupère l’ensemble de clés publiques JWK pour vérifier la signature des JWT en local |
 | **Introspection** | `/oauth/v2/introspect` | POST | Interroge la validité et les métadonnées d’un token (usage côté serveur) |
 | **Revocation** | `/oauth/v2/revoke` | POST | Révoque un access / refresh token |
-| **End Session** | `/oidc/v1/end_session` | GET / POST | Déconnexion : termine la session Zitadel |
+| **End Session** | `/oidc/v1/end_session` | GET / POST | Déconnexion : termine la session Casdoor |
 | **Device Authorization** | `/oauth/v2/device_authorization` | POST | Endpoint initial du Device Code Flow |
 
 ### Paramètres de l’endpoint Authorization
@@ -92,7 +92,7 @@ Choisissez le flux d’autorisation selon le type de client ; pour SPA / Native 
 <li>Obtention des access / id / refresh token.</li>
 </ol>
 
-**Client Credentials** : POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:zitadel:iam:org:project:id:{projectid}:aud` → obtention d’un access_token (sans id_token, sans identité utilisateur).
+**Client Credentials** : POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:casdoor:iam:org:project:id:{projectid}:aud` → obtention d’un access_token (sans id_token, sans identité utilisateur).
 
 **Refresh Token** : la première autorisation contient le scope `offline_access` → stockez le refresh_token de manière sécurisée → à l’expiration de l’access_token, POST `grant_type=refresh_token` + `refresh_token=<token>` → obtention de nouveaux tokens (le refresh_token peut être renouvelé).
 
@@ -182,7 +182,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 ## Liste des Scopes
 
-Les scopes OIDC standard déterminent quels claims sont retournés ; les scopes propres à Zitadel contrôlent l’audience, les rôles et les contraintes d’organisation.
+Les scopes OIDC standard déterminent quels claims sont retournés ; les scopes propres à Casdoor contrôlent l’audience, les rôles et les contraintes d’organisation.
 
 ### Scopes standard
 
@@ -195,21 +195,21 @@ Les scopes OIDC standard déterminent quels claims sont retournés ; les scopes 
 | `address` | Récupère les informations d’adresse de l’utilisateur | id_token, userinfo |
 | `offline_access` | Demande un `refresh_token` (valide uniquement dans le flux Authorization Code) | — |
 
-### Scopes propres à Zitadel
+### Scopes propres à Casdoor
 
 | Scope | Description | Token concerné |
 |-------|------|-------------|
-| `urn:zitadel:iam:org:project:id:{projectid}:aud` | Ajoute l’ID de projet spécifié à l'`aud` de l’access token ; la vérification de signature côté serveur doit correspondre | access_token |
-| `urn:zitadel:iam:org:project:id:zitadel:aud` | Ajoute l’ID de projet propre à Zitadel à l'`aud` (pour accéder à l’API Zitadel) | access_token |
-| `urn:zitadel:iam:org:projects:roles` | Inclut dans le token la liste des rôles de tous les projets autorisés | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:project:role:{rolekey}` | Demande uniquement un claim de rôle spécifique, ex. `...:role:admin` | id_token, access_token |
-| `urn:zitadel:iam:org:id:{orgid}` | Restreint l’utilisateur à l’appartenance à cette organisation ; isolation forcée lors de connexions inter-organisations | Pour la validation |
-| `urn:zitadel:iam:org:domain:primary:{domain}` | Restreint au domaine principal de l’organisation de l’utilisateur, ex. `...:primary:lurus.cn` | Pour la validation |
-| `urn:zitadel:iam:user:metadata` | Inclut dans le token les métadonnées personnalisées de l’utilisateur (paires clé-valeur en Base64) | id_token, access_token, userinfo |
-| `urn:zitadel:iam:user:resourceowner` | Récupère l’ID, le nom et le domaine principal de l’organisation de l’utilisateur | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:idp:id:{idp_id}` | Redirige directement vers l’IdP spécifié (WeChat Entreprise, Feishu), en contournant la page de sélection d’IDP | Contrôle de comportement |
+| `urn:casdoor:iam:org:project:id:{projectid}:aud` | Ajoute l’ID de projet spécifié à l'`aud` de l’access token ; la vérification de signature côté serveur doit correspondre | access_token |
+| `urn:casdoor:iam:org:project:id:casdoor:aud` | Ajoute l’ID de projet propre à Casdoor à l'`aud` (pour accéder à l’API Casdoor) | access_token |
+| `urn:casdoor:iam:org:projects:roles` | Inclut dans le token la liste des rôles de tous les projets autorisés | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:project:role:{rolekey}` | Demande uniquement un claim de rôle spécifique, ex. `...:role:admin` | id_token, access_token |
+| `urn:casdoor:iam:org:id:{orgid}` | Restreint l’utilisateur à l’appartenance à cette organisation ; isolation forcée lors de connexions inter-organisations | Pour la validation |
+| `urn:casdoor:iam:org:domain:primary:{domain}` | Restreint au domaine principal de l’organisation de l’utilisateur, ex. `...:primary:lurus.cn` | Pour la validation |
+| `urn:casdoor:iam:user:metadata` | Inclut dans le token les métadonnées personnalisées de l’utilisateur (paires clé-valeur en Base64) | id_token, access_token, userinfo |
+| `urn:casdoor:iam:user:resourceowner` | Récupère l’ID, le nom et le domaine principal de l’organisation de l’utilisateur | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:idp:id:{idp_id}` | Redirige directement vers l’IdP spécifié (WeChat Entreprise, Feishu), en contournant la page de sélection d’IDP | Contrôle de comportement |
 
-> **Combinaison courante** (Web App) : `openid profile email offline_access urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{projectid}:aud`
+> **Combinaison courante** (Web App) : `openid profile email offline_access urn:casdoor:iam:org:projects:roles urn:casdoor:iam:org:project:id:{projectid}:aud`
 
 ---
 
@@ -221,7 +221,7 @@ Le tableau ci-dessous indique dans quel type de token apparaît chaque claim, ai
 
 | Claim | Description | id_token | access_token | userinfo | Scope requis |
 |-------|------|:--------:|:------------:|:--------:|-----------|
-| `sub` | ID unique de l’utilisateur (ID interne Zitadel) | ✓ | ✓ (JWT) | ✓ | Toujours |
+| `sub` | ID unique de l’utilisateur (ID interne Casdoor) | ✓ | ✓ (JWT) | ✓ | Toujours |
 | `iss` | Issuer, fixé à `https://auth.lurus.cn` | ✓ | ✓ | — | Toujours |
 | `aud` | Audience, client_id de l’application | ✓ | ✓ | — | Toujours |
 | `exp` / `iat` | Date d’expiration / d’émission (Unix) | ✓ | ✓ | — | Toujours |
@@ -235,22 +235,22 @@ Le tableau ci-dessous indique dans quel type de token apparaît chaque claim, ai
 
 > `✓*` = retourné uniquement lorsque le response_type contient `id_token` ou sur demande explicite.
 
-### Claims propres à Zitadel
+### Claims propres à Casdoor
 
 | Claim | Description | id_token | access_token | userinfo |
 |-------|------|:--------:|:------------:|:--------:|
-| `urn:zitadel:iam:org:project:roles` | Rôles de projet de l’utilisateur, structure `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:org:domain:primary` | Domaine principal de l’organisation de l’utilisateur | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:metadata` | Métadonnées personnalisées de l’utilisateur, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:resourceowner:id` / `:name` / `:primary_domain` | ID / nom / domaine principal de l’organisation de l’utilisateur | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:project:roles` | Rôles de projet de l’utilisateur, structure `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:domain:primary` | Domaine principal de l’organisation de l’utilisateur | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:metadata` | Métadonnées personnalisées de l’utilisateur, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:resourceowner:id` / `:name` / `:primary_domain` | ID / nom / domaine principal de l’organisation de l’utilisateur | ✓ | ✓ (JWT) | ✓ |
 
 **Exemple de claim de rôle** :
 ```json
-{ "urn:zitadel:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
+{ "urn:casdoor:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
 ```
 **Exemple de claim Metadata** (la valeur est en Base64 ; à l’usage il faut la décoder avec `atob()` / `base64.StdEncoding.DecodeString()`) :
 ```json
-{ "urn:zitadel:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
+{ "urn:casdoor:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
 ```
 
 ---
@@ -387,14 +387,14 @@ Les erreurs d’intégration les plus courantes et leur correction directe.
 <details class="lurus-faq-item">
 <summary>Erreur d’audience (le claim <code>aud</code> ne correspond pas)</summary>
 
-**Symptôme** : la vérification de signature signale `token audience mismatch` / `invalid audience`. **Cause** : par défaut, l'`aud` de l’access token ne contient que le `client_id`. **Solution** : ajoutez au scope `urn:zitadel:iam:org:project:id:{projectid}:aud` pour inscrire explicitement l’ID de projet dans l'`aud`.
+**Symptôme** : la vérification de signature signale `token audience mismatch` / `invalid audience`. **Cause** : par défaut, l'`aud` de l’access token ne contient que le `client_id`. **Solution** : ajoutez au scope `urn:casdoor:iam:org:project:id:{projectid}:aud` pour inscrire explicitement l’ID de projet dans l'`aud`.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>Le claim <code>roles</code> est vide ou absent</summary>
 
-**Cause** : l’utilisateur n’a pas de User Grant sur ce Project, ou le scope de rôles n’a pas été demandé. **À vérifier** : ① dans la console, Project → Authorizations, confirmez la présence d’un Grant de rôle ② le scope contient `urn:zitadel:iam:org:projects:roles` ③ dans les paramètres du Project, activez « Assert Roles on Authentication ».
+**Cause** : l’utilisateur n’a pas de User Grant sur ce Project, ou le scope de rôles n’a pas été demandé. **À vérifier** : ① dans la console, Project → Authorizations, confirmez la présence d’un Grant de rôle ② le scope contient `urn:casdoor:iam:org:projects:roles` ③ dans les paramètres du Project, activez « Assert Roles on Authentication ».
 
 </details>
 
@@ -434,7 +434,7 @@ Le renouvellement retourne `invalid_grant`. Causes possibles : la première auto
 
 ## Liens connexes
 
-- Officiel Zitadel : [Endpoints](https://zitadel.com/docs/apis/openidoauth/endpoints) · [Scopes](https://zitadel.com/docs/apis/openidoauth/scopes) · [Claims](https://zitadel.com/docs/apis/openidoauth/claims)
+- Officiel Casdoor : [Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
 - Console Auth [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
 

@@ -89,7 +89,7 @@ export const glossary: Record<string, GlossaryEntry> = {
 
   // ─── Auth ────────────────────────────────────────────────
   'OIDC': {
-    zh: 'OpenID Connect，基于 OAuth 2.0 的身份认证标准，Lurus 使用 Zitadel 实现。',
+    zh: 'OpenID Connect，基于 OAuth 2.0 的身份认证标准，Lurus 使用 Casdoor 实现。',
     en: 'OpenID Connect',
     tags: ['auth'],
   },
@@ -113,7 +113,7 @@ export const glossary: Record<string, GlossaryEntry> = {
     en: 'JSON Web Token',
     tags: ['auth', 'general'],
   },
-  'Zitadel': {
+  'Casdoor': {
     zh: 'Lurus 使用的开源身份平台，提供 OIDC / OAuth2 / SAML / SCIM / MFA 能力。',
     tags: ['auth'],
   },

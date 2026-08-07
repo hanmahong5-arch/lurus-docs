@@ -1,13 +1,13 @@
 ---
-title: 核心概念 | Zitadel 身份认证
-description: Instance / Organization / Project / Application / User / Grant / Administrator 等 Zitadel 对象模型详解，结合 Lurus 实际部署说明。
+title: 核心概念 | Casdoor 身份认证
+description: Instance / Organization / Project / Application / User / Grant / Administrator 等 Casdoor 对象模型详解，结合 Lurus 实际部署说明。
 ---
 
 <div class="auth-concepts">
 
 # 核心概念
 
-Lurus 用 [Zitadel](https://zitadel.com) 作统一 OIDC 身份提供方（IdP），公网入口 `auth.lurus.cn`。本页梳理对象模型层级。
+Lurus 用 [Casdoor](https://casdoor.com) 作统一 OIDC 身份提供方（IdP），公网入口 `auth.lurus.cn`。本页梳理对象模型层级。
 
 ---
 
@@ -18,7 +18,7 @@ Lurus 用 [Zitadel](https://zitadel.com) 作统一 OIDC 身份提供方（IdP）
 </div>
 
 <ArchitectureDiagram
-  title="Zitadel 对象模型层级"
+  title="Casdoor 对象模型层级"
   chart="graph TD; Instance[Instance · lurus-prod] --> Org[Organization · lurus.cn]; Org --> User[User · 员工 / 客户 / Service Account]; Org --> Project[Project · lurus-api / lucrum / switch …]; Org --> OrgGrant[Grant · 授权 Project 给其他 Org]; Project --> App[Application · Web / SPA / Native / API / SAML]; Project --> Role[Role · 如 lucrum:admin]; User -. User Grant .-> Role"
 />
 
@@ -55,7 +55,7 @@ Lurus 用 [Zitadel](https://zitadel.com) 作统一 OIDC 身份提供方（IdP）
 
 ## Project 项目
 
-**逻辑产品分组**，每个 Project 对应一个软件产品或服务边界。同 Project 下所有 Application 共享相同 Role 定义。组成：Application（登录客户端）、Role（角色字符串如 `admin`/`viewer`）、User Grant（角色授予 User）、Granted Organization（整个 Project 授权给其他 Org）。Project 级设置含：是否要求登录携带角色声明（`urn:zitadel:iam:org:project:roles`）、是否允许外部 IdP 登录等。
+**逻辑产品分组**，每个 Project 对应一个软件产品或服务边界。同 Project 下所有 Application 共享相同 Role 定义。组成：Application（登录客户端）、Role（角色字符串如 `admin`/`viewer`）、User Grant（角色授予 User）、Granted Organization（整个 Project 授权给其他 Org）。Project 级设置含：是否要求登录携带角色声明（`urn:casdoor:iam:org:project:roles`）、是否允许外部 IdP 登录等。
 
 ::: tip Lurus 语境
 每个产品线对应一个独立 Project，命名见 `lurus.yaml` `capabilities:` 注册表。角色约定由各产品团队定义。
@@ -103,7 +103,7 @@ Lurus 用 [Zitadel](https://zitadel.com) 作统一 OIDC 身份提供方（IdP）
 基于 RBAC，核心为 Project Role、User Grant、Project Grant。
 
 - **Project Role**：Project 内角色字符串，三字段 Key（代码标识，如 `admin`）、Display Name（控制台显示，如「管理员」）、Group（可选分组，如 `management`）。同 Project 下所有 Application 共享。
-- **User Grant** = `User + Project + Role[]`：登录后 access token 的 `urn:zitadel:iam:org:project:roles` claim 携带用户在目标 Project 被授予的所有角色，后端解析此 claim 鉴权，无需额外调 API。
+- **User Grant** = `User + Project + Role[]`：登录后 access token 的 `urn:casdoor:iam:org:project:roles` claim 携带用户在目标 Project 被授予的所有角色，后端解析此 claim 鉴权，无需额外调 API。
 - **Project Grant** = `Project (来源 Org) → Organization (目标 Org)`：将整个 Project 管理权授予另一 Organization。B2B 多租户核心：Lurus 无需为客户员工建账号，由客户在其 Organization 内自管用户和权限。
 
 ---
@@ -140,7 +140,7 @@ Instance 层定义默认值，Organization 层按需覆盖。
 | **Privacy Policy** | 隐私声明 URL、ToS URL |
 | **Branding** | 登录页 Logo、配色、自定义 CSS（Organization 级可独立定制） |
 
-主组织 `lurus.cn` 的具体策略由平台运维在 Zitadel Console 管理，此处不硬编码。
+主组织 `lurus.cn` 的具体策略由平台运维在 Casdoor Console 管理，此处不硬编码。
 
 ---
 
@@ -148,7 +148,7 @@ Instance 层定义默认值，Organization 层按需覆盖。
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">对齐 Lurus 实际部署</p>
-    <div class="lurus-callout__body"><ul><li><strong>Project 命名</strong>：每个产品对应一个 Project（<code>lurus-api</code>、<code>lucrum</code>、<code>switch</code>、<code>lutu</code>、<code>admin</code>、<code>forge</code>），以 Zitadel Console 为准。</li><li><strong>角色约定</strong>：角色字符串由服务级 CLAUDE.md 或 <code>lurus.yaml</code> <code>capabilities:</code> 注册表定义，不在此硬编码。</li><li><strong>Machine User 场景</strong>：M2M 调用统一用 Machine User + JWT Profile，避免共享人类账号。</li><li><strong>PAT 场景</strong>：CI/CD 和脚本可用 PAT，须设最短有效期并定期轮换。</li><li><strong>完整配置参考</strong>：<code>lurus.yaml</code> <code>capabilities:</code> 段为架构变更唯一入口。</li></ul></div>
+    <div class="lurus-callout__body"><ul><li><strong>Project 命名</strong>：每个产品对应一个 Project（<code>lurus-api</code>、<code>lucrum</code>、<code>switch</code>、<code>lutu</code>、<code>admin</code>、<code>forge</code>），以 Casdoor Console 为准。</li><li><strong>角色约定</strong>：角色字符串由服务级 CLAUDE.md 或 <code>lurus.yaml</code> <code>capabilities:</code> 注册表定义，不在此硬编码。</li><li><strong>Machine User 场景</strong>：M2M 调用统一用 Machine User + JWT Profile，避免共享人类账号。</li><li><strong>PAT 场景</strong>：CI/CD 和脚本可用 PAT，须设最短有效期并定期轮换。</li><li><strong>完整配置参考</strong>：<code>lurus.yaml</code> <code>capabilities:</code> 段为架构变更唯一入口。</li></ul></div>
   </div>
 </div>
 

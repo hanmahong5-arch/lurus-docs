@@ -9,11 +9,11 @@ description: The identity system shared across all Lurus product lines — log i
 
 **Log in once, access everything.** Lurus API, Lucrum, Switch, Creator, Lutu, Admin, Forge, and all other products share the same identity system — when a user logs into any product, the rest recognize them automatically; permissions and quotas are settled uniformly at the account level; and enterprise customers can integrate their own SSO to onboard employees.
 
-The system is served by `auth.lurus.cn`, built and self-hosted on top of the open-source identity infrastructure [Zitadel](https://zitadel.com). It fully implements the OIDC / OAuth2 / SAML standard protocols, and user data remains entirely within Lurus’s own K8s cluster throughout.
+The system is served by `auth.lurus.cn`, built and self-hosted on top of the open-source identity infrastructure [Casdoor](https://casdoor.com). It fully implements the OIDC / OAuth2 / SAML standard protocols, and user data remains entirely within Lurus’s own K8s cluster throughout.
 
 ::: tip Quick links
 - User self-service: [auth.lurus.cn](https://auth.lurus.cn) — change password, manage Passkeys, bind MFA, view login history
-- Organization/project management: [auth.lurus.cn](https://auth.lurus.cn) (Zitadel organization console) — member invitations, permission assignment, and audits for enterprise customers; or contact sales to enable enterprise organization management
+- Organization/project management: [auth.lurus.cn](https://auth.lurus.cn) (Casdoor organization console) — member invitations, permission assignment, and audits for enterprise customers; or contact sales to enable enterprise organization management
 :::
 
 ---
@@ -50,7 +50,7 @@ The system is served by `auth.lurus.cn`, built and self-hosted on top of the ope
     { title: 'B2B Multi-Tenancy', body: 'Multiple Organizations can be created under an Instance, naturally supporting enterprise customer isolation; each organization can independently configure branding, login policies, and IdP federation.', icon: 'building-2' },
     { title: 'OIDC / OAuth2 / SAML', body: 'Full implementation of the three major standard protocols, compatible with mainstream SDKs and frameworks, for seamless integration with Go, Rust, TypeScript, and Flutter applications.', icon: 'link' },
     { title: 'Audit Logs', body: 'Key operations such as logins, MFA changes, permission grants, and password resets are all recorded in queryable, immutable logs to meet compliance requirements.', icon: 'history' },
-    { title: 'Actions Extensions', body: 'Inject custom logic at key points in the authentication flow (such as syncing user attributes or restricting login conditions) without forking Zitadel itself.', icon: 'workflow' },
+    { title: 'Actions Extensions', body: 'Inject custom logic at key points in the authentication flow (such as syncing user attributes or restricting login conditions) without forking Casdoor itself.', icon: 'workflow' },
   ]"
 />
 
@@ -74,7 +74,7 @@ The system is served by `auth.lurus.cn`, built and self-hosted on top of the ope
 | **Project** | A collection of applications under an Organization, managing roles and grants uniformly | Each product line (Lurus API, Lucrum, Switch, Forge…) corresponds to one Project |
 | **Application** | A specific client within a Project, holding `client_id` / `client_secret` | Each frontend, desktop, and server registers a separate Application |
 | **User** | A login-capable account, either Human (a real person) or Service User (a machine) | End users are Human; backend service-to-service calls use a Service User + JWT Profile |
-| **Grant** | The binding relationship that grants a Project Role to a User | Controls a user’s permission level within a specific product; the [auth.lurus.cn](https://auth.lurus.cn) (Zitadel) organization settings are authoritative |
+| **Grant** | The binding relationship that grants a Project Role to a User | Controls a user’s permission level within a specific product; the [auth.lurus.cn](https://auth.lurus.cn) (Casdoor) organization settings are authoritative |
 
 ---
 
@@ -128,11 +128,11 @@ The system is served by `auth.lurus.cn`, built and self-hosted on top of the ope
 
 ## Further Reading
 
-Built on top of the open-source identity infrastructure Zitadel. For a deeper dive into the underlying mechanisms or SDK details, refer to the upstream documentation:
+Built on top of the open-source identity infrastructure Casdoor. For a deeper dive into the underlying mechanisms or SDK details, refer to the upstream documentation:
 
-- [Zitadel Documentation Home](https://zitadel.com/docs) — getting started, deployment modes, and SDK integration guides
-- [Core Concepts](https://zitadel.com/docs/concepts) — explanations of the principles behind Instance, Organization, Project, User, and Grant
-- [API Reference](https://zitadel.com/docs/apis) — REST / gRPC endpoint documentation for the Management API, Auth API, and Admin API
+- [Casdoor Documentation Home](https://casdoor.com/docs) — getting started, deployment modes, and SDK integration guides
+- [Core Concepts](https://casdoor.com/docs/concepts) — explanations of the principles behind Instance, Organization, Project, User, and Grant
+- [API Reference](https://casdoor.com/docs/apis) — REST / gRPC endpoint documentation for the Management API, Auth API, and Admin API
 
 <RelatedProducts product-id="auth" />
 

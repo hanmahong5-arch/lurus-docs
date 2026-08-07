@@ -55,7 +55,7 @@ Al registrarte con éxito obtienes:
 
 **Gestión de la cuenta** (inicia sesión en [identity.lurus.cn](https://identity.lurus.cn) → Configuración de la cuenta): información personal, historial de inicios de sesión, vinculaciones de terceros, configuración de seguridad (cambiar contraseña, verificación en dos pasos).
 
-**Un solo inicio de sesión, acceso en todo el sitio**: basado en el estándar OIDC, al iniciar sesión en cualquier producto se establece una sesión entre todos los productos; admite Passkey/WebAuthn sin contraseña, MFA con TOTP/llaves de hardware, e inicio de sesión social con GitHub/Google, y las empresas pueden integrar SSO con Azure AD/Feishu/Okta. Los usuarios finales usan una sola cuenta para API/Lucrum/Switch/Creator/Lutu; los desarrolladores integran sus propias aplicaciones con el SDK de OIDC, y el backend usa Service User + JWT Profile; la gestión organizativa empresarial (miembros/permisos/auditoría) se realiza a través de [auth.lurus.cn](https://auth.lurus.cn) (consola de Zitadel) o contactando con el equipo comercial para activarla.
+**Un solo inicio de sesión, acceso en todo el sitio**: basado en el estándar OIDC, al iniciar sesión en cualquier producto se establece una sesión entre todos los productos; admite Passkey/WebAuthn sin contraseña, MFA con TOTP/llaves de hardware, e inicio de sesión social con GitHub/Google, y las empresas pueden integrar SSO con Azure AD/Feishu/Okta. Los usuarios finales usan una sola cuenta para API/Lucrum/Switch/Creator/Lutu; los desarrolladores integran sus propias aplicaciones con el SDK de OIDC, y el backend usa Service User + JWT Profile; la gestión organizativa empresarial (miembros/permisos/auditoría) se realiza a través de [auth.lurus.cn](https://auth.lurus.cn) (consola de Casdoor) o contactando con el equipo comercial para activarla.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -208,7 +208,7 @@ Los datos de los usuarios están estrictamente aislados y no se comparten.
 <NextSteps
   title="Siguientes pasos"
   :steps="[
-    { text: 'Autenticación de identidad (Zitadel)', link: '/es/platform/auth/', primary: true },
+    { text: 'Autenticación de identidad (Casdoor)', link: '/es/platform/auth/', primary: true },
     { text: 'Detalles de facturación', link: '/es/platform/billing' },
     { text: 'Preguntas frecuentes', link: '/es/platform/faq' },
     { text: 'Obtener API Key', link: '/es/guide/get-api-key' },

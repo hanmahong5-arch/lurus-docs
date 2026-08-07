@@ -9,11 +9,11 @@ description: Lurus 全製品ラインで共有される ID 基盤。一度のロ
 
 **一度ログインすれば、全サイトを横断利用。** Lurus API、Lucrum、Switch、Creator、Lutu、Admin、Forge などすべての製品が同一の ID 基盤を共有します。ユーザーがいずれかの製品でログインすると、残りの製品も自動的に認識します。権限とクォータはアカウント単位で一元的に精算され、エンタープライズ顧客は自社の SSO を接続して従業員のオンボーディングを完了できます。
 
-この基盤は `auth.lurus.cn` がサービスを提供し、オープンソースの ID インフラ [Zitadel](https://zitadel.com) をベースに自社構築・デプロイされています。OIDC / OAuth2 / SAML の標準プロトコルを完全実装し、ユーザーデータは終始 Lurus 自社の K8s クラスター内に保持されます。
+この基盤は `auth.lurus.cn` がサービスを提供し、オープンソースの ID インフラ [Casdoor](https://casdoor.com) をベースに自社構築・デプロイされています。OIDC / OAuth2 / SAML の標準プロトコルを完全実装し、ユーザーデータは終始 Lurus 自社の K8s クラスター内に保持されます。
 
 ::: tip クイック入口
 - ユーザーセルフサービス管理：[auth.lurus.cn](https://auth.lurus.cn) — パスワード変更、Passkey 管理、MFA バインド、ログイン履歴の確認
-- 組織 / プロジェクト管理：[auth.lurus.cn](https://auth.lurus.cn)（Zitadel 組織コンソール）— エンタープライズ顧客のメンバー招待、権限割り当て、監査。または商談窓口へ連絡してエンタープライズ組織管理を開設
+- 組織 / プロジェクト管理：[auth.lurus.cn](https://auth.lurus.cn)（Casdoor 組織コンソール）— エンタープライズ顧客のメンバー招待、権限割り当て、監査。または商談窓口へ連絡してエンタープライズ組織管理を開設
 :::
 
 ---
@@ -50,7 +50,7 @@ description: Lurus 全製品ラインで共有される ID 基盤。一度のロ
     { title: 'B2B マルチテナント', body: 'Instance の下に複数の Organization を作成でき、エンタープライズ顧客の分離を自然にサポートします。各組織はブランド、ログインポリシー、IdP フェデレーションを個別に設定できます。', icon: 'building-2' },
     { title: 'OIDC / OAuth2 / SAML', body: '三大標準プロトコルを完全実装し、市場の主要な SDK やフレームワークと互換性があり、Go、Rust、TypeScript、Flutter アプリにシームレスに統合できます。', icon: 'link' },
     { title: '監査ログ', body: 'ログイン、MFA 変更、権限付与、パスワードリセットなどの重要操作はすべて、照会可能な不変ログとして記録され、コンプライアンス要件を満たします。', icon: 'history' },
-    { title: 'Actions 拡張', body: '認証フローの重要なノードにカスタムロジックを注入できます（ユーザー属性の同期、ログイン条件の制限など）。Zitadel 本体を fork する必要はありません。', icon: 'workflow' },
+    { title: 'Actions 拡張', body: '認証フローの重要なノードにカスタムロジックを注入できます（ユーザー属性の同期、ログイン条件の制限など）。Casdoor 本体を fork する必要はありません。', icon: 'workflow' },
   ]"
 />
 
@@ -74,7 +74,7 @@ description: Lurus 全製品ラインで共有される ID 基盤。一度のロ
 | **Project** | Organization 配下のアプリケーション集合。roles と grants を一元管理 | 各製品ライン（Lurus API、Lucrum、Switch、Forge…）が一つの Project に対応 |
 | **Application** | Project 内の具体的なクライアント。`client_id` / `client_secret` を保持 | 各フロントエンド、デスクトップ、サーバーサイドがそれぞれ一つの Application を登録 |
 | **User** | ログイン可能なアカウント。Human（実在の人）と Service User（マシン）に分かれる | エンドユーザーは Human。バックエンドサービス間の呼び出しには Service User + JWT Profile を使用 |
-| **Grant** | Project Role を特定の User に付与するバインド関係 | ユーザーの具体的な製品内での権限レベルを制御。[auth.lurus.cn](https://auth.lurus.cn)（Zitadel）の組織設定を正とする |
+| **Grant** | Project Role を特定の User に付与するバインド関係 | ユーザーの具体的な製品内での権限レベルを制御。[auth.lurus.cn](https://auth.lurus.cn)（Casdoor）の組織設定を正とする |
 
 ---
 
@@ -128,11 +128,11 @@ description: Lurus 全製品ラインで共有される ID 基盤。一度のロ
 
 ## 関連資料
 
-オープンソースの ID インフラ Zitadel をベースに構築されています。基盤の仕組みや SDK の詳細を深く知りたい場合は、上流のドキュメントを参照してください。
+オープンソースの ID インフラ Casdoor をベースに構築されています。基盤の仕組みや SDK の詳細を深く知りたい場合は、上流のドキュメントを参照してください。
 
-- [Zitadel ドキュメントホーム](https://zitadel.com/docs) — クイックスタート、デプロイモード、SDK 統合ガイド
-- [コア概念](https://zitadel.com/docs/concepts) — Instance、Organization、Project、User、Grant の原理説明
-- [API リファレンス](https://zitadel.com/docs/apis) — Management API、Auth API、Admin API の REST / gRPC エンドポイントドキュメント
+- [Casdoor ドキュメントホーム](https://casdoor.com/docs) — クイックスタート、デプロイモード、SDK 統合ガイド
+- [コア概念](https://casdoor.com/docs/concepts) — Instance、Organization、Project、User、Grant の原理説明
+- [API リファレンス](https://casdoor.com/docs/apis) — Management API、Auth API、Admin API の REST / gRPC エンドポイントドキュメント
 
 <RelatedProducts product-id="auth" />
 

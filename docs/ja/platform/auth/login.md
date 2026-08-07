@@ -1,5 +1,5 @@
 ---
-title: ログインと多要素認証 | Zitadel 身元認証
+title: ログインと多要素認証 | Casdoor 身元認証
 description: Lurus がサポートするログイン方式（パスワード、Passkey、ソーシャルログイン、エンタープライズ SSO）と多要素認証ポリシー。
 ---
 
@@ -7,7 +7,7 @@ description: Lurus がサポートするログイン方式（パスワード、P
 
 # ログインと多要素認証
 
-Lurus のすべての製品は同一の身元認証インフラ（**Zitadel**、外部公開は `auth.lurus.cn`）を共有します。Lurus API、Switch、Lucrum、Forge のいずれを利用する場合でも、ログインは同じ入口を経由し、一度ログインすれば全製品で通用します。
+Lurus のすべての製品は同一の身元認証インフラ（**Casdoor**、外部公開は `auth.lurus.cn`）を共有します。Lurus API、Switch、Lucrum、Forge のいずれを利用する場合でも、ログインは同じ入口を経由し、一度ログインすれば全製品で通用します。
 
 ---
 
@@ -107,7 +107,7 @@ Passkey > ソーシャルログイン > メールパスワード。Passkey は�
 
 ## 5. パスワードポリシー (Password Policy)
 
-以下は Zitadel インスタンスのデフォルト基準であり、管理者はコンソールで調整できます。実際の要件は登録/パスワード変更時にリアルタイムで提示されます。
+以下は Casdoor インスタンスのデフォルト基準であり、管理者はコンソールで調整できます。実際の要件は登録/パスワード変更時にリアルタイムで提示されます。
 
 **複雑度**（デフォルト値）：最小長 8 文字；大文字、小文字、数字、特殊文字（`!@#$%^&*` など）を各々最低 1 つ。
 
@@ -123,11 +123,11 @@ Passkey > ソーシャルログイン > メールパスワード。Passkey は�
 
 ## 6. 身元代理 / Identity Brokering
 
-Zitadel は中間 IdP として機能し、1 つまたは複数の**上流の外部 IdP**（企業の Azure AD/Okta、またはソーシャルの GitHub/Google）と連携します。ユーザーが「XXX でログイン」をクリック → 上流 IdP へジャンプして認証 → Zitadel が結果を受信 → Lurus 統一 token を発行、という流れです。
+Casdoor は中間 IdP として機能し、1 つまたは複数の**上流の外部 IdP**（企業の Azure AD/Okta、またはソーシャルの GitHub/Google）と連携します。ユーザーが「XXX でログイン」をクリック → 上流 IdP へジャンプして認証 → Casdoor が結果を受信 → Lurus 統一 token を発行、という流れです。
 
 <ArchitectureDiagram
   title="Identity Brokering 経路"
-  chart="graph LR; P[Lurus 製品] --> Z[auth.lurus.cn · Zitadel]; Z --> U[上流 IdP · Azure AD / Okta / GitHub …]; U -. ユーザー身元アサーション OIDC/SAML .-> Z; Z -. Lurus access_token / id_token を発行 .-> P"
+  chart="graph LR; P[Lurus 製品] --> Z[auth.lurus.cn · Casdoor]; Z --> U[上流 IdP · Azure AD / Okta / GitHub …]; U -. ユーザー身元アサーション OIDC/SAML .-> Z; Z -. Lurus access_token / id_token を発行 .-> P"
 />
 
 **いつ使うか**：企業顧客の B2B SSO（従業員が自社の Azure AD/Okta で直接ログインでき、登録不要）；ドメイン自動ルーティング（企業メールを入力するとドメインに応じて対応する IdP へジャンプ、Domain Discovery）；アカウント関連付け（既存の Lurus アカウントに GitHub/Google を関連付け）；Just-in-Time 作成（初回の外部 IdP ログイン時に自動でアカウントを作成しデフォルトロールを割り当て）。
@@ -197,7 +197,7 @@ B2B 組織にカスタムログインドメイン（`auth.client.com`）を設�
   ]"
 />
 
-- [請求とサブスクリプション](../billing.md) · [プラットフォームよくある質問](../faq.md) · [Lurus API 接続ガイド](/ja/api/overview) · [Zitadel 公式ドキュメント](https://zitadel.com/docs)（英語）
+- [請求とサブスクリプション](../billing.md) · [プラットフォームよくある質問](../faq.md) · [Lurus API 接続ガイド](/ja/api/overview) · [Casdoor 公式ドキュメント](https://casdoor.com/docs)（英語）
 
 </div>
 

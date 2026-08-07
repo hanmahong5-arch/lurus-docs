@@ -31,7 +31,7 @@ import { changelog } from '../.vitepress/data/changelog'
 
 ### 安全
 
-- Zitadel OIDC 统一身份认证
+- Casdoor OIDC 统一身份认证
 - 全站 TLS 1.3 + 通配符证书自动续期
 - Trivy 容器扫描集成到所有 CI 流水线
 - SM4-GCM 国密加密支持 (Kova)

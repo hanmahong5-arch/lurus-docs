@@ -1,5 +1,5 @@
 ---
-title: API 認証 | Zitadel ID 認証
+title: API 認証 | Casdoor ID 認証
 description: Service User、Personal Access Token、JWT Profile、Client Credentials の完全な解説。Lurus のすべてのマシン間（M2M）認証シナリオを網羅します。
 ---
 
@@ -7,7 +7,7 @@ description: Service User、Personal Access Token、JWT Profile、Client Credent
 
 # API 認証（マシン間 / M2M） <StatusBadge status="live" />
 
-M2M 認証向け：ブラウザの OIDC フローとは異なり、M2M では Zitadel の **Service Account**（サービスアカウント）を使い、人手を介さずに access token を取得します。Zitadel インスタンスは `https://auth.lurus.cn` で、以下のエンドポイントはすべてこれを基準とします。
+M2M 認証向け：ブラウザの OIDC フローとは異なり、M2M では Casdoor の **Service Account**（サービスアカウント）を使い、人手を介さずに access token を取得します。Casdoor インスタンスは `https://auth.lurus.cn` で、以下のエンドポイントはすべてこれを基準とします。
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">認証方式</span></div>
@@ -58,7 +58,7 @@ PAT は**即利用可能な token** で、access token に交換せずに、そ�
 
 ### 1.2 PAT の使用
 
-標準の Bearer token として各リクエストの header に付与します。その Service Account に認可されているすべての Zitadel API にアクセスでき、追加の audience scope は不要です。
+標準の Bearer token として各リクエストの header に付与します。その Service Account に認可されているすべての Casdoor API にアクセスでき、追加の audience scope は不要です。
 
 ```bash
 # 查询当前账号所在组织
@@ -72,8 +72,8 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 ### 1.3 適用される Lurus のシナリオ
 
 - 運用スクリプト：Management API でユーザーを一括照会または変更
-- `2l-svc-zitadel-mcp` MCP Server による Zitadel Management API へのアクセス
-- CI/CD パイプラインでの一時的な管理操作；ローカル開発での Zitadel API の簡易テスト
+- `2l-svc-casdoor-mcp` MCP Server による Casdoor Management API へのアクセス
+- CI/CD パイプラインでの一時的な管理操作；ローカル開発での Casdoor API の簡易テスト
 
 ### 1.4 セキュリティ上の注意
 
@@ -103,7 +103,7 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 **命名規約** `svc-<service>-<purpose>`、例：
 - `svc-lurus-api-platform-client` — lurus-api が platform 内部インターフェースを呼び出す
 - `svc-ci-deploy` — CI/CD デプロイ専用
-- `svc-zitadel-mcp-admin` — Zitadel MCP Server の管理用
+- `svc-casdoor-mcp-admin` — Casdoor MCP Server の管理用
 
 ### 2.2 権限の割り当て
 
@@ -177,7 +177,7 @@ curl -X GET https://auth.lurus.cn/v2/users/me \
 
 ## 四、JWT Profile（最も安全なマシン認証方式） <Badge text="本番推奨" type="tip" />
 
-非対称鍵を使用します：Service Account が**秘密鍵**を保持し、Zitadel が対応する**公開鍵**を保存します。クライアントは秘密鍵で短命の JWT に署名して `client_assertion` とし、Zitadel が署名を検証したうえで access token を発行します。**秘密鍵はネットワーク経由で送信されない**ため、最も安全な M2M 方式です。
+非対称鍵を使用します：Service Account が**秘密鍵**を保持し、Casdoor が対応する**公開鍵**を保存します。クライアントは秘密鍵で短命の JWT に署名して `client_assertion` とし、Casdoor が署名を検証したうえで access token を発行します。**秘密鍵はネットワーク経由で送信されない**ため、最も安全な M2M 方式です。
 
 ### 4.1 鍵ペアの生成
 
@@ -190,7 +190,7 @@ openssl genrsa -out privatekey.pem 2048
 openssl rsa -in privatekey.pem -pubout -out publickey.pem
 ```
 
-その後、Zitadel User Service API で `publickey.pem` をアップロードします。
+その後、Casdoor User Service API で `publickey.pem` をアップロードします。
 
 ### 4.2 JSON 鍵ファイルの形式
 
@@ -223,12 +223,12 @@ openssl rsa -in privatekey.pem -pubout -out publickey.pem
 |-------|------|
 | `iss` | JSON ファイル内の `userId` |
 | `sub` | `iss` と同じ（リクエスト元、すなわちアプリケーション自身を表す） |
-| `aud` | Zitadel インスタンスのドメイン：`https://auth.lurus.cn` |
+| `aud` | Casdoor インスタンスのドメイン：`https://auth.lurus.cn` |
 | `iat` | 現在の UTC Unix タイムスタンプ |
 | `exp` | 失効時刻。`iat + 300`（5 分）を推奨；**最長でも 1 時間を超えない** |
 
 ::: warning 時刻同期
-`iat` は Zitadel サーバー時刻より 1 時間以上早くてはならず、そうでないと token リクエストが拒否されます。マシンの NTP 同期が正常であることを確認してください。
+`iat` は Casdoor サーバー時刻より 1 時間以上早くてはならず、そうでないと token リクエストが拒否されます。マシンの NTP 同期が正常であることを確認してください。
 :::
 
 ### 4.4 access token への交換
@@ -394,25 +394,25 @@ async function getToken(keyFilePath: string): Promise<string> {
 
 ## 五、正しい Audience をリクエストする
 
-Zitadel は access token の **audience（aud）** フィールドを検証します。対象 API ごとに、scope で対応する audience を宣言します。
+Casdoor は access token の **audience（aud）** フィールドを検証します。対象 API ごとに、scope で対応する audience を宣言します。
 
-**Zitadel 自身の API にアクセスする場合**（Management / Admin / Auth）：`scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud`。この予約 scope は Zitadel プロジェクトを token の audience に加えます。Management API などは、この audience を含まない token を拒否します。
+**Casdoor 自身の API にアクセスする場合**（Management / Admin / Auth）：`scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud`。この予約 scope は Casdoor プロジェクトを token の audience に加えます。Management API などは、この audience を含まない token を拒否します。
 
 ```bash
 curl -X POST https://auth.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
-  --data 'scope=openid profile urn:zitadel:iam:org:project:id:zitadel:aud'
+  --data 'scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud'
 ```
 
-**カスタム Project のリソースサービスにアクセスする場合**：`scope=openid profile urn:zitadel:iam:org:project:id:<your_project_id>:aud`（`<your_project_id>` はコンソールの Project 詳細ページで確認します）。
+**カスタム Project のリソースサービスにアクセスする場合**：`scope=openid profile urn:casdoor:iam:org:project:id:<your_project_id>:aud`（`<your_project_id>` はコンソールの Project 詳細ページで確認します）。
 
 ### よくあるエラー
 
 | 現象 | 原因 | 解決 |
 |------|------|------|
-| `403 Forbidden` | token の audience に対象 API が含まれていない | token 交換時に対応する `urn:zitadel:iam:...` scope を追加する |
+| `403 Forbidden` | token の audience に対象 API が含まれていない | token 交換時に対応する `urn:casdoor:iam:...` scope を追加する |
 | `401 Unauthorized` | token が失効しているか署名が無効 | 時刻同期を確認し、token を再取得する |
 | `invalid_grant` | assertion の失効（>5 分）または `aud` が不正 | assertion の `exp` と `aud` を確認する |
 
@@ -428,7 +428,7 @@ curl -X POST https://auth.lurus.cn/oauth/v2/token \
 apiVersion: v1
 kind: Secret
 metadata:
-  name: zitadel-service-account-key
+  name: idp-service-account-key
   namespace: lurus-system
 type: Opaque
 stringData:
@@ -444,18 +444,18 @@ stringData:
 ```yaml
 # Deployment 中挂载
 volumes:
-  - name: zitadel-key
+  - name: idp-key
     secret:
-      secretName: zitadel-service-account-key
+      secretName: idp-service-account-key
 containers:
   - name: app
     volumeMounts:
-      - name: zitadel-key
-        mountPath: /secrets/zitadel
+      - name: idp-key
+        mountPath: /secrets/casdoor
         readOnly: true
     env:
-      - name: ZITADEL_KEY_FILE
-        value: /secrets/zitadel/key.json
+      - name: OIDC_KEY_FILE
+        value: /secrets/casdoor/key.json
 ```
 
 ---
@@ -464,14 +464,14 @@ containers:
 
 | サービス | 認証シナリオ | 推奨方式 |
 |------|---------|---------|
-| **2l-svc-zitadel-mcp** | Zitadel Management API を呼び出してユーザー/権限を管理 | PAT（運用）または Service Account + JWT Profile |
+| **2l-svc-casdoor-mcp** | Casdoor Management API を呼び出してユーザー/権限を管理 | PAT（運用）または Service Account + JWT Profile |
 | **2b-svc-api (Hub)** | フロントエンドの OIDC token をバックエンドで検証；platform 内部インターフェースを呼び出す | フロントエンドユーザーは OIDC token；プラットフォーム呼び出しは `INTERNAL_API_KEY`（bearer_internal_key モード） |
-| **2l-svc-platform** | 内部 API（`/internal/v1/...`）を提供し、Hub などが消費する | `bearer_internal_key`（Zitadel ではなく、プラットフォーム内部の取り決め） |
+| **2l-svc-platform** | 内部 API（`/internal/v1/...`）を提供し、Hub などが消費する | `bearer_internal_key`（Casdoor ではなく、プラットフォーム内部の取り決め） |
 | **CI/CD パイプライン** | デプロイ時にクラスタリソースを照会/更新 | 独立した Service Account + PAT、フローごとに独立したアカウント |
 | **定期バックグラウンドジョブ** | 独立した Job、ユーザーコンテキストなし | Service Account + Client Credentials または JWT Profile |
 
 ::: info `bearer_internal_key` について
-`lurus-platform` の内部 API（service: `platform-core.lurus-platform.svc:18104`）は Zitadel token ではなく独立した `INTERNAL_API_KEY` を使い、この key は K8s Secret を通じて消費側に配布されます。詳細は `lurus.yaml` の `capabilities` セクションを参照してください。
+`lurus-platform` の内部 API（service: `platform-core.lurus-platform.svc:18104`）は Casdoor token ではなく独立した `INTERNAL_API_KEY` を使い、この key は K8s Secret を通じて消費側に配布されます。詳細は `lurus.yaml` の `capabilities` セクションを参照してください。
 :::
 
 ---
@@ -503,7 +503,7 @@ containers:
 
 ## 参考リンク
 
-- [Zitadel：Service Account 認証の概要](https://zitadel.com/docs/guides/integrate/service-accounts/authenticate-service-accounts) · [PAT](https://zitadel.com/docs/guides/integrate/service-accounts/personal-access-token) · [Client Credentials](https://zitadel.com/docs/guides/integrate/service-accounts/client-credentials) · [Private Key JWT](https://zitadel.com/docs/guides/integrate/service-accounts/private-key-jwt) · [Zitadel API へのアクセス](https://zitadel.com/docs/guides/integrate/zitadel-apis/access-zitadel-apis)
+- [Casdoor：Service Account 認証の概要](https://casdoor.com/docs/guides/integrate/service-accounts/authenticate-service-accounts) · [PAT](https://casdoor.com/docs/guides/integrate/service-accounts/personal-access-token) · [Client Credentials](https://casdoor.com/docs/guides/integrate/service-accounts/client-credentials) · [Private Key JWT](https://casdoor.com/docs/guides/integrate/service-accounts/private-key-jwt) · [Casdoor API へのアクセス](https://casdoor.com/docs/guides/integrate/casdoor-apis/access-casdoor-apis)
 - [RFC 7523：JWT Bearer Token Grant](https://datatracker.ietf.org/doc/html/rfc7523)
 
 </div>

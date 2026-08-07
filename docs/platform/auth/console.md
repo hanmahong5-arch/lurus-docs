@@ -1,5 +1,5 @@
 ---
-title: 控制台管理 | Zitadel 身份认证
+title: 控制台管理 | Casdoor 身份认证
 description: 使用 auth.lurus.cn 控制台管理组织、用户、项目、应用、身份策略的完整操作手册。
 ---
 
@@ -7,7 +7,7 @@ description: 使用 auth.lurus.cn 控制台管理组织、用户、项目、应�
 
 # 控制台管理
 
-Lurus 用 [Zitadel](https://zitadel.com) 作统一身份认证平台，控制台入口 [auth.lurus.cn](https://auth.lurus.cn)。本文面向**组织管理员 / IT 运维**，覆盖日常操作完整流程。
+Lurus 用 [Casdoor](https://casdoor.com) 作统一身份认证平台，控制台入口 [auth.lurus.cn](https://auth.lurus.cn)。本文面向**组织管理员 / IT 运维**，覆盖日常操作完整流程。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -75,16 +75,16 @@ Lurus 用 [Zitadel](https://zitadel.com) 作统一身份认证平台，控制台
 
 左侧 **Organizations**（Instance 级）→ 目标组织行 **"..."** → **Set as default organization**（行上显示 **Default** 标签）。
 
-> 用户登录若未携带组织上下文（无 `urn:zitadel:iam:org:id:{id}` scope），落入默认 Organization 的策略和品牌配置。
+> 用户登录若未携带组织上下文（无 `urn:casdoor:iam:org:id:{id}` scope），落入默认 Organization 的策略和品牌配置。
 
 ### 2.3 域名验证
 
 将公司邮箱域名绑定到 Organization，可启用按域名路由登录和单点直达。
 
-目标 Organization → **Settings → Organization Domains → Add Domain** → 输域名（如 `lurus.cn`）→ 选验证方式（**DNS Challenge**：DNS 加 TXT 记录，值由 Zitadel 生成 / **HTTP Challenge**：Web 指定路径放验证文件）→ **Verify** → 通过后可 **Set as primary** 设主域名。
+目标 Organization → **Settings → Organization Domains → Add Domain** → 输域名（如 `lurus.cn`）→ 选验证方式（**DNS Challenge**：DNS 加 TXT 记录，值由 Casdoor 生成 / **HTTP Challenge**：Web 指定路径放验证文件）→ **Verify** → 通过后可 **Set as primary** 设主域名。
 
 ::: warning
-DNS TXT 记录验证后**不要删除**，Zitadel 定期重新校验；删除会导致域名状态失效。
+DNS TXT 记录验证后**不要删除**，Casdoor 定期重新校验；删除会导致域名状态失效。
 :::
 
 ### 2.4 成员管理（Organization Members）
@@ -301,7 +301,7 @@ Organization 可覆盖 Instance 默认策略（Organization → **Settings** 各
 
 ### 7.5 Branding（**Branding**）
 
-Logo/Icon（亮/暗各一套）、Primary Color、Background Color、Warning Color、Font、**Hide Watermark**（隐藏 "Powered by ZITADEL"）、**Login Name Suffix**（登录名后缀是否显示）。
+Logo/Icon（亮/暗各一套）、Primary Color、Background Color、Warning Color、Font、**Hide Watermark**（隐藏 "Powered by Casdoor"）、**Login Name Suffix**（登录名后缀是否显示）。
 
 ### 7.6 Privacy Policy（**Privacy Policy**）
 
@@ -325,7 +325,7 @@ Logo/Icon（亮/暗各一套）、Primary Color、Background Color、Warning Col
 ## 8. Actions（自定义代码扩展）
 
 ::: info
-Actions 在登录/注册/用户创建等关键事件触发点运行 **JavaScript**（Zitadel 服务端沙箱），执行结果可影响流程继续或中断。
+Actions 在登录/注册/用户创建等关键事件触发点运行 **JavaScript**（Casdoor 服务端沙箱），执行结果可影响流程继续或中断。
 :::
 
 左侧 **Actions → New Action** → 填名称、选触发 Flow 和 Trigger Type → 写 JS 处理函数 → 激活并绑定到 Flow。
@@ -414,7 +414,7 @@ Actions 在登录/注册/用户创建等关键事件触发点运行 **JavaScript
   </div>
 </div>
 
-*基于 Zitadel 自托管实例（`auth.lurus.cn`），界面细节以实际版本为准。策略变更请同步本文档。*
+*基于 Casdoor 自托管实例（`auth.lurus.cn`），界面细节以实际版本为准。策略变更请同步本文档。*
 
 </div>
 

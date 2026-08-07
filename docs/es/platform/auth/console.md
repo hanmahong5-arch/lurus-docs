@@ -1,5 +1,5 @@
 ---
-title: Administración de la consola | Autenticación de identidad Zitadel
+title: Administración de la consola | Autenticación de identidad Casdoor
 description: Manual operativo completo para administrar organizaciones, usuarios, proyectos, aplicaciones y políticas de identidad mediante la consola auth.lurus.cn.
 ---
 
@@ -7,7 +7,7 @@ description: Manual operativo completo para administrar organizaciones, usuarios
 
 # Administración de la consola
 
-Lurus usa [Zitadel](https://zitadel.com) como plataforma unificada de autenticación de identidad; el punto de entrada de la consola es [auth.lurus.cn](https://auth.lurus.cn). Este artículo está dirigido a **administradores de organización / operaciones de TI** y cubre el flujo completo de las operaciones cotidianas.
+Lurus usa [Casdoor](https://casdoor.com) como plataforma unificada de autenticación de identidad; el punto de entrada de la consola es [auth.lurus.cn](https://auth.lurus.cn). Este artículo está dirigido a **administradores de organización / operaciones de TI** y cubre el flujo completo de las operaciones cotidianas.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -75,16 +75,16 @@ Tras iniciar sesión accedes a la Management Console, dividida en tres zonas:
 
 **Organizations** del menú izquierdo (nivel Instance) → **"..."** en la fila de la organización destino → **Set as default organization** (la fila muestra la etiqueta **Default**).
 
-> Si un usuario inicia sesión sin un contexto de organización (sin el scope `urn:zitadel:iam:org:id:{id}`), queda bajo las políticas y la configuración de marca de la Organization predeterminada.
+> Si un usuario inicia sesión sin un contexto de organización (sin el scope `urn:casdoor:iam:org:id:{id}`), queda bajo las políticas y la configuración de marca de la Organization predeterminada.
 
 ### 2.3 Verificación de dominio
 
 Vincula el dominio del correo corporativo a la Organization para habilitar el enrutamiento de inicio de sesión por dominio y el acceso directo de inicio de sesión único.
 
-Organization destino → **Settings → Organization Domains → Add Domain** → escribe el dominio (por ejemplo `lurus.cn`) → elige el método de verificación (**DNS Challenge**: añade un registro TXT en el DNS, cuyo valor genera Zitadel / **HTTP Challenge**: coloca el archivo de verificación en una ruta específica de la web) → **Verify** → una vez aprobado puedes usar **Set as primary** para fijar el dominio principal.
+Organization destino → **Settings → Organization Domains → Add Domain** → escribe el dominio (por ejemplo `lurus.cn`) → elige el método de verificación (**DNS Challenge**: añade un registro TXT en el DNS, cuyo valor genera Casdoor / **HTTP Challenge**: coloca el archivo de verificación en una ruta específica de la web) → **Verify** → una vez aprobado puedes usar **Set as primary** para fijar el dominio principal.
 
 ::: warning
-Tras verificar el registro TXT del DNS, **no lo elimines**: Zitadel lo revalida periódicamente; eliminarlo invalidará el estado del dominio.
+Tras verificar el registro TXT del DNS, **no lo elimines**: Casdoor lo revalida periódicamente; eliminarlo invalidará el estado del dominio.
 :::
 
 ### 2.4 Administración de miembros (Organization Members)
@@ -301,7 +301,7 @@ Configurable: longitud mínima (Min Length), si se exigen mayúsculas/minúscula
 
 ### 7.5 Branding (**Branding**)
 
-Logo/Icon (un juego para claro y otro para oscuro), Primary Color, Background Color, Warning Color, Font, **Hide Watermark** (oculta "Powered by ZITADEL"), **Login Name Suffix** (si se muestra el sufijo del nombre de inicio de sesión).
+Logo/Icon (un juego para claro y otro para oscuro), Primary Color, Background Color, Warning Color, Font, **Hide Watermark** (oculta "Powered by Casdoor"), **Login Name Suffix** (si se muestra el sufijo del nombre de inicio de sesión).
 
 ### 7.6 Privacy Policy (**Privacy Policy**)
 
@@ -325,7 +325,7 @@ Eventos que la desencadenan: reclamación de dominio, inicialización de usuario
 ## 8. Actions (extensiones de código personalizado)
 
 ::: info
-Las Actions ejecutan **JavaScript** (en un entorno aislado del lado servidor de Zitadel) en puntos clave de eventos como inicio de sesión, registro y creación de usuarios; el resultado de la ejecución puede determinar si el flujo continúa o se interrumpe.
+Las Actions ejecutan **JavaScript** (en un entorno aislado del lado servidor de Casdoor) en puntos clave de eventos como inicio de sesión, registro y creación de usuarios; el resultado de la ejecución puede determinar si el flujo continúa o se interrumpe.
 :::
 
 **Actions → New Action** del menú izquierdo → completa el nombre, elige el Flow desencadenante y el Trigger Type → escribe la función de procesamiento en JS → actívala y vincúlala al Flow.
@@ -414,7 +414,7 @@ Las Actions ejecutan **JavaScript** (en un entorno aislado del lado servidor de 
   </div>
 </div>
 
-*Basado en una instancia autoalojada de Zitadel (`auth.lurus.cn`); los detalles de la interfaz dependen de la versión real. Por favor, sincroniza este documento cuando cambien las políticas.*
+*Basado en una instancia autoalojada de Casdoor (`auth.lurus.cn`); los detalles de la interfaz dependen de la versión real. Por favor, sincroniza este documento cuando cambien las políticas.*
 
 </div>
 

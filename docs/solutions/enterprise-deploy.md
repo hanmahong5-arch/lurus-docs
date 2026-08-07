@@ -69,7 +69,7 @@ description: SaaS / 私有化 / 混合云三种部署形态与合规边界对比
 
 企业已有 IdP（Okta / Azure AD / 自建 Keycloak）员工用公司账号登录：
 
-<ArchitectureDiagram title="企业 IdP 联邦登录" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Zitadel]; B --> C[所有 Lurus 产品]" />
+<ArchitectureDiagram title="企业 IdP 联邦登录" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Casdoor]; B --> C[所有 Lurus 产品]" />
 
 支持协议：OIDC / OAuth 2.0 / SAML 2.0 / SCIM（用户生命周期）。
 

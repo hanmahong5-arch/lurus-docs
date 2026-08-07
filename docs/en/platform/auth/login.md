@@ -1,5 +1,5 @@
 ---
-title: Login & Multi-Factor Authentication | Zitadel Identity Authentication
+title: Login & Multi-Factor Authentication | Casdoor Identity Authentication
 description: Login methods supported by Lurus (password, Passkey, social login, enterprise SSO) and multi-factor authentication policies.
 ---
 
@@ -7,7 +7,7 @@ description: Login methods supported by Lurus (password, Passkey, social login, 
 
 # Login & Multi-Factor Authentication
 
-All Lurus products share the same identity authentication infrastructure (**Zitadel**, publicly at `auth.lurus.cn`). Whether you use the Lurus API, Switch, Lucrum, or Forge, login goes through a single entry point — one login covers the entire suite.
+All Lurus products share the same identity authentication infrastructure (**Casdoor**, publicly at `auth.lurus.cn`). Whether you use the Lurus API, Switch, Lucrum, or Forge, login goes through a single entry point — one login covers the entire suite.
 
 ---
 
@@ -107,7 +107,7 @@ Use a TOTP app that supports cloud backup (1Password, Authy) to avoid losing acc
 
 ## 5. Password Policy
 
-The following is the default baseline of the Zitadel instance; administrators can adjust it in the console, and the actual requirements are shown in real time during registration / password change.
+The following is the default baseline of the Casdoor instance; administrators can adjust it in the console, and the actual requirements are shown in real time during registration / password change.
 
 **Complexity** (defaults): minimum length 8 characters; at least 1 each of uppercase, lowercase, digit, and special character (`!@#$%^&*`, etc.).
 
@@ -123,11 +123,11 @@ If you are locked out due to repeatedly entering the wrong password or OTP, cont
 
 ## 6. Identity Brokering
 
-Zitadel acts as an intermediary IdP, integrating one or more **upstream external IdPs** (enterprise Azure AD/Okta, or social GitHub/Google). The user clicks "Sign in with XXX" → is redirected to the upstream IdP for verification → Zitadel receives the result → issues a unified Lurus token.
+Casdoor acts as an intermediary IdP, integrating one or more **upstream external IdPs** (enterprise Azure AD/Okta, or social GitHub/Google). The user clicks "Sign in with XXX" → is redirected to the upstream IdP for verification → Casdoor receives the result → issues a unified Lurus token.
 
 <ArchitectureDiagram
   title="Identity Brokering Path"
-  chart="graph LR; P[Lurus Product] --> Z[auth.lurus.cn · Zitadel]; Z --> U[Upstream IdP · Azure AD / Okta / GitHub …]; U -. User identity assertion OIDC/SAML .-> Z; Z -. Issue Lurus access_token / id_token .-> P"
+  chart="graph LR; P[Lurus Product] --> Z[auth.lurus.cn · Casdoor]; Z --> U[Upstream IdP · Azure AD / Okta / GitHub …]; U -. User identity assertion OIDC/SAML .-> Z; Z -. Issue Lurus access_token / id_token .-> P"
 />
 
 **When to use**: enterprise B2B SSO (employees log in directly with their own Azure AD/Okta, no registration needed); automatic domain routing (after entering an enterprise email, route to the corresponding IdP by domain — Domain Discovery); account linking (link an existing Lurus account to GitHub/Google); Just-in-Time creation (first external IdP login automatically creates an account and assigns the default role).
@@ -197,7 +197,7 @@ Steps: ① On the MFA verification screen, click **Log in with recovery code** �
   ]"
 />
 
-- [Billing & Subscriptions](../billing.md) · [Platform FAQ](../faq.md) · [Lurus API Integration Guide](/en/api/overview) · [Zitadel Official Documentation](https://zitadel.com/docs) (English)
+- [Billing & Subscriptions](../billing.md) · [Platform FAQ](../faq.md) · [Lurus API Integration Guide](/en/api/overview) · [Casdoor Official Documentation](https://casdoor.com/docs) (English)
 
 </div>
 

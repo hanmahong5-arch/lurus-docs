@@ -1,5 +1,5 @@
 ---
-title: OIDC / OAuth2 連携 | Zitadel ID認証
+title: OIDC / OAuth2 連携 | Casdoor ID認証
 description: 自社アプリを Lurus SSO に接続するための完全ガイド — エンドポイント、Scopes、Claims、PKCE、Device Flow。
 ---
 
@@ -7,7 +7,7 @@ description: 自社アプリを Lurus SSO に接続するための完全ガイ�
 
 # OIDC / OAuth2 連携 <StatusBadge status="live" />
 
-Lurus の統一 ID 認証は [Zitadel](https://zitadel.com) をベースとし、標準的な OIDC / OAuth2 インターフェースを公開しています。アプリが標準 OIDC に対応していれば、コア認証ロジックを変更することなくそのまま Lurus SSO に接続できます。
+Lurus の統一 ID 認証は [Casdoor](https://casdoor.com) をベースとし、標準的な OIDC / OAuth2 インターフェースを公開しています。アプリが標準 OIDC に対応していれば、コア認証ロジックを変更することなくそのまま Lurus SSO に接続できます。
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">1</span><span class="lurus-stat__label">Discovery URL 自動検出</span></div>
@@ -49,7 +49,7 @@ SDK の初期化時に（エンドポイントをハードコードするので�
 | **JWKS** | `/oauth/v2/keys` | GET | JWK 公開鍵セットを取得し、ローカルで JWT を検証 |
 | **Introspection** | `/oauth/v2/introspect` | POST | token の有効性とメタ情報を照会（サーバー側で使用） |
 | **Revocation** | `/oauth/v2/revoke` | POST | access / refresh token を失効させる |
-| **End Session** | `/oidc/v1/end_session` | GET / POST | ログアウト：Zitadel セッションを終了 |
+| **End Session** | `/oidc/v1/end_session` | GET / POST | ログアウト：Casdoor セッションを終了 |
 | **Device Authorization** | `/oauth/v2/device_authorization` | POST | Device Code Flow の開始エンドポイント |
 
 ### Authorization エンドポイントのパラメータ
@@ -92,7 +92,7 @@ SDK の初期化時に（エンドポイントをハードコードするので�
 <li>access / id / refresh token を取得。</li>
 </ol>
 
-**Client Credentials**：POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:zitadel:iam:org:project:id:{projectid}:aud` → access_token を取得（id_token なし、ユーザー身元なし）。
+**Client Credentials**：POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:casdoor:iam:org:project:id:{projectid}:aud` → access_token を取得（id_token なし、ユーザー身元なし）。
 
 **Refresh Token**：初回認可時に scope へ `offline_access` を含める → refresh_token を安全に保管 → access_token の失効時に POST `grant_type=refresh_token` + `refresh_token=<token>` → 新しい token を取得（refresh_token はローテーションされる場合あり）。
 
@@ -182,7 +182,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 ## Scopes 一覧
 
-標準 OIDC scopes は返却される claim を決定し、Zitadel 固有の scopes は audience、ロール、組織制約を制御します。
+標準 OIDC scopes は返却される claim を決定し、Casdoor 固有の scopes は audience、ロール、組織制約を制御します。
 
 ### 標準 Scopes
 
@@ -195,21 +195,21 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 | `address` | ユーザーの住所情報を取得 | id_token, userinfo |
 | `offline_access` | `refresh_token` を要求（Authorization Code フローでのみ有効） | — |
 
-### Zitadel 固有 Scopes
+### Casdoor 固有 Scopes
 
 | Scope | 説明 | 影響する Token |
 |-------|------|-------------|
-| `urn:zitadel:iam:org:project:id:{projectid}:aud` | 指定した project ID を access token の `aud` に追加。サーバー側の検証で一致が必須 | access_token |
-| `urn:zitadel:iam:org:project:id:zitadel:aud` | Zitadel 自身の project ID を `aud` に追加（Zitadel API へのアクセス用） | access_token |
-| `urn:zitadel:iam:org:projects:roles` | token に、認可されたすべてのプロジェクトのロール一覧を含める | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:project:role:{rolekey}` | 特定のロール claim のみを要求（例：`...:role:admin`） | id_token, access_token |
-| `urn:zitadel:iam:org:id:{orgid}` | ユーザーが当該組織に所属していることを必須とする。組織をまたぐログインを強制的に分離 | 検証用 |
-| `urn:zitadel:iam:org:domain:primary:{domain}` | ユーザーが所属する組織のプライマリドメインを限定（例：`...:primary:lurus.cn`） | 検証用 |
-| `urn:zitadel:iam:user:metadata` | token にユーザー独自の metadata を含める（Base64 のキー・バリュー） | id_token, access_token, userinfo |
-| `urn:zitadel:iam:user:resourceowner` | ユーザーが所属する組織の ID、名前、プライマリドメインを取得 | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:idp:id:{idp_id}` | 指定した IdP（企業微信、飛書）へ直接遷移し、IDP 選択ページをスキップ | 挙動制御 |
+| `urn:casdoor:iam:org:project:id:{projectid}:aud` | 指定した project ID を access token の `aud` に追加。サーバー側の検証で一致が必須 | access_token |
+| `urn:casdoor:iam:org:project:id:casdoor:aud` | Casdoor 自身の project ID を `aud` に追加（Casdoor API へのアクセス用） | access_token |
+| `urn:casdoor:iam:org:projects:roles` | token に、認可されたすべてのプロジェクトのロール一覧を含める | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:project:role:{rolekey}` | 特定のロール claim のみを要求（例：`...:role:admin`） | id_token, access_token |
+| `urn:casdoor:iam:org:id:{orgid}` | ユーザーが当該組織に所属していることを必須とする。組織をまたぐログインを強制的に分離 | 検証用 |
+| `urn:casdoor:iam:org:domain:primary:{domain}` | ユーザーが所属する組織のプライマリドメインを限定（例：`...:primary:lurus.cn`） | 検証用 |
+| `urn:casdoor:iam:user:metadata` | token にユーザー独自の metadata を含める（Base64 のキー・バリュー） | id_token, access_token, userinfo |
+| `urn:casdoor:iam:user:resourceowner` | ユーザーが所属する組織の ID、名前、プライマリドメインを取得 | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:idp:id:{idp_id}` | 指定した IdP（企業微信、飛書）へ直接遷移し、IDP 選択ページをスキップ | 挙動制御 |
 
-> **よく使う組み合わせ**（Web App）：`openid profile email offline_access urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{projectid}:aud`
+> **よく使う組み合わせ**（Web App）：`openid profile email offline_access urn:casdoor:iam:org:projects:roles urn:casdoor:iam:org:project:id:{projectid}:aud`
 
 ---
 
@@ -221,7 +221,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 | Claim | 説明 | id_token | access_token | userinfo | 依存する Scope |
 |-------|------|:--------:|:------------:|:--------:|-----------|
-| `sub` | ユーザー一意 ID（Zitadel 内部 ID） | ✓ | ✓ (JWT) | ✓ | 常時 |
+| `sub` | ユーザー一意 ID（Casdoor 内部 ID） | ✓ | ✓ (JWT) | ✓ | 常時 |
 | `iss` | Issuer。固定で `https://auth.lurus.cn` | ✓ | ✓ | — | 常時 |
 | `aud` | Audience。アプリの client_id | ✓ | ✓ | — | 常時 |
 | `exp` / `iat` | 失効 / 発行時刻（Unix） | ✓ | ✓ | — | 常時 |
@@ -235,22 +235,22 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 > `✓*` = response_type に `id_token` を含む場合、または明示的に要求した場合にのみ返却。
 
-### Zitadel 固有 Claims
+### Casdoor 固有 Claims
 
 | Claim | 説明 | id_token | access_token | userinfo |
 |-------|------|:--------:|:------------:|:--------:|
-| `urn:zitadel:iam:org:project:roles` | ユーザーのプロジェクトロール。構造は `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:org:domain:primary` | ユーザーが所属する組織のプライマリドメイン | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:metadata` | ユーザー独自の metadata。`{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:resourceowner:id` / `:name` / `:primary_domain` | ユーザーが所属する組織の ID / 名前 / プライマリドメイン | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:project:roles` | ユーザーのプロジェクトロール。構造は `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:domain:primary` | ユーザーが所属する組織のプライマリドメイン | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:metadata` | ユーザー独自の metadata。`{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:resourceowner:id` / `:name` / `:primary_domain` | ユーザーが所属する組織の ID / 名前 / プライマリドメイン | ✓ | ✓ (JWT) | ✓ |
 
 **ロール claim の例**：
 ```json
-{ "urn:zitadel:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
+{ "urn:casdoor:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
 ```
 **Metadata claim の例**（value は Base64 で、使用時には `atob()` / `base64.StdEncoding.DecodeString()` でデコードが必要）：
 ```json
-{ "urn:zitadel:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
+{ "urn:casdoor:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
 ```
 
 ---
@@ -387,14 +387,14 @@ TypeScript での実装も同様です：`fetch` で POST `/device_authorization
 <details class="lurus-faq-item">
 <summary>audience エラー（<code>aud</code> claim が一致しない）</summary>
 
-**症状**：署名検証で `token audience mismatch` / `invalid audience` が出る。**原因**：access token の `aud` はデフォルトで `client_id` しか含まない。**解決**：scope に `urn:zitadel:iam:org:project:id:{projectid}:aud` を追加し、project ID を明示的に `aud` へ書き込む。
+**症状**：署名検証で `token audience mismatch` / `invalid audience` が出る。**原因**：access token の `aud` はデフォルトで `client_id` しか含まない。**解決**：scope に `urn:casdoor:iam:org:project:id:{projectid}:aud` を追加し、project ID を明示的に `aud` へ書き込む。
 
 </details>
 
 <details class="lurus-faq-item">
 <summary><code>roles</code> claim が空または欠落</summary>
 
-**原因**：ユーザーが当該 Project の User Grant を持っていない、またはロール scope を要求していない。**確認**：① コンソールの Project → Authorizations でロール Grant があることを確認 ② scope に `urn:zitadel:iam:org:projects:roles` を含む ③ Project 設定で「Assert Roles on Authentication」を有効化。
+**原因**：ユーザーが当該 Project の User Grant を持っていない、またはロール scope を要求していない。**確認**：① コンソールの Project → Authorizations でロール Grant があることを確認 ② scope に `urn:casdoor:iam:org:projects:roles` を含む ③ Project 設定で「Assert Roles on Authentication」を有効化。
 
 </details>
 
@@ -434,7 +434,7 @@ TypeScript での実装も同様です：`fetch` で POST `/device_authorization
 
 ## 関連リンク
 
-- Zitadel 公式：[Endpoints](https://zitadel.com/docs/apis/openidoauth/endpoints) · [Scopes](https://zitadel.com/docs/apis/openidoauth/scopes) · [Claims](https://zitadel.com/docs/apis/openidoauth/claims)
+- Casdoor 公式：[Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
 - Auth コンソール [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
 

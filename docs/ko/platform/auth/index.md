@@ -9,11 +9,11 @@ description: Lurus 전 제품군이 공유하는 신원 체계 — 한 번 로�
 
 **한 번 로그인, 전 사이트 통행.** Lurus API, Lucrum, Switch, Creator, Lutu, Admin, Forge 등 모든 제품이 동일한 신원 체계를 공유합니다 — 사용자가 어느 제품에서든 로그인하면 나머지 제품이 자동으로 인식하고, 권한과 할당량은 계정 단위로 통합 정산되며, 기업 고객은 자사 SSO를 연동해 직원 온보딩을 완료할 수 있습니다.
 
-이 체계는 `auth.lurus.cn` 에서 서비스를 제공하며, 오픈소스 신원 인프라 [Zitadel](https://zitadel.com) 을 기반으로 자체 배포되어 OIDC / OAuth2 / SAML 표준 프로토콜을 완전히 구현합니다. 사용자 데이터는 전 과정에서 Lurus 자체 K8s 클러스터 내에 보관됩니다.
+이 체계는 `auth.lurus.cn` 에서 서비스를 제공하며, 오픈소스 신원 인프라 [Casdoor](https://casdoor.com) 을 기반으로 자체 배포되어 OIDC / OAuth2 / SAML 표준 프로토콜을 완전히 구현합니다. 사용자 데이터는 전 과정에서 Lurus 자체 K8s 클러스터 내에 보관됩니다.
 
 ::: tip 빠른 진입점
 - 사용자 셀프 관리: [auth.lurus.cn](https://auth.lurus.cn) — 비밀번호 변경, Passkey 관리, MFA 바인딩, 로그인 기록 조회
-- 조직/프로젝트 관리: [auth.lurus.cn](https://auth.lurus.cn)(Zitadel 조직 콘솔) — 기업 고객 멤버 초대, 권한 할당, 감사; 또는 영업에 문의하여 기업 조직 관리 활성화
+- 조직/프로젝트 관리: [auth.lurus.cn](https://auth.lurus.cn)(Casdoor 조직 콘솔) — 기업 고객 멤버 초대, 권한 할당, 감사; 또는 영업에 문의하여 기업 조직 관리 활성화
 :::
 
 ---
@@ -50,7 +50,7 @@ description: Lurus 전 제품군이 공유하는 신원 체계 — 한 번 로�
     { title: 'B2B 멀티테넌트', body: 'Instance 하위에 여러 Organization 을 생성할 수 있어 기업 고객 격리를 자연스럽게 지원합니다. 각 조직은 브랜드, 로그인 정책, IdP 페더레이션을 독립적으로 구성할 수 있습니다.', icon: 'building-2' },
     { title: 'OIDC / OAuth2 / SAML', body: '3대 표준 프로토콜을 완전히 구현하여 시중 주요 SDK 및 프레임워크와 호환되며, Go, Rust, TypeScript, Flutter 애플리케이션에 매끄럽게 통합됩니다.', icon: 'link' },
     { title: '감사 로그', body: '로그인, MFA 변경, 권한 부여, 비밀번호 재설정 등 핵심 작업은 모두 조회 가능한 불변 로그로 기록되어 컴플라이언스 요구사항을 충족합니다.', icon: 'history' },
-    { title: 'Actions 확장', body: '인증 플로우의 핵심 지점에 커스텀 로직(예: 사용자 속성 동기화, 로그인 조건 제한)을 주입할 수 있으며, Zitadel 본체를 fork 할 필요가 없습니다.', icon: 'workflow' },
+    { title: 'Actions 확장', body: '인증 플로우의 핵심 지점에 커스텀 로직(예: 사용자 속성 동기화, 로그인 조건 제한)을 주입할 수 있으며, Casdoor 본체를 fork 할 필요가 없습니다.', icon: 'workflow' },
   ]"
 />
 
@@ -74,7 +74,7 @@ description: Lurus 전 제품군이 공유하는 신원 체계 — 한 번 로�
 | **Project** | Organization 하위의 애플리케이션 집합, roles 와 grants 를 통합 관리 | 각 제품군(Lurus API, Lucrum, Switch, Forge…)이 하나의 Project 에 대응합니다 |
 | **Application** | Project 내의 구체적 클라이언트, `client_id` / `client_secret` 보유 | 각 프런트엔드, 데스크톱, 서버를 각각 하나의 Application 으로 등록합니다 |
 | **User** | 로그인 가능한 계정, Human(실제 사용자)과 Service User(머신)로 구분 | 최종 사용자는 Human; 백엔드 서비스 간 호출은 Service User + JWT Profile 사용 |
-| **Grant** | Project Role 을 특정 User 에게 부여하는 바인딩 관계 | 사용자의 구체적 제품 내 권한 등급을 제어합니다; [auth.lurus.cn](https://auth.lurus.cn)(Zitadel) 조직 설정을 기준으로 합니다 |
+| **Grant** | Project Role 을 특정 User 에게 부여하는 바인딩 관계 | 사용자의 구체적 제품 내 권한 등급을 제어합니다; [auth.lurus.cn](https://auth.lurus.cn)(Casdoor) 조직 설정을 기준으로 합니다 |
 
 ---
 
@@ -128,11 +128,11 @@ description: Lurus 전 제품군이 공유하는 신원 체계 — 한 번 로�
 
 ## 더 읽어보기
 
-오픈소스 신원 인프라 Zitadel 을 기반으로 구축되었습니다. 하위 메커니즘이나 SDK 세부 사항을 더 깊이 파악하려면 업스트림 문서를 참고하세요:
+오픈소스 신원 인프라 Casdoor 을 기반으로 구축되었습니다. 하위 메커니즘이나 SDK 세부 사항을 더 깊이 파악하려면 업스트림 문서를 참고하세요:
 
-- [Zitadel 문서 홈](https://zitadel.com/docs) — 빠른 시작, 배포 모드, SDK 통합 가이드
-- [핵심 개념](https://zitadel.com/docs/concepts) — Instance, Organization, Project, User, Grant 원리 설명
-- [API 참조](https://zitadel.com/docs/apis) — Management API, Auth API, Admin API 의 REST / gRPC 엔드포인트 문서
+- [Casdoor 문서 홈](https://casdoor.com/docs) — 빠른 시작, 배포 모드, SDK 통합 가이드
+- [핵심 개념](https://casdoor.com/docs/concepts) — Instance, Organization, Project, User, Grant 원리 설명
+- [API 참조](https://casdoor.com/docs/apis) — Management API, Auth API, Admin API 의 REST / gRPC 엔드포인트 문서
 
 <RelatedProducts product-id="auth" />
 

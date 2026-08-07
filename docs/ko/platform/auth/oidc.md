@@ -1,5 +1,5 @@
 ---
-title: OIDC / OAuth2 통합 | Zitadel 신원 인증
+title: OIDC / OAuth2 통합 | Casdoor 신원 인증
 description: 자체 애플리케이션을 Lurus SSO에 연동하기 위한 완전 가이드 — 엔드포인트, Scopes, Claims, PKCE, Device Flow.
 ---
 
@@ -7,7 +7,7 @@ description: 자체 애플리케이션을 Lurus SSO에 연동하기 위한 완�
 
 # OIDC / OAuth2 통합 <StatusBadge status="live" />
 
-Lurus 통합 신원 인증은 [Zitadel](https://zitadel.com) 기반이며, 표준 OIDC / OAuth2 인터페이스를 외부에 노출합니다. 애플리케이션이 표준 OIDC를 지원하면 핵심 인증 로직을 수정하지 않고도 Lurus SSO에 바로 연동할 수 있습니다.
+Lurus 통합 신원 인증은 [Casdoor](https://casdoor.com) 기반이며, 표준 OIDC / OAuth2 인터페이스를 외부에 노출합니다. 애플리케이션이 표준 OIDC를 지원하면 핵심 인증 로직을 수정하지 않고도 Lurus SSO에 바로 연동할 수 있습니다.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">1</span><span class="lurus-stat__label">Discovery URL 자동 발견</span></div>
@@ -49,7 +49,7 @@ SDK를 초기화할 때 엔드포인트를 하드코딩하는 대신 이 URL을 
 | **JWKS** | `/oauth/v2/keys` | GET | JWK 공개 키 집합을 가져와 JWT를 로컬에서 검증 |
 | **Introspection** | `/oauth/v2/introspect` | POST | token 유효성과 메타 정보 조회(서버 측에서 사용) |
 | **Revocation** | `/oauth/v2/revoke` | POST | access / refresh token 취소 |
-| **End Session** | `/oidc/v1/end_session` | GET / POST | 로그아웃: Zitadel 세션 종료 |
+| **End Session** | `/oidc/v1/end_session` | GET / POST | 로그아웃: Casdoor 세션 종료 |
 | **Device Authorization** | `/oauth/v2/device_authorization` | POST | Device Code Flow 시작 엔드포인트 |
 
 ### Authorization 엔드포인트 파라미터
@@ -92,7 +92,7 @@ SDK를 초기화할 때 엔드포인트를 하드코딩하는 대신 이 URL을 
 <li>access / id / refresh token을 획득합니다.</li>
 </ol>
 
-**Client Credentials**: POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:zitadel:iam:org:project:id:{projectid}:aud` → access_token 획득(id_token 없음, 사용자 신원 없음).
+**Client Credentials**: POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:casdoor:iam:org:project:id:{projectid}:aud` → access_token 획득(id_token 없음, 사용자 신원 없음).
 
 **Refresh Token**: 최초 인가 scope에 `offline_access` 포함 → refresh_token을 안전하게 저장 → access_token 만료 시 POST `grant_type=refresh_token` + `refresh_token=<token>` → 새 token 획득(refresh_token이 회전될 수 있음).
 
@@ -182,7 +182,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 ## Scopes 목록
 
-표준 OIDC scopes는 어떤 claim이 반환될지 결정하며, Zitadel 고유 scopes는 audience, 역할, 조직 제약을 제어합니다.
+표준 OIDC scopes는 어떤 claim이 반환될지 결정하며, Casdoor 고유 scopes는 audience, 역할, 조직 제약을 제어합니다.
 
 ### 표준 Scopes
 
@@ -195,21 +195,21 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 | `address` | 사용자 주소 정보 획득 | id_token, userinfo |
 | `offline_access` | `refresh_token` 요청(Authorization Code 플로우에서만 유효) | — |
 
-### Zitadel 고유 Scopes
+### Casdoor 고유 Scopes
 
 | Scope | 설명 | 영향받는 Token |
 |-------|------|-------------|
-| `urn:zitadel:iam:org:project:id:{projectid}:aud` | 지정한 project ID를 access token의 `aud`에 추가; 서버 측 검증 시 반드시 일치해야 함 | access_token |
-| `urn:zitadel:iam:org:project:id:zitadel:aud` | Zitadel 자체 project ID를 `aud`에 추가(Zitadel API 접근용) | access_token |
-| `urn:zitadel:iam:org:projects:roles` | token에 인가된 모든 프로젝트의 역할 목록을 포함 | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:project:role:{rolekey}` | 특정 역할 claim만 요청, 예: `...:role:admin` | id_token, access_token |
-| `urn:zitadel:iam:org:id:{orgid}` | 사용자가 해당 조직에 속하도록 제한; 조직 간 로그인 강제 격리 | 검증용 |
-| `urn:zitadel:iam:org:domain:primary:{domain}` | 사용자가 속한 조직의 기본 도메인 제한, 예: `...:primary:lurus.cn` | 검증용 |
-| `urn:zitadel:iam:user:metadata` | token에 사용자 정의 metadata 포함(Base64 키-값 쌍) | id_token, access_token, userinfo |
-| `urn:zitadel:iam:user:resourceowner` | 사용자가 속한 조직의 ID, 이름, 기본 도메인 획득 | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:idp:id:{idp_id}` | 지정한 IdP(WeCom, Feishu)로 바로 이동, IDP 선택 페이지 건너뜀 | 동작 제어 |
+| `urn:casdoor:iam:org:project:id:{projectid}:aud` | 지정한 project ID를 access token의 `aud`에 추가; 서버 측 검증 시 반드시 일치해야 함 | access_token |
+| `urn:casdoor:iam:org:project:id:casdoor:aud` | Casdoor 자체 project ID를 `aud`에 추가(Casdoor API 접근용) | access_token |
+| `urn:casdoor:iam:org:projects:roles` | token에 인가된 모든 프로젝트의 역할 목록을 포함 | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:project:role:{rolekey}` | 특정 역할 claim만 요청, 예: `...:role:admin` | id_token, access_token |
+| `urn:casdoor:iam:org:id:{orgid}` | 사용자가 해당 조직에 속하도록 제한; 조직 간 로그인 강제 격리 | 검증용 |
+| `urn:casdoor:iam:org:domain:primary:{domain}` | 사용자가 속한 조직의 기본 도메인 제한, 예: `...:primary:lurus.cn` | 검증용 |
+| `urn:casdoor:iam:user:metadata` | token에 사용자 정의 metadata 포함(Base64 키-값 쌍) | id_token, access_token, userinfo |
+| `urn:casdoor:iam:user:resourceowner` | 사용자가 속한 조직의 ID, 이름, 기본 도메인 획득 | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:idp:id:{idp_id}` | 지정한 IdP(WeCom, Feishu)로 바로 이동, IDP 선택 페이지 건너뜀 | 동작 제어 |
 
-> **자주 쓰는 조합**(Web App): `openid profile email offline_access urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{projectid}:aud`
+> **자주 쓰는 조합**(Web App): `openid profile email offline_access urn:casdoor:iam:org:projects:roles urn:casdoor:iam:org:project:id:{projectid}:aud`
 
 ---
 
@@ -221,7 +221,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 | Claim | 설명 | id_token | access_token | userinfo | 의존 Scope |
 |-------|------|:--------:|:------------:|:--------:|-----------|
-| `sub` | 사용자 고유 ID(Zitadel 내부 ID) | ✓ | ✓ (JWT) | ✓ | 항상 |
+| `sub` | 사용자 고유 ID(Casdoor 내부 ID) | ✓ | ✓ (JWT) | ✓ | 항상 |
 | `iss` | Issuer, 고정값 `https://auth.lurus.cn` | ✓ | ✓ | — | 항상 |
 | `aud` | Audience, 애플리케이션 client_id | ✓ | ✓ | — | 항상 |
 | `exp` / `iat` | 만료 / 발급 시간(Unix) | ✓ | ✓ | — | 항상 |
@@ -235,22 +235,22 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 > `✓*` = response_type에 `id_token`이 포함되거나 명시적으로 요청한 경우에만 반환.
 
-### Zitadel 고유 Claims
+### Casdoor 고유 Claims
 
 | Claim | 설명 | id_token | access_token | userinfo |
 |-------|------|:--------:|:------------:|:--------:|
-| `urn:zitadel:iam:org:project:roles` | 사용자 프로젝트 역할, 구조 `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:org:domain:primary` | 사용자가 속한 조직의 기본 도메인 | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:metadata` | 사용자 정의 metadata, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:resourceowner:id` / `:name` / `:primary_domain` | 사용자가 속한 조직 ID / 이름 / 기본 도메인 | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:project:roles` | 사용자 프로젝트 역할, 구조 `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:domain:primary` | 사용자가 속한 조직의 기본 도메인 | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:metadata` | 사용자 정의 metadata, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:resourceowner:id` / `:name` / `:primary_domain` | 사용자가 속한 조직 ID / 이름 / 기본 도메인 | ✓ | ✓ (JWT) | ✓ |
 
 **역할 claim 예시**:
 ```json
-{ "urn:zitadel:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
+{ "urn:casdoor:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
 ```
 **Metadata claim 예시**(value는 Base64이며 사용 시 `atob()` / `base64.StdEncoding.DecodeString()`으로 디코딩 필요):
 ```json
-{ "urn:zitadel:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
+{ "urn:casdoor:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
 ```
 
 ---
@@ -387,14 +387,14 @@ TypeScript 구현도 동형입니다: `fetch`로 `/device_authorization`에 POST
 <details class="lurus-faq-item">
 <summary>audience 오류(<code>aud</code> claim 불일치)</summary>
 
-**증상**: 검증 시 `token audience mismatch` / `invalid audience` 보고. **원인**: access token의 `aud`에는 기본적으로 `client_id`만 포함됩니다. **해결**: scope에 `urn:zitadel:iam:org:project:id:{projectid}:aud`를 추가하여 project ID를 `aud`에 명시적으로 기록합니다.
+**증상**: 검증 시 `token audience mismatch` / `invalid audience` 보고. **원인**: access token의 `aud`에는 기본적으로 `client_id`만 포함됩니다. **해결**: scope에 `urn:casdoor:iam:org:project:id:{projectid}:aud`를 추가하여 project ID를 `aud`에 명시적으로 기록합니다.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary><code>roles</code> claim이 비어 있거나 누락됨</summary>
 
-**원인**: 사용자가 해당 Project에 User Grant가 없거나 역할 scope를 요청하지 않았습니다. **점검**: ① 콘솔 Project → Authorizations에서 역할 Grant가 있는지 확인 ② scope에 `urn:zitadel:iam:org:projects:roles` 포함 ③ Project 설정에서 「Assert Roles on Authentication」 활성화.
+**원인**: 사용자가 해당 Project에 User Grant가 없거나 역할 scope를 요청하지 않았습니다. **점검**: ① 콘솔 Project → Authorizations에서 역할 Grant가 있는지 확인 ② scope에 `urn:casdoor:iam:org:projects:roles` 포함 ③ Project 설정에서 「Assert Roles on Authentication」 활성화.
 
 </details>
 
@@ -434,7 +434,7 @@ TypeScript 구현도 동형입니다: `fetch`로 `/device_authorization`에 POST
 
 ## 관련 링크
 
-- Zitadel 공식: [Endpoints](https://zitadel.com/docs/apis/openidoauth/endpoints) · [Scopes](https://zitadel.com/docs/apis/openidoauth/scopes) · [Claims](https://zitadel.com/docs/apis/openidoauth/claims)
+- Casdoor 공식: [Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
 - Auth 콘솔 [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
 

@@ -1,5 +1,5 @@
 ---
-title: OIDC / OAuth2 集成 | Zitadel 身份认证
+title: OIDC / OAuth2 集成 | Casdoor 身份认证
 description: 将自有应用接入 Lurus SSO 的完整指南 — 端点、Scopes、Claims、PKCE、Device Flow。
 ---
 
@@ -7,7 +7,7 @@ description: 将自有应用接入 Lurus SSO 的完整指南 — 端点、Scopes
 
 # OIDC / OAuth2 集成 <StatusBadge status="live" />
 
-Lurus 统一身份认证基于 [Zitadel](https://zitadel.com)，对外暴露标准 OIDC / OAuth2 接口。应用支持标准 OIDC 即可直接接入 Lurus SSO，无需修改核心认证逻辑。
+Lurus 统一身份认证基于 [Casdoor](https://casdoor.com)，对外暴露标准 OIDC / OAuth2 接口。应用支持标准 OIDC 即可直接接入 Lurus SSO，无需修改核心认证逻辑。
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">1</span><span class="lurus-stat__label">Discovery URL 自动发现</span></div>
@@ -49,7 +49,7 @@ Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
 | **JWKS** | `/oauth/v2/keys` | GET | 获取 JWK 公钥集合，本地验签 JWT |
 | **Introspection** | `/oauth/v2/introspect` | POST | 查询 token 有效性与元信息（服务端用） |
 | **Revocation** | `/oauth/v2/revoke` | POST | 撤销 access / refresh token |
-| **End Session** | `/oidc/v1/end_session` | GET / POST | 登出：终止 Zitadel 会话 |
+| **End Session** | `/oidc/v1/end_session` | GET / POST | 登出：终止 Casdoor 会话 |
 | **Device Authorization** | `/oauth/v2/device_authorization` | POST | Device Code Flow 起始端点 |
 
 ### Authorization 端点参数
@@ -92,7 +92,7 @@ Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
 <li>获得 access / id / refresh token。</li>
 </ol>
 
-**Client Credentials**：POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:zitadel:iam:org:project:id:{projectid}:aud` → 获得 access_token（无 id_token，无用户身份）。
+**Client Credentials**：POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:casdoor:iam:org:project:id:{projectid}:aud` → 获得 access_token（无 id_token，无用户身份）。
 
 **Refresh Token**：初次授权 scope 含 `offline_access` → 安全存储 refresh_token → access_token 过期时 POST `grant_type=refresh_token` + `refresh_token=<token>` → 获新 token（refresh_token 可能轮换）。
 
@@ -182,7 +182,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 ## Scopes 清单
 
-标准 OIDC scopes 决定返回哪些 claim；Zitadel 特有 scopes 控制 audience、角色与组织约束。
+标准 OIDC scopes 决定返回哪些 claim；Casdoor 特有 scopes 控制 audience、角色与组织约束。
 
 ### 标准 Scopes
 
@@ -195,21 +195,21 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 | `address` | 获取用户地址信息 | id_token, userinfo |
 | `offline_access` | 请求 `refresh_token`（仅 Authorization Code 流有效） | — |
 
-### Zitadel 特有 Scopes
+### Casdoor 特有 Scopes
 
 | Scope | 说明 | 影响的 Token |
 |-------|------|-------------|
-| `urn:zitadel:iam:org:project:id:{projectid}:aud` | 将指定 project ID 加入 access token 的 `aud`；服务端验签必须匹配 | access_token |
-| `urn:zitadel:iam:org:project:id:zitadel:aud` | 将 Zitadel 自身 project ID 加入 `aud`（访问 Zitadel API 用） | access_token |
-| `urn:zitadel:iam:org:projects:roles` | token 中包含所有已授权项目的角色列表 | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:project:role:{rolekey}` | 仅请求特定角色 claim，如 `...:role:admin` | id_token, access_token |
-| `urn:zitadel:iam:org:id:{orgid}` | 限定用户必须属于该组织；跨组织登录强制隔离 | 校验用 |
-| `urn:zitadel:iam:org:domain:primary:{domain}` | 限定用户所在组织主域名，如 `...:primary:lurus.cn` | 校验用 |
-| `urn:zitadel:iam:user:metadata` | token 中包含用户自定义 metadata（Base64 键值对） | id_token, access_token, userinfo |
-| `urn:zitadel:iam:user:resourceowner` | 获取用户所属组织的 ID、名称和主域名 | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:idp:id:{idp_id}` | 直接跳转到指定 IdP（企业微信、飞书），跳过 IDP 选择页 | 行为控制 |
+| `urn:casdoor:iam:org:project:id:{projectid}:aud` | 将指定 project ID 加入 access token 的 `aud`；服务端验签必须匹配 | access_token |
+| `urn:casdoor:iam:org:project:id:casdoor:aud` | 将 Casdoor 自身 project ID 加入 `aud`（访问 Casdoor API 用） | access_token |
+| `urn:casdoor:iam:org:projects:roles` | token 中包含所有已授权项目的角色列表 | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:project:role:{rolekey}` | 仅请求特定角色 claim，如 `...:role:admin` | id_token, access_token |
+| `urn:casdoor:iam:org:id:{orgid}` | 限定用户必须属于该组织；跨组织登录强制隔离 | 校验用 |
+| `urn:casdoor:iam:org:domain:primary:{domain}` | 限定用户所在组织主域名，如 `...:primary:lurus.cn` | 校验用 |
+| `urn:casdoor:iam:user:metadata` | token 中包含用户自定义 metadata（Base64 键值对） | id_token, access_token, userinfo |
+| `urn:casdoor:iam:user:resourceowner` | 获取用户所属组织的 ID、名称和主域名 | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:idp:id:{idp_id}` | 直接跳转到指定 IdP（企业微信、飞书），跳过 IDP 选择页 | 行为控制 |
 
-> **常用组合**（Web App）：`openid profile email offline_access urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{projectid}:aud`
+> **常用组合**（Web App）：`openid profile email offline_access urn:casdoor:iam:org:projects:roles urn:casdoor:iam:org:project:id:{projectid}:aud`
 
 ---
 
@@ -221,7 +221,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 | Claim | 说明 | id_token | access_token | userinfo | 依赖 Scope |
 |-------|------|:--------:|:------------:|:--------:|-----------|
-| `sub` | 用户唯一 ID（Zitadel 内部 ID） | ✓ | ✓ (JWT) | ✓ | 始终 |
+| `sub` | 用户唯一 ID（Casdoor 内部 ID） | ✓ | ✓ (JWT) | ✓ | 始终 |
 | `iss` | Issuer，固定 `https://auth.lurus.cn` | ✓ | ✓ | — | 始终 |
 | `aud` | Audience，应用 client_id | ✓ | ✓ | — | 始终 |
 | `exp` / `iat` | 过期 / 签发时间（Unix） | ✓ | ✓ | — | 始终 |
@@ -235,22 +235,22 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 > `✓*` = 仅在 response_type 含 `id_token` 或显式请求时返回。
 
-### Zitadel 特有 Claims
+### Casdoor 特有 Claims
 
 | Claim | 说明 | id_token | access_token | userinfo |
 |-------|------|:--------:|:------------:|:--------:|
-| `urn:zitadel:iam:org:project:roles` | 用户项目角色，结构 `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:org:domain:primary` | 用户所属组织主域名 | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:metadata` | 用户自定义 metadata，`{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:resourceowner:id` / `:name` / `:primary_domain` | 用户所属组织 ID / 名称 / 主域名 | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:project:roles` | 用户项目角色，结构 `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:domain:primary` | 用户所属组织主域名 | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:metadata` | 用户自定义 metadata，`{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:resourceowner:id` / `:name` / `:primary_domain` | 用户所属组织 ID / 名称 / 主域名 | ✓ | ✓ (JWT) | ✓ |
 
 **角色 claim 示例**：
 ```json
-{ "urn:zitadel:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
+{ "urn:casdoor:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
 ```
 **Metadata claim 示例**（value 为 Base64，使用时需 `atob()` / `base64.StdEncoding.DecodeString()` 解码）：
 ```json
-{ "urn:zitadel:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
+{ "urn:casdoor:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
 ```
 
 ---
@@ -387,14 +387,14 @@ TypeScript 实现同构：`fetch` POST `/device_authorization` 起 flow，再以
 <details class="lurus-faq-item">
 <summary>audience 错误（<code>aud</code> claim 不匹配）</summary>
 
-**现象**：验签报 `token audience mismatch` / `invalid audience`。**原因**：access token 的 `aud` 默认只含 `client_id`。**解决**：scope 加 `urn:zitadel:iam:org:project:id:{projectid}:aud`，将 project ID 显式写入 `aud`。
+**现象**：验签报 `token audience mismatch` / `invalid audience`。**原因**：access token 的 `aud` 默认只含 `client_id`。**解决**：scope 加 `urn:casdoor:iam:org:project:id:{projectid}:aud`，将 project ID 显式写入 `aud`。
 
 </details>
 
 <details class="lurus-faq-item">
 <summary><code>roles</code> claim 为空或缺失</summary>
 
-**原因**：用户在该 Project 无 User Grant，或未请求角色 scope。**检查**：① 控制台 Project → Authorizations 确认有角色 Grant ② scope 含 `urn:zitadel:iam:org:projects:roles` ③ Project 设置开启「Assert Roles on Authentication」。
+**原因**：用户在该 Project 无 User Grant，或未请求角色 scope。**检查**：① 控制台 Project → Authorizations 确认有角色 Grant ② scope 含 `urn:casdoor:iam:org:projects:roles` ③ Project 设置开启「Assert Roles on Authentication」。
 
 </details>
 
@@ -434,7 +434,7 @@ TypeScript 实现同构：`fetch` POST `/device_authorization` 起 flow，再以
 
 ## 相关链接
 
-- Zitadel 官方：[Endpoints](https://zitadel.com/docs/apis/openidoauth/endpoints) · [Scopes](https://zitadel.com/docs/apis/openidoauth/scopes) · [Claims](https://zitadel.com/docs/apis/openidoauth/claims)
+- Casdoor 官方：[Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
 - Auth 控制台 [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
 

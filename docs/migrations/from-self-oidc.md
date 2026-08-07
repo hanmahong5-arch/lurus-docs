@@ -22,7 +22,7 @@ description: SCIM 用户迁移、SSO 联邦、灰度切换的完整路径。
   <div class="lurus-card lurus-card--auth">
     <span class="lurus-card__icon"><Icon name="import" :size="20" /></span>
     <div class="lurus-card__title">策略 B：彻底搬家</div>
-    <p class="lurus-card__body">原 Keycloak/Auth0 经 SCIM 导出到 Lurus Auth（Zitadel），成为唯一真相源。</p>
+    <p class="lurus-card__body">原 Keycloak/Auth0 经 SCIM 导出到 Lurus Auth（Casdoor），成为唯一真相源。</p>
   </div>
 </div>
 
@@ -35,7 +35,7 @@ description: SCIM 用户迁移、SSO 联邦、灰度切换的完整路径。
 ### 策略 B — 搬家拓扑
 
 <ArchitectureDiagram title="策略 B：搬家" chart="graph LR
-  KC[原 Keycloak/Auth0] -->|SCIM 导出| LA[Lurus Auth · Zitadel]
+  KC[原 Keycloak/Auth0] -->|SCIM 导出| LA[Lurus Auth · Casdoor]
   LA --> D[所有下游]" />
 
 ## <Icon name="building-2" :size="20" /> 策略 A 步骤（推荐）

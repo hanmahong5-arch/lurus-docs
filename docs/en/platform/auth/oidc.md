@@ -1,5 +1,5 @@
 ---
-title: OIDC / OAuth2 Integration | Zitadel Identity Authentication
+title: OIDC / OAuth2 Integration | Casdoor Identity Authentication
 description: Complete guide to connecting your own application to Lurus SSO — endpoints, scopes, claims, PKCE, Device Flow.
 ---
 
@@ -7,7 +7,7 @@ description: Complete guide to connecting your own application to Lurus SSO — 
 
 # OIDC / OAuth2 Integration <StatusBadge status="live" />
 
-Lurus unified identity authentication is built on [Zitadel](https://zitadel.com) and exposes standard OIDC / OAuth2 interfaces. Any application that supports standard OIDC can connect to Lurus SSO directly, with no changes to its core authentication logic.
+Lurus unified identity authentication is built on [Casdoor](https://casdoor.com) and exposes standard OIDC / OAuth2 interfaces. Any application that supports standard OIDC can connect to Lurus SSO directly, with no changes to its core authentication logic.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">1</span><span class="lurus-stat__label">Discovery URL auto-discovery</span></div>
@@ -49,7 +49,7 @@ All endpoints use `https://auth.lurus.cn` as the Base URL.
 | **JWKS** | `/oauth/v2/keys` | GET | Fetch the JWK public key set to verify JWT signatures locally |
 | **Introspection** | `/oauth/v2/introspect` | POST | Query token validity and metadata (server-side use) |
 | **Revocation** | `/oauth/v2/revoke` | POST | Revoke an access / refresh token |
-| **End Session** | `/oidc/v1/end_session` | GET / POST | Logout: terminate the Zitadel session |
+| **End Session** | `/oidc/v1/end_session` | GET / POST | Logout: terminate the Casdoor session |
 | **Device Authorization** | `/oauth/v2/device_authorization` | POST | Starting endpoint for the Device Code Flow |
 
 ### Authorization Endpoint Parameters
@@ -92,7 +92,7 @@ Choose the authorization flow based on the client type; SPA / Native / Web shoul
 <li>Receive the access / id / refresh token.</li>
 </ol>
 
-**Client Credentials**: POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:zitadel:iam:org:project:id:{projectid}:aud` → obtain an access_token (no id_token, no user identity).
+**Client Credentials**: POST `/oauth/v2/token` with `grant_type=client_credentials` + `client_id` + `client_secret` + `scope=openid urn:casdoor:iam:org:project:id:{projectid}:aud` → obtain an access_token (no id_token, no user identity).
 
 **Refresh Token**: include `offline_access` in the initial authorization scope → store the refresh_token securely → when the access_token expires, POST `grant_type=refresh_token` + `refresh_token=<token>` → obtain new tokens (the refresh_token may rotate).
 
@@ -182,7 +182,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 
 ## Scopes Reference
 
-Standard OIDC scopes determine which claims are returned; Zitadel-specific scopes control audience, roles, and organization constraints.
+Standard OIDC scopes determine which claims are returned; Casdoor-specific scopes control audience, roles, and organization constraints.
 
 ### Standard Scopes
 
@@ -195,21 +195,21 @@ Standard OIDC scopes determine which claims are returned; Zitadel-specific scope
 | `address` | Get the user’s address information | id_token, userinfo |
 | `offline_access` | Request a `refresh_token` (only valid in the Authorization Code flow) | — |
 
-### Zitadel-Specific Scopes
+### Casdoor-Specific Scopes
 
 | Scope | Description | Affected Token |
 |-------|------|-------------|
-| `urn:zitadel:iam:org:project:id:{projectid}:aud` | Add the specified project ID to the access token’s `aud`; server-side verification must match | access_token |
-| `urn:zitadel:iam:org:project:id:zitadel:aud` | Add Zitadel’s own project ID to `aud` (used to access the Zitadel API) | access_token |
-| `urn:zitadel:iam:org:projects:roles` | Include the role list of all authorized projects in the token | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:project:role:{rolekey}` | Request only a specific role claim, e.g. `...:role:admin` | id_token, access_token |
-| `urn:zitadel:iam:org:id:{orgid}` | Restrict the user to the given organization; enforce isolation for cross-org login | Validation only |
-| `urn:zitadel:iam:org:domain:primary:{domain}` | Restrict the user to the primary domain of their organization, e.g. `...:primary:lurus.cn` | Validation only |
-| `urn:zitadel:iam:user:metadata` | Include the user’s custom metadata in the token (Base64 key-value pairs) | id_token, access_token, userinfo |
-| `urn:zitadel:iam:user:resourceowner` | Get the ID, name, and primary domain of the user’s organization | id_token, access_token, userinfo |
-| `urn:zitadel:iam:org:idp:id:{idp_id}` | Jump directly to the specified IdP (WeCom, Feishu), skipping the IdP selection page | Behavior control |
+| `urn:casdoor:iam:org:project:id:{projectid}:aud` | Add the specified project ID to the access token’s `aud`; server-side verification must match | access_token |
+| `urn:casdoor:iam:org:project:id:casdoor:aud` | Add Casdoor’s own project ID to `aud` (used to access the Casdoor API) | access_token |
+| `urn:casdoor:iam:org:projects:roles` | Include the role list of all authorized projects in the token | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:project:role:{rolekey}` | Request only a specific role claim, e.g. `...:role:admin` | id_token, access_token |
+| `urn:casdoor:iam:org:id:{orgid}` | Restrict the user to the given organization; enforce isolation for cross-org login | Validation only |
+| `urn:casdoor:iam:org:domain:primary:{domain}` | Restrict the user to the primary domain of their organization, e.g. `...:primary:lurus.cn` | Validation only |
+| `urn:casdoor:iam:user:metadata` | Include the user’s custom metadata in the token (Base64 key-value pairs) | id_token, access_token, userinfo |
+| `urn:casdoor:iam:user:resourceowner` | Get the ID, name, and primary domain of the user’s organization | id_token, access_token, userinfo |
+| `urn:casdoor:iam:org:idp:id:{idp_id}` | Jump directly to the specified IdP (WeCom, Feishu), skipping the IdP selection page | Behavior control |
 
-> **Common combination** (Web App): `openid profile email offline_access urn:zitadel:iam:org:projects:roles urn:zitadel:iam:org:project:id:{projectid}:aud`
+> **Common combination** (Web App): `openid profile email offline_access urn:casdoor:iam:org:projects:roles urn:casdoor:iam:org:project:id:{projectid}:aud`
 
 ---
 
@@ -221,7 +221,7 @@ The table below indicates which token each claim appears in, and which scope it 
 
 | Claim | Description | id_token | access_token | userinfo | Required Scope |
 |-------|------|:--------:|:------------:|:--------:|-----------|
-| `sub` | Unique user ID (Zitadel internal ID) | ✓ | ✓ (JWT) | ✓ | Always |
+| `sub` | Unique user ID (Casdoor internal ID) | ✓ | ✓ (JWT) | ✓ | Always |
 | `iss` | Issuer, fixed as `https://auth.lurus.cn` | ✓ | ✓ | — | Always |
 | `aud` | Audience, the application’s client_id | ✓ | ✓ | — | Always |
 | `exp` / `iat` | Expiry / issued-at time (Unix) | ✓ | ✓ | — | Always |
@@ -235,22 +235,22 @@ The table below indicates which token each claim appears in, and which scope it 
 
 > `✓*` = returned only when the response_type includes `id_token` or when explicitly requested.
 
-### Zitadel-Specific Claims
+### Casdoor-Specific Claims
 
 | Claim | Description | id_token | access_token | userinfo |
 |-------|------|:--------:|:------------:|:--------:|
-| `urn:zitadel:iam:org:project:roles` | The user’s project roles, structured as `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:org:domain:primary` | The primary domain of the user’s organization | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:metadata` | The user’s custom metadata, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
-| `urn:zitadel:iam:user:resourceowner:id` / `:name` / `:primary_domain` | The ID / name / primary domain of the user’s organization | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:project:roles` | The user’s project roles, structured as `{ "roleName": { "orgId": "domain" } }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:org:domain:primary` | The primary domain of the user’s organization | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:metadata` | The user’s custom metadata, `{ "key": "base64value" }` | ✓ | ✓ (JWT) | ✓ |
+| `urn:casdoor:iam:user:resourceowner:id` / `:name` / `:primary_domain` | The ID / name / primary domain of the user’s organization | ✓ | ✓ (JWT) | ✓ |
 
 **Role claim example**:
 ```json
-{ "urn:zitadel:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
+{ "urn:casdoor:iam:org:project:roles": { "admin": { "178204173316174381": "lurus.cn" }, "viewer": { "178204173316174381": "lurus.cn" } } }
 ```
 **Metadata claim example** (the value is Base64; decode with `atob()` / `base64.StdEncoding.DecodeString()` before use):
 ```json
-{ "urn:zitadel:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
+{ "urn:casdoor:iam:user:metadata": { "department": "ZW5naW5lZXJpbmc=", "employee_id": "VTEwMDEy" } }
 ```
 
 ---
@@ -387,14 +387,14 @@ The most common integration errors and one-shot fixes.
 <details class="lurus-faq-item">
 <summary>audience error (<code>aud</code> claim mismatch)</summary>
 
-**Symptom**: verification reports `token audience mismatch` / `invalid audience`. **Cause**: the access token’s `aud` contains only `client_id` by default. **Fix**: add `urn:zitadel:iam:org:project:id:{projectid}:aud` to the scope to explicitly write the project ID into `aud`.
+**Symptom**: verification reports `token audience mismatch` / `invalid audience`. **Cause**: the access token’s `aud` contains only `client_id` by default. **Fix**: add `urn:casdoor:iam:org:project:id:{projectid}:aud` to the scope to explicitly write the project ID into `aud`.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary><code>roles</code> claim is empty or missing</summary>
 
-**Cause**: the user has no User Grant in that Project, or the role scope was not requested. **Checks**: ① In the console, go to Project → Authorizations and confirm a role Grant exists. ② Include `urn:zitadel:iam:org:projects:roles` in the scope. ③ Enable "Assert Roles on Authentication" in the Project settings.
+**Cause**: the user has no User Grant in that Project, or the role scope was not requested. **Checks**: ① In the console, go to Project → Authorizations and confirm a role Grant exists. ② Include `urn:casdoor:iam:org:projects:roles` in the scope. ③ Enable "Assert Roles on Authentication" in the Project settings.
 
 </details>
 
@@ -434,7 +434,7 @@ Renewal returns `invalid_grant`. Possible causes: the initial authorization scop
 
 ## Related Links
 
-- Zitadel official: [Endpoints](https://zitadel.com/docs/apis/openidoauth/endpoints) · [Scopes](https://zitadel.com/docs/apis/openidoauth/scopes) · [Claims](https://zitadel.com/docs/apis/openidoauth/claims)
+- Casdoor official: [Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
 - Auth console [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
 

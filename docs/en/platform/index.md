@@ -55,7 +55,7 @@ A successful registration gives you:
 
 **Account management** (sign in to [identity.lurus.cn](https://identity.lurus.cn) → Account Settings): personal info, sign-in history, third-party bindings, security settings (change password, two-factor authentication).
 
-**Sign in once, access everything**: built on the OIDC standard, signing in to any product establishes a session across all products; supports Passkey/WebAuthn passwordless login, TOTP/hardware-key MFA, and GitHub/Google social login, while enterprises can integrate Azure AD / Feishu / Okta SSO. End users use a single account across API/Lucrum/Switch/Creator/Lutu; developers integrate their own apps with the OIDC SDK, and backends use a Service User + JWT Profile; enterprise organization management (members/permissions/audit) is handled via [auth.lurus.cn](https://auth.lurus.cn) (Zitadel console) or by contacting our sales team.
+**Sign in once, access everything**: built on the OIDC standard, signing in to any product establishes a session across all products; supports Passkey/WebAuthn passwordless login, TOTP/hardware-key MFA, and GitHub/Google social login, while enterprises can integrate Azure AD / Feishu / Okta SSO. End users use a single account across API/Lucrum/Switch/Creator/Lutu; developers integrate their own apps with the OIDC SDK, and backends use a Service User + JWT Profile; enterprise organization management (members/permissions/audit) is handled via [auth.lurus.cn](https://auth.lurus.cn) (Casdoor console) or by contacting our sales team.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -208,7 +208,7 @@ User data is strictly isolated and never shared.
 <NextSteps
   title="Next Steps"
   :steps="[
-    { text: 'Identity & Authentication (Zitadel)', link: '/en/platform/auth/', primary: true },
+    { text: 'Identity & Authentication (Casdoor)', link: '/en/platform/auth/', primary: true },
     { text: 'Billing Details', link: '/en/platform/billing' },
     { text: 'FAQ', link: '/en/platform/faq' },
     { text: 'Get an API Key', link: '/en/guide/get-api-key' },

@@ -1,5 +1,5 @@
 ---
-title: 로그인 및 다단계 인증 | Zitadel 신원 인증
+title: 로그인 및 다단계 인증 | Casdoor 신원 인증
 description: Lurus가 지원하는 로그인 방식(비밀번호, Passkey, 소셜 로그인, 기업 SSO)과 다단계 인증 정책.
 ---
 
@@ -7,7 +7,7 @@ description: Lurus가 지원하는 로그인 방식(비밀번호, Passkey, 소�
 
 # 로그인 및 다단계 인증
 
-Lurus의 모든 제품은 동일한 신원 인증 인프라(**Zitadel**, 대외적으로 `auth.lurus.cn`)를 공유합니다. Lurus API, Switch, Lucrum, Forge 중 무엇을 사용하든 로그인은 동일한 입구를 거치며, 한 번 로그인하면 전 라인이 연동됩니다.
+Lurus의 모든 제품은 동일한 신원 인증 인프라(**Casdoor**, 대외적으로 `auth.lurus.cn`)를 공유합니다. Lurus API, Switch, Lucrum, Forge 중 무엇을 사용하든 로그인은 동일한 입구를 거치며, 한 번 로그인하면 전 라인이 연동됩니다.
 
 ---
 
@@ -107,7 +107,7 @@ Passkey > 소셜 로그인 > 이메일 비밀번호. Passkey는 비밀번호를 
 
 ## 5. 비밀번호 정책 (Password Policy)
 
-다음은 Zitadel 인스턴스의 기본 기준이며, 관리자는 콘솔에서 조정할 수 있습니다. 실제 요구 사항은 가입/비밀번호 변경 시 실시간으로 안내됩니다.
+다음은 Casdoor 인스턴스의 기본 기준이며, 관리자는 콘솔에서 조정할 수 있습니다. 실제 요구 사항은 가입/비밀번호 변경 시 실시간으로 안내됩니다.
 
 **복잡도**(기본값): 최소 길이 8자, 대문자·소문자·숫자·특수 문자(`!@#$%^&*` 등) 각 최소 1개.
 
@@ -123,11 +123,11 @@ Passkey > 소셜 로그인 > 이메일 비밀번호. Passkey는 비밀번호를 
 
 ## 6. 신원 브로커링 / Identity Brokering
 
-Zitadel은 중간 IdP 역할을 하며, 하나 또는 여러 개의 **상위 외부 IdP**(기업 Azure AD/Okta 또는 소셜 GitHub/Google)와 연동합니다. 사용자가 "XXX로 로그인"을 클릭하면 → 상위 IdP로 이동하여 검증 → Zitadel이 결과를 수신 → Lurus 통합 token을 발급합니다.
+Casdoor은 중간 IdP 역할을 하며, 하나 또는 여러 개의 **상위 외부 IdP**(기업 Azure AD/Okta 또는 소셜 GitHub/Google)와 연동합니다. 사용자가 "XXX로 로그인"을 클릭하면 → 상위 IdP로 이동하여 검증 → Casdoor이 결과를 수신 → Lurus 통합 token을 발급합니다.
 
 <ArchitectureDiagram
   title="Identity Brokering 링크"
-  chart="graph LR; P[Lurus 제품] --> Z[auth.lurus.cn · Zitadel]; Z --> U[상위 IdP · Azure AD / Okta / GitHub …]; U -. 사용자 신원 어서션 OIDC/SAML .-> Z; Z -. Lurus access_token / id_token 발급 .-> P"
+  chart="graph LR; P[Lurus 제품] --> Z[auth.lurus.cn · Casdoor]; Z --> U[상위 IdP · Azure AD / Okta / GitHub …]; U -. 사용자 신원 어서션 OIDC/SAML .-> Z; Z -. Lurus access_token / id_token 발급 .-> P"
 />
 
 **사용 시점**: 기업 고객 B2B SSO(직원이 자사 Azure AD/Okta로 직접 로그인, 가입 불필요), 도메인 자동 라우팅(기업 이메일 입력 후 도메인에 따라 해당 IdP로 이동, Domain Discovery), 계정 연결(기존 Lurus 계정에 GitHub/Google 연결), Just-in-Time 생성(첫 외부 IdP 로그인 시 자동으로 계정을 만들고 기본 역할 할당).
@@ -197,7 +197,7 @@ B2B 조직에 사용자 지정 로그인 도메인(`auth.client.com`)을 구성�
   ]"
 />
 
-- [청구 및 구독](../billing.md) · [플랫폼 자주 묻는 질문](../faq.md) · [Lurus API 연동 가이드](/ko/api/overview) · [Zitadel 공식 문서](https://zitadel.com/docs)(영문)
+- [청구 및 구독](../billing.md) · [플랫폼 자주 묻는 질문](../faq.md) · [Lurus API 연동 가이드](/ko/api/overview) · [Casdoor 공식 문서](https://casdoor.com/docs)(영문)
 
 </div>
 

@@ -1,5 +1,5 @@
 ---
-title: Inicio de sesión y autenticación multifactor | Autenticación de identidad Zitadel
+title: Inicio de sesión y autenticación multifactor | Autenticación de identidad Casdoor
 description: Métodos de inicio de sesión compatibles con Lurus (contraseña, Passkey, inicio de sesión social, SSO empresarial) y políticas de autenticación multifactor.
 ---
 
@@ -7,7 +7,7 @@ description: Métodos de inicio de sesión compatibles con Lurus (contraseña, P
 
 # Inicio de sesión y autenticación multifactor
 
-Todos los productos de Lurus comparten la misma infraestructura de autenticación de identidad (**Zitadel**, accesible públicamente en `auth.lurus.cn`). Tanto si usas Lurus API, Switch, Lucrum o Forge, el inicio de sesión pasa por el mismo punto de entrada: una sola autenticación da acceso a toda la plataforma.
+Todos los productos de Lurus comparten la misma infraestructura de autenticación de identidad (**Casdoor**, accesible públicamente en `auth.lurus.cn`). Tanto si usas Lurus API, Switch, Lucrum o Forge, el inicio de sesión pasa por el mismo punto de entrada: una sola autenticación da acceso a toda la plataforma.
 
 ---
 
@@ -107,7 +107,7 @@ Usa una app de TOTP con copia de seguridad en la nube (1Password, Authy) para no
 
 ## 5. Política de contraseñas (Password Policy)
 
-A continuación se muestra la referencia predeterminada de la instancia de Zitadel, que el administrador puede ajustar en la consola; los requisitos reales se indican en tiempo real al registrarse o cambiar la contraseña.
+A continuación se muestra la referencia predeterminada de la instancia de Casdoor, que el administrador puede ajustar en la consola; los requisitos reales se indican en tiempo real al registrarse o cambiar la contraseña.
 
 **Complejidad** (valores predeterminados): longitud mínima de 8 caracteres; al menos 1 mayúscula, 1 minúscula, 1 dígito y 1 carácter especial (`!@#$%^&*`, etc.).
 
@@ -123,11 +123,11 @@ Si la cuenta se bloquea por errores consecutivos de contraseña u OTP, contacta 
 
 ## 6. Intermediación de identidad / Identity Brokering
 
-Zitadel actúa como IdP intermediario y se integra con uno o varios **IdP externos upstream** (Azure AD/Okta empresariales, o sociales como GitHub/Google). El usuario pulsa "Iniciar sesión con XXX" → salta al IdP upstream para verificarse → Zitadel recibe el resultado → emite el token unificado de Lurus.
+Casdoor actúa como IdP intermediario y se integra con uno o varios **IdP externos upstream** (Azure AD/Okta empresariales, o sociales como GitHub/Google). El usuario pulsa "Iniciar sesión con XXX" → salta al IdP upstream para verificarse → Casdoor recibe el resultado → emite el token unificado de Lurus.
 
 <ArchitectureDiagram
   title="Cadena de Identity Brokering"
-  chart="graph LR; P[Producto Lurus] --> Z[auth.lurus.cn · Zitadel]; Z --> U[IdP upstream · Azure AD / Okta / GitHub …]; U -. Aserción de identidad del usuario OIDC/SAML .-> Z; Z -. Emite access_token / id_token de Lurus .-> P"
+  chart="graph LR; P[Producto Lurus] --> Z[auth.lurus.cn · Casdoor]; Z --> U[IdP upstream · Azure AD / Okta / GitHub …]; U -. Aserción de identidad del usuario OIDC/SAML .-> Z; Z -. Emite access_token / id_token de Lurus .-> P"
 />
 
 **Cuándo usarlo**: SSO B2B para clientes empresariales (los empleados inician sesión directamente con su propio Azure AD/Okta, sin registrarse); enrutamiento automático por dominio (tras introducir el correo corporativo, salta al IdP correspondiente según el dominio, Domain Discovery); vinculación de cuentas (asociar una cuenta de Lurus existente a GitHub/Google); creación Just-in-Time (el primer inicio de sesión por IdP externo crea automáticamente la cuenta y le asigna el rol predeterminado).
@@ -197,7 +197,7 @@ Pasos a seguir: ① En la pantalla de verificación de MFA, pulsa **Iniciar sesi
   ]"
 />
 
-- [Facturación y suscripción](../billing.md) · [Preguntas frecuentes de la plataforma](../faq.md) · [Guía de integración de Lurus API](/es/api/overview) · [Documentación oficial de Zitadel](https://zitadel.com/docs) (en inglés)
+- [Facturación y suscripción](../billing.md) · [Preguntas frecuentes de la plataforma](../faq.md) · [Guía de integración de Lurus API](/es/api/overview) · [Documentación oficial de Casdoor](https://casdoor.com/docs) (en inglés)
 
 </div>
 

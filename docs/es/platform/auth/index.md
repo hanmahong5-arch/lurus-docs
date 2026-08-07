@@ -9,11 +9,11 @@ description: "El sistema de identidad compartido por toda la línea de productos
 
 **Un solo inicio de sesión, acceso a todo el sitio.** Lurus API, Lucrum, Switch, Creator, Lutu, Admin, Forge y todos los demás productos comparten el mismo sistema de identidad: cuando un usuario inicia sesión en cualquier producto, el resto lo reconoce automáticamente; los permisos y las cuotas se liquidan de forma unificada a nivel de cuenta; los clientes empresariales pueden integrar su propio SSO para incorporar a sus empleados.
 
-Este sistema es provisto por `auth.lurus.cn`, desplegado de forma autogestionada sobre la infraestructura de identidad de código abierto [Zitadel](https://zitadel.com), que implementa por completo los protocolos estándar OIDC / OAuth2 / SAML; los datos de los usuarios permanecen en todo momento dentro del propio clúster K8s de Lurus.
+Este sistema es provisto por `auth.lurus.cn`, desplegado de forma autogestionada sobre la infraestructura de identidad de código abierto [Casdoor](https://casdoor.com), que implementa por completo los protocolos estándar OIDC / OAuth2 / SAML; los datos de los usuarios permanecen en todo momento dentro del propio clúster K8s de Lurus.
 
 ::: tip Accesos rápidos
 - Autogestión del usuario: [auth.lurus.cn](https://auth.lurus.cn) — cambiar contraseña, gestionar Passkey, vincular MFA, ver el historial de inicios de sesión
-- Gestión de organizaciones/proyectos: [auth.lurus.cn](https://auth.lurus.cn) (consola de organización de Zitadel) — invitar miembros para clientes empresariales, asignar permisos, auditar; o contacta con el área comercial para habilitar la gestión de organización empresarial
+- Gestión de organizaciones/proyectos: [auth.lurus.cn](https://auth.lurus.cn) (consola de organización de Casdoor) — invitar miembros para clientes empresariales, asignar permisos, auditar; o contacta con el área comercial para habilitar la gestión de organización empresarial
 :::
 
 ---
@@ -50,7 +50,7 @@ Este sistema es provisto por `auth.lurus.cn`, desplegado de forma autogestionada
     { title: 'Multiinquilino B2B', body: 'Bajo una Instance se pueden crear múltiples Organization, lo que soporta de forma nativa el aislamiento de clientes empresariales; cada organización puede configurar de forma independiente su marca, sus políticas de inicio de sesión y su federación de IdP.', icon: 'building-2' },
     { title: 'OIDC / OAuth2 / SAML', body: 'Implementa por completo los tres protocolos estándar, compatible con los principales SDK y frameworks del mercado, con integración fluida en aplicaciones Go, Rust, TypeScript y Flutter.', icon: 'link' },
     { title: 'Registros de auditoría', body: 'Las operaciones críticas como inicios de sesión, cambios de MFA, concesión de permisos y restablecimiento de contraseñas quedan registradas en logs inmutables y consultables, cumpliendo los requisitos de conformidad.', icon: 'history' },
-    { title: 'Extensión Actions', body: 'Inyecta lógica personalizada en puntos clave del flujo de autenticación (por ejemplo, sincronizar atributos del usuario o restringir condiciones de inicio de sesión), sin necesidad de hacer fork del propio Zitadel.', icon: 'workflow' },
+    { title: 'Extensión Actions', body: 'Inyecta lógica personalizada en puntos clave del flujo de autenticación (por ejemplo, sincronizar atributos del usuario o restringir condiciones de inicio de sesión), sin necesidad de hacer fork del propio Casdoor.', icon: 'workflow' },
   ]"
 />
 
@@ -74,7 +74,7 @@ Este sistema es provisto por `auth.lurus.cn`, desplegado de forma autogestionada
 | **Project** | Conjunto de aplicaciones bajo una Organization, que gestiona de forma unificada roles y grants | Cada línea de producto (Lurus API, Lucrum, Switch, Forge…) corresponde a un Project |
 | **Application** | Cliente concreto dentro de un Project, que posee `client_id` / `client_secret` | Cada frontend, cliente de escritorio y servidor se registra como una Application independiente |
 | **User** | Cuenta con capacidad de inicio de sesión, dividida en Human (persona real) y Service User (máquina) | Los usuarios finales son Human; las llamadas entre servicios de backend usan Service User + JWT Profile |
-| **Grant** | Relación de vinculación que concede un Project Role a un User | Controla el nivel de permiso del usuario dentro de un producto concreto; rige la configuración de la organización en [auth.lurus.cn](https://auth.lurus.cn) (Zitadel) |
+| **Grant** | Relación de vinculación que concede un Project Role a un User | Controla el nivel de permiso del usuario dentro de un producto concreto; rige la configuración de la organización en [auth.lurus.cn](https://auth.lurus.cn) (Casdoor) |
 
 ---
 
@@ -128,11 +128,11 @@ Este sistema es provisto por `auth.lurus.cn`, desplegado de forma autogestionada
 
 ## Lecturas adicionales
 
-El sistema está construido sobre la infraestructura de identidad de código abierto Zitadel; si necesitas profundizar en los mecanismos subyacentes o en los detalles del SDK, puedes consultar la documentación oficial:
+El sistema está construido sobre la infraestructura de identidad de código abierto Casdoor; si necesitas profundizar en los mecanismos subyacentes o en los detalles del SDK, puedes consultar la documentación oficial:
 
-- [Página principal de la documentación de Zitadel](https://zitadel.com/docs) — primeros pasos, modos de despliegue y guía de integración de SDK
-- [Conceptos principales](https://zitadel.com/docs/concepts) — explicación de los principios de Instance, Organization, Project, User y Grant
-- [Referencia de la API](https://zitadel.com/docs/apis) — documentación de los endpoints REST / gRPC de la Management API, Auth API y Admin API
+- [Página principal de la documentación de Casdoor](https://casdoor.com/docs) — primeros pasos, modos de despliegue y guía de integración de SDK
+- [Conceptos principales](https://casdoor.com/docs/concepts) — explicación de los principios de Instance, Organization, Project, User y Grant
+- [Referencia de la API](https://casdoor.com/docs/apis) — documentación de los endpoints REST / gRPC de la Management API, Auth API y Admin API
 
 <RelatedProducts product-id="auth" />
 

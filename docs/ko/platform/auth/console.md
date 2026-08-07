@@ -1,5 +1,5 @@
 ---
-title: 콘솔 관리 | Zitadel 신원 인증
+title: 콘솔 관리 | Casdoor 신원 인증
 description: auth.lurus.cn 콘솔로 조직, 사용자, 프로젝트, 애플리케이션, 신원 정책을 관리하는 전체 운영 가이드.
 ---
 
@@ -7,7 +7,7 @@ description: auth.lurus.cn 콘솔로 조직, 사용자, 프로젝트, 애플리�
 
 # 콘솔 관리
 
-Lurus는 [Zitadel](https://zitadel.com)을 통합 신원 인증 플랫폼으로 사용하며, 콘솔 진입점은 [auth.lurus.cn](https://auth.lurus.cn)입니다. 본 문서는 **조직 관리자 / IT 운영**을 대상으로 일상 운영의 전체 흐름을 다룹니다.
+Lurus는 [Casdoor](https://casdoor.com)을 통합 신원 인증 플랫폼으로 사용하며, 콘솔 진입점은 [auth.lurus.cn](https://auth.lurus.cn)입니다. 본 문서는 **조직 관리자 / IT 운영**을 대상으로 일상 운영의 전체 흐름을 다룹니다.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -75,16 +75,16 @@ Lurus는 [Zitadel](https://zitadel.com)을 통합 신원 인증 플랫폼으로 
 
 왼쪽 **Organizations**(Instance 레벨) → 대상 조직 행의 **"..."** → **Set as default organization**(행에 **Default** 라벨 표시).
 
-> 사용자가 로그인할 때 조직 컨텍스트를 가지고 있지 않으면(`urn:zitadel:iam:org:id:{id}` scope 없음), 기본 Organization의 정책과 브랜딩 설정이 적용됩니다.
+> 사용자가 로그인할 때 조직 컨텍스트를 가지고 있지 않으면(`urn:casdoor:iam:org:id:{id}` scope 없음), 기본 Organization의 정책과 브랜딩 설정이 적용됩니다.
 
 ### 2.3 도메인 검증
 
 회사 이메일 도메인을 Organization에 바인딩하면 도메인 기반 라우팅 로그인과 단일 직접 접속을 활성화할 수 있습니다.
 
-대상 Organization → **Settings → Organization Domains → Add Domain** → 도메인 입력(예: `lurus.cn`) → 검증 방식 선택(**DNS Challenge**: DNS에 TXT 레코드 추가, 값은 Zitadel이 생성 / **HTTP Challenge**: 웹의 지정 경로에 검증 파일 배치) → **Verify** → 통과 후 **Set as primary**로 기본 도메인 설정 가능.
+대상 Organization → **Settings → Organization Domains → Add Domain** → 도메인 입력(예: `lurus.cn`) → 검증 방식 선택(**DNS Challenge**: DNS에 TXT 레코드 추가, 값은 Casdoor이 생성 / **HTTP Challenge**: 웹의 지정 경로에 검증 파일 배치) → **Verify** → 통과 후 **Set as primary**로 기본 도메인 설정 가능.
 
 ::: warning
-DNS TXT 레코드는 검증 후 **삭제하지 마세요**. Zitadel이 주기적으로 재검증하며, 삭제하면 도메인 상태가 무효화됩니다.
+DNS TXT 레코드는 검증 후 **삭제하지 마세요**. Casdoor이 주기적으로 재검증하며, 삭제하면 도메인 상태가 무효화됩니다.
 :::
 
 ### 2.4 멤버 관리(Organization Members)
@@ -301,7 +301,7 @@ Organization은 Instance 기본 정책을 재정의할 수 있습니다(Organiza
 
 ### 7.5 Branding(**Branding**)
 
-Logo/Icon(라이트/다크 각 한 세트), Primary Color, Background Color, Warning Color, Font, **Hide Watermark**("Powered by ZITADEL" 숨김), **Login Name Suffix**(로그인 이름 접미사 표시 여부).
+Logo/Icon(라이트/다크 각 한 세트), Primary Color, Background Color, Warning Color, Font, **Hide Watermark**("Powered by Casdoor" 숨김), **Login Name Suffix**(로그인 이름 접미사 표시 여부).
 
 ### 7.6 Privacy Policy(**Privacy Policy**)
 
@@ -325,7 +325,7 @@ Logo/Icon(라이트/다크 각 한 세트), Primary Color, Background Color, War
 ## 8. Actions(커스텀 코드 확장）
 
 ::: info
-Actions는 로그인/등록/사용자 생성 등 핵심 이벤트 트리거 시점에 **JavaScript**(Zitadel 서버 측 샌드박스)를 실행하며, 실행 결과가 흐름의 계속 또는 중단에 영향을 줄 수 있습니다.
+Actions는 로그인/등록/사용자 생성 등 핵심 이벤트 트리거 시점에 **JavaScript**(Casdoor 서버 측 샌드박스)를 실행하며, 실행 결과가 흐름의 계속 또는 중단에 영향을 줄 수 있습니다.
 :::
 
 왼쪽 **Actions → New Action** → 이름 입력, 트리거 Flow와 Trigger Type 선택 → JS 처리 함수 작성 → 활성화하고 Flow에 바인딩.
@@ -414,7 +414,7 @@ Actions는 로그인/등록/사용자 생성 등 핵심 이벤트 트리거 시�
   </div>
 </div>
 
-*Zitadel 셀프 호스팅 인스턴스(`auth.lurus.cn`) 기반이며, 인터페이스 세부 사항은 실제 버전을 기준으로 합니다. 정책 변경 시 본 문서를 동기화하세요.*
+*Casdoor 셀프 호스팅 인스턴스(`auth.lurus.cn`) 기반이며, 인터페이스 세부 사항은 실제 버전을 기준으로 합니다. 정책 변경 시 본 문서를 동기화하세요.*
 
 </div>
 

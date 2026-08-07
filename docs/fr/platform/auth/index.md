@@ -9,11 +9,11 @@ description: "Le système d’identité partagé par toute la gamme de produits 
 
 **Une seule connexion, un accès à tout le site.** Lurus API, Lucrum, Switch, Creator, Lutu, Admin, Forge et tous les autres produits partagent le même système d’identité — l’utilisateur se connecte à n’importe quel produit, et les autres produits le reconnaissent automatiquement ; les permissions et les quotas sont consolidés à l’échelle du compte ; les clients entreprise peuvent intégrer leur propre SSO pour l’intégration de leurs employés.
 
-Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de l’infrastructure d’identité open source [Zitadel](https://zitadel.com), implémentant intégralement les protocoles standards OIDC / OAuth2 / SAML ; les données utilisateur restent à tout moment dans le cluster K8s propre à Lurus.
+Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de l’infrastructure d’identité open source [Casdoor](https://casdoor.com), implémentant intégralement les protocoles standards OIDC / OAuth2 / SAML ; les données utilisateur restent à tout moment dans le cluster K8s propre à Lurus.
 
 ::: tip Accès rapide
 - Gestion en libre-service par l’utilisateur : [auth.lurus.cn](https://auth.lurus.cn) — modifier le mot de passe, gérer les Passkeys, lier la MFA, consulter l’historique de connexion
-- Gestion des organisations/projets : [auth.lurus.cn](https://auth.lurus.cn) (console d’organisation Zitadel) — invitation de membres, attribution de permissions et audit pour les clients entreprise ; ou contactez le service commercial pour activer la gestion d’organisation entreprise
+- Gestion des organisations/projets : [auth.lurus.cn](https://auth.lurus.cn) (console d’organisation Casdoor) — invitation de membres, attribution de permissions et audit pour les clients entreprise ; ou contactez le service commercial pour activer la gestion d’organisation entreprise
 :::
 
 ---
@@ -50,7 +50,7 @@ Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de 
     { title: 'Multi-tenant B2B', body: 'Plusieurs Organizations peuvent être créées sous une Instance, ce qui prend en charge nativement l\'isolation des clients entreprise ; chaque organisation peut configurer indépendamment sa marque, sa politique de connexion et sa fédération d\'IdP.', icon: 'building-2' },
     { title: 'OIDC / OAuth2 / SAML', body: 'Implémentation complète des trois protocoles standards, compatible avec les principaux SDK et frameworks du marché, pour une intégration transparente des applications Go, Rust, TypeScript et Flutter.', icon: 'link' },
     { title: 'Journaux d\'audit', body: 'Les opérations clés telles que la connexion, les changements de MFA, l\'octroi de permissions ou la réinitialisation de mot de passe sont toutes enregistrées dans des journaux immuables et interrogeables, conformément aux exigences de conformité.', icon: 'history' },
-    { title: 'Extensions Actions', body: 'Injectez une logique personnalisée aux points clés du flux d\'authentification (par exemple synchroniser les attributs utilisateur, restreindre les conditions de connexion), sans avoir à forker le cœur de Zitadel.', icon: 'workflow' },
+    { title: 'Extensions Actions', body: 'Injectez une logique personnalisée aux points clés du flux d\'authentification (par exemple synchroniser les attributs utilisateur, restreindre les conditions de connexion), sans avoir à forker le cœur de Casdoor.', icon: 'workflow' },
   ]"
 />
 
@@ -74,7 +74,7 @@ Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de 
 | **Project** | Ensemble d’applications sous une Organization, gérant de manière unifiée les roles et les grants | Chaque gamme de produits (Lurus API, Lucrum, Switch, Forge…) correspond à un Project |
 | **Application** | Client spécifique au sein d’un Project, détenant un `client_id` / `client_secret` | Chaque frontend, application de bureau ou serveur enregistre une Application distincte |
 | **User** | Compte pouvant se connecter, réparti entre Human (personne réelle) et Service User (machine) | Les utilisateurs finaux sont des Human ; les appels entre services backend utilisent un Service User + JWT Profile |
-| **Grant** | Relation de liaison octroyant un Project Role à un User donné | Contrôle le niveau de permission de l’utilisateur au sein d’un produit donné ; les paramètres d’organisation [auth.lurus.cn](https://auth.lurus.cn) (Zitadel) font foi |
+| **Grant** | Relation de liaison octroyant un Project Role à un User donné | Contrôle le niveau de permission de l’utilisateur au sein d’un produit donné ; les paramètres d’organisation [auth.lurus.cn](https://auth.lurus.cn) (Casdoor) font foi |
 
 ---
 
@@ -128,11 +128,11 @@ Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de 
 
 ## Pour aller plus loin
 
-Construit sur la base de l’infrastructure d’identité open source Zitadel ; pour approfondir les mécanismes sous-jacents ou les détails du SDK, consultez la documentation amont :
+Construit sur la base de l’infrastructure d’identité open source Casdoor ; pour approfondir les mécanismes sous-jacents ou les détails du SDK, consultez la documentation amont :
 
-- [Page d’accueil de la documentation Zitadel](https://zitadel.com/docs) — prise en main, modèles de déploiement, guides d’intégration de SDK
-- [Concepts principaux](https://zitadel.com/docs/concepts) — explication des principes d’Instance, Organization, Project, User et Grant
-- [Référence API](https://zitadel.com/docs/apis) — documentation des points de terminaison REST / gRPC de la Management API, de l’Auth API et de l’Admin API
+- [Page d’accueil de la documentation Casdoor](https://casdoor.com/docs) — prise en main, modèles de déploiement, guides d’intégration de SDK
+- [Concepts principaux](https://casdoor.com/docs/concepts) — explication des principes d’Instance, Organization, Project, User et Grant
+- [Référence API](https://casdoor.com/docs/apis) — documentation des points de terminaison REST / gRPC de la Management API, de l’Auth API et de l’Admin API
 
 <RelatedProducts product-id="auth" />
 

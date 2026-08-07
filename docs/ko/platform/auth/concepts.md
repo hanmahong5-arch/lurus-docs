@@ -1,13 +1,13 @@
 ---
-title: 핵심 개념 | Zitadel 신원 인증
-description: Instance / Organization / Project / Application / User / Grant / Administrator 등 Zitadel 객체 모델에 대한 상세 설명으로, Lurus 실제 배포와 결합하여 설명합니다.
+title: 핵심 개념 | Casdoor 신원 인증
+description: Instance / Organization / Project / Application / User / Grant / Administrator 등 Casdoor 객체 모델에 대한 상세 설명으로, Lurus 실제 배포와 결합하여 설명합니다.
 ---
 
 <div class="auth-concepts">
 
 # 핵심 개념
 
-Lurus는 [Zitadel](https://zitadel.com)을 통합 OIDC 신원 제공자(IdP)로 사용하며, 공용 진입점은 `auth.lurus.cn`입니다. 이 페이지에서는 객체 모델 계층 구조를 정리합니다.
+Lurus는 [Casdoor](https://casdoor.com)을 통합 OIDC 신원 제공자(IdP)로 사용하며, 공용 진입점은 `auth.lurus.cn`입니다. 이 페이지에서는 객체 모델 계층 구조를 정리합니다.
 
 ---
 
@@ -18,7 +18,7 @@ Lurus는 [Zitadel](https://zitadel.com)을 통합 OIDC 신원 제공자(IdP)로 
 </div>
 
 <ArchitectureDiagram
-  title="Zitadel 객체 모델 계층"
+  title="Casdoor 객체 모델 계층"
   chart="graph TD; Instance[Instance · lurus-prod] --> Org[Organization · lurus.cn]; Org --> User[User · 직원 / 고객 / Service Account]; Org --> Project[Project · lurus-api / lucrum / switch …]; Org --> OrgGrant[Grant · Project를 다른 Org에 위임]; Project --> App[Application · Web / SPA / Native / API / SAML]; Project --> Role[Role · 예: lucrum:admin]; User -. User Grant .-> Role"
 />
 
@@ -55,7 +55,7 @@ Lurus는 [Zitadel](https://zitadel.com)을 통합 OIDC 신원 제공자(IdP)로 
 
 ## Project 프로젝트
 
-**논리적 제품 그룹**으로, 각 Project는 하나의 소프트웨어 제품 또는 서비스 경계에 대응합니다. 동일한 Project 하의 모든 Application은 동일한 Role 정의를 공유합니다. 구성: Application(로그인 클라이언트), Role(`admin`/`viewer` 같은 역할 문자열), User Grant(역할을 User에게 부여), Granted Organization(전체 Project를 다른 Org에 위임). Project 수준 설정에는 다음이 포함됩니다: 로그인 시 역할 선언(`urn:zitadel:iam:org:project:roles`) 포함을 요구할지 여부, 외부 IdP 로그인을 허용할지 여부 등.
+**논리적 제품 그룹**으로, 각 Project는 하나의 소프트웨어 제품 또는 서비스 경계에 대응합니다. 동일한 Project 하의 모든 Application은 동일한 Role 정의를 공유합니다. 구성: Application(로그인 클라이언트), Role(`admin`/`viewer` 같은 역할 문자열), User Grant(역할을 User에게 부여), Granted Organization(전체 Project를 다른 Org에 위임). Project 수준 설정에는 다음이 포함됩니다: 로그인 시 역할 선언(`urn:casdoor:iam:org:project:roles`) 포함을 요구할지 여부, 외부 IdP 로그인을 허용할지 여부 등.
 
 ::: tip Lurus 맥락
 각 제품 라인은 하나의 독립적인 Project에 대응하며, 명명 규칙은 `lurus.yaml` `capabilities:` 레지스트리를 참조하세요. 역할 규약은 각 제품 팀이 정의합니다.
@@ -103,7 +103,7 @@ Lurus는 [Zitadel](https://zitadel.com)을 통합 OIDC 신원 제공자(IdP)로 
 RBAC 기반이며, 핵심은 Project Role, User Grant, Project Grant입니다.
 
 - **Project Role**: Project 내 역할 문자열로, 세 개의 필드 Key(`admin` 같은 코드 식별자), Display Name(콘솔 표시, 예: 「관리자」), Group(선택적 그룹, 예: `management`)을 갖습니다. 동일한 Project 하의 모든 Application이 공유합니다.
-- **User Grant** = `User + Project + Role[]`: 로그인 후 access token의 `urn:zitadel:iam:org:project:roles` claim은 대상 Project에서 사용자에게 부여된 모든 역할을 담으며, 백엔드는 이 claim을 파싱하여 권한을 확인하므로 추가 API 호출이 필요 없습니다.
+- **User Grant** = `User + Project + Role[]`: 로그인 후 access token의 `urn:casdoor:iam:org:project:roles` claim은 대상 Project에서 사용자에게 부여된 모든 역할을 담으며, 백엔드는 이 claim을 파싱하여 권한을 확인하므로 추가 API 호출이 필요 없습니다.
 - **Project Grant** = `Project (소스 Org) → Organization (대상 Org)`: 전체 Project 관리 권한을 다른 Organization에 부여합니다. B2B 멀티테넌트의 핵심으로, Lurus는 고객 직원의 계정을 생성할 필요 없이, 고객이 자신의 Organization 내에서 사용자와 권한을 스스로 관리합니다.
 
 ---
@@ -140,7 +140,7 @@ Instance 계층에서 기본값을 정의하고, Organization 계층에서 필�
 | **Privacy Policy** | 개인정보 처리방침 URL, ToS URL |
 | **Branding** | 로그인 페이지 Logo, 배색, 사용자 정의 CSS(Organization 수준에서 독립적으로 맞춤화 가능) |
 
-주 조직 `lurus.cn`의 구체적인 정책은 플랫폼 운영팀이 Zitadel Console에서 관리하며, 여기에 하드코딩하지 않습니다.
+주 조직 `lurus.cn`의 구체적인 정책은 플랫폼 운영팀이 Casdoor Console에서 관리하며, 여기에 하드코딩하지 않습니다.
 
 ---
 
@@ -148,7 +148,7 @@ Instance 계층에서 기본값을 정의하고, Organization 계층에서 필�
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Lurus 실제 배포에 정렬</p>
-    <div class="lurus-callout__body"><ul><li><strong>Project 명명</strong>: 각 제품은 하나의 Project에 대응하며(<code>lurus-api</code>, <code>lucrum</code>, <code>switch</code>, <code>lutu</code>, <code>admin</code>, <code>forge</code>), Zitadel Console을 기준으로 합니다.</li><li><strong>역할 규약</strong>: 역할 문자열은 서비스 수준 CLAUDE.md 또는 <code>lurus.yaml</code> <code>capabilities:</code> 레지스트리에서 정의하며, 여기에 하드코딩하지 않습니다.</li><li><strong>Machine User 시나리오</strong>: M2M 호출은 통일적으로 Machine User + JWT Profile을 사용하여, 인간 계정 공유를 피합니다.</li><li><strong>PAT 시나리오</strong>: CI/CD와 스크립트는 PAT를 사용할 수 있으며, 최단 유효 기간을 설정하고 정기적으로 교체해야 합니다.</li><li><strong>전체 구성 참조</strong>: <code>lurus.yaml</code> <code>capabilities:</code> 절이 아키텍처 변경의 유일한 진입점입니다.</li></ul></div>
+    <div class="lurus-callout__body"><ul><li><strong>Project 명명</strong>: 각 제품은 하나의 Project에 대응하며(<code>lurus-api</code>, <code>lucrum</code>, <code>switch</code>, <code>lutu</code>, <code>admin</code>, <code>forge</code>), Casdoor Console을 기준으로 합니다.</li><li><strong>역할 규약</strong>: 역할 문자열은 서비스 수준 CLAUDE.md 또는 <code>lurus.yaml</code> <code>capabilities:</code> 레지스트리에서 정의하며, 여기에 하드코딩하지 않습니다.</li><li><strong>Machine User 시나리오</strong>: M2M 호출은 통일적으로 Machine User + JWT Profile을 사용하여, 인간 계정 공유를 피합니다.</li><li><strong>PAT 시나리오</strong>: CI/CD와 스크립트는 PAT를 사용할 수 있으며, 최단 유효 기간을 설정하고 정기적으로 교체해야 합니다.</li><li><strong>전체 구성 참조</strong>: <code>lurus.yaml</code> <code>capabilities:</code> 절이 아키텍처 변경의 유일한 진입점입니다.</li></ul></div>
   </div>
 </div>
 

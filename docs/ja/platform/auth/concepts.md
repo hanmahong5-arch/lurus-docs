@@ -1,13 +1,13 @@
 ---
-title: コアコンセプト | Zitadel ID 認証
-description: Instance / Organization / Project / Application / User / Grant / Administrator など Zitadel オブジェクトモデルの詳細解説。Lurus の実際のデプロイ構成に即して説明します。
+title: コアコンセプト | Casdoor ID 認証
+description: Instance / Organization / Project / Application / User / Grant / Administrator など Casdoor オブジェクトモデルの詳細解説。Lurus の実際のデプロイ構成に即して説明します。
 ---
 
 <div class="auth-concepts">
 
 # コアコンセプト
 
-Lurus は [Zitadel](https://zitadel.com) を統一 OIDC ID プロバイダー（IdP）として利用しており、公開エンドポイントは `auth.lurus.cn` です。本ページではオブジェクトモデルの階層構造を整理します。
+Lurus は [Casdoor](https://casdoor.com) を統一 OIDC ID プロバイダー（IdP）として利用しており、公開エンドポイントは `auth.lurus.cn` です。本ページではオブジェクトモデルの階層構造を整理します。
 
 ---
 
@@ -18,7 +18,7 @@ Lurus は [Zitadel](https://zitadel.com) を統一 OIDC ID プロバイダー（
 </div>
 
 <ArchitectureDiagram
-  title="Zitadel オブジェクトモデル階層"
+  title="Casdoor オブジェクトモデル階層"
   chart="graph TD; Instance[Instance · lurus-prod] --> Org[Organization · lurus.cn]; Org --> User[User · 従業員 / 顧客 / Service Account]; Org --> Project[Project · lurus-api / lucrum / switch …]; Org --> OrgGrant[Grant · Project を他の Org に付与]; Project --> App[Application · Web / SPA / Native / API / SAML]; Project --> Role[Role · 例 lucrum:admin]; User -. User Grant .-> Role"
 />
 
@@ -55,7 +55,7 @@ Lurus は [Zitadel](https://zitadel.com) を統一 OIDC ID プロバイダー（
 
 ## Project プロジェクト
 
-**論理的なプロダクト分類**であり、各 Project は 1 つのソフトウェア製品またはサービス境界に対応します。同一 Project 配下のすべての Application は同一の Role 定義を共有します。構成要素：Application（ログインクライアント）、Role（`admin`/`viewer` などのロール文字列）、User Grant（ロールを User に付与）、Granted Organization（Project 全体を他の Org に付与）。Project レベルの設定には次が含まれます：ログイン時にロールクレーム（`urn:zitadel:iam:org:project:roles`）を含めることを要求するか、外部 IdP でのログインを許可するか、など。
+**論理的なプロダクト分類**であり、各 Project は 1 つのソフトウェア製品またはサービス境界に対応します。同一 Project 配下のすべての Application は同一の Role 定義を共有します。構成要素：Application（ログインクライアント）、Role（`admin`/`viewer` などのロール文字列）、User Grant（ロールを User に付与）、Granted Organization（Project 全体を他の Org に付与）。Project レベルの設定には次が含まれます：ログイン時にロールクレーム（`urn:casdoor:iam:org:project:roles`）を含めることを要求するか、外部 IdP でのログインを許可するか、など。
 
 ::: tip Lurus におけるコンテキスト
 各プロダクトラインが独立した Project に対応します。命名は `lurus.yaml` `capabilities:` レジストリを参照してください。ロールの規約は各プロダクトチームが定義します。
@@ -103,7 +103,7 @@ Lurus は [Zitadel](https://zitadel.com) を統一 OIDC ID プロバイダー（
 RBAC を基盤とし、中核は Project Role、User Grant、Project Grant です。
 
 - **Project Role**：Project 内のロール文字列で、3 つのフィールドからなります。Key（コード識別子、例 `admin`）、Display Name（コンソール表示、例「管理者」）、Group（任意のグループ、例 `management`）。同一 Project 配下のすべての Application で共有されます。
-- **User Grant** = `User + Project + Role[]`：ログイン後、access token の `urn:zitadel:iam:org:project:roles` クレームに、対象 Project でユーザーに付与されたすべてのロールが含まれます。バックエンドはこのクレームを解析して認可を行い、追加で API を呼び出す必要はありません。
+- **User Grant** = `User + Project + Role[]`：ログイン後、access token の `urn:casdoor:iam:org:project:roles` クレームに、対象 Project でユーザーに付与されたすべてのロールが含まれます。バックエンドはこのクレームを解析して認可を行い、追加で API を呼び出す必要はありません。
 - **Project Grant** = `Project（提供元 Org）→ Organization（対象 Org）`：Project 全体の管理権限を別の Organization に付与します。B2B マルチテナントの中核です：Lurus は顧客の従業員のためにアカウントを作成する必要がなく、顧客が自身の Organization 内でユーザーと権限を自己管理します。
 
 ---
@@ -140,7 +140,7 @@ Instance 層でデフォルト値を定義し、Organization 層で必要に応�
 | **Privacy Policy** | プライバシーポリシー URL、ToS URL |
 | **Branding** | ログインページの Logo、配色、カスタム CSS（Organization レベルで個別にカスタマイズ可能） |
 
-主組織 `lurus.cn` の具体的なポリシーはプラットフォーム運用チームが Zitadel Console で管理しており、ここではハードコードしません。
+主組織 `lurus.cn` の具体的なポリシーはプラットフォーム運用チームが Casdoor Console で管理しており、ここではハードコードしません。
 
 ---
 
@@ -148,7 +148,7 @@ Instance 層でデフォルト値を定義し、Organization 層で必要に応�
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Lurus の実際のデプロイ構成に合わせる</p>
-    <div class="lurus-callout__body"><ul><li><strong>Project の命名</strong>：各プロダクトが 1 つの Project に対応します（<code>lurus-api</code>、<code>lucrum</code>、<code>switch</code>、<code>lutu</code>、<code>admin</code>、<code>forge</code>）。Zitadel Console を正とします。</li><li><strong>ロールの規約</strong>：ロール文字列はサービスレベルの CLAUDE.md または <code>lurus.yaml</code> <code>capabilities:</code> レジストリで定義され、ここではハードコードしません。</li><li><strong>Machine User のシナリオ</strong>：M2M 呼び出しは一律に Machine User + JWT Profile を使用し、人間のアカウントの共有を避けます。</li><li><strong>PAT のシナリオ</strong>：CI/CD やスクリプトには PAT を使用できますが、最短の有効期限を設定し、定期的にローテーションする必要があります。</li><li><strong>完全な設定リファレンス</strong>：<code>lurus.yaml</code> <code>capabilities:</code> セクションがアーキテクチャ変更の唯一の入口です。</li></ul></div>
+    <div class="lurus-callout__body"><ul><li><strong>Project の命名</strong>：各プロダクトが 1 つの Project に対応します（<code>lurus-api</code>、<code>lucrum</code>、<code>switch</code>、<code>lutu</code>、<code>admin</code>、<code>forge</code>）。Casdoor Console を正とします。</li><li><strong>ロールの規約</strong>：ロール文字列はサービスレベルの CLAUDE.md または <code>lurus.yaml</code> <code>capabilities:</code> レジストリで定義され、ここではハードコードしません。</li><li><strong>Machine User のシナリオ</strong>：M2M 呼び出しは一律に Machine User + JWT Profile を使用し、人間のアカウントの共有を避けます。</li><li><strong>PAT のシナリオ</strong>：CI/CD やスクリプトには PAT を使用できますが、最短の有効期限を設定し、定期的にローテーションする必要があります。</li><li><strong>完全な設定リファレンス</strong>：<code>lurus.yaml</code> <code>capabilities:</code> セクションがアーキテクチャ変更の唯一の入口です。</li></ul></div>
   </div>
 </div>
 
