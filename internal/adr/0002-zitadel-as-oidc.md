@@ -58,7 +58,9 @@ date: 2025-09
 > ADR 正文是 2025-09 当时的决策原貌，**不修改**。以下记录此后发生的、会影响照本操作的事实变更。
 
 - **2026-08（域名）**：IdP 对外域名由 `auth.lurus.cn` 改为 `identity.lurus.cn`。决策本身（Zitadel 作为统一 OIDC Provider）不变。`auth.lurus.cn` 曾以 301 别名过渡，**2026-08-19 起该别名与其 DNS 记录一并拆除**——正文与本页历史段落里出现的 `auth.lurus.cn` 一律不再可解析，请勿照抄。现行端点以 `https://identity.lurus.cn/.well-known/openid-configuration` 为准。
-- **命名提示**：本知识库多处把底层 IdP 写作 "Casdoor"，与事实不符——集群内实际运行的是 `lurus-platform/zitadel`（Deployment + NodePort Service），本 ADR 记录的决策也是 Zitadel。惟 `casdoor-mcp` / `2l-svc-casdoor-mcp` / `svc-casdoor-mcp-admin` 是**已固化的仓库名、二进制名与服务账号名**，属标识符，不随之更名。
+- **命名提示**：本知识库多处把底层 IdP 写作 "Casdoor"，与事实不符——集群内实际运行的是 `lurus-platform/zitadel`（Deployment + NodePort Service），本 ADR 记录的决策也是 Zitadel。`lurus.yaml:902` 的 `after Casdoor cutover` 说明历史上确有一次 Casdoor→Zitadel 迁移，这些叙述是**迁移后未清理的残留**。
+- **🔴 失效路径（照抄会失败）**：文档里出现的 `2l-svc-casdoor-mcp` 目录与 `casdoor-mcp` 二进制**都已不存在**。现行真值：目录 `2l-svc-iam-mcp`、go module 与仓库 `github.com/hanmahong5-arch/lurus-zitadel-mcp`、二进制 `iam-mcp`（`go build -o iam-mcp .`）、`lurus.yaml` 短名 `zitadel-mcp`，计划终名 `lurus-iam-mcp`（vendor-neutral，rename deferred）。凡 `cd 2l-svc-casdoor-mcp && go build -o casdoor-mcp .` 一类命令均须按此订正。
+- **待确认**：IdP 内的服务账号名 `svc-casdoor-mcp-admin`。仓库改名不会改 Zitadel 里的对象名，故它可能仍然有效，需在控制台核对后再决定文档写法。
 
 ## 参考
 
