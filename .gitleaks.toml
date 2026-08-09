@@ -1,0 +1,150 @@
+# gitleaks configuration for 2l-bs-docs
+#
+# Extends the upstream default ruleset (generic API keys, cloud provider
+# creds, private keys, JWTs, ...) and adds Lurus-specific rules covering the
+# credential classes found tracked in this repo by the 2026-08-07 sweep:
+#   1. Shared cluster ops password (Lurus@ops) — was written out verbatim in
+#      internal/products/lutu.md (scrubbed from the working tree)
+#   2. A live oauth2-proxy cookie-secret in deploy/internal-oidc/README.md
+#      (scrubbed from the working tree; rotation is owner-gated)
+#   3. newapi/relay-style keys, internal API key, credentialed DSNs — guard
+#      rails for the classes that leaked from sibling repos
+#
+# SCOPE NOTE: the CI gate scans the *working tree*, not git history. History
+# still carries the pre-scrub values; remediation for those is rotation
+# (owner-gated), not a permanently-red history scan.
+#
+# Run locally:  gitleaks detect --no-git --config .gitleaks.toml --redact -v
+# Staged only:  gitleaks protect --staged --config .gitleaks.toml --redact -v
+
+title = "docs secret scanning"
+
+[extend]
+useDefault = true
+
+# --- Rule 1: shared Lurus ops password ---------------------------------------
+# The actual leak shape in this repo: "(root / Lurus@ops)" spelled out in an
+# internal product runbook.
+[[rules]]
+id = "lurus-shared-ops-password"
+description = "Shared Lurus infrastructure password (cluster PG / Zitadel admin / newapi root) in plaintext"
+regex = '''Lurus(@|%40|%2540)ops'''
+keywords = ["lurus@ops", "lurus%40ops"]
+
+# --- Rule 2: newapi/relay-style API key --------------------------------------
+# Blind spot found 2026-08-07: a real newapi relay key (sk- + 48 alnum)
+# slipped past both the gitleaks default ruleset and the base Lurus rules.
+[[rules]]
+id = "lurus-relay-key"
+description = "Lurus newapi/relay style API key (sk- + long alnum) or Langfuse key pair"
+regex = '''\bsk-[A-Za-z0-9]{30,}\b|\b[ps]k-lf-[a-z0-9-]{16,}\b'''
+keywords = ["sk-", "pk-lf-"]
+[rules.allowlist]
+regexes = [
+  # internal/products/newapi.md documents the key FORMAT as sk-xxxx...:
+  # an all-x body carries no key material.
+  '''^sk-x+$''',
+]
+
+# --- Rule 3: cross-service internal API key (64-hex) -------------------------
+[[rules]]
+id = "lurus-internal-api-key"
+description = "Lurus cross-service internal API key (64-hex) committed in plaintext"
+regex = '''(?i)(lurus[_-]?identity[_-]?internal[_-]?key|internal[_-]?api[_-]?key|lurus[_-]?api[_-]?key)["'\s]*[:=]["'\s]*([a-f0-9]{64})'''
+secretGroup = 2
+keywords = [
+  "lurus_identity_internal_key",
+  "internal_api_key",
+  "lurus_api_key",
+  "lurus-identity-internal-key",
+]
+[rules.allowlist]
+regexes = [
+  '''(?i)(changeme|change[_-]?me|placeholder|replace[_-]?me|example|dummy|<[^>]+>|\$\{[^}]+\}|\$\([^)]+\)|base64-encoded)''',
+  '''^0{64}$''',
+  '''^f{64}$''',
+]
+
+# --- Rule 4: connection string / DSN with embedded credentials ---------------
+[[rules]]
+id = "lurus-dsn-with-credentials"
+description = "Connection string / DSN carrying an embedded username:password"
+regex = '''(?i)\b[a-z][a-z0-9+.-]*://[a-z0-9_.-]+:([^@\s"'/]{6,})@[a-z0-9_.-]+(:[0-9]+)?/'''
+secretGroup = 1
+keywords = [
+  "postgres://", "postgresql://", "mysql://", "redis://", "mongodb://", "amqp://",
+]
+[rules.allowlist]
+regexes = [
+  '''(?i)(changeme|change[_-]?me|placeholder|replace[_-]?me|example|dummy|localhost|127\.0\.0\.1|<[^>]+>|\$\{[^}]+\}|\$\([^)]+\))''',
+  # docs illustrate DSN shape as postgres://user:pass@host/db
+  '''^(password|pass)$''',
+]
+
+# --- Rule 5: literal password values in k8s Secret / env assignments ---------
+[[rules]]
+id = "k8s-literal-password"
+description = "Literal password value assigned to a *_PASSWORD / *_SECRET / *_TOKEN key"
+regex = '''(?i)\b([a-z0-9_-]*(?:password|passwd|secret|token))["'\s]*[:=][ \t]*["']([^"'\s$<{][^"'\n]{7,})["']'''
+secretGroup = 2
+keywords = ["password", "passwd", "secret", "token"]
+[rules.allowlist]
+regexes = [
+  '''(?i)(changeme|change[_-]?me|placeholder|replace[_-]?me|example|dummy|sample|test[_-]?only|your[_-]|xxx+|redacted|masked|\*{3,})''',
+  # templated / referenced values are fine
+  '''(\$\{[^}]+\}|\$\([^)]+\)|\{\{[^}]+\}\}|<[^>]+>|base64-encoded)''',
+  # k8s indirection is the approved pattern, never a literal
+  '''(?i)(secretKeyRef|valueFrom|secretName|configMapKeyRef)''',
+  # CSS design-token custom-property names in docs/.vitepress/data/products.ts
+  # ("--lurus-color-kova"), matched only because the object key is named
+  # *token; a value starting with "--" is a CSS variable, never a secret.
+  '''^--[a-z0-9-]+$''',
+  # API-reference pages show truncated example values ending in a literal
+  # ellipsis ("MtjHodGy...") — a truncated value carries no usable secret.
+  '''\.\.\.$''',
+]
+
+# --- Global allowlist --------------------------------------------------------
+[allowlist]
+description = "Paths that never contain live credentials"
+paths = [
+  '''(^|/)node_modules/''',
+  # vitepress build output + cache (untracked; mirrors of source pages)
+  '''(^|/)docs/\.vitepress/dist/''',
+  '''(^|/)docs/\.vitepress/cache/''',
+  '''(^|/)dist-internal/''',
+  '''(^|/)dist/''',
+  '''(^|/)build/''',
+  '''\.lock$''',
+  '''(^|/)bun\.lockb$''',
+  '''(^|/)package-lock\.json$''',
+  '''\.(png|jpe?g|gif|svg|ico|webp|woff2?|ttf|eot|pdf)$''',
+  # this config necessarily names the patterns it hunts for
+  '''(^|/)\.gitleaks\.toml$''',
+  # scanner's own output artifacts
+  '''(^|/)gitleaks\.sarif$''',
+  '''(^|/)gitleaks-report\.json$''',
+  # Multilingual glossary: term definitions for "Token" / "Bearer Token" etc.
+  # read as `"token": "<sentence>"` and fire the literal-password rule in
+  # every language (verified item-by-item in the 2026-08-07 scan).
+  '''(^|/)docs/\.vitepress/data/i18n-data\.ts$''',
+  # Test fixtures: assertions need literal throwaway credentials. Real
+  # secrets must never live under a test path anyway.
+  '''(^|/)__tests__/''',
+  '''(^|/)tests?/''',
+  '''(^|/)e2e/''',
+  '''\.(test|spec)\.[jt]sx?$''',
+  '''(^|/)test_[^/]+\.py$''',
+  '''[^/]+_test\.(go|py)$''',
+]
+regexes = [
+  # Doc-example PEM blocks whose body is a literal "\n..." ellipsis
+  # (docs/*/platform/auth/api-auth.md, internal/products/mcp.md) — the
+  # backslash-n is two characters in the page source, no key material.
+  '''PRIVATE KEY-----\\n\.\.\.''',
+  # API-reference pages show truncated example values ending in a literal
+  # ellipsis ('"access_token": "MtjHodGy...4zxKylDOhg6kW90WeEQs2q..."' in
+  # docs/*/platform/auth/api-auth.md §3.3) — global because the upstream
+  # generic-api-key rule fires on them too, not only the custom rules.
+  '''\.\.\.$''',
+]

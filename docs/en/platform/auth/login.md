@@ -7,7 +7,7 @@ description: Login methods supported by Lurus (password, Passkey, social login, 
 
 # Login & Multi-Factor Authentication
 
-All Lurus products share the same identity authentication infrastructure (**Casdoor**, publicly at `auth.lurus.cn`). Whether you use the Lurus API, Switch, Lucrum, or Forge, login goes through a single entry point — one login covers the entire suite.
+All Lurus products share the same identity authentication infrastructure (**Casdoor**, publicly at `identity.lurus.cn`). Whether you use the Lurus API, Switch, Lucrum, or Forge, login goes through a single entry point — one login covers the entire suite.
 
 ---
 
@@ -17,11 +17,11 @@ All Lurus products share the same identity authentication infrastructure (**Casd
   <p class="lurus-section-head__lede">OIDC Authorization Code Flow + PKCE; the client stores no secrets.</p>
 </div>
 
-When a user accesses any product without a valid session, the application redirects the browser to `auth.lurus.cn`, and after verification redirects back with an authorization code.
+When a user accesses any product without a valid session, the application redirects the browser to `identity.lurus.cn`, and after verification redirects back with an authorization code.
 
 <ArchitectureDiagram
   title="Authorization Code + PKCE Flow"
-  chart="sequenceDiagram; participant B as User Browser; participant P as Lurus Product; participant A as auth.lurus.cn; B->>P: Access product page; P-->>B: 302 redirect; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: Login page Email/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: Authorization code; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: Login succeeds, enter product"
+  chart="sequenceDiagram; participant B as User Browser; participant P as Lurus Product; participant A as identity.lurus.cn; B->>P: Access product page; P-->>B: 302 redirect; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: Login page Email/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: Authorization code; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: Login succeeds, enter product"
 />
 
 **PKCE**: Before sending the authorization request, the client generates a random `code_verifier` and sends its SHA-256 hash `code_challenge` along with the request; after retrieving the authorization code, it exchanges the code for a token using the original verifier, and the server issues the token only if the two match. Even if the authorization code is intercepted, it cannot be exchanged for a token.
@@ -51,12 +51,12 @@ Passkey > Social login > Email & password. Passkeys require no memorized passwor
 
 ## 3. Passkey / WebAuthn
 
-**How it works**: Based on **WebAuthn / FIDO2**, asymmetric cryptography replaces passwords. At registration the device generates a key pair, **the private key stays on the device** (protected by biometrics/PIN), and the public key is uploaded to `auth.lurus.cn`; at login the server issues a challenge, the device signs it with the private key, and the server verifies it with the public key. The entire process involves **zero password transmission**, so even a database breach yields only public keys.
+**How it works**: Based on **WebAuthn / FIDO2**, asymmetric cryptography replaces passwords. At registration the device generates a key pair, **the private key stays on the device** (protected by biometrics/PIN), and the public key is uploaded to `identity.lurus.cn`; at login the server issues a challenge, the device signs it with the private key, and the server verifies it with the public key. The entire process involves **zero password transmission**, so even a database breach yields only public keys.
 
 **Registration (user steps)**:
 
 <ol class="lurus-steps">
-<li>Log in to <code>auth.lurus.cn</code>.</li>
+<li>Log in to <code>identity.lurus.cn</code>.</li>
 <li>Go to <strong>Account Settings → Security → Add Passkey</strong>.</li>
 <li>Name the Passkey (e.g. "MacBook Touch ID").</li>
 <li>Complete biometric verification (Touch ID / Face ID / PIN / hardware key).</li>
@@ -127,7 +127,7 @@ Casdoor acts as an intermediary IdP, integrating one or more **upstream external
 
 <ArchitectureDiagram
   title="Identity Brokering Path"
-  chart="graph LR; P[Lurus Product] --> Z[auth.lurus.cn · Casdoor]; Z --> U[Upstream IdP · Azure AD / Okta / GitHub …]; U -. User identity assertion OIDC/SAML .-> Z; Z -. Issue Lurus access_token / id_token .-> P"
+  chart="graph LR; P[Lurus Product] --> Z[identity.lurus.cn · Casdoor]; Z --> U[Upstream IdP · Azure AD / Okta / GitHub …]; U -. User identity assertion OIDC/SAML .-> Z; Z -. Issue Lurus access_token / id_token .-> P"
 />
 
 **When to use**: enterprise B2B SSO (employees log in directly with their own Azure AD/Okta, no registration needed); automatic domain routing (after entering an enterprise email, route to the corresponding IdP by domain — Domain Discovery); account linking (link an existing Lurus account to GitHub/Google); Just-in-Time creation (first external IdP login automatically creates an account and assigns the default role).
@@ -193,7 +193,7 @@ Steps: ① On the MFA verification screen, click **Log in with recovery code** �
   :steps="[
     { text: 'OIDC / OAuth2 Integration', link: '/en/platform/auth/oidc', primary: true },
     { text: 'API Authentication (PAT / JWT)', link: '/en/platform/auth/api-auth' },
-    { text: 'Authentication Console', link: 'https://auth.lurus.cn', external: true },
+    { text: 'Authentication Console', link: 'https://identity.lurus.cn', external: true },
   ]"
 />
 

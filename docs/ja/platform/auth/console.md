@@ -1,13 +1,13 @@
 ---
 title: コンソール管理 | Casdoor ID 認証
-description: auth.lurus.cn コンソールを使って組織・ユーザー・プロジェクト・アプリケーション・ID ポリシーを管理する完全操作マニュアル。
+description: identity.lurus.cn コンソールを使って組織・ユーザー・プロジェクト・アプリケーション・ID ポリシーを管理する完全操作マニュアル。
 ---
 
 <div class="console-page">
 
 # コンソール管理
 
-Lurus は [Casdoor](https://casdoor.com) を統一 ID 認証プラットフォームとして採用しており、コンソールの入口は [auth.lurus.cn](https://auth.lurus.cn) です。本記事は**組織管理者 / IT 運用担当**を対象とし、日常操作の完全なフローを網羅します。
+Lurus は [Casdoor](https://casdoor.com) を統一 ID 認証プラットフォームとして採用しており、コンソールの入口は [identity.lurus.cn](https://identity.lurus.cn) です。本記事は**組織管理者 / IT 運用担当**を対象とし、日常操作の完全なフローを網羅します。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -69,7 +69,7 @@ Lurus は [Casdoor](https://casdoor.com) を統一 ID 認証プラットフォ�
 
 **切り替え**：上部 Breadcrumb のドロップダウン → 対象の組織名をクリック。
 
-**セルフサービス登録入口（B2B）**：顧客は `https://auth.lurus.cn/ui/login/register/org` にアクセスして自分で組織を登録できます。
+**セルフサービス登録入口（B2B）**：顧客は `https://identity.lurus.cn/ui/login/register/org` にアクセスして自分で組織を登録できます。
 
 ### 2.2 デフォルト Organization の設定
 
@@ -410,11 +410,11 @@ Actions はログイン/登録/ユーザー作成などの重要イベントの�
   <span class="lurus-callout__icon"><Icon name="link" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">関連ドキュメント</p>
-    <div class="lurus-callout__body"><a href="/ja/platform/auth/">認証の概要と接続ポイント</a> · <a href="/ja/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/ja/platform/auth/api-auth">API 認証</a> · <a href="https://auth.lurus.cn">認証コンソール ↗</a></div>
+    <div class="lurus-callout__body"><a href="/ja/platform/auth/">認証の概要と接続ポイント</a> · <a href="/ja/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/ja/platform/auth/api-auth">API 認証</a> · <a href="https://identity.lurus.cn">認証コンソール ↗</a></div>
   </div>
 </div>
 
-*Casdoor セルフホストインスタンス（`auth.lurus.cn`）に基づきます。インターフェースの詳細は実際のバージョンを基準としてください。ポリシー変更時は本ドキュメントを同期してください。*
+*Casdoor セルフホストインスタンス（`identity.lurus.cn`）に基づきます。インターフェースの詳細は実際のバージョンを基準としてください。ポリシー変更時は本ドキュメントを同期してください。*
 
 </div>
 

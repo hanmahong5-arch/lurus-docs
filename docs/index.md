@@ -137,7 +137,7 @@ description: LurusTech 平台文档 — API Reference · Quickstart · Integrati
     :actions="[
       { label: '概述与接入点', href: '/platform/auth/', primary: true },
       { label: '企业 SSO 联邦', href: '/platform/auth/oidc' },
-      { label: '认证控制台', href: 'https://auth.lurus.cn', external: true },
+      { label: '认证控制台', href: 'https://identity.lurus.cn', external: true },
     ]"
   />
   <ActionCard

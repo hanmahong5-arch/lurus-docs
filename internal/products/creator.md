@@ -40,7 +40,7 @@ sourcePath: 2c-gui-creator
 | 数据目录 | `%APPDATA%\lurus-creator\` |
 | LLM 网关 | `https://api.lurus.cn/v1`（默认，用户可覆盖） |
 | 平台计费 | `https://identity.lurus.cn` (user JWT，`/api/v1/wallet`) |
-| Auth | Casdoor OIDC PKCE → `auth.lurus.cn`，本地 callback `:31415` |
+| Auth | Casdoor OIDC PKCE → `identity.lurus.cn`，本地 callback `:31415` |
 | 关键依赖 | yt-dlp, ffmpeg (懒下载至 `%APPDATA%\lurus-creator\bin\`)，chromedp，Chrome/Edge |
 | 部署目标 | 桌面 Windows，无 K8s，无容器 |
 | 命名空间 | 无（桌面进程） |
@@ -62,7 +62,7 @@ flowchart TB
     subgraph External["外部服务"]
         GW["Lurus Gateway\napi.lurus.cn/v1\n(Newapi 中转)"]
         PLT["Platform\nidentity.lurus.cn\n/api/v1/wallet"]
-        AUTH["Casdoor OIDC\nauth.lurus.cn"]
+        AUTH["Casdoor OIDC\nidentity.lurus.cn"]
     end
 
     subgraph LocalProc["本地子进程 (懒启动)"]

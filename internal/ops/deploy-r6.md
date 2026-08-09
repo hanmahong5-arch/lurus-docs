@@ -110,7 +110,7 @@ ssh root@100.122.83.20 "cd /data/lurus-infra/<service> && \
 
 ```
 - lurus-platform/platform-core   (identity.lurus.cn)
-- lurus-platform/casdoor         (auth.lurus.cn)
+- lurus-platform/casdoor         (identity.lurus.cn)
 - lucrum/lucrum-web              (lucrum.lurus.cn)
 - database/lurus-pg              (local PG StatefulSet)
 - lurus-system/redis             (local redis)

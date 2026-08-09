@@ -44,7 +44,7 @@ Lurus Platform 是全公司唯一的账号、钱包、计费、订阅、通知�
 | NATS Stream | `IDENTITY_EVENTS` |
 | Temporal Workflows | `SubscriptionRenewal`, `PaymentCompletion`, `SubscriptionLifecycle`, `ExpiryScanner` |
 | Temporal Namespace | 默认 (同 cluster Temporal server) |
-| 关键依赖 | Casdoor (auth.lurus.cn), PostgreSQL (lurus-pg-rw.database.svc:5432), Redis, NATS, Temporal |
+| 关键依赖 | Casdoor (identity.lurus.cn), PostgreSQL (lurus-pg-rw.database.svc:5432), Redis, NATS, Temporal |
 | 子模块 Notification | `lurus-notification.lurus-platform.svc:18900` |
 | 子模块 Mail | Stalwart SMTP/JMAP + Roundcube webmail |
 | 部署目标 | R1 PROD (43.226.46.164) — 已对外商业交付 |
@@ -625,7 +625,7 @@ graph TD
 
 | 场景 | 推荐传输 | 端点 |
 |------|---------|------|
-| 浏览器端用户登录 / OIDC 授权码流 | Casdoor OIDC (`auth.lurus.cn`) | 标准 code flow |
+| 浏览器端用户登录 / OIDC 授权码流 | Casdoor OIDC (`identity.lurus.cn`) | 标准 code flow |
 | 服务间 M2M 调用（身份/计费） | gRPC `:18105` | `IdentityService.*` |
 | 订阅购买 / 管理员操作 | HTTP `:18104` | `/internal/v1/*` |
 

@@ -144,7 +144,7 @@ flowchart TB
         KV["2b-svc-kova\nAgent 引擎"]
         MEM["2b-svc-memorus\n:8880 RAG"]
         NOTIF["notification\n:18900"]
-        ZIT["Casdoor\nauth.lurus.cn\nOIDC/PKCE"]
+        ZIT["Casdoor\nidentity.lurus.cn\nOIDC/PKCE"]
     end
 
     UA -->|HTTPS tally.lurus.cn| WEB
@@ -375,7 +375,7 @@ graph LR
     T -->|Kova REST API Key| KV["2b-svc-kova\nAgent 持久执行引擎"]
     T -->|MEMORUS_API_KEY\nHTTP REST| MEM["2b-svc-memorus :8880\nRAG 历史记忆"]
     T -->|bearer INTERNAL_API_KEY\nPOST /internal/v1/notify| NOTIF["notification :18900\nWebSocket/邮件/FCM"]
-    T <-->|OIDC/PKCE JWT| ZIT["Casdoor\nauth.lurus.cn"]
+    T <-->|OIDC/PKCE JWT| ZIT["Casdoor\nidentity.lurus.cn"]
 ```
 
 | 能力 | 提供者 | Tally 使用方式 | 节省建设成本估算 |
@@ -386,7 +386,7 @@ graph LR
 | memory | Memorus :8880 | retail：记录客户购买历史；cross_border：B2B 采购偏好 RAG | 3-6 个月 |
 | agent-execution | Kova REST :3002 | 补货 Agent、滞销预警 Agent 注册与触发 | 6-9 个月 |
 | notification | notification :18900 | 库存预警、补货建议、单据状态推送 | 1 个月 |
-| auth | Casdoor (auth.lurus.cn) | OIDC/PKCE，Next.js BFF callback，JWT 验证 | 2-3 个月 |
+| auth | Casdoor (identity.lurus.cn) | OIDC/PKCE，Next.js BFF callback，JWT 验证 | 2-3 个月 |
 
 ### 6.1 Kova 补货 Agent 工作流
 

@@ -1,13 +1,13 @@
 ---
 title: Console Administration | Casdoor Identity Authentication
-description: A complete operations handbook for managing organizations, users, projects, applications, and identity policies using the auth.lurus.cn console.
+description: A complete operations handbook for managing organizations, users, projects, applications, and identity policies using the identity.lurus.cn console.
 ---
 
 <div class="console-page">
 
 # Console Administration
 
-Lurus uses [Casdoor](https://casdoor.com) as its unified identity authentication platform, with the console available at [auth.lurus.cn](https://auth.lurus.cn). This page is aimed at **organization administrators / IT operations** and covers the complete workflow for day-to-day operations.
+Lurus uses [Casdoor](https://casdoor.com) as its unified identity authentication platform, with the console available at [identity.lurus.cn](https://identity.lurus.cn). This page is aimed at **organization administrators / IT operations** and covers the complete workflow for day-to-day operations.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -69,7 +69,7 @@ After logging in, you enter the Management Console, which is divided into three 
 
 **Switch**: top Breadcrumb dropdown → click the target organization name.
 
-**Self-service registration entry (B2B)**: customers visit `https://auth.lurus.cn/ui/login/register/org` to register an organization on their own.
+**Self-service registration entry (B2B)**: customers visit `https://identity.lurus.cn/ui/login/register/org` to register an organization on their own.
 
 ### 2.2 Setting the Default Organization
 
@@ -410,11 +410,11 @@ Left-hand **Actions → New Action** → fill in a name, choose the trigger Flow
   <span class="lurus-callout__icon"><Icon name="link" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Related documentation</p>
-    <div class="lurus-callout__body"><a href="/en/platform/auth/">Authentication overview and entry points</a> · <a href="/en/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/en/platform/auth/api-auth">API Authentication</a> · <a href="https://auth.lurus.cn">Authentication console ↗</a></div>
+    <div class="lurus-callout__body"><a href="/en/platform/auth/">Authentication overview and entry points</a> · <a href="/en/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/en/platform/auth/api-auth">API Authentication</a> · <a href="https://identity.lurus.cn">Authentication console ↗</a></div>
   </div>
 </div>
 
-*Based on a self-hosted Casdoor instance (`auth.lurus.cn`); interface details are subject to the actual version. Please keep this document in sync with any policy changes.*
+*Based on a self-hosted Casdoor instance (`identity.lurus.cn`); interface details are subject to the actual version. Please keep this document in sync with any policy changes.*
 
 </div>
 

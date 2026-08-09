@@ -21,7 +21,7 @@ spec:
           args:
             - --provider=oidc
             - --provider-display-name=Lurus Identity
-            - --oidc-issuer-url=https://auth.lurus.cn
+            - --oidc-issuer-url=https://identity.lurus.cn
             - --redirect-url=https://internal.lurus.cn/oauth2/callback
             - --http-address=0.0.0.0:4180
             - --reverse-proxy=true

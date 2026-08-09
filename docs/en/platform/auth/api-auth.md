@@ -7,7 +7,7 @@ description: Complete guide to Service Users, Personal Access Tokens, JWT Profil
 
 # API Authentication (Machine-to-Machine) <StatusBadge status="live" />
 
-For M2M authentication: unlike the browser OIDC flow, M2M uses a Casdoor **Service Account**, obtaining an access token without human intervention. The Casdoor instance is `https://auth.lurus.cn`, and all endpoints below are relative to it.
+For M2M authentication: unlike the browser OIDC flow, M2M uses a Casdoor **Service Account**, obtaining an access token without human intervention. The Casdoor instance is `https://identity.lurus.cn`, and all endpoints below are relative to it.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">authentication methods</span></div>
@@ -49,7 +49,7 @@ A PAT is a **ready-to-use token** that you place directly into the `Authorizatio
 ### 1.1 Create a PAT
 
 <ol class="lurus-steps">
-<li>Log in to the <a href="https://auth.lurus.cn">auth.lurus.cn</a> console.</li>
+<li>Log in to the <a href="https://identity.lurus.cn">identity.lurus.cn</a> console.</li>
 <li>Go to <strong>Users → Service Accounts</strong> (when the account belongs to an Organization, operate within that context).</li>
 <li>Click <strong>New</strong> to create a service account, entering a username (see the naming convention in <a href="#3-service-account">Section 3</a>) and a display name.</li>
 <li>In the account details → <strong>Personal Access Tokens</strong> → <strong>New</strong>, set an expiration time as needed (leave blank for no expiry).</li>
@@ -62,10 +62,10 @@ Attach it to every request header as a standard Bearer token; it can access all 
 
 ```bash
 # Query the organization the current account belongs to
-curl -X GET https://auth.lurus.cn/management/v1/orgs/me \
+curl -X GET https://identity.lurus.cn/management/v1/orgs/me \
   -H 'Authorization: Bearer <PAT>'
 # Call the v2 API
-curl -X GET https://auth.lurus.cn/v2/users/me \
+curl -X GET https://identity.lurus.cn/v2/users/me \
   -H 'Authorization: Bearer <PAT>'
 ```
 
@@ -130,7 +130,7 @@ Send a `client_credentials` grant request to the token endpoint:
 ::: code-group
 
 ```bash [curl]
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
@@ -143,7 +143,7 @@ const params = new URLSearchParams({
   scope: 'openid profile',
 })
 const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')
-const response = await fetch('https://auth.lurus.cn/oauth/v2/token', {
+const response = await fetch('https://identity.lurus.cn/oauth/v2/token', {
   method: 'POST',
   headers: {
     'Authorization': `Basic ${credentials}`,
@@ -169,7 +169,7 @@ const { access_token, expires_in } = await response.json()
 ### 3.4 Call the API
 
 ```bash
-curl -X GET https://auth.lurus.cn/v2/users/me \
+curl -X GET https://identity.lurus.cn/v2/users/me \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
@@ -216,14 +216,14 @@ Then upload `publickey.pem` via the Casdoor User Service API.
 **Payload**:
 
 ```json
-{ "iss": "<userId>", "sub": "<userId>", "aud": "https://auth.lurus.cn", "iat": 1714000000, "exp": 1714000300 }
+{ "iss": "<userId>", "sub": "<userId>", "aud": "https://identity.lurus.cn", "iat": 1714000000, "exp": 1714000300 }
 ```
 
 | Claim | Description |
 |-------|------|
 | `iss` | The `userId` from the JSON file |
 | `sub` | Same as `iss` (represents the requester, i.e., the application itself) |
-| `aud` | The Casdoor instance domain: `https://auth.lurus.cn` |
+| `aud` | The Casdoor instance domain: `https://identity.lurus.cn` |
 | `iat` | The current UTC Unix timestamp |
 | `exp` | Expiry; `iat + 300` (5 minutes) is recommended; **must not exceed 1 hour** |
 
@@ -241,7 +241,7 @@ The curl flow: first sign out an assertion using a library, then POST to exchang
 # 1. First sign the JWT with a library (illustrative)
 ASSERTION="<base64url-header>.<base64url-payload>.<base64url-signature>"
 # 2. Request the token
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer' \
   --data 'scope=openid profile' \
@@ -286,7 +286,7 @@ func GetToken(keyFilePath string) (string, error) {
     claims := jwt.MapClaims{
         "iss": kf.UserID,
         "sub": kf.UserID,
-        "aud": jwt.ClaimStrings{"https://auth.lurus.cn"},
+        "aud": jwt.ClaimStrings{"https://identity.lurus.cn"},
         "iat": now.Unix(),
         "exp": now.Add(5 * time.Minute).Unix(),
     }
@@ -302,7 +302,7 @@ func GetToken(keyFilePath string) (string, error) {
         "assertion":  {assertion},
     }
     req, _ := http.NewRequest("POST",
-        "https://auth.lurus.cn/oauth/v2/token",
+        "https://identity.lurus.cn/oauth/v2/token",
         strings.NewReader(params.Encode()),
     )
     req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -332,13 +332,13 @@ def get_token(key_file_path: str) -> str:
     assertion = jwt.encode(
         {
             "iss": key_data["userId"], "sub": key_data["userId"],
-            "aud": "https://auth.lurus.cn", "iat": now, "exp": now + 300,
+            "aud": "https://identity.lurus.cn", "iat": now, "exp": now + 300,
         },
         key_data["key"], algorithm="RS256",
         headers={"kid": key_data["keyId"]},
     )
     response = requests.post(
-        "https://auth.lurus.cn/oauth/v2/token",
+        "https://identity.lurus.cn/oauth/v2/token",
         data={
             "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
             "scope": "openid profile", "assertion": assertion,
@@ -363,7 +363,7 @@ async function getToken(keyFilePath: string): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
 
   const assertion = jwt.sign(
-    { iss: keyData.userId, sub: keyData.userId, aud: 'https://auth.lurus.cn', iat: now, exp: now + 300 },
+    { iss: keyData.userId, sub: keyData.userId, aud: 'https://identity.lurus.cn', iat: now, exp: now + 300 },
     keyData.key,
     { algorithm: 'RS256', keyid: keyData.keyId }
   );
@@ -373,7 +373,7 @@ async function getToken(keyFilePath: string): Promise<string> {
     scope: 'openid profile',
     assertion,
   });
-  const resp = await fetch('https://auth.lurus.cn/oauth/v2/token', {
+  const resp = await fetch('https://identity.lurus.cn/oauth/v2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
@@ -399,7 +399,7 @@ Casdoor validates the **audience (aud)** field of the access token. For differen
 **To access Casdoor’s own APIs** (Management / Admin / Auth): `scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud`. This reserved scope adds the Casdoor project to the token’s audience; the Management API and others will reject any token that does not include this audience.
 
 ```bash
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
@@ -494,7 +494,7 @@ The `lurus-platform` internal API (service: `platform-core.lurus-platform.svc:18
   :steps="[
     { text: 'OIDC / OAuth2 Integration (Browser Login)', link: '/en/platform/auth/oidc', primary: true },
     { text: 'Identity Authentication Overview and Entry Points', link: '/en/platform/auth/' },
-    { text: 'Authentication Console', link: 'https://auth.lurus.cn', external: true },
+    { text: 'Authentication Console', link: 'https://identity.lurus.cn', external: true },
   ]"
   title="Next Steps"
 />

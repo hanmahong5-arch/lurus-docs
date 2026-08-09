@@ -55,7 +55,7 @@ description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제
 
 **계정 관리**([identity.lurus.cn](https://identity.lurus.cn) → 계정 설정 로그인): 개인 정보, 로그인 기록, 서드파티 연동, 보안 설정(비밀번호 변경, 2단계 인증).
 
-**한 번 로그인하면 전체 사이트 통행**: OIDC 표준 기반으로, 임의의 제품에 로그인하면 모든 제품 간에 세션이 수립됩니다. Passkey/WebAuthn 무비밀번호, TOTP/하드웨어 키 MFA, GitHub/Google 소셜 로그인을 지원하며, 기업은 Azure AD/飞书/Okta SSO 와 연동할 수 있습니다. 최종 사용자는 하나의 계정으로 API/Lucrum/Switch/Creator/Lutu 를 모두 사용하고, 개발자는 OIDC SDK 로 자체 애플리케이션에 연동하며 백엔드는 Service User + JWT Profile 을 사용합니다. 기업 조직 관리(멤버/권한/감사)는 [auth.lurus.cn](https://auth.lurus.cn)(Casdoor 콘솔)을 통하거나 영업팀에 문의하여 개통합니다.
+**한 번 로그인하면 전체 사이트 통행**: OIDC 표준 기반으로, 임의의 제품에 로그인하면 모든 제품 간에 세션이 수립됩니다. Passkey/WebAuthn 무비밀번호, TOTP/하드웨어 키 MFA, GitHub/Google 소셜 로그인을 지원하며, 기업은 Azure AD/飞书/Okta SSO 와 연동할 수 있습니다. 최종 사용자는 하나의 계정으로 API/Lucrum/Switch/Creator/Lutu 를 모두 사용하고, 개발자는 OIDC SDK 로 자체 애플리케이션에 연동하며 백엔드는 Service User + JWT Profile 을 사용합니다. 기업 조직 관리(멤버/권한/감사)는 [identity.lurus.cn](https://identity.lurus.cn)(Casdoor 콘솔)을 통하거나 영업팀에 문의하여 개통합니다.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>

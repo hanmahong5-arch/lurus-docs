@@ -9,11 +9,11 @@ description: Lurus 전 제품군이 공유하는 신원 체계 — 한 번 로�
 
 **한 번 로그인, 전 사이트 통행.** Lurus API, Lucrum, Switch, Creator, Lutu, Admin, Forge 등 모든 제품이 동일한 신원 체계를 공유합니다 — 사용자가 어느 제품에서든 로그인하면 나머지 제품이 자동으로 인식하고, 권한과 할당량은 계정 단위로 통합 정산되며, 기업 고객은 자사 SSO를 연동해 직원 온보딩을 완료할 수 있습니다.
 
-이 체계는 `auth.lurus.cn` 에서 서비스를 제공하며, 오픈소스 신원 인프라 [Casdoor](https://casdoor.com) 을 기반으로 자체 배포되어 OIDC / OAuth2 / SAML 표준 프로토콜을 완전히 구현합니다. 사용자 데이터는 전 과정에서 Lurus 자체 K8s 클러스터 내에 보관됩니다.
+이 체계는 `identity.lurus.cn` 에서 서비스를 제공하며, 오픈소스 신원 인프라 [Casdoor](https://casdoor.com) 을 기반으로 자체 배포되어 OIDC / OAuth2 / SAML 표준 프로토콜을 완전히 구현합니다. 사용자 데이터는 전 과정에서 Lurus 자체 K8s 클러스터 내에 보관됩니다.
 
 ::: tip 빠른 진입점
-- 사용자 셀프 관리: [auth.lurus.cn](https://auth.lurus.cn) — 비밀번호 변경, Passkey 관리, MFA 바인딩, 로그인 기록 조회
-- 조직/프로젝트 관리: [auth.lurus.cn](https://auth.lurus.cn)(Casdoor 조직 콘솔) — 기업 고객 멤버 초대, 권한 할당, 감사; 또는 영업에 문의하여 기업 조직 관리 활성화
+- 사용자 셀프 관리: [identity.lurus.cn](https://identity.lurus.cn) — 비밀번호 변경, Passkey 관리, MFA 바인딩, 로그인 기록 조회
+- 조직/프로젝트 관리: [identity.lurus.cn](https://identity.lurus.cn)(Casdoor 조직 콘솔) — 기업 고객 멤버 초대, 권한 할당, 감사; 또는 영업에 문의하여 기업 조직 관리 활성화
 :::
 
 ---
@@ -26,11 +26,11 @@ description: Lurus 전 제품군이 공유하는 신원 체계 — 한 번 로�
 
 | 엔드포인트 | URL | 설명 |
 |------|-----|------|
-| 콘솔 | `https://auth.lurus.cn` | 사용자 셀프 계정·보안 기기·세션 관리 |
-| OIDC Discovery | `https://auth.lurus.cn/.well-known/openid-configuration` | SDK 자동 발견, 모든 엔드포인트와 지원 기능 포함 |
-| OAuth2 권한 부여 | `https://auth.lurus.cn/oauth/v2/authorize` | 표준 권한 부여 코드 / PKCE 플로우 진입점 |
-| Token 엔드포인트 | `https://auth.lurus.cn/oauth/v2/token` | access token / refresh token 교환 |
-| 사용자 정보 | `https://auth.lurus.cn/oidc/v1/userinfo` | 현재 사용자 claims 조회 |
+| 콘솔 | `https://identity.lurus.cn` | 사용자 셀프 계정·보안 기기·세션 관리 |
+| OIDC Discovery | `https://identity.lurus.cn/.well-known/openid-configuration` | SDK 자동 발견, 모든 엔드포인트와 지원 기능 포함 |
+| OAuth2 권한 부여 | `https://identity.lurus.cn/oauth/v2/authorize` | 표준 권한 부여 코드 / PKCE 플로우 진입점 |
+| Token 엔드포인트 | `https://identity.lurus.cn/oauth/v2/token` | access token / refresh token 교환 |
+| 사용자 정보 | `https://identity.lurus.cn/oidc/v1/userinfo` | 현재 사용자 claims 조회 |
 
 ---
 
@@ -69,12 +69,12 @@ description: Lurus 전 제품군이 공유하는 신원 체계 — 한 번 로�
 
 | 개념 | 의미 | Lurus 에서의 매핑 |
 |------|------|-----------------|
-| **Instance** | 최상위 배포 단위, 독립 데이터베이스와 구성 | Lurus 는 단일 Instance 를 운영하며 `auth.lurus.cn` 에 호스팅됩니다 |
+| **Instance** | 최상위 배포 단위, 독립 데이터베이스와 구성 | Lurus 는 단일 Instance 를 운영하며 `identity.lurus.cn` 에 호스팅됩니다 |
 | **Organization** | 테넌트 격리 단위, 독립 사용자 저장소와 로그인 정책 | 개인 사용자는 `lurus.cn` 메인 조직에 속하고, 기업 고객은 독립 Organization 을 신청하여 자사 도메인과 IdP 를 구성할 수 있습니다 |
 | **Project** | Organization 하위의 애플리케이션 집합, roles 와 grants 를 통합 관리 | 각 제품군(Lurus API, Lucrum, Switch, Forge…)이 하나의 Project 에 대응합니다 |
 | **Application** | Project 내의 구체적 클라이언트, `client_id` / `client_secret` 보유 | 각 프런트엔드, 데스크톱, 서버를 각각 하나의 Application 으로 등록합니다 |
 | **User** | 로그인 가능한 계정, Human(실제 사용자)과 Service User(머신)로 구분 | 최종 사용자는 Human; 백엔드 서비스 간 호출은 Service User + JWT Profile 사용 |
-| **Grant** | Project Role 을 특정 User 에게 부여하는 바인딩 관계 | 사용자의 구체적 제품 내 권한 등급을 제어합니다; [auth.lurus.cn](https://auth.lurus.cn)(Casdoor) 조직 설정을 기준으로 합니다 |
+| **Grant** | Project Role 을 특정 User 에게 부여하는 바인딩 관계 | 사용자의 구체적 제품 내 권한 등급을 제어합니다; [identity.lurus.cn](https://identity.lurus.cn)(Casdoor) 조직 설정을 기준으로 합니다 |
 
 ---
 

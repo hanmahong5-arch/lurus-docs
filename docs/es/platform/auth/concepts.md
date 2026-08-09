@@ -7,7 +7,7 @@ description: Explicación detallada del modelo de objetos de Casdoor (Instance /
 
 # Conceptos clave
 
-Lurus usa [Casdoor](https://casdoor.com) como proveedor de identidad (IdP) OIDC unificado, con punto de entrada público `auth.lurus.cn`. Esta página describe la jerarquía del modelo de objetos.
+Lurus usa [Casdoor](https://casdoor.com) como proveedor de identidad (IdP) OIDC unificado, con punto de entrada público `identity.lurus.cn`. Esta página describe la jerarquía del modelo de objetos.
 
 ---
 
@@ -38,7 +38,7 @@ La **abstracción de máximo nivel** en la jerarquía de datos, equivalente a un
 | Instancia virtual | Mediante la System API se pueden crear varias instancias virtuales, idóneo para la distribución multiinquilino SaaS |
 
 ::: tip Contexto de Lurus
-En el entorno de producción solo existe una instancia, **`lurus-prod`** (`auth.lurus.cn`). No se necesitan instancias virtuales; todas las líneas de producto comparten el mismo issuer.
+En el entorno de producción solo existe una instancia, **`lurus-prod`** (`identity.lurus.cn`). No se necesitan instancias virtuales; todas las líneas de producto comparten el mismo issuer.
 :::
 
 ---

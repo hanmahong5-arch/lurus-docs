@@ -7,7 +7,7 @@ description: A detailed walkthrough of the Casdoor object model — Instance / O
 
 # Core Concepts
 
-Lurus uses [Casdoor](https://casdoor.com) as its unified OIDC identity provider (IdP), with the public entry point `auth.lurus.cn`. This page lays out the object model hierarchy.
+Lurus uses [Casdoor](https://casdoor.com) as its unified OIDC identity provider (IdP), with the public entry point `identity.lurus.cn`. This page lays out the object model hierarchy.
 
 ---
 
@@ -38,7 +38,7 @@ The **highest abstraction** in the data hierarchy, equivalent to an independent 
 | Virtual instances | Multiple virtual instances can be created via the System API, suitable for SaaS multi-tenant distribution |
 
 ::: tip In the Lurus context
-The production environment has only one instance, **`lurus-prod`** (`auth.lurus.cn`). Virtual instances are not needed; all product lines share the same issuer.
+The production environment has only one instance, **`lurus-prod`** (`identity.lurus.cn`). Virtual instances are not needed; all product lines share the same issuer.
 :::
 
 ---

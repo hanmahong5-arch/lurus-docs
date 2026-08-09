@@ -43,7 +43,7 @@ description: "Le parcours complet : migration des utilisateurs SCIM, fédératio
 <ol class="lurus-steps">
 <li>
 
-**Créer une connexion de fédération dans la console Lurus** — Rendez-vous sur `auth.lurus.cn` → Paramètres de l'entreprise → Fournisseurs d'identité → Nouveau → choisir OIDC. Renseignez, pour l'IdP de l'entreprise :
+**Créer une connexion de fédération dans la console Lurus** — Rendez-vous sur `identity.lurus.cn` → Paramètres de l'entreprise → Fournisseurs d'identité → Nouveau → choisir OIDC. Renseignez, pour l'IdP de l'entreprise :
 
 - Issuer URL
 - Client ID
@@ -86,10 +86,10 @@ department:  department   # custom claim
 
 **Import en masse dans Lurus**
 
-<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="批量导入用户（auth.lurus.cn）" />
+<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="批量导入用户（identity.lurus.cn）" />
 
 ```bash
-curl -X POST https://auth.lurus.cn/admin/v1/scim/users:batchImport \
+curl -X POST https://identity.lurus.cn/admin/v1/scim/users:batchImport \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d @users.json

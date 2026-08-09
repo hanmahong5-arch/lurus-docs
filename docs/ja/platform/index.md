@@ -55,7 +55,7 @@ description: Lurus 統合アカウント体系、サブスクリプションプ�
 
 **アカウント管理**（[identity.lurus.cn](https://identity.lurus.cn) にログイン → アカウント設定）：個人情報、ログイン履歴、サードパーティ連携、セキュリティ設定（パスワード変更、二段階認証）。
 
-**一度のログインで全サイト通行**：OIDC 標準に基づき、任意の製品にログインすればすべての製品間でセッションが確立されます。Passkey/WebAuthn のパスワードレス、TOTP/ハードウェアキーによる MFA、GitHub/Google のソーシャルログインに対応し、企業は Azure AD/飞书/Okta SSO と連携できます。エンドユーザーは1つのアカウントで API/Lucrum/Switch/Creator/Lutu をまとめて利用でき、開発者は OIDC SDK で自社アプリに組み込み、バックエンドは Service User + JWT Profile を使用します。企業の組織管理（メンバー/権限/監査）は [auth.lurus.cn](https://auth.lurus.cn)（Casdoor コンソール）経由、または営業窓口へお問い合わせのうえ開通します。
+**一度のログインで全サイト通行**：OIDC 標準に基づき、任意の製品にログインすればすべての製品間でセッションが確立されます。Passkey/WebAuthn のパスワードレス、TOTP/ハードウェアキーによる MFA、GitHub/Google のソーシャルログインに対応し、企業は Azure AD/飞书/Okta SSO と連携できます。エンドユーザーは1つのアカウントで API/Lucrum/Switch/Creator/Lutu をまとめて利用でき、開発者は OIDC SDK で自社アプリに組み込み、バックエンドは Service User + JWT Profile を使用します。企業の組織管理（メンバー/権限/監査）は [identity.lurus.cn](https://identity.lurus.cn)（Casdoor コンソール）経由、または営業窓口へお問い合わせのうえ開通します。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>

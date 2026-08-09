@@ -43,7 +43,7 @@ description: "SCIM 사용자 마이그레이션, SSO 페더레이션, 점진적 
 <ol class="lurus-steps">
 <li>
 
-**Lurus 콘솔에서 페더레이션 연결 생성** — `auth.lurus.cn` 접속 → 기업 설정 → 신원 제공자 → 신규 생성 → OIDC 선택. 기업 IdP의 다음 항목을 입력합니다:
+**Lurus 콘솔에서 페더레이션 연결 생성** — `identity.lurus.cn` 접속 → 기업 설정 → 신원 제공자 → 신규 생성 → OIDC 선택. 기업 IdP의 다음 항목을 입력합니다:
 
 - Issuer URL
 - Client ID
@@ -86,10 +86,10 @@ department:  department   # custom claim
 
 **Lurus로 일괄 가져오기**
 
-<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="사용자 일괄 가져오기(auth.lurus.cn)" />
+<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="사용자 일괄 가져오기(identity.lurus.cn)" />
 
 ```bash
-curl -X POST https://auth.lurus.cn/admin/v1/scim/users:batchImport \
+curl -X POST https://identity.lurus.cn/admin/v1/scim/users:batchImport \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d @users.json

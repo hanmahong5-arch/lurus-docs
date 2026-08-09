@@ -41,7 +41,7 @@ Newhub 是 Lurus 新一代**多租户 LLM 网关 / AI 数据处理枢纽**，叠
 | 端口 | pod:3000 / svc:8850 |
 | 命名空间 | lurus-system |
 | 数据存储 | PG schema `lurus_api`（GORM auto-migrate）+ Redis DB 0（`redis.lurus-system.svc:6379/0`）|
-| 关键依赖 | Platform gRPC（`IDENTITY_GRPC_ADDR`）· Casdoor（`auth.lurus.cn`）· Meilisearch（日志检索）· newapi（整合并入中）|
+| 关键依赖 | Platform gRPC（`IDENTITY_GRPC_ADDR`）· Casdoor（`identity.lurus.cn`）· Meilisearch（日志检索）· newapi（整合并入中）|
 | 部署目标 | **R6 stage**（`100.122.83.20` Tailscale）|
 | 角色 | `multi-tenant-hub-layer` |
 

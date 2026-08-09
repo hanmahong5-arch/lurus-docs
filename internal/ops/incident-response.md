@@ -55,7 +55,7 @@ ssh root@100.98.57.55 "kubectl get events -A --sort-by=.lastTimestamp | tail -30
 curl -sS -o /dev/null -w 'docs=%{http_code}\n' https://docs.lurus.cn/
 curl -sS -o /dev/null -w 'identity=%{http_code}\n' https://identity.lurus.cn/healthz
 curl -sS -o /dev/null -w 'newapi=%{http_code}\n' https://newapi.lurus.cn/api/status
-curl -sS -o /dev/null -w 'auth=%{http_code}\n' https://auth.lurus.cn/.well-known/openid-configuration
+curl -sS -o /dev/null -w 'auth=%{http_code}\n' https://identity.lurus.cn/.well-known/openid-configuration
 ```
 
 ## 常见症状速查

@@ -1,13 +1,13 @@
 ---
 title: 콘솔 관리 | Casdoor 신원 인증
-description: auth.lurus.cn 콘솔로 조직, 사용자, 프로젝트, 애플리케이션, 신원 정책을 관리하는 전체 운영 가이드.
+description: identity.lurus.cn 콘솔로 조직, 사용자, 프로젝트, 애플리케이션, 신원 정책을 관리하는 전체 운영 가이드.
 ---
 
 <div class="console-page">
 
 # 콘솔 관리
 
-Lurus는 [Casdoor](https://casdoor.com)을 통합 신원 인증 플랫폼으로 사용하며, 콘솔 진입점은 [auth.lurus.cn](https://auth.lurus.cn)입니다. 본 문서는 **조직 관리자 / IT 운영**을 대상으로 일상 운영의 전체 흐름을 다룹니다.
+Lurus는 [Casdoor](https://casdoor.com)을 통합 신원 인증 플랫폼으로 사용하며, 콘솔 진입점은 [identity.lurus.cn](https://identity.lurus.cn)입니다. 본 문서는 **조직 관리자 / IT 운영**을 대상으로 일상 운영의 전체 흐름을 다룹니다.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -69,7 +69,7 @@ Lurus는 [Casdoor](https://casdoor.com)을 통합 신원 인증 플랫폼으로 
 
 **전환**: 상단 Breadcrumb 드롭다운 → 대상 조직 이름 클릭.
 
-**셀프 서비스 등록 진입점(B2B)**: 고객이 `https://auth.lurus.cn/ui/login/register/org`에 접속하여 직접 조직을 등록합니다.
+**셀프 서비스 등록 진입점(B2B)**: 고객이 `https://identity.lurus.cn/ui/login/register/org`에 접속하여 직접 조직을 등록합니다.
 
 ### 2.2 기본 Organization 설정
 
@@ -410,11 +410,11 @@ Actions는 로그인/등록/사용자 생성 등 핵심 이벤트 트리거 시�
   <span class="lurus-callout__icon"><Icon name="link" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">관련 문서</p>
-    <div class="lurus-callout__body"><a href="/ko/platform/auth/">인증 개요 및 접속점</a> · <a href="/ko/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/ko/platform/auth/api-auth">API 인증</a> · <a href="https://auth.lurus.cn">인증 콘솔 ↗</a></div>
+    <div class="lurus-callout__body"><a href="/ko/platform/auth/">인증 개요 및 접속점</a> · <a href="/ko/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/ko/platform/auth/api-auth">API 인증</a> · <a href="https://identity.lurus.cn">인증 콘솔 ↗</a></div>
   </div>
 </div>
 
-*Casdoor 셀프 호스팅 인스턴스(`auth.lurus.cn`) 기반이며, 인터페이스 세부 사항은 실제 버전을 기준으로 합니다. 정책 변경 시 본 문서를 동기화하세요.*
+*Casdoor 셀프 호스팅 인스턴스(`identity.lurus.cn`) 기반이며, 인터페이스 세부 사항은 실제 버전을 기준으로 합니다. 정책 변경 시 본 문서를 동기화하세요.*
 
 </div>
 

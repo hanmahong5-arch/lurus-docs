@@ -7,7 +7,7 @@ description: Service User、Personal Access Token、JWT Profile 与 Client Crede
 
 # API 认证（机器对机器） <StatusBadge status="live" />
 
-面向 M2M 认证：与浏览器 OIDC 流程不同，M2M 用 Casdoor **Service Account**（服务账号），无需人工干预获取 access token。Casdoor 实例 `https://auth.lurus.cn`，以下端点均以此为基础。
+面向 M2M 认证：与浏览器 OIDC 流程不同，M2M 用 Casdoor **Service Account**（服务账号），无需人工干预获取 access token。Casdoor 实例 `https://identity.lurus.cn`，以下端点均以此为基础。
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">认证方式</span></div>
@@ -53,7 +53,7 @@ PAT 是**即用型 token**，直接作 Bearer token 放入 `Authorization` heade
 ### 1.1 创建 PAT
 
 <ol class="lurus-steps">
-<li>登录 <a href="https://auth.lurus.cn">auth.lurus.cn</a> 控制台。</li>
+<li>登录 <a href="https://identity.lurus.cn">identity.lurus.cn</a> 控制台。</li>
 <li>进入 <strong>Users → Service Accounts</strong>（账号归属某 Organization 时在该上下文内操作）。</li>
 <li><strong>New</strong> 创建服务账号，填用户名（命名规范见<a href="#三service-account-服务账号">第三节</a>）和显示名称。</li>
 <li>账号详情 → <strong>Personal Access Tokens</strong> → <strong>New</strong>，按需设过期时间（留空则永不过期）。</li>
@@ -66,10 +66,10 @@ PAT 是**即用型 token**，直接作 Bearer token 放入 `Authorization` heade
 
 ```bash
 # 查询当前账号所在组织
-curl -X GET https://auth.lurus.cn/management/v1/orgs/me \
+curl -X GET https://identity.lurus.cn/management/v1/orgs/me \
   -H 'Authorization: Bearer <PAT>'
 # 调用 v2 API
-curl -X GET https://auth.lurus.cn/v2/users/me \
+curl -X GET https://identity.lurus.cn/v2/users/me \
   -H 'Authorization: Bearer <PAT>'
 ```
 
@@ -134,7 +134,7 @@ Service Account 详情 → **Actions → Generate Client Secret** → 记录 `Cl
 ::: code-group
 
 ```bash [curl]
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
@@ -147,7 +147,7 @@ const params = new URLSearchParams({
   scope: 'openid profile',
 })
 const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')
-const response = await fetch('https://auth.lurus.cn/oauth/v2/token', {
+const response = await fetch('https://identity.lurus.cn/oauth/v2/token', {
   method: 'POST',
   headers: {
     'Authorization': `Basic ${credentials}`,
@@ -173,7 +173,7 @@ const { access_token, expires_in } = await response.json()
 ### 3.4 调用 API
 
 ```bash
-curl -X GET https://auth.lurus.cn/v2/users/me \
+curl -X GET https://identity.lurus.cn/v2/users/me \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
@@ -220,14 +220,14 @@ openssl rsa -in privatekey.pem -pubout -out publickey.pem
 **Payload**：
 
 ```json
-{ "iss": "<userId>", "sub": "<userId>", "aud": "https://auth.lurus.cn", "iat": 1714000000, "exp": 1714000300 }
+{ "iss": "<userId>", "sub": "<userId>", "aud": "https://identity.lurus.cn", "iat": 1714000000, "exp": 1714000300 }
 ```
 
 | Claim | 说明 |
 |-------|------|
 | `iss` | JSON 文件中的 `userId` |
 | `sub` | 同 `iss`（代表请求方即应用本身） |
-| `aud` | Casdoor 实例域名：`https://auth.lurus.cn` |
+| `aud` | Casdoor 实例域名：`https://identity.lurus.cn` |
 | `iat` | 当前 UTC Unix 时间戳 |
 | `exp` | 过期，建议 `iat + 300`（5 分钟）；**最长不超过 1 小时** |
 
@@ -245,7 +245,7 @@ curl 流程：先用代码库签出 assertion，再 POST 换 token。Go / Node.j
 # 1. 先用代码库签名 JWT（示意）
 ASSERTION="<base64url-header>.<base64url-payload>.<base64url-signature>"
 # 2. 请求 token
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer' \
   --data 'scope=openid profile' \
@@ -290,7 +290,7 @@ func GetToken(keyFilePath string) (string, error) {
     claims := jwt.MapClaims{
         "iss": kf.UserID,
         "sub": kf.UserID,
-        "aud": jwt.ClaimStrings{"https://auth.lurus.cn"},
+        "aud": jwt.ClaimStrings{"https://identity.lurus.cn"},
         "iat": now.Unix(),
         "exp": now.Add(5 * time.Minute).Unix(),
     }
@@ -306,7 +306,7 @@ func GetToken(keyFilePath string) (string, error) {
         "assertion":  {assertion},
     }
     req, _ := http.NewRequest("POST",
-        "https://auth.lurus.cn/oauth/v2/token",
+        "https://identity.lurus.cn/oauth/v2/token",
         strings.NewReader(params.Encode()),
     )
     req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -336,13 +336,13 @@ def get_token(key_file_path: str) -> str:
     assertion = jwt.encode(
         {
             "iss": key_data["userId"], "sub": key_data["userId"],
-            "aud": "https://auth.lurus.cn", "iat": now, "exp": now + 300,
+            "aud": "https://identity.lurus.cn", "iat": now, "exp": now + 300,
         },
         key_data["key"], algorithm="RS256",
         headers={"kid": key_data["keyId"]},
     )
     response = requests.post(
-        "https://auth.lurus.cn/oauth/v2/token",
+        "https://identity.lurus.cn/oauth/v2/token",
         data={
             "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
             "scope": "openid profile", "assertion": assertion,
@@ -367,7 +367,7 @@ async function getToken(keyFilePath: string): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
 
   const assertion = jwt.sign(
-    { iss: keyData.userId, sub: keyData.userId, aud: 'https://auth.lurus.cn', iat: now, exp: now + 300 },
+    { iss: keyData.userId, sub: keyData.userId, aud: 'https://identity.lurus.cn', iat: now, exp: now + 300 },
     keyData.key,
     { algorithm: 'RS256', keyid: keyData.keyId }
   );
@@ -377,7 +377,7 @@ async function getToken(keyFilePath: string): Promise<string> {
     scope: 'openid profile',
     assertion,
   });
-  const resp = await fetch('https://auth.lurus.cn/oauth/v2/token', {
+  const resp = await fetch('https://identity.lurus.cn/oauth/v2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
@@ -403,7 +403,7 @@ Casdoor 验证 access token 的 **audience（aud）** 字段。对不同目标 A
 **访问 Casdoor 自身 API**（Management / Admin / Auth）：`scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud`。这个保留 scope 将 Casdoor 项目加入 token 的 audience，Management API 等会拒绝不含此 audience 的 token。
 
 ```bash
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
@@ -498,7 +498,7 @@ containers:
   :steps="[
     { text: 'OIDC / OAuth2 集成（浏览器登录）', link: '/platform/auth/oidc', primary: true },
     { text: '身份认证概述与接入点', link: '/platform/auth/' },
-    { text: '认证控制台', link: 'https://auth.lurus.cn', external: true },
+    { text: '认证控制台', link: 'https://identity.lurus.cn', external: true },
   ]"
   title="下一步"
 />

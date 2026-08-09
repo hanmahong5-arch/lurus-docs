@@ -69,7 +69,7 @@ flowchart TB
 
     GW -->|"HTTP 代理\nBearer token"| Cloud["Lurus Cloud\napi.lurus.cn"]
     BE -->|"账单 / 配额查询\n/api/v2/*"| Cloud
-    BE -->|"OIDC PKCE\n:31416 回调"| Casdoor["auth.lurus.cn\n(Casdoor)"]
+    BE -->|"OIDC PKCE\n:31416 回调"| Casdoor["identity.lurus.cn\n(Casdoor)"]
     BE -->|"版本检查\nGitHub Releases"| GitHub["github.com\nlurus-dev/lurus-switch"]
 
     subgraph Tools["本地 AI CLI 工具（被管理对象）"]

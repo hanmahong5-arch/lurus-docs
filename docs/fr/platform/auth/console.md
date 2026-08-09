@@ -1,13 +1,13 @@
 ---
 title: Gestion de la console | Authentification d’identité Casdoor
-description: Manuel d’utilisation complet pour gérer les organisations, utilisateurs, projets, applications et politiques d’identité via la console auth.lurus.cn.
+description: Manuel d’utilisation complet pour gérer les organisations, utilisateurs, projets, applications et politiques d’identité via la console identity.lurus.cn.
 ---
 
 <div class="console-page">
 
 # Gestion de la console
 
-Lurus utilise [Casdoor](https://casdoor.com) comme plateforme unifiée d’authentification d’identité, avec la console accessible à [auth.lurus.cn](https://auth.lurus.cn). Cet article s’adresse aux **administrateurs d’organisation / équipes IT et exploitation** et couvre l’intégralité des flux d’opérations quotidiennes.
+Lurus utilise [Casdoor](https://casdoor.com) comme plateforme unifiée d’authentification d’identité, avec la console accessible à [identity.lurus.cn](https://identity.lurus.cn). Cet article s’adresse aux **administrateurs d’organisation / équipes IT et exploitation** et couvre l’intégralité des flux d’opérations quotidiennes.
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -69,7 +69,7 @@ Après connexion, vous accédez à la Management Console, divisée en trois zone
 
 **Basculer** : menu déroulant du Breadcrumb en haut → cliquer sur le nom de l’organisation cible.
 
-**Point d’entrée d’inscription en libre-service (B2B)** : les clients accèdent à `https://auth.lurus.cn/ui/login/register/org` pour enregistrer eux-mêmes leur organisation.
+**Point d’entrée d’inscription en libre-service (B2B)** : les clients accèdent à `https://identity.lurus.cn/ui/login/register/org` pour enregistrer eux-mêmes leur organisation.
 
 ### 2.2 Définir l’Organization par défaut
 
@@ -410,11 +410,11 @@ Menu gauche **Actions → New Action** → renseigner un nom, choisir le Flow d�
   <span class="lurus-callout__icon"><Icon name="link" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Documentation associée</p>
-    <div class="lurus-callout__body"><a href="/fr/platform/auth/">Vue d’ensemble de l’authentification et points d’entrée</a> · <a href="/fr/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/fr/platform/auth/api-auth">Authentification API</a> · <a href="https://auth.lurus.cn">Console d’authentification ↗</a></div>
+    <div class="lurus-callout__body"><a href="/fr/platform/auth/">Vue d’ensemble de l’authentification et points d’entrée</a> · <a href="/fr/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/fr/platform/auth/api-auth">Authentification API</a> · <a href="https://identity.lurus.cn">Console d’authentification ↗</a></div>
   </div>
 </div>
 
-*Basé sur une instance Casdoor auto-hébergée (`auth.lurus.cn`) ; les détails de l’interface dépendent de la version réelle. Veuillez synchroniser ce document en cas de changement de politique.*
+*Basé sur une instance Casdoor auto-hébergée (`identity.lurus.cn`) ; les détails de l’interface dépendent de la version réelle. Veuillez synchroniser ce document en cas de changement de politique.*
 
 </div>
 

@@ -55,7 +55,7 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
 
 **账号管理**（登录 [identity.lurus.cn](https://identity.lurus.cn) → 账号设置）：个人信息、登录历史、第三方绑定、安全设置（改密码、两步验证）。
 
-**一次登录，全站通行**：基于 OIDC 标准，登录任意产品即在所有产品间建立会话；支持 Passkey/WebAuthn 无密码、TOTP/硬件密钥 MFA、GitHub/Google 社交登录，企业可对接 Azure AD/飞书/Okta SSO。终端用户一份账号通吃 API/Lucrum/Switch/Creator/Lutu；开发者用 OIDC SDK 接入自有应用，后端用 Service User + JWT Profile；企业组织管理（成员/权限/审计）经 [auth.lurus.cn](https://auth.lurus.cn)（Casdoor 控制台）或联系商务开通。
+**一次登录，全站通行**：基于 OIDC 标准，登录任意产品即在所有产品间建立会话；支持 Passkey/WebAuthn 无密码、TOTP/硬件密钥 MFA、GitHub/Google 社交登录，企业可对接 Azure AD/飞书/Okta SSO。终端用户一份账号通吃 API/Lucrum/Switch/Creator/Lutu；开发者用 OIDC SDK 接入自有应用，后端用 Service User + JWT Profile；企业组织管理（成员/权限/审计）经 [identity.lurus.cn](https://identity.lurus.cn)（Casdoor 控制台）或联系商务开通。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>

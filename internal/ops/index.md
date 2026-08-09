@@ -41,7 +41,7 @@ owner: marvin
 - [ ] R1 / R6 磁盘 < 80%（`df -h`）
 - [ ] 证书剩余有效期 > 30 天
 - [ ] PG 备份最近一次成功（MinIO `pg-backups-v2`）
-- [ ] Casdoor 服务正常（auth.lurus.cn）
+- [ ] Casdoor 服务正常（identity.lurus.cn）
 - [ ] ICP 备案有效性
 - [ ] 三丰云 / 阿里云余额 > 30 天
 - [ ] 各产品 lastReviewed < 90 天

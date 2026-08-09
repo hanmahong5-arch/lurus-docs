@@ -9,11 +9,11 @@ description: "Le système d’identité partagé par toute la gamme de produits 
 
 **Une seule connexion, un accès à tout le site.** Lurus API, Lucrum, Switch, Creator, Lutu, Admin, Forge et tous les autres produits partagent le même système d’identité — l’utilisateur se connecte à n’importe quel produit, et les autres produits le reconnaissent automatiquement ; les permissions et les quotas sont consolidés à l’échelle du compte ; les clients entreprise peuvent intégrer leur propre SSO pour l’intégration de leurs employés.
 
-Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de l’infrastructure d’identité open source [Casdoor](https://casdoor.com), implémentant intégralement les protocoles standards OIDC / OAuth2 / SAML ; les données utilisateur restent à tout moment dans le cluster K8s propre à Lurus.
+Ce système est fourni par `identity.lurus.cn`, déployé en interne sur la base de l’infrastructure d’identité open source [Casdoor](https://casdoor.com), implémentant intégralement les protocoles standards OIDC / OAuth2 / SAML ; les données utilisateur restent à tout moment dans le cluster K8s propre à Lurus.
 
 ::: tip Accès rapide
-- Gestion en libre-service par l’utilisateur : [auth.lurus.cn](https://auth.lurus.cn) — modifier le mot de passe, gérer les Passkeys, lier la MFA, consulter l’historique de connexion
-- Gestion des organisations/projets : [auth.lurus.cn](https://auth.lurus.cn) (console d’organisation Casdoor) — invitation de membres, attribution de permissions et audit pour les clients entreprise ; ou contactez le service commercial pour activer la gestion d’organisation entreprise
+- Gestion en libre-service par l’utilisateur : [identity.lurus.cn](https://identity.lurus.cn) — modifier le mot de passe, gérer les Passkeys, lier la MFA, consulter l’historique de connexion
+- Gestion des organisations/projets : [identity.lurus.cn](https://identity.lurus.cn) (console d’organisation Casdoor) — invitation de membres, attribution de permissions et audit pour les clients entreprise ; ou contactez le service commercial pour activer la gestion d’organisation entreprise
 :::
 
 ---
@@ -26,11 +26,11 @@ Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de 
 
 | Point de terminaison | URL | Description |
 |------|-----|------|
-| Console | `https://auth.lurus.cn` | Gestion en libre-service du compte, des appareils de sécurité et des sessions |
-| OIDC Discovery | `https://auth.lurus.cn/.well-known/openid-configuration` | Découverte automatique par le SDK, incluant tous les points de terminaison et les capacités prises en charge |
-| Autorisation OAuth2 | `https://auth.lurus.cn/oauth/v2/authorize` | Point d’entrée du flux standard de code d’autorisation / PKCE |
-| Point de terminaison Token | `https://auth.lurus.cn/oauth/v2/token` | Échange contre un access token / refresh token |
-| Informations utilisateur | `https://auth.lurus.cn/oidc/v1/userinfo` | Lecture des claims de l’utilisateur courant |
+| Console | `https://identity.lurus.cn` | Gestion en libre-service du compte, des appareils de sécurité et des sessions |
+| OIDC Discovery | `https://identity.lurus.cn/.well-known/openid-configuration` | Découverte automatique par le SDK, incluant tous les points de terminaison et les capacités prises en charge |
+| Autorisation OAuth2 | `https://identity.lurus.cn/oauth/v2/authorize` | Point d’entrée du flux standard de code d’autorisation / PKCE |
+| Point de terminaison Token | `https://identity.lurus.cn/oauth/v2/token` | Échange contre un access token / refresh token |
+| Informations utilisateur | `https://identity.lurus.cn/oidc/v1/userinfo` | Lecture des claims de l’utilisateur courant |
 
 ---
 
@@ -69,12 +69,12 @@ Ce système est fourni par `auth.lurus.cn`, déployé en interne sur la base de 
 
 | Concept | Signification | Mappage dans Lurus |
 |------|------|-----------------|
-| **Instance** | Unité de déploiement de plus haut niveau, avec base de données et configuration indépendantes | Lurus exploite une Instance unique, hébergée sur `auth.lurus.cn` |
+| **Instance** | Unité de déploiement de plus haut niveau, avec base de données et configuration indépendantes | Lurus exploite une Instance unique, hébergée sur `identity.lurus.cn` |
 | **Organization** | Unité d’isolation de locataire, avec annuaire d’utilisateurs et politique de connexion indépendants | Les utilisateurs particuliers appartiennent à l’organisation principale `lurus.cn` ; les clients entreprise demandent une Organization dédiée, configurable avec leur propre domaine et leur propre IdP |
 | **Project** | Ensemble d’applications sous une Organization, gérant de manière unifiée les roles et les grants | Chaque gamme de produits (Lurus API, Lucrum, Switch, Forge…) correspond à un Project |
 | **Application** | Client spécifique au sein d’un Project, détenant un `client_id` / `client_secret` | Chaque frontend, application de bureau ou serveur enregistre une Application distincte |
 | **User** | Compte pouvant se connecter, réparti entre Human (personne réelle) et Service User (machine) | Les utilisateurs finaux sont des Human ; les appels entre services backend utilisent un Service User + JWT Profile |
-| **Grant** | Relation de liaison octroyant un Project Role à un User donné | Contrôle le niveau de permission de l’utilisateur au sein d’un produit donné ; les paramètres d’organisation [auth.lurus.cn](https://auth.lurus.cn) (Casdoor) font foi |
+| **Grant** | Relation de liaison octroyant un Project Role à un User donné | Contrôle le niveau de permission de l’utilisateur au sein d’un produit donné ; les paramètres d’organisation [identity.lurus.cn](https://identity.lurus.cn) (Casdoor) font foi |
 
 ---
 

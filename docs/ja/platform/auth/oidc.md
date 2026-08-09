@@ -21,7 +21,7 @@ Lurus の統一 ID 認証は [Casdoor](https://casdoor.com) をベースとし�
 ほとんどの OIDC SDK は **Discovery** に対応しており、URL を 1 つ指定するだけで、すべてのエンドポイント、アルゴリズム、機能を自動的に取得できます。
 
 ```
-Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
+Discovery URL: https://identity.lurus.cn/.well-known/openid-configuration
 ```
 
 SDK の初期化時に（エンドポイントをハードコードするのではなく）この URL を直接指定すれば、サーバー側で鍵がローテーションされたりエンドポイントが変更されたりしても、アプリを修正する必要はありません。
@@ -38,7 +38,7 @@ SDK の初期化時に（エンドポイントをハードコードするので�
 
 ## 標準エンドポイント
 
-すべてのエンドポイントは `https://auth.lurus.cn` を Base URL とします。
+すべてのエンドポイントは `https://identity.lurus.cn` を Base URL とします。
 
 | エンドポイント名 | パス | HTTP メソッド | 用途 |
 |----------|------|-----------|------|
@@ -124,7 +124,7 @@ function buildAuthorizeURL(clientId: string, redirectUri: string): string {
     nonce: randomBytes(16).toString("base64url"),
     code_challenge: challenge, code_challenge_method: "S256",
   });
-  return `https://auth.lurus.cn/oauth/v2/authorize?${params}`;
+  return `https://identity.lurus.cn/oauth/v2/authorize?${params}`;
 }
 
 // Step 3: 回调处理 — 验证 state，提取 code
@@ -141,7 +141,7 @@ function handleCallback(callbackURL: string) {
 // Step 4: 用 code 换 tokens
 async function exchangeCode(code: string, clientId: string, redirectUri: string) {
   const verifier = sessionStorage.getItem("pkce_verifier")!;
-  const resp = await fetch("https://auth.lurus.cn/oauth/v2/token", {
+  const resp = await fetch("https://identity.lurus.cn/oauth/v2/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -163,13 +163,13 @@ CODE_VERIFIER="dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
 CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | sha256sum | cut -d' ' -f1 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
 
 # 引导用户访问登录 URL
-echo "https://auth.lurus.cn/oauth/v2/authorize?response_type=code\
+echo "https://identity.lurus.cn/oauth/v2/authorize?response_type=code\
 &client_id=YOUR_CLIENT_ID&redirect_uri=https://yourapp.example.com/callback\
 &scope=openid%20profile%20email%20offline_access&state=random_state_value\
 &code_challenge=${CODE_CHALLENGE}&code_challenge_method=S256"
 
 # 用回调中的 code 换 tokens
-curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=authorization_code" \
   -d "code=AUTHORIZATION_CODE_FROM_CALLBACK" \
@@ -222,7 +222,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 | Claim | 説明 | id_token | access_token | userinfo | 依存する Scope |
 |-------|------|:--------:|:------------:|:--------:|-----------|
 | `sub` | ユーザー一意 ID（Casdoor 内部 ID） | ✓ | ✓ (JWT) | ✓ | 常時 |
-| `iss` | Issuer。固定で `https://auth.lurus.cn` | ✓ | ✓ | — | 常時 |
+| `iss` | Issuer。固定で `https://identity.lurus.cn` | ✓ | ✓ | — | 常時 |
 | `aud` | Audience。アプリの client_id | ✓ | ✓ | — | 常時 |
 | `exp` / `iat` | 失効 / 発行時刻（Unix） | ✓ | ✓ | — | 常時 |
 | `auth_time` | ユーザーが実際にログインした時刻 | ✓ | — | — | 常時 |
@@ -260,9 +260,9 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 サーバー側で Bearer token を受け取った際、形式だけで有効性を判断しては**いけません**。必ず以下を実施してください：
 
 ```
-1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://auth.lurus.cn/oauth/v2/keys
+1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://identity.lurus.cn/oauth/v2/keys
 2. 用匹配 kid 的公钥验证 JWT 签名
-3. 校验标准 claims：iss == "https://auth.lurus.cn"；aud 含本应用 client_id 或 project_id；
+3. 校验标准 claims：iss == "https://identity.lurus.cn"；aud 含本应用 client_id 或 project_id；
    exp > now()；nbf <= now()（如有）
 4. 按需校验业务 claims（角色、组织 ID）
 ```
@@ -293,7 +293,7 @@ var provider *oidc.Provider
 func Init(ctx context.Context) error {
     var err error
     // SDK 自动从 Discovery URL 加载配置和 JWKS
-    provider, err = oidc.NewProvider(ctx, "https://auth.lurus.cn")
+    provider, err = oidc.NewProvider(ctx, "https://identity.lurus.cn")
     return err
 }
 
@@ -312,7 +312,7 @@ func VerifyAccessToken(ctx context.Context, rawToken, clientID string) (*oidc.ID
 access token が不透明な形式（JWT ではない）の場合は Introspection で検証します：
 
 ```bash
-curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
+curl -X POST https://identity.lurus.cn/oauth/v2/introspect \
   -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
   -d "token=ACCESS_TOKEN_TO_CHECK"
 # 响应：{ "active": true, "sub": "...", "exp": 1234567890, ... } 或 { "active": false }
@@ -338,7 +338,7 @@ curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
 ### Step 1: Device Code を要求
 
 ```bash
-curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/device_authorization \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=YOUR_CLIENT_ID" -d "scope=openid profile email"
 ```
@@ -347,8 +347,8 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 {
   "device_code": "Ag_EE...zo9OA",
   "user_code": "GQWC-FWFK",
-  "verification_uri": "https://auth.lurus.cn/device",
-  "verification_uri_complete": "https://auth.lurus.cn/device?user_code=GQWC-FWFK",
+  "verification_uri": "https://identity.lurus.cn/device",
+  "verification_uri_complete": "https://identity.lurus.cn/device?user_code=GQWC-FWFK",
   "expires_in": 300,
   "interval": 5
 }
@@ -356,7 +356,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 
 ### Step 2: ユーザーに表示
 
-`verification_uri`（`https://auth.lurus.cn/device`）+ `user_code` を表示するか、`verification_uri_complete` を QR コードで読み取らせます。タイムアウトは 5 分。
+`verification_uri`（`https://identity.lurus.cn/device`）+ `user_code` を表示するか、`verification_uri_complete` を QR コードで読み取らせます。タイムアウトは 5 分。
 
 ### Step 3: Token エンドポイントをポーリング
 
@@ -364,7 +364,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 
 ```bash
 while true; do
-  RESPONSE=$(curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+  RESPONSE=$(curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
     -d "device_code=Ag_EE...zo9OA" -d "client_id=YOUR_CLIENT_ID")
@@ -425,7 +425,7 @@ TypeScript での実装も同様です：`fetch` で POST `/device_authorization
   :steps="[
     { text: 'API 認証（マシン対マシン）', link: '/ja/platform/auth/api-auth', primary: true },
     { text: 'ID 認証の概要と接続ポイント', link: '/ja/platform/auth/' },
-    { text: '認証コンソール', link: 'https://auth.lurus.cn', external: true },
+    { text: '認証コンソール', link: 'https://identity.lurus.cn', external: true },
   ]"
   title="次のステップ"
 />
@@ -436,7 +436,7 @@ TypeScript での実装も同様です：`fetch` で POST `/device_authorization
 
 - Casdoor 公式：[Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
-- Auth コンソール [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
+- Auth コンソール [identity.lurus.cn](https://identity.lurus.cn) · Discovery [/.well-known/openid-configuration](https://identity.lurus.cn/.well-known/openid-configuration)
 
 </div>
 

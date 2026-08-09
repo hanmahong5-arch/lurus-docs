@@ -51,7 +51,7 @@ flowchart LR
   subgraph External["外部服务"]
     Gateway["api.lurus.cn\nLLM Gateway"]
     Kova["kova-rest (Rust)\n:3002\n可选"]
-    Casdoor["auth.lurus.cn\nCasdoor SSO\n可选 flag"]
+    Casdoor["identity.lurus.cn\nCasdoor SSO\n可选 flag"]
   end
 
   Web -->|"/api/** proxy"| Backend
@@ -213,8 +213,8 @@ FORGE_OIDC_ENABLED=true (未来 SSO 模式)
 | `FORGE_KOVA_REST_URL` | 否 | kova-rest 地址；缺省则 Canvas 执行降级 | `http://localhost:3002` |
 | `FORGE_KOVA_REST_API_KEY` | 否 | kova-rest bearer key | |
 | `FORGE_OIDC_ENABLED` | 否 | 启用 SSO 模式（默认 false） | `true` |
-| `FORGE_OIDC_ISSUER` | SSO 时必填 | Casdoor issuer | `https://auth.lurus.cn` |
-| `FORGE_OIDC_JWKS_URI` | SSO 时必填 | JWKS 端点 | `https://auth.lurus.cn/oauth/v2/keys` |
+| `FORGE_OIDC_ISSUER` | SSO 时必填 | Casdoor issuer | `https://identity.lurus.cn` |
+| `FORGE_OIDC_JWKS_URI` | SSO 时必填 | JWKS 端点 | `https://identity.lurus.cn/oauth/v2/keys` |
 | `FORGE_OIDC_CLIENT_ID` | SSO 时必填 | OIDC client/audience | |
 | `FORGE_API_GATEWAY_URL` | SSO 时 | 用于 provision 用户 gateway token | `https://api.lurus.cn` |
 | `FORGE_API_GATEWAY_INTERNAL_KEY` | SSO 时 | 内部 provision 调用鉴权 key | |

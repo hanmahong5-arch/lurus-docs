@@ -43,7 +43,7 @@ description: "SCIM ユーザー移行、SSO フェデレーション、段階的
 <ol class="lurus-steps">
 <li>
 
-**Lurus コンソールでフェデレーション接続を作成する** — `auth.lurus.cn` にアクセス → 企業設定 → ID プロバイダー → 新規作成 → OIDC を選択。企業 IdP の以下を入力します：
+**Lurus コンソールでフェデレーション接続を作成する** — `identity.lurus.cn` にアクセス → 企業設定 → ID プロバイダー → 新規作成 → OIDC を選択。企業 IdP の以下を入力します：
 
 - Issuer URL
 - Client ID
@@ -86,10 +86,10 @@ department:  department   # custom claim
 
 **Lurus へ一括インポートする**
 
-<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="ユーザーを一括インポート（auth.lurus.cn）" />
+<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="ユーザーを一括インポート（identity.lurus.cn）" />
 
 ```bash
-curl -X POST https://auth.lurus.cn/admin/v1/scim/users:batchImport \
+curl -X POST https://identity.lurus.cn/admin/v1/scim/users:batchImport \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d @users.json

@@ -24,9 +24,9 @@ Traefik (R1)
   │ 2. ForwardAuth → oauth2-proxy:4180/oauth2/auth
   ▼ (401 if no cookie)
 oauth2-proxy
-  │ 3. 302 → auth.lurus.cn/oauth/v2/authorize
+  │ 3. 302 → identity.lurus.cn/oauth/v2/authorize
   ▼
-Casdoor (auth.lurus.cn)
+Casdoor (identity.lurus.cn)
   │ 4. login → 302 → internal.lurus.cn/oauth2/callback
   ▼
 oauth2-proxy
@@ -43,7 +43,7 @@ Break-glass：`internal-fallback.lurus.cn`（不挂 DNS，仅 /etc/hosts 覆盖�
 
 ### 1. 在 Casdoor 控制台创建 OIDC 客户端
 
-打开 https://auth.lurus.cn/ui/console，登录账号：
+打开 https://identity.lurus.cn/ui/console，登录账号：
 
 - 用户名：`admin@lurus.cn`
 - 密码：`<see ~/重要信息.md or 1Password vault>`
@@ -79,7 +79,7 @@ Console
 ssh root@43.226.46.164 "kubectl create secret generic oauth2-proxy-internal -n lurus-system \
   --from-literal=client-id='<paste>' \
   --from-literal=client-secret='<paste>' \
-  --from-literal=cookie-secret='qicMEYmTaMuhGdZ8GQ0-T2-5JaeDjxggYYj0TqeaizY' \
+  --from-literal=cookie-secret='<REDACTED-见带外凭证库>' \
   --dry-run=client -o yaml | kubectl apply -f -"
 
 # 2. 部署 oauth2-proxy
@@ -95,7 +95,7 @@ kubectl apply -f ingressroute.yaml
 ## 验证
 
 ```bash
-# 应该 302 到 auth.lurus.cn 而不是 401
+# 应该 302 到 identity.lurus.cn 而不是 401
 curl -sk -I https://internal.lurus.cn/
 
 # break-glass 仍是 BasicAuth

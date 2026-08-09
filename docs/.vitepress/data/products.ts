@@ -536,7 +536,7 @@ graph = workflow.compile(
     colorToken: '--lurus-color-auth',
     icon: 'shield-check',
     home: '/platform/auth/',
-    consoleUrl: 'https://auth.lurus.cn',
+    consoleUrl: 'https://identity.lurus.cn',
     highlights: [
       { title: '全产品 SSO', body: '一次登录，所有 Lurus 产品畅通', icon: 'key-round' },
       { title: 'Passkey + MFA', body: 'WebAuthn / TOTP / 备份码多因素组合', icon: 'shield' },
@@ -548,7 +548,7 @@ graph = workflow.compile(
       { text: '概述与接入点', link: '/platform/auth/', primary: true },
       { text: 'OIDC / OAuth2', link: '/platform/auth/oidc' },
       { text: 'API 认证', link: '/platform/auth/api-auth' },
-      { text: '认证控制台', link: 'https://auth.lurus.cn', external: true },
+      { text: '认证控制台', link: 'https://identity.lurus.cn', external: true },
     ],
   },
 

@@ -21,7 +21,7 @@ L’authentification d’identité unifiée de Lurus repose sur [Casdoor](https:
 La grande majorité des SDK OIDC prennent en charge le **Discovery** : une seule URL suffit pour récupérer automatiquement tous les endpoints, algorithmes et capacités.
 
 ```
-Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
+Discovery URL: https://identity.lurus.cn/.well-known/openid-configuration
 ```
 
 Initialisez le SDK en pointant directement vers cette URL (plutôt que de coder les endpoints en dur) : en cas de rotation des clés serveur ou de modification des endpoints, l’application n’a pas besoin d’être modifiée.
@@ -38,7 +38,7 @@ Initialisez le SDK en pointant directement vers cette URL (plutôt que de coder 
 
 ## Endpoints standard
 
-Tous les endpoints utilisent `https://auth.lurus.cn` comme Base URL.
+Tous les endpoints utilisent `https://identity.lurus.cn` comme Base URL.
 
 | Nom de l’endpoint | Chemin | Méthode HTTP | Usage |
 |----------|------|-----------|------|
@@ -124,7 +124,7 @@ function buildAuthorizeURL(clientId: string, redirectUri: string): string {
     nonce: randomBytes(16).toString("base64url"),
     code_challenge: challenge, code_challenge_method: "S256",
   });
-  return `https://auth.lurus.cn/oauth/v2/authorize?${params}`;
+  return `https://identity.lurus.cn/oauth/v2/authorize?${params}`;
 }
 
 // Step 3: 回调处理 — 验证 state，提取 code
@@ -141,7 +141,7 @@ function handleCallback(callbackURL: string) {
 // Step 4: 用 code 换 tokens
 async function exchangeCode(code: string, clientId: string, redirectUri: string) {
   const verifier = sessionStorage.getItem("pkce_verifier")!;
-  const resp = await fetch("https://auth.lurus.cn/oauth/v2/token", {
+  const resp = await fetch("https://identity.lurus.cn/oauth/v2/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -163,13 +163,13 @@ CODE_VERIFIER="dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
 CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | sha256sum | cut -d' ' -f1 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
 
 # 引导用户访问登录 URL
-echo "https://auth.lurus.cn/oauth/v2/authorize?response_type=code\
+echo "https://identity.lurus.cn/oauth/v2/authorize?response_type=code\
 &client_id=YOUR_CLIENT_ID&redirect_uri=https://yourapp.example.com/callback\
 &scope=openid%20profile%20email%20offline_access&state=random_state_value\
 &code_challenge=${CODE_CHALLENGE}&code_challenge_method=S256"
 
 # 用回调中的 code 换 tokens
-curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=authorization_code" \
   -d "code=AUTHORIZATION_CODE_FROM_CALLBACK" \
@@ -222,7 +222,7 @@ Le tableau ci-dessous indique dans quel type de token apparaît chaque claim, ai
 | Claim | Description | id_token | access_token | userinfo | Scope requis |
 |-------|------|:--------:|:------------:|:--------:|-----------|
 | `sub` | ID unique de l’utilisateur (ID interne Casdoor) | ✓ | ✓ (JWT) | ✓ | Toujours |
-| `iss` | Issuer, fixé à `https://auth.lurus.cn` | ✓ | ✓ | — | Toujours |
+| `iss` | Issuer, fixé à `https://identity.lurus.cn` | ✓ | ✓ | — | Toujours |
 | `aud` | Audience, client_id de l’application | ✓ | ✓ | — | Toujours |
 | `exp` / `iat` | Date d’expiration / d’émission (Unix) | ✓ | ✓ | — | Toujours |
 | `auth_time` | Heure de connexion effective de l’utilisateur | ✓ | — | — | Toujours |
@@ -260,9 +260,9 @@ Le tableau ci-dessous indique dans quel type de token apparaît chaque claim, ai
 Après réception d’un Bearer token, le serveur **ne doit pas** se contenter de juger de sa validité d’après son format. Il doit impérativement :
 
 ```
-1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://auth.lurus.cn/oauth/v2/keys
+1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://identity.lurus.cn/oauth/v2/keys
 2. 用匹配 kid 的公钥验证 JWT 签名
-3. 校验标准 claims：iss == "https://auth.lurus.cn"；aud 含本应用 client_id 或 project_id；
+3. 校验标准 claims：iss == "https://identity.lurus.cn"；aud 含本应用 client_id 或 project_id；
    exp > now()；nbf <= now()（如有）
 4. 按需校验业务 claims（角色、组织 ID）
 ```
@@ -293,7 +293,7 @@ var provider *oidc.Provider
 func Init(ctx context.Context) error {
     var err error
     // SDK 自动从 Discovery URL 加载配置和 JWKS
-    provider, err = oidc.NewProvider(ctx, "https://auth.lurus.cn")
+    provider, err = oidc.NewProvider(ctx, "https://identity.lurus.cn")
     return err
 }
 
@@ -312,7 +312,7 @@ func VerifyAccessToken(ctx context.Context, rawToken, clientID string) (*oidc.ID
 Lorsque l’access token est dans un format opaque (non-JWT), utilisez l’Introspection pour le vérifier :
 
 ```bash
-curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
+curl -X POST https://identity.lurus.cn/oauth/v2/introspect \
   -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
   -d "token=ACCESS_TOKEN_TO_CHECK"
 # 响应：{ "active": true, "sub": "...", "exp": 1234567890, ... } 或 { "active": false }
@@ -338,7 +338,7 @@ Adapté aux appareils sans saisie navigateur (CLI, TV, IoT). Les produits CLI de
 ### Step 1 : Demander le Device Code
 
 ```bash
-curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/device_authorization \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=YOUR_CLIENT_ID" -d "scope=openid profile email"
 ```
@@ -347,8 +347,8 @@ Réponse :
 {
   "device_code": "Ag_EE...zo9OA",
   "user_code": "GQWC-FWFK",
-  "verification_uri": "https://auth.lurus.cn/device",
-  "verification_uri_complete": "https://auth.lurus.cn/device?user_code=GQWC-FWFK",
+  "verification_uri": "https://identity.lurus.cn/device",
+  "verification_uri_complete": "https://identity.lurus.cn/device?user_code=GQWC-FWFK",
   "expires_in": 300,
   "interval": 5
 }
@@ -356,7 +356,7 @@ Réponse :
 
 ### Step 2 : Afficher à l’utilisateur
 
-Affichez `verification_uri` (`https://auth.lurus.cn/device`) + `user_code`, ou scannez `verification_uri_complete`. Délai d’expiration : 5 minutes.
+Affichez `verification_uri` (`https://identity.lurus.cn/device`) + `user_code`, ou scannez `verification_uri_complete`. Délai d’expiration : 5 minutes.
 
 ### Step 3 : Interroger l’endpoint Token
 
@@ -364,7 +364,7 @@ Interrogez toutes les `interval` secondes, jusqu’au succès ou à l’expirati
 
 ```bash
 while true; do
-  RESPONSE=$(curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+  RESPONSE=$(curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
     -d "device_code=Ag_EE...zo9OA" -d "client_id=YOUR_CLIENT_ID")
@@ -425,7 +425,7 @@ Le renouvellement retourne `invalid_grant`. Causes possibles : la première auto
   :steps="[
     { text: 'Authentification API (machine à machine)', link: '/fr/platform/auth/api-auth', primary: true },
     { text: 'Vue d\'ensemble de l\'authentification et points d\'entrée', link: '/fr/platform/auth/' },
-    { text: 'Console d\'authentification', link: 'https://auth.lurus.cn', external: true },
+    { text: 'Console d\'authentification', link: 'https://identity.lurus.cn', external: true },
   ]"
   title="Étapes suivantes"
 />
@@ -436,7 +436,7 @@ Le renouvellement retourne `invalid_grant`. Causes possibles : la première auto
 
 - Officiel Casdoor : [Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
-- Console Auth [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
+- Console Auth [identity.lurus.cn](https://identity.lurus.cn) · Discovery [/.well-known/openid-configuration](https://identity.lurus.cn/.well-known/openid-configuration)
 
 </div>
 

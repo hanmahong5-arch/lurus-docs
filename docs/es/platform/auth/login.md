@@ -7,7 +7,7 @@ description: Métodos de inicio de sesión compatibles con Lurus (contraseña, P
 
 # Inicio de sesión y autenticación multifactor
 
-Todos los productos de Lurus comparten la misma infraestructura de autenticación de identidad (**Casdoor**, accesible públicamente en `auth.lurus.cn`). Tanto si usas Lurus API, Switch, Lucrum o Forge, el inicio de sesión pasa por el mismo punto de entrada: una sola autenticación da acceso a toda la plataforma.
+Todos los productos de Lurus comparten la misma infraestructura de autenticación de identidad (**Casdoor**, accesible públicamente en `identity.lurus.cn`). Tanto si usas Lurus API, Switch, Lucrum o Forge, el inicio de sesión pasa por el mismo punto de entrada: una sola autenticación da acceso a toda la plataforma.
 
 ---
 
@@ -17,11 +17,11 @@ Todos los productos de Lurus comparten la misma infraestructura de autenticació
   <p class="lurus-section-head__lede">OIDC Authorization Code Flow + PKCE; el cliente no almacena ninguna clave.</p>
 </div>
 
-Cuando un usuario accede a cualquier producto sin una sesión válida, la aplicación redirige el navegador a `auth.lurus.cn`; tras la verificación, regresa con el código de autorización.
+Cuando un usuario accede a cualquier producto sin una sesión válida, la aplicación redirige el navegador a `identity.lurus.cn`; tras la verificación, regresa con el código de autorización.
 
 <ArchitectureDiagram
   title="Flujo Authorization Code + PKCE"
-  chart="sequenceDiagram; participant B as Navegador del usuario; participant P as Producto Lurus; participant A as auth.lurus.cn; B->>P: Acceder a la página del producto; P-->>B: 302 redirección; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: Página de inicio de sesión Correo/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: Código de autorización; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: Inicio de sesión correcto, entrar al producto"
+  chart="sequenceDiagram; participant B as Navegador del usuario; participant P as Producto Lurus; participant A as identity.lurus.cn; B->>P: Acceder a la página del producto; P-->>B: 302 redirección; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: Página de inicio de sesión Correo/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: Código de autorización; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: Inicio de sesión correcto, entrar al producto"
 />
 
 **PKCE**: antes de enviar la solicitud de autorización, el cliente genera un `code_verifier` aleatorio y envía con la solicitud su hash SHA-256 `code_challenge`; tras recibir el código de autorización, lo canjea por un token con el verifier original, y el servidor solo emite el token si ambos coinciden. Aunque se intercepte el código de autorización, no podrá canjearse por un token.
@@ -51,12 +51,12 @@ Passkey > inicio de sesión social > correo y contraseña. Passkey no requiere r
 
 ## 3. Passkey / WebAuthn
 
-**Principio**: se basa en **WebAuthn / FIDO2**, sustituyendo la contraseña por criptografía asimétrica. Durante el registro, el dispositivo genera un par de claves; la **clave privada permanece en el dispositivo** (protegida por biometría/PIN) y la clave pública se sube a `auth.lurus.cn`. Al iniciar sesión, el servidor envía un desafío, el dispositivo lo firma con la clave privada y el servidor lo verifica con la clave pública. En todo el proceso **no se transmite ninguna contraseña**, y una filtración de la base de datos solo expone claves públicas.
+**Principio**: se basa en **WebAuthn / FIDO2**, sustituyendo la contraseña por criptografía asimétrica. Durante el registro, el dispositivo genera un par de claves; la **clave privada permanece en el dispositivo** (protegida por biometría/PIN) y la clave pública se sube a `identity.lurus.cn`. Al iniciar sesión, el servidor envía un desafío, el dispositivo lo firma con la clave privada y el servidor lo verifica con la clave pública. En todo el proceso **no se transmite ninguna contraseña**, y una filtración de la base de datos solo expone claves públicas.
 
 **Registro (acción del usuario)**:
 
 <ol class="lurus-steps">
-<li>Inicia sesión en <code>auth.lurus.cn</code>.</li>
+<li>Inicia sesión en <code>identity.lurus.cn</code>.</li>
 <li>Ve a <strong>Configuración de la cuenta → Seguridad → Añadir Passkey</strong>.</li>
 <li>Asigna un nombre a la Passkey (por ejemplo, "MacBook Touch ID").</li>
 <li>Completa la identificación biométrica (Touch ID / Face ID / PIN / clave de hardware).</li>
@@ -127,7 +127,7 @@ Casdoor actúa como IdP intermediario y se integra con uno o varios **IdP extern
 
 <ArchitectureDiagram
   title="Cadena de Identity Brokering"
-  chart="graph LR; P[Producto Lurus] --> Z[auth.lurus.cn · Casdoor]; Z --> U[IdP upstream · Azure AD / Okta / GitHub …]; U -. Aserción de identidad del usuario OIDC/SAML .-> Z; Z -. Emite access_token / id_token de Lurus .-> P"
+  chart="graph LR; P[Producto Lurus] --> Z[identity.lurus.cn · Casdoor]; Z --> U[IdP upstream · Azure AD / Okta / GitHub …]; U -. Aserción de identidad del usuario OIDC/SAML .-> Z; Z -. Emite access_token / id_token de Lurus .-> P"
 />
 
 **Cuándo usarlo**: SSO B2B para clientes empresariales (los empleados inician sesión directamente con su propio Azure AD/Okta, sin registrarse); enrutamiento automático por dominio (tras introducir el correo corporativo, salta al IdP correspondiente según el dominio, Domain Discovery); vinculación de cuentas (asociar una cuenta de Lurus existente a GitHub/Google); creación Just-in-Time (el primer inicio de sesión por IdP externo crea automáticamente la cuenta y le asigna el rol predeterminado).
@@ -193,7 +193,7 @@ Pasos a seguir: ① En la pantalla de verificación de MFA, pulsa **Iniciar sesi
   :steps="[
     { text: 'Integración OIDC / OAuth2', link: '/es/platform/auth/oidc', primary: true },
     { text: 'Autenticación de API (PAT / JWT)', link: '/es/platform/auth/api-auth' },
-    { text: 'Consola de autenticación', link: 'https://auth.lurus.cn', external: true },
+    { text: 'Consola de autenticación', link: 'https://identity.lurus.cn', external: true },
   ]"
 />
 

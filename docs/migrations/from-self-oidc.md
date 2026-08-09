@@ -43,7 +43,7 @@ description: SCIM 用户迁移、SSO 联邦、灰度切换的完整路径。
 <ol class="lurus-steps">
 <li>
 
-**在 Lurus 控制台创建联邦连接** — 访问 `auth.lurus.cn` → 企业设置 → 身份提供商 → 新建 → 选 OIDC。填入企业 IdP 的：
+**在 Lurus 控制台创建联邦连接** — 访问 `identity.lurus.cn` → 企业设置 → 身份提供商 → 新建 → 选 OIDC。填入企业 IdP 的：
 
 - Issuer URL
 - Client ID
@@ -86,10 +86,10 @@ department:  department   # custom claim
 
 **批量导入 Lurus**
 
-<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="批量导入用户（auth.lurus.cn）" />
+<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="批量导入用户（identity.lurus.cn）" />
 
 ```bash
-curl -X POST https://auth.lurus.cn/admin/v1/scim/users:batchImport \
+curl -X POST https://identity.lurus.cn/admin/v1/scim/users:batchImport \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d @users.json

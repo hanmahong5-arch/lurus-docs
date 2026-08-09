@@ -7,7 +7,7 @@ description: Instance / Organization / Project / Application / User / Grant / Ad
 
 # 핵심 개념
 
-Lurus는 [Casdoor](https://casdoor.com)을 통합 OIDC 신원 제공자(IdP)로 사용하며, 공용 진입점은 `auth.lurus.cn`입니다. 이 페이지에서는 객체 모델 계층 구조를 정리합니다.
+Lurus는 [Casdoor](https://casdoor.com)을 통합 OIDC 신원 제공자(IdP)로 사용하며, 공용 진입점은 `identity.lurus.cn`입니다. 이 페이지에서는 객체 모델 계층 구조를 정리합니다.
 
 ---
 
@@ -38,7 +38,7 @@ Lurus는 [Casdoor](https://casdoor.com)을 통합 OIDC 신원 제공자(IdP)로 
 | 가상 인스턴스 | System API를 통해 여러 가상 인스턴스를 생성할 수 있으며, SaaS 멀티테넌트 배포에 적합 |
 
 ::: tip Lurus 맥락
-프로덕션 환경에는 단 하나의 인스턴스 **`lurus-prod`**(`auth.lurus.cn`)만 존재합니다. 가상 인스턴스가 필요 없으며, 모든 제품 라인이 동일한 issuer를 공유합니다.
+프로덕션 환경에는 단 하나의 인스턴스 **`lurus-prod`**(`identity.lurus.cn`)만 존재합니다. 가상 인스턴스가 필요 없으며, 모든 제품 라인이 동일한 issuer를 공유합니다.
 :::
 
 ---

@@ -7,7 +7,7 @@ description: Méthodes de connexion prises en charge par Lurus (mot de passe, Pa
 
 # Connexion et authentification multifacteur
 
-Tous les produits Lurus partagent la même infrastructure d’authentification d’identité (**Casdoor**, exposée sur `auth.lurus.cn`). Que vous utilisiez l’API Lurus, Switch, Lucrum ou Forge, la connexion passe par le même point d’entrée : une seule connexion vous donne accès à toute la chaîne.
+Tous les produits Lurus partagent la même infrastructure d’authentification d’identité (**Casdoor**, exposée sur `identity.lurus.cn`). Que vous utilisiez l’API Lurus, Switch, Lucrum ou Forge, la connexion passe par le même point d’entrée : une seule connexion vous donne accès à toute la chaîne.
 
 ---
 
@@ -17,11 +17,11 @@ Tous les produits Lurus partagent la même infrastructure d’authentification d
   <p class="lurus-section-head__lede">OIDC Authorization Code Flow + PKCE ; le client ne stocke aucune clé secrète.</p>
 </div>
 
-Lorsqu’un utilisateur accède à un produit quelconque sans session valide, l’application redirige le navigateur vers `auth.lurus.cn` ; après vérification, il est renvoyé avec un code d’autorisation.
+Lorsqu’un utilisateur accède à un produit quelconque sans session valide, l’application redirige le navigateur vers `identity.lurus.cn` ; après vérification, il est renvoyé avec un code d’autorisation.
 
 <ArchitectureDiagram
   title="Flux Authorization Code + PKCE"
-  chart="sequenceDiagram; participant B as Navigateur utilisateur; participant P as Produit Lurus; participant A as auth.lurus.cn; B->>P: Accès à la page du produit; P-->>B: 302 Redirection; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: Page de connexion e-mail/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: Code d’autorisation; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: Connexion réussie, entrée dans le produit"
+  chart="sequenceDiagram; participant B as Navigateur utilisateur; participant P as Produit Lurus; participant A as identity.lurus.cn; B->>P: Accès à la page du produit; P-->>B: 302 Redirection; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: Page de connexion e-mail/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: Code d’autorisation; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: Connexion réussie, entrée dans le produit"
 />
 
 **PKCE** : avant d’envoyer la requête d’autorisation, le client génère un `code_verifier` aléatoire et envoie son hachage SHA-256 `code_challenge` avec la requête ; une fois le code d’autorisation récupéré, il échange le token à l’aide du verifier d’origine, et le serveur ne délivre le token que si les deux concordent. Même si le code d’autorisation est intercepté, il ne permet pas d’obtenir un token.
@@ -51,12 +51,12 @@ Passkey > connexion sociale > e-mail et mot de passe. Le Passkey ne nécessite a
 
 ## 3. Passkey / WebAuthn
 
-**Principe** : basé sur **WebAuthn / FIDO2**, le chiffrement asymétrique remplace le mot de passe. Lors de l’enregistrement, l’appareil génère une paire de clés ; **la clé privée reste sur l’appareil** (protégée par la biométrie/PIN), la clé publique étant transmise à `auth.lurus.cn`. À la connexion, le serveur envoie un défi, l’appareil le signe avec la clé privée et le serveur le vérifie avec la clé publique. L’ensemble du processus se fait **sans aucune transmission de mot de passe** ; une fuite de la base de données ne révèle que la clé publique.
+**Principe** : basé sur **WebAuthn / FIDO2**, le chiffrement asymétrique remplace le mot de passe. Lors de l’enregistrement, l’appareil génère une paire de clés ; **la clé privée reste sur l’appareil** (protégée par la biométrie/PIN), la clé publique étant transmise à `identity.lurus.cn`. À la connexion, le serveur envoie un défi, l’appareil le signe avec la clé privée et le serveur le vérifie avec la clé publique. L’ensemble du processus se fait **sans aucune transmission de mot de passe** ; une fuite de la base de données ne révèle que la clé publique.
 
 **Enregistrement (actions de l’utilisateur)** :
 
 <ol class="lurus-steps">
-<li>Connectez-vous à <code>auth.lurus.cn</code>.</li>
+<li>Connectez-vous à <code>identity.lurus.cn</code>.</li>
 <li>Accédez à <strong>Paramètres du compte → Sécurité → Ajouter un Passkey</strong>.</li>
 <li>Nommez le Passkey (par ex. « MacBook Touch ID »).</li>
 <li>Effectuez l’identification biométrique (Touch ID / Face ID / PIN / clé matérielle).</li>
@@ -127,7 +127,7 @@ Casdoor agit comme IdP intermédiaire, en s’interconnectant à un ou plusieurs
 
 <ArchitectureDiagram
   title="Chaîne d’Identity Brokering"
-  chart="graph LR; P[Produit Lurus] --> Z[auth.lurus.cn · Casdoor]; Z --> U[IdP en amont · Azure AD / Okta / GitHub …]; U -. Assertion d’identité utilisateur OIDC/SAML .-> Z; Z -. Délivrance access_token / id_token Lurus .-> P"
+  chart="graph LR; P[Produit Lurus] --> Z[identity.lurus.cn · Casdoor]; Z --> U[IdP en amont · Azure AD / Okta / GitHub …]; U -. Assertion d’identité utilisateur OIDC/SAML .-> Z; Z -. Délivrance access_token / id_token Lurus .-> P"
 />
 
 **Quand l’utiliser** : SSO B2B pour clients entreprise (les employés se connectent directement avec leur propre Azure AD/Okta, sans inscription) ; routage automatique par domaine (après saisie d’un e-mail d’entreprise, redirection vers l’IdP correspondant selon le domaine, Domain Discovery) ; association de comptes (associer GitHub/Google à un compte Lurus existant) ; création Just-in-Time (la première connexion via un IdP externe crée automatiquement le compte et lui attribue un rôle par défaut).
@@ -193,7 +193,7 @@ Après s’être connecté sur `app.lurus.cn`, l’accès à `docs.lurus.cn` exi
   :steps="[
     { text: 'Intégration OIDC / OAuth2', link: '/fr/platform/auth/oidc', primary: true },
     { text: 'Authentification API (PAT / JWT)', link: '/fr/platform/auth/api-auth' },
-    { text: 'Console d’authentification', link: 'https://auth.lurus.cn', external: true },
+    { text: 'Console d’authentification', link: 'https://identity.lurus.cn', external: true },
   ]"
 />
 

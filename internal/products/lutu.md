@@ -79,7 +79,7 @@ graph TB
         P["Platform\nidentity.lurus.cn\n(account · billing · wallet · subscription\n notification WS)"]
         G["LLM Gateway\ntest-router.lurus.cn → newapi.lurus.cn\n(Portkey AI Gateway + newapi)\nREST + SSE"]
         L["Lucrum\nlucrum.lurus.cn\n(market · kline · advisor · strategy)"]
-        A["Casdoor OIDC\nauth.lurus.cn"]
+        A["Casdoor OIDC\nidentity.lurus.cn"]
     end
 
     UI --> PM
@@ -98,7 +98,7 @@ sequenceDiagram
     actor User
     participant App as Lutu APP
     participant AppAuth as flutter_appauth
-    participant Casdoor as auth.lurus.cn (Casdoor)
+    participant Casdoor as identity.lurus.cn (Casdoor)
     participant Platform as identity.lurus.cn
 
     User->>App: 点击「企业 SSO 登录」
@@ -241,7 +241,7 @@ sequenceDiagram
 | Platform | `identity.lurus.cn` | REST + WebSocket | 账户、钱包、计费、订阅、通知 | Bearer JWT (platform JWT) |
 | LLM Gateway | `test-router.lurus.cn` (Stage) | REST + SSE | LLM 聊天、模型列表、用量统计 | Bearer `gatewaySharedKey` (sk-xxx) |
 | Lucrum | `lucrum.lurus.cn` | REST + SSE | 市场数据、K线、11 AI 顾问、策略市场 | Bearer JWT |
-| Casdoor OIDC | `auth.lurus.cn` | OIDC/OAuth2 | SSO 企业登录 PKCE 流程 | PKCE code_verifier |
+| Casdoor OIDC | `identity.lurus.cn` | OIDC/OAuth2 | SSO 企业登录 PKCE 流程 | PKCE code_verifier |
 | Notification WS | `wss://identity.lurus.cn/api/v1/notifications/ws` | WebSocket | 实时推送（未读计数、通知事件） | `?token=<access_token>` |
 
 <div class="lurus-callout lurus-callout--warn"><span class="lurus-callout__icon"><Icon name="key-round" :size="18"/></span><div><p class="lurus-callout__title">LLM 鉴权现状（临时方案）</p><div class="lurus-callout__body">当前所有用户共享一个 newapi sk-xxx 令牌（<code>ApiConfig.gatewaySharedKey</code>，newapi user_id=1 root 账户）。原因：platform-core JWT 无法直接传入 newapi <code>/v1/*</code> 接口，SSO bridge 尚未实现。轮换与长期方案见下。</div></div></div>
@@ -250,7 +250,7 @@ sequenceDiagram
 
 当前所有用户共享一个 newapi sk-xxx 令牌（`ApiConfig.gatewaySharedKey`，newapi user_id=1 root 账户）。这是因为 platform-core JWT 无法直接传入 newapi `/v1/*` 接口，SSO bridge 尚未实现。
 
-- 轮换方式：登录 newapi (root / Lurus@ops) → Tokens → 撤销并重建 "lutu-app-shared" → 更新 `constants.dart::gatewaySharedKey` → 重新打包发布
+- 轮换方式：登录 newapi (root 账户,口令见带外凭证库) → Tokens → 撤销并重建 "lutu-app-shared" → 更新 `constants.dart::gatewaySharedKey` → 重新打包发布
 - 长期方案：platform-core 新增 `/api/v1/account/llm-key` 端点，按用户 mint newapi token，计费绑定
 
 ---
@@ -467,7 +467,7 @@ storeFile=../../lutu-release.jks
 **症状**：`flutter_appauth` 报 `invalid_client` 或 `redirect_uri_mismatch`
 
 **处置**：
-1. 登录 `https://auth.lurus.cn` Casdoor admin
+1. 登录 `https://identity.lurus.cn` Casdoor admin
 2. Projects → 创建 Native App，Bundle ID 填 `cn.lurus.lutu`
 3. Redirect URI 填 `cn.lurus.lutu://callback`
 4. Post-Logout URI 填 `cn.lurus.lutu://logout`
@@ -576,7 +576,7 @@ ssh root@100.98.57.55 "kubectl logs -n lurus-platform deploy/platform-core --tai
 
 技术栈：**Flutter 3.35+ / Dart 3.9+**，状态管理用 `Provider + ChangeNotifier`（15 个 ChangeNotifier，以 `AuthProvider` 为根节点，`AuthAwareMixin` 保证登出时自动清空），路由用 `go_router`，HTTP 用 `Dio + RetryInterceptor`。
 
-认证路径：`flutter_appauth` 实现 **OIDC PKCE**，对接 `auth.lurus.cn`（Casdoor），token 写入 `flutter_secure_storage`，后续请求由 `AuthInterceptor` 自动注入 Bearer 并处理 refresh。gRPC 接入通过 `platform-core.lurus-platform.svc:18105`（内部）或 `identity.lurus.cn`（外部），使用生成的 Dart gRPC stub。
+认证路径：`flutter_appauth` 实现 **OIDC PKCE**，对接 `identity.lurus.cn`（Casdoor），token 写入 `flutter_secure_storage`，后续请求由 `AuthInterceptor` 自动注入 Bearer 并处理 refresh。gRPC 接入通过 `platform-core.lurus-platform.svc:18105`（内部）或 `identity.lurus.cn`（外部），使用生成的 Dart gRPC stub。
 
 关键依赖版本：`flutter_appauth ^8.0.1`、`flutter_secure_storage ^9.2.4`、`sqflite ^2.4.1`、`sentry_flutter ^9.19.0`、`go_router ^14.8.1`。构建产物走 `flutter build apk --release --split-per-abi --obfuscate`，arm64 约 24 MB。
 
@@ -587,7 +587,7 @@ Lutu 是**纯移动端客户端**，无服务端组件，运维关注点在发�
 - **构建**：GitHub Actions 触发，push 走 analyze + test + debug APK，`v*` tag 触发 Release APK（arm64/armeabi-v7a/x86_64），符号文件上传至 Sentry。
 - **发布**：Android → Google Play（需先完成 KB-4 签名配置）；iOS → App Store（需先完成 Apple Developer 证书 + provisioning profile）。长期方案接入 **fastlane** 自动化双端发布流程（`fastlane supply` for Play / `fastlane deliver` for App Store）。
 - **监控**：崩溃接 **Sentry**（`--dart-define=SENTRY_DSN=...` 注入，空值 no-op），contract 测试每夜对 R6 stage 后端跑 anti-drift 检测。
-- **后端依赖**：Platform (`identity.lurus.cn`)、LLM Gateway (`test-router.lurus.cn`)、Lucrum (`lucrum.lurus.cn`)、Casdoor (`auth.lurus.cn`)。任一 503 会导致对应功能模块降级，Health 检查见§12.2。
+- **后端依赖**：Platform (`identity.lurus.cn`)、LLM Gateway (`test-router.lurus.cn`)、Lucrum (`lucrum.lurus.cn`)、Casdoor (`identity.lurus.cn`)。任一 503 会导致对应功能模块降级，Health 检查见§12.2。
 
 ### 决策者视角
 
@@ -631,7 +631,7 @@ sequenceDiagram
     actor User
     participant App as Lutu Flutter App
     participant AppAuth as flutter_appauth
-    participant Casdoor as auth.lurus.cn
+    participant Casdoor as identity.lurus.cn
     participant TokenStore as flutter_secure_storage
     participant Platform as identity.lurus.cn
 
@@ -704,7 +704,7 @@ class AuthService {
       AuthorizationTokenRequest(
         OidcConfig.clientId,                  // 'cn.lurus.lutu' native app client
         OidcConfig.redirectUrl,               // 'cn.lurus.lutu://callback'
-        issuer: OidcConfig.issuer,            // 'https://auth.lurus.cn'
+        issuer: OidcConfig.issuer,            // 'https://identity.lurus.cn'
         scopes: ['openid', 'profile', 'email', 'offline_access'],
         promptValues: ['login'],
       ),

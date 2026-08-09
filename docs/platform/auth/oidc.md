@@ -21,7 +21,7 @@ Lurus 统一身份认证基于 [Casdoor](https://casdoor.com)，对外暴露标�
 绝大多数 OIDC SDK 支持 **Discovery**，只需一个 URL 即可自动获取所有端点、算法和能力。
 
 ```
-Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
+Discovery URL: https://identity.lurus.cn/.well-known/openid-configuration
 ```
 
 初始化 SDK 直接指向该 URL（而非硬编码端点），服务端密钥轮换或端点变更时应用无需修改。
@@ -38,7 +38,7 @@ Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
 
 ## 标准端点
 
-所有端点以 `https://auth.lurus.cn` 为 Base URL。
+所有端点以 `https://identity.lurus.cn` 为 Base URL。
 
 | 端点名称 | 路径 | HTTP 方法 | 用途 |
 |----------|------|-----------|------|
@@ -124,7 +124,7 @@ function buildAuthorizeURL(clientId: string, redirectUri: string): string {
     nonce: randomBytes(16).toString("base64url"),
     code_challenge: challenge, code_challenge_method: "S256",
   });
-  return `https://auth.lurus.cn/oauth/v2/authorize?${params}`;
+  return `https://identity.lurus.cn/oauth/v2/authorize?${params}`;
 }
 
 // Step 3: 回调处理 — 验证 state，提取 code
@@ -141,7 +141,7 @@ function handleCallback(callbackURL: string) {
 // Step 4: 用 code 换 tokens
 async function exchangeCode(code: string, clientId: string, redirectUri: string) {
   const verifier = sessionStorage.getItem("pkce_verifier")!;
-  const resp = await fetch("https://auth.lurus.cn/oauth/v2/token", {
+  const resp = await fetch("https://identity.lurus.cn/oauth/v2/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -163,13 +163,13 @@ CODE_VERIFIER="dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
 CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | sha256sum | cut -d' ' -f1 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
 
 # 引导用户访问登录 URL
-echo "https://auth.lurus.cn/oauth/v2/authorize?response_type=code\
+echo "https://identity.lurus.cn/oauth/v2/authorize?response_type=code\
 &client_id=YOUR_CLIENT_ID&redirect_uri=https://yourapp.example.com/callback\
 &scope=openid%20profile%20email%20offline_access&state=random_state_value\
 &code_challenge=${CODE_CHALLENGE}&code_challenge_method=S256"
 
 # 用回调中的 code 换 tokens
-curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=authorization_code" \
   -d "code=AUTHORIZATION_CODE_FROM_CALLBACK" \
@@ -222,7 +222,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 | Claim | 说明 | id_token | access_token | userinfo | 依赖 Scope |
 |-------|------|:--------:|:------------:|:--------:|-----------|
 | `sub` | 用户唯一 ID（Casdoor 内部 ID） | ✓ | ✓ (JWT) | ✓ | 始终 |
-| `iss` | Issuer，固定 `https://auth.lurus.cn` | ✓ | ✓ | — | 始终 |
+| `iss` | Issuer，固定 `https://identity.lurus.cn` | ✓ | ✓ | — | 始终 |
 | `aud` | Audience，应用 client_id | ✓ | ✓ | — | 始终 |
 | `exp` / `iat` | 过期 / 签发时间（Unix） | ✓ | ✓ | — | 始终 |
 | `auth_time` | 用户实际登录时间 | ✓ | — | — | 始终 |
@@ -260,9 +260,9 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 服务端收到 Bearer token 后**不要**仅凭格式判断有效性，必须：
 
 ```
-1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://auth.lurus.cn/oauth/v2/keys
+1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://identity.lurus.cn/oauth/v2/keys
 2. 用匹配 kid 的公钥验证 JWT 签名
-3. 校验标准 claims：iss == "https://auth.lurus.cn"；aud 含本应用 client_id 或 project_id；
+3. 校验标准 claims：iss == "https://identity.lurus.cn"；aud 含本应用 client_id 或 project_id；
    exp > now()；nbf <= now()（如有）
 4. 按需校验业务 claims（角色、组织 ID）
 ```
@@ -293,7 +293,7 @@ var provider *oidc.Provider
 func Init(ctx context.Context) error {
     var err error
     // SDK 自动从 Discovery URL 加载配置和 JWKS
-    provider, err = oidc.NewProvider(ctx, "https://auth.lurus.cn")
+    provider, err = oidc.NewProvider(ctx, "https://identity.lurus.cn")
     return err
 }
 
@@ -312,7 +312,7 @@ func VerifyAccessToken(ctx context.Context, rawToken, clientID string) (*oidc.ID
 access token 为不透明格式（非 JWT）时用 Introspection 验证：
 
 ```bash
-curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
+curl -X POST https://identity.lurus.cn/oauth/v2/introspect \
   -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
   -d "token=ACCESS_TOKEN_TO_CHECK"
 # 响应：{ "active": true, "sub": "...", "exp": 1234567890, ... } 或 { "active": false }
@@ -338,7 +338,7 @@ curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
 ### Step 1: 请求 Device Code
 
 ```bash
-curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/device_authorization \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=YOUR_CLIENT_ID" -d "scope=openid profile email"
 ```
@@ -347,8 +347,8 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 {
   "device_code": "Ag_EE...zo9OA",
   "user_code": "GQWC-FWFK",
-  "verification_uri": "https://auth.lurus.cn/device",
-  "verification_uri_complete": "https://auth.lurus.cn/device?user_code=GQWC-FWFK",
+  "verification_uri": "https://identity.lurus.cn/device",
+  "verification_uri_complete": "https://identity.lurus.cn/device?user_code=GQWC-FWFK",
   "expires_in": 300,
   "interval": 5
 }
@@ -356,7 +356,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 
 ### Step 2: 展示给用户
 
-展示 `verification_uri`（`https://auth.lurus.cn/device`）+ `user_code`，或扫码 `verification_uri_complete`。超时 5 分钟。
+展示 `verification_uri`（`https://identity.lurus.cn/device`）+ `user_code`，或扫码 `verification_uri_complete`。超时 5 分钟。
 
 ### Step 3: 轮询 Token 端点
 
@@ -364,7 +364,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 
 ```bash
 while true; do
-  RESPONSE=$(curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+  RESPONSE=$(curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
     -d "device_code=Ag_EE...zo9OA" -d "client_id=YOUR_CLIENT_ID")
@@ -425,7 +425,7 @@ TypeScript 实现同构：`fetch` POST `/device_authorization` 起 flow，再以
   :steps="[
     { text: 'API 认证（机器对机器）', link: '/platform/auth/api-auth', primary: true },
     { text: '身份认证概述与接入点', link: '/platform/auth/' },
-    { text: '认证控制台', link: 'https://auth.lurus.cn', external: true },
+    { text: '认证控制台', link: 'https://identity.lurus.cn', external: true },
   ]"
   title="下一步"
 />
@@ -436,7 +436,7 @@ TypeScript 实现同构：`fetch` POST `/device_authorization` 起 flow，再以
 
 - Casdoor 官方：[Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
-- Auth 控制台 [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
+- Auth 控制台 [identity.lurus.cn](https://identity.lurus.cn) · Discovery [/.well-known/openid-configuration](https://identity.lurus.cn/.well-known/openid-configuration)
 
 </div>
 

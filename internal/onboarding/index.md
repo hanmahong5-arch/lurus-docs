@@ -35,7 +35,7 @@ owner: marvin
 ### 检查清单
 
 - [ ] 公司邮箱可收发（`<name>@lurus.cn`）
-- [ ] Casdoor 登录通：访问 `auth.lurus.cn` 应能用公司邮箱登录
+- [ ] Casdoor 登录通：访问 `identity.lurus.cn` 应能用公司邮箱登录
 - [ ] 用 Casdoor 单点登录 `identity.lurus.cn`（账号中心，原 admin.lurus.cn 已 SUNSET 2026-05-10）/ `forge.lurus.cn` / `internal.lurus.cn`（本站）
 - [ ] Tailscale 装好：`100.122.83.20`（R6）和 `100.98.57.55`（R1 master，read 权限可 ping）能访问
 - [ ] GitHub 二次验证 + SSH key 已绑定

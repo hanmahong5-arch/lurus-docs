@@ -140,7 +140,7 @@ No es la compra de una herramienta, es un reemplazo de infraestructura. Mira pri
     :actions="[
       { label: 'Visión general y puntos de acceso', href: '/es/platform/auth/', primary: true },
       { label: 'Federación SSO empresarial', href: '/es/platform/auth/oidc' },
-      { label: 'Consola de autenticación', href: 'https://auth.lurus.cn', external: true },
+      { label: 'Consola de autenticación', href: 'https://identity.lurus.cn', external: true },
     ]"
   />
   <ActionCard

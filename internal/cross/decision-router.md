@@ -135,7 +135,7 @@ graph TD
 |---|---|
 | 自建 vs Lurus 总成本 (TCO) | [能力矩阵](/cross/capability-matrix) + [集成配方](/cross/integration-recipes) |
 | 数据私有化合规 | [adr/0001-three-tier-envs](/adr/0001-three-tier-envs) |
-| SSO 联邦 | 配方 #4 + [adr/0002-casdoor-as-oidc](/adr/0002-casdoor-as-oidc) |
+| SSO 联邦 | 配方 #4 + [adr/0002-zitadel-as-oidc](/adr/0002-zitadel-as-oidc) |
 | 24/7 可用性 | [ops/incident-response](/ops/incident-response) |
 | 数据备份 | [ops/db-backup](/ops/db-backup) |
 | 升级路径 / roadmap | [/roadmap/](/roadmap/) |

@@ -140,7 +140,7 @@ Ce n’est pas l’achat d’un outil, c’est un remplacement d’infrastructur
     :actions="[
       { label: 'Présentation et points d\'accès', href: '/fr/platform/auth/', primary: true },
       { label: 'Fédération SSO entreprise', href: '/fr/platform/auth/oidc' },
-      { label: 'Console d\'authentification', href: 'https://auth.lurus.cn', external: true },
+      { label: 'Console d\'authentification', href: 'https://identity.lurus.cn', external: true },
     ]"
   />
   <ActionCard

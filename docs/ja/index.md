@@ -140,7 +140,7 @@ description: LurusTech プラットフォームドキュメント — API Refere
     :actions="[
       { label: '概要と接続点', href: '/ja/platform/auth/', primary: true },
       { label: 'エンタープライズ SSO フェデレーション', href: '/ja/platform/auth/oidc' },
-      { label: '認証コンソール', href: 'https://auth.lurus.cn', external: true },
+      { label: '認証コンソール', href: 'https://identity.lurus.cn', external: true },
     ]"
   />
   <ActionCard

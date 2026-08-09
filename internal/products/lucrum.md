@@ -286,7 +286,7 @@ push main (lucrum-web/** 或 lurus-ai-qtrd/**) → GitHub Actions
 | `REDIS_HOST` | `redis-service.lucrum.svc.cluster.local` |
 | `REDIS_DB` | `0` (pod 内独立 Redis，非集群共享 DB 1) |
 | `NEXTAUTH_URL` | `https://lucrum.lurus.cn` |
-| `OIDC_ISSUER` | `https://auth.lurus.cn` |
+| `OIDC_ISSUER` | `https://identity.lurus.cn` |
 | `OIDC_CLIENT_SECRET` | `""` (PKCE 无 secret) |
 
 **lurus-ai-qtrd**
@@ -428,7 +428,7 @@ python -m uvicorn vnpy_ai_trader.src.web.app:app --host 0.0.0.0 --port 8000 --re
 
 6. **lucrum-api 资源饱和**：当前资源限额 `cpu: 1000m / memory: 2Gi`，K8s 节点 cloud-ubuntu-2-4c8g 跑满时 vnpy 回测任务会 OOMKilled。遇到大范围回测（多 symbol × 长时间段）应主动监控 pod 内存。
 
-7. **R6 部署路径变更**：2026-04-25 Lucrum 从 R1 迁移到 R6 单节点 K3s。R6 无 Traefik，通过主机 nginx (`/etc/nginx/sites-enabled/lurus-stage`) 反代 `NodePort 30300` 到 `lucrum.lurus.cn`。原先 R1 的 `hostAliases`（将 `auth.lurus.cn` 重写为内网 Traefik IP）已删除，pod 现在通过公网 DNS 解析 Casdoor。如迁回 R1，需在 Deployment 补回 `hostAliases`（见 git history）。
+7. **R6 部署路径变更**：2026-04-25 Lucrum 从 R1 迁移到 R6 单节点 K3s。R6 无 Traefik，通过主机 nginx (`/etc/nginx/sites-enabled/lurus-stage`) 反代 `NodePort 30300` 到 `lucrum.lurus.cn`。原先 R1 的 `hostAliases`（将当时的 IdP 域名 `auth.lurus.cn` 重写为内网 Traefik IP）已删除，pod 现在通过公网 DNS 解析 IdP —— 该域名 2026-08-19 起为 `identity.lurus.cn`（`auth.lurus.cn` 别名同日拆除）。如迁回 R1，需在 Deployment 补回 `hostAliases`，且必须指向新域名（见 git history）。
 
 8. **Secret 缺失导致 CrashLoop**：`lucrum-secrets` 中 `LURUS_IDENTITY_INTERNAL_KEY` 如果缺失，pod 会 `CreateContainerConfigError`，无法启动。`MEMORUS_API_KEY` 声明了 `optional: true` 可缺失，其他所有 key 都是硬依赖。重新部署时先 `kubectl get secret lucrum-secrets -n lucrum` 确认所有 key 存在。
 

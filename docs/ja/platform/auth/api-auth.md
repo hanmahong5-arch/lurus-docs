@@ -7,7 +7,7 @@ description: Service User、Personal Access Token、JWT Profile、Client Credent
 
 # API 認証（マシン間 / M2M） <StatusBadge status="live" />
 
-M2M 認証向け：ブラウザの OIDC フローとは異なり、M2M では Casdoor の **Service Account**（サービスアカウント）を使い、人手を介さずに access token を取得します。Casdoor インスタンスは `https://auth.lurus.cn` で、以下のエンドポイントはすべてこれを基準とします。
+M2M 認証向け：ブラウザの OIDC フローとは異なり、M2M では Casdoor の **Service Account**（サービスアカウント）を使い、人手を介さずに access token を取得します。Casdoor インスタンスは `https://identity.lurus.cn` で、以下のエンドポイントはすべてこれを基準とします。
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">3</span><span class="lurus-stat__label">認証方式</span></div>
@@ -49,7 +49,7 @@ PAT は**即利用可能な token** で、access token に交換せずに、そ�
 ### 1.1 PAT の作成
 
 <ol class="lurus-steps">
-<li><a href="https://auth.lurus.cn">auth.lurus.cn</a> コンソールにログインします。</li>
+<li><a href="https://identity.lurus.cn">identity.lurus.cn</a> コンソールにログインします。</li>
 <li><strong>Users → Service Accounts</strong> に進みます（アカウントが特定の Organization に属する場合は、そのコンテキスト内で操作します）。</li>
 <li><strong>New</strong> でサービスアカウントを作成し、ユーザー名（命名規則は<a href="#三service-account-服务账号">第三節</a>を参照）と表示名を入力します。</li>
 <li>アカウント詳細 → <strong>Personal Access Tokens</strong> → <strong>New</strong> で、必要に応じて有効期限を設定します（空欄なら無期限）。</li>
@@ -62,10 +62,10 @@ PAT は**即利用可能な token** で、access token に交換せずに、そ�
 
 ```bash
 # 查询当前账号所在组织
-curl -X GET https://auth.lurus.cn/management/v1/orgs/me \
+curl -X GET https://identity.lurus.cn/management/v1/orgs/me \
   -H 'Authorization: Bearer <PAT>'
 # 调用 v2 API
-curl -X GET https://auth.lurus.cn/v2/users/me \
+curl -X GET https://identity.lurus.cn/v2/users/me \
   -H 'Authorization: Bearer <PAT>'
 ```
 
@@ -130,7 +130,7 @@ token エンドポイントに `client_credentials` grant リクエストを送�
 ::: code-group
 
 ```bash [curl]
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
@@ -143,7 +143,7 @@ const params = new URLSearchParams({
   scope: 'openid profile',
 })
 const credentials = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')
-const response = await fetch('https://auth.lurus.cn/oauth/v2/token', {
+const response = await fetch('https://identity.lurus.cn/oauth/v2/token', {
   method: 'POST',
   headers: {
     'Authorization': `Basic ${credentials}`,
@@ -169,7 +169,7 @@ const { access_token, expires_in } = await response.json()
 ### 3.4 API の呼び出し
 
 ```bash
-curl -X GET https://auth.lurus.cn/v2/users/me \
+curl -X GET https://identity.lurus.cn/v2/users/me \
   -H "Authorization: Bearer $ACCESS_TOKEN"
 ```
 
@@ -216,14 +216,14 @@ openssl rsa -in privatekey.pem -pubout -out publickey.pem
 **Payload**：
 
 ```json
-{ "iss": "<userId>", "sub": "<userId>", "aud": "https://auth.lurus.cn", "iat": 1714000000, "exp": 1714000300 }
+{ "iss": "<userId>", "sub": "<userId>", "aud": "https://identity.lurus.cn", "iat": 1714000000, "exp": 1714000300 }
 ```
 
 | Claim | 説明 |
 |-------|------|
 | `iss` | JSON ファイル内の `userId` |
 | `sub` | `iss` と同じ（リクエスト元、すなわちアプリケーション自身を表す） |
-| `aud` | Casdoor インスタンスのドメイン：`https://auth.lurus.cn` |
+| `aud` | Casdoor インスタンスのドメイン：`https://identity.lurus.cn` |
 | `iat` | 現在の UTC Unix タイムスタンプ |
 | `exp` | 失効時刻。`iat + 300`（5 分）を推奨；**最長でも 1 時間を超えない** |
 
@@ -241,7 +241,7 @@ curl のフロー：まずコードライブラリで assertion を署名し、�
 # 1. 先用代码库签名 JWT（示意）
 ASSERTION="<base64url-header>.<base64url-payload>.<base64url-signature>"
 # 2. 请求 token
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data 'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer' \
   --data 'scope=openid profile' \
@@ -286,7 +286,7 @@ func GetToken(keyFilePath string) (string, error) {
     claims := jwt.MapClaims{
         "iss": kf.UserID,
         "sub": kf.UserID,
-        "aud": jwt.ClaimStrings{"https://auth.lurus.cn"},
+        "aud": jwt.ClaimStrings{"https://identity.lurus.cn"},
         "iat": now.Unix(),
         "exp": now.Add(5 * time.Minute).Unix(),
     }
@@ -302,7 +302,7 @@ func GetToken(keyFilePath string) (string, error) {
         "assertion":  {assertion},
     }
     req, _ := http.NewRequest("POST",
-        "https://auth.lurus.cn/oauth/v2/token",
+        "https://identity.lurus.cn/oauth/v2/token",
         strings.NewReader(params.Encode()),
     )
     req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -332,13 +332,13 @@ def get_token(key_file_path: str) -> str:
     assertion = jwt.encode(
         {
             "iss": key_data["userId"], "sub": key_data["userId"],
-            "aud": "https://auth.lurus.cn", "iat": now, "exp": now + 300,
+            "aud": "https://identity.lurus.cn", "iat": now, "exp": now + 300,
         },
         key_data["key"], algorithm="RS256",
         headers={"kid": key_data["keyId"]},
     )
     response = requests.post(
-        "https://auth.lurus.cn/oauth/v2/token",
+        "https://identity.lurus.cn/oauth/v2/token",
         data={
             "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
             "scope": "openid profile", "assertion": assertion,
@@ -363,7 +363,7 @@ async function getToken(keyFilePath: string): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
 
   const assertion = jwt.sign(
-    { iss: keyData.userId, sub: keyData.userId, aud: 'https://auth.lurus.cn', iat: now, exp: now + 300 },
+    { iss: keyData.userId, sub: keyData.userId, aud: 'https://identity.lurus.cn', iat: now, exp: now + 300 },
     keyData.key,
     { algorithm: 'RS256', keyid: keyData.keyId }
   );
@@ -373,7 +373,7 @@ async function getToken(keyFilePath: string): Promise<string> {
     scope: 'openid profile',
     assertion,
   });
-  const resp = await fetch('https://auth.lurus.cn/oauth/v2/token', {
+  const resp = await fetch('https://identity.lurus.cn/oauth/v2/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: params.toString(),
@@ -399,7 +399,7 @@ Casdoor は access token の **audience（aud）** フィールドを検証し�
 **Casdoor 自身の API にアクセスする場合**（Management / Admin / Auth）：`scope=openid profile urn:casdoor:iam:org:project:id:casdoor:aud`。この予約 scope は Casdoor プロジェクトを token の audience に加えます。Management API などは、この audience を含まない token を拒否します。
 
 ```bash
-curl -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -X POST https://identity.lurus.cn/oauth/v2/token \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --user "$CLIENT_ID:$CLIENT_SECRET" \
   --data 'grant_type=client_credentials' \
@@ -494,7 +494,7 @@ containers:
   :steps="[
     { text: 'OIDC / OAuth2 連携（ブラウザログイン）', link: '/ja/platform/auth/oidc', primary: true },
     { text: 'ID 認証の概要と接続ポイント', link: '/ja/platform/auth/' },
-    { text: '認証コンソール', link: 'https://auth.lurus.cn', external: true },
+    { text: '認証コンソール', link: 'https://identity.lurus.cn', external: true },
   ]"
   title="次のステップ"
 />

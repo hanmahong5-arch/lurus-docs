@@ -21,7 +21,7 @@ Lurus 통합 신원 인증은 [Casdoor](https://casdoor.com) 기반이며, 표�
 대다수의 OIDC SDK는 **Discovery**를 지원하므로, URL 하나만으로 모든 엔드포인트, 알고리즘, 기능을 자동으로 가져올 수 있습니다.
 
 ```
-Discovery URL: https://auth.lurus.cn/.well-known/openid-configuration
+Discovery URL: https://identity.lurus.cn/.well-known/openid-configuration
 ```
 
 SDK를 초기화할 때 엔드포인트를 하드코딩하는 대신 이 URL을 직접 가리키면, 서버 측 키 회전이나 엔드포인트 변경 시에도 애플리케이션을 수정할 필요가 없습니다.
@@ -38,7 +38,7 @@ SDK를 초기화할 때 엔드포인트를 하드코딩하는 대신 이 URL을 
 
 ## 표준 엔드포인트
 
-모든 엔드포인트는 `https://auth.lurus.cn`을 Base URL로 사용합니다.
+모든 엔드포인트는 `https://identity.lurus.cn`을 Base URL로 사용합니다.
 
 | 엔드포인트 이름 | 경로 | HTTP 메서드 | 용도 |
 |----------|------|-----------|------|
@@ -124,7 +124,7 @@ function buildAuthorizeURL(clientId: string, redirectUri: string): string {
     nonce: randomBytes(16).toString("base64url"),
     code_challenge: challenge, code_challenge_method: "S256",
   });
-  return `https://auth.lurus.cn/oauth/v2/authorize?${params}`;
+  return `https://identity.lurus.cn/oauth/v2/authorize?${params}`;
 }
 
 // Step 3: 回调处理 — 验证 state，提取 code
@@ -141,7 +141,7 @@ function handleCallback(callbackURL: string) {
 // Step 4: 用 code 换 tokens
 async function exchangeCode(code: string, clientId: string, redirectUri: string) {
   const verifier = sessionStorage.getItem("pkce_verifier")!;
-  const resp = await fetch("https://auth.lurus.cn/oauth/v2/token", {
+  const resp = await fetch("https://identity.lurus.cn/oauth/v2/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -163,13 +163,13 @@ CODE_VERIFIER="dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
 CODE_CHALLENGE=$(echo -n "$CODE_VERIFIER" | sha256sum | cut -d' ' -f1 | xxd -r -p | base64 | tr '+/' '-_' | tr -d '=')
 
 # 引导用户访问登录 URL
-echo "https://auth.lurus.cn/oauth/v2/authorize?response_type=code\
+echo "https://identity.lurus.cn/oauth/v2/authorize?response_type=code\
 &client_id=YOUR_CLIENT_ID&redirect_uri=https://yourapp.example.com/callback\
 &scope=openid%20profile%20email%20offline_access&state=random_state_value\
 &code_challenge=${CODE_CHALLENGE}&code_challenge_method=S256"
 
 # 用回调中的 code 换 tokens
-curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "grant_type=authorization_code" \
   -d "code=AUTHORIZATION_CODE_FROM_CALLBACK" \
@@ -222,7 +222,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 | Claim | 설명 | id_token | access_token | userinfo | 의존 Scope |
 |-------|------|:--------:|:------------:|:--------:|-----------|
 | `sub` | 사용자 고유 ID(Casdoor 내부 ID) | ✓ | ✓ (JWT) | ✓ | 항상 |
-| `iss` | Issuer, 고정값 `https://auth.lurus.cn` | ✓ | ✓ | — | 항상 |
+| `iss` | Issuer, 고정값 `https://identity.lurus.cn` | ✓ | ✓ | — | 항상 |
 | `aud` | Audience, 애플리케이션 client_id | ✓ | ✓ | — | 항상 |
 | `exp` / `iat` | 만료 / 발급 시간(Unix) | ✓ | ✓ | — | 항상 |
 | `auth_time` | 사용자 실제 로그인 시간 | ✓ | — | — | 항상 |
@@ -260,9 +260,9 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
 서버는 Bearer token을 받은 후 형식만으로 유효성을 판단해서는 **안 되며**, 반드시 다음을 수행해야 합니다:
 
 ```
-1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://auth.lurus.cn/oauth/v2/keys
+1. 从 JWKS 拉公钥（建议缓存 TTL 1小时）: GET https://identity.lurus.cn/oauth/v2/keys
 2. 用匹配 kid 的公钥验证 JWT 签名
-3. 校验标准 claims：iss == "https://auth.lurus.cn"；aud 含本应用 client_id 或 project_id；
+3. 校验标准 claims：iss == "https://identity.lurus.cn"；aud 含本应用 client_id 或 project_id；
    exp > now()；nbf <= now()（如有）
 4. 按需校验业务 claims（角色、组织 ID）
 ```
@@ -293,7 +293,7 @@ var provider *oidc.Provider
 func Init(ctx context.Context) error {
     var err error
     // SDK 自动从 Discovery URL 加载配置和 JWKS
-    provider, err = oidc.NewProvider(ctx, "https://auth.lurus.cn")
+    provider, err = oidc.NewProvider(ctx, "https://identity.lurus.cn")
     return err
 }
 
@@ -312,7 +312,7 @@ func VerifyAccessToken(ctx context.Context, rawToken, clientID string) (*oidc.ID
 access token이 불투명 형식(JWT가 아님)인 경우 Introspection으로 검증합니다:
 
 ```bash
-curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
+curl -X POST https://identity.lurus.cn/oauth/v2/introspect \
   -u "YOUR_CLIENT_ID:YOUR_CLIENT_SECRET" \
   -d "token=ACCESS_TOKEN_TO_CHECK"
 # 响应：{ "active": true, "sub": "...", "exp": 1234567890, ... } 或 { "active": false }
@@ -338,7 +338,7 @@ curl -X POST https://auth.lurus.cn/oauth/v2/introspect \
 ### Step 1: Device Code 요청
 
 ```bash
-curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
+curl -s -X POST https://identity.lurus.cn/oauth/v2/device_authorization \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=YOUR_CLIENT_ID" -d "scope=openid profile email"
 ```
@@ -347,8 +347,8 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 {
   "device_code": "Ag_EE...zo9OA",
   "user_code": "GQWC-FWFK",
-  "verification_uri": "https://auth.lurus.cn/device",
-  "verification_uri_complete": "https://auth.lurus.cn/device?user_code=GQWC-FWFK",
+  "verification_uri": "https://identity.lurus.cn/device",
+  "verification_uri_complete": "https://identity.lurus.cn/device?user_code=GQWC-FWFK",
   "expires_in": 300,
   "interval": 5
 }
@@ -356,7 +356,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 
 ### Step 2: 사용자에게 표시
 
-`verification_uri`(`https://auth.lurus.cn/device`) + `user_code`를 표시하거나, `verification_uri_complete`를 QR 코드로 스캔하게 합니다. 타임아웃은 5분입니다.
+`verification_uri`(`https://identity.lurus.cn/device`) + `user_code`를 표시하거나, `verification_uri_complete`를 QR 코드로 스캔하게 합니다. 타임아웃은 5분입니다.
 
 ### Step 3: Token 엔드포인트 폴링
 
@@ -364,7 +364,7 @@ curl -s -X POST https://auth.lurus.cn/oauth/v2/device_authorization \
 
 ```bash
 while true; do
-  RESPONSE=$(curl -s -X POST https://auth.lurus.cn/oauth/v2/token \
+  RESPONSE=$(curl -s -X POST https://identity.lurus.cn/oauth/v2/token \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "grant_type=urn:ietf:params:oauth:grant-type:device_code" \
     -d "device_code=Ag_EE...zo9OA" -d "client_id=YOUR_CLIENT_ID")
@@ -425,7 +425,7 @@ TypeScript 구현도 동형입니다: `fetch`로 `/device_authorization`에 POST
   :steps="[
     { text: 'API 인증(머신 대 머신)', link: '/ko/platform/auth/api-auth', primary: true },
     { text: '신원 인증 개요와 접근점', link: '/ko/platform/auth/' },
-    { text: '인증 콘솔', link: 'https://auth.lurus.cn', external: true },
+    { text: '인증 콘솔', link: 'https://identity.lurus.cn', external: true },
   ]"
   title="다음 단계"
 />
@@ -436,7 +436,7 @@ TypeScript 구현도 동형입니다: `fetch`로 `/device_authorization`에 POST
 
 - Casdoor 공식: [Endpoints](https://casdoor.com/docs/apis/openidoauth/endpoints) · [Scopes](https://casdoor.com/docs/apis/openidoauth/scopes) · [Claims](https://casdoor.com/docs/apis/openidoauth/claims)
 - [RFC 7636 — PKCE](https://datatracker.ietf.org/doc/html/rfc7636) · [RFC 8628 — Device Authorization Grant](https://datatracker.ietf.org/doc/html/rfc8628)
-- Auth 콘솔 [auth.lurus.cn](https://auth.lurus.cn) · Discovery [/.well-known/openid-configuration](https://auth.lurus.cn/.well-known/openid-configuration)
+- Auth 콘솔 [identity.lurus.cn](https://identity.lurus.cn) · Discovery [/.well-known/openid-configuration](https://identity.lurus.cn/.well-known/openid-configuration)
 
 </div>
 

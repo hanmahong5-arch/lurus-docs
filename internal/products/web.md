@@ -184,7 +184,7 @@ push main → check (lint + build) → docker build → GHCR push
 
 ## 环境变量
 
-lurus-www 无环境变量依赖（所有外链硬编码为 `api.lurus.cn` / `auth.lurus.cn` / `docs.lurus.cn`）。
+lurus-www 无环境变量依赖（所有外链硬编码为 `api.lurus.cn` / `identity.lurus.cn` / `docs.lurus.cn`）。
 
 ---
 
@@ -328,7 +328,7 @@ push main → test (ExUnit) → build (Elixir mix release)
 | `PORT` | 硬编码 `4000` | Bandit 监听端口 |
 | `DATABASE_URL` | 硬编码（含密码） | PG `webgame` schema，**明文在 manifest 中** |
 | `OIDC_CLIENT_ID` | Secret `webgame-secret` | OIDC 登录（可选，当前可无账号匿名玩） |
-| `OIDC_ISSUER` | 硬编码 `https://auth.lurus.cn` | — |
+| `OIDC_ISSUER` | 硬编码 `https://identity.lurus.cn` | — |
 | `CHAT_ENABLED` | `false` | 聊天功能关闭 |
 | `RELEASE_TMP` | `/tmp` | BEAM release 临时目录（rootfs 只读时必须指向 emptyDir） |
 
@@ -578,12 +578,12 @@ graph TD
     D -->|否| H{是否特定产品功能？}
 
     H -->|Lucrum 量化| I[放 lucrum.lurus.cn\nGo+Next.js]
-    H -->|平台账户 / 计费| J[放 auth.lurus.cn / api.lurus.cn\nCasdoor + Platform]
+    H -->|平台账户 / 计费| J[放 identity.lurus.cn / api.lurus.cn\nCasdoor + Platform]
     H -->|Admin 后台| K[放 admin.lurus.cn\nElixir/Phoenix Admin]
     H -->|其他新产品| L[申请新子域\n遵循 lurus.yaml 注册]
 
     E --> M{内容是否需要登录？}
-    M -->|是| N[✓ 跳转 auth.lurus.cn OIDC\n回调到 www]
+    M -->|是| N[✓ 跳转 identity.lurus.cn OIDC\n回调到 www]
     M -->|否| O[✓ 纯静态，无后端依赖]
 ```
 
@@ -627,11 +627,11 @@ sequenceDiagram
 sequenceDiagram
     participant U as 用户浏览器
     participant WWW as www.lurus.cn<br/>Next.js
-    participant AUTH as auth.lurus.cn<br/>Casdoor OIDC
+    participant AUTH as identity.lurus.cn<br/>Casdoor OIDC
     participant PLAT as api.lurus.cn<br/>Platform
 
     U->>WWW: GET /pricing → 点击"免费注册"
-    WWW-->>U: 302 redirect<br/>https://auth.lurus.cn/oauth/v2/authorize<br/>?client_id=www&redirect_uri=...&scope=openid+profile
+    WWW-->>U: 302 redirect<br/>https://identity.lurus.cn/oauth/v2/authorize<br/>?client_id=www&redirect_uri=...&scope=openid+profile
     U->>AUTH: OIDC 授权请求
     AUTH-->>U: 登录/注册表单
     U->>AUTH: 提交凭证
@@ -823,7 +823,7 @@ curl -s -o /dev/null -w "%{http_code}" https://www.lurus.cn/ai-assistant
 | 图片资源 | ✓ 使用 `next/image` 自动 WebP/AVIF 压缩 + `minimumCacheTTL: 86400`，减少重复拉取带宽消耗 | ✗ 使用原始 `<img src>` 直链高分辨率图，在 3Mbps 出口严重拖慢首屏 |
 | ICP 合规 | ✓ 备案文案（ICP 备案号 + 公安备案号）常驻 Footer，随每次构建一同部署 | ✗ 移除或"暂时隐藏" Footer 备案信息——阿里云巡检和工信部核验会直接下线域名 |
 | 游戏状态 | ✓ 游戏状态机（物理/碰撞/升级/道具）全部跑在 Phoenix GameServer GenServer 服务端 | ✗ 将碰撞检测或分数计算放到客户端 JS——不同客户端帧率导致结果不一致，且易被作弊 |
-| 跨子域跳转 | ✓ 所有跨子域外链（docs.lurus.cn / api.lurus.cn / auth.lurus.cn）统一加 `target="_blank" rel="noopener noreferrer"` | ✗ 裸链接跳转无 `noopener`——允许目标页通过 `window.opener` 访问来源页，存在跨域信息泄漏 |
+| 跨子域跳转 | ✓ 所有跨子域外链（docs.lurus.cn / api.lurus.cn / identity.lurus.cn）统一加 `target="_blank" rel="noopener noreferrer"` | ✗ 裸链接跳转无 `noopener`——允许目标页通过 `window.opener` 访问来源页，存在跨域信息泄漏 |
 | 带宽监控 | ✓ 在阿里云云监控设置 3Mbps 带宽利用率告警（阈值 80%），触发时评估 CDN 分流方案 | ✗ 不配告警，等到用户反馈"网站加载慢"才发现带宽已跑满 |
 | LiveView WebSocket | ✓ LiveView 断线重连优先使用服务端返回的 `my_id` 覆盖客户端状态，保证 playerId 一致性 | ✗ 重连时客户端自行生成新 ID——导致玩家分身，同一玩家在 GameServer 中注册两个 slot |
 | 容器安全 | ✓ rootfs 设为 `readOnly: true`，`RELEASE_TMP=/tmp` 指向 `emptyDir` volume | ✗ 容器以 root 身份运行且 rootfs 可写——增加容器逃逸风险 |
@@ -834,10 +834,10 @@ curl -s -o /dev/null -w "%{http_code}" https://www.lurus.cn/ai-assistant
 
 ### ① www + Platform：注册 / 登录跳转 Casdoor
 
-用户在 `www.lurus.cn/pricing` 点击"免费注册"，前端构造 OIDC Authorization Code 请求跳转至 `auth.lurus.cn`（Casdoor），登录/注册完成后携带 code 回调到 `www.lurus.cn/auth/callback`。www 后端用 code 换取 `access_token`，再调用 Platform 内部接口 `GET /v1/user/me`（Bearer token）获取账户信息。全链路无跨域 cookie 共享，所有鉴权通过 OIDC 标准 code flow 完成。
+用户在 `www.lurus.cn/pricing` 点击"免费注册"，前端构造 OIDC Authorization Code 请求跳转至 `identity.lurus.cn`（Casdoor），登录/注册完成后携带 code 回调到 `www.lurus.cn/auth/callback`。www 后端用 code 换取 `access_token`，再调用 Platform 内部接口 `GET /v1/user/me`（Bearer token）获取账户信息。全链路无跨域 cookie 共享，所有鉴权通过 OIDC 标准 code flow 完成。
 
 **关键配置约束**：
-- `auth.lurus.cn` 的 OIDC client 须将 `https://www.lurus.cn/auth/callback` 加入 `redirect_uris` 白名单
+- `identity.lurus.cn` 的 OIDC client 须将 `https://www.lurus.cn/auth/callback` 加入 `redirect_uris` 白名单
 - www 不存储用户密码，session cookie `SameSite=Lax; Secure; HttpOnly`
 - webgame 匿名模式不走此流程；账号绑定是可选项（`OIDC_CLIENT_ID` 已配置但 OIDC 登录非强制）
 

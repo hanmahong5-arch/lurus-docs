@@ -1,13 +1,13 @@
 ---
 title: 控制台管理 | Casdoor 身份认证
-description: 使用 auth.lurus.cn 控制台管理组织、用户、项目、应用、身份策略的完整操作手册。
+description: 使用 identity.lurus.cn 控制台管理组织、用户、项目、应用、身份策略的完整操作手册。
 ---
 
 <div class="console-page">
 
 # 控制台管理
 
-Lurus 用 [Casdoor](https://casdoor.com) 作统一身份认证平台，控制台入口 [auth.lurus.cn](https://auth.lurus.cn)。本文面向**组织管理员 / IT 运维**，覆盖日常操作完整流程。
+Lurus 用 [Casdoor](https://casdoor.com) 作统一身份认证平台，控制台入口 [identity.lurus.cn](https://identity.lurus.cn)。本文面向**组织管理员 / IT 运维**，覆盖日常操作完整流程。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -69,7 +69,7 @@ Lurus 用 [Casdoor](https://casdoor.com) 作统一身份认证平台，控制台
 
 **切换**：顶部 Breadcrumb 下拉 → 点目标组织名。
 
-**自助注册入口（B2B）**：客户访问 `https://auth.lurus.cn/ui/login/register/org` 自行注册组织。
+**自助注册入口（B2B）**：客户访问 `https://identity.lurus.cn/ui/login/register/org` 自行注册组织。
 
 ### 2.2 设置默认 Organization
 
@@ -410,11 +410,11 @@ Actions 在登录/注册/用户创建等关键事件触发点运行 **JavaScript
   <span class="lurus-callout__icon"><Icon name="link" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">相关文档</p>
-    <div class="lurus-callout__body"><a href="/platform/auth/">认证概述与接入点</a> · <a href="/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/platform/auth/api-auth">API 认证</a> · <a href="https://auth.lurus.cn">认证控制台 ↗</a></div>
+    <div class="lurus-callout__body"><a href="/platform/auth/">认证概述与接入点</a> · <a href="/platform/auth/oidc">OIDC / OAuth2</a> · <a href="/platform/auth/api-auth">API 认证</a> · <a href="https://identity.lurus.cn">认证控制台 ↗</a></div>
   </div>
 </div>
 
-*基于 Casdoor 自托管实例（`auth.lurus.cn`），界面细节以实际版本为准。策略变更请同步本文档。*
+*基于 Casdoor 自托管实例（`identity.lurus.cn`），界面细节以实际版本为准。策略变更请同步本文档。*
 
 </div>
 

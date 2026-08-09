@@ -199,7 +199,7 @@ func RunStrategy(ctx context.Context, nl string) error {
 ```mermaid
 sequenceDiagram
   participant U as 客户员工
-  participant Z as Casdoor<br/>auth.lurus.cn
+  participant Z as Casdoor<br/>identity.lurus.cn
   participant IDP as 客户 IdP<br/>(Azure AD)
   participant LU as Lutu / 其他业务
   participant PF as Platform
@@ -227,11 +227,11 @@ casdoor-admin idp create --type saml --metadata-url $CUSTOMER_IDP_URL
 casdoor-admin scim enable --provider azure-ad
 
 # 3. 在客户 IdP 登记 Lurus SP
-# entityID: https://auth.lurus.cn/saml/v2/metadata
-# ACS:      https://auth.lurus.cn/saml/v2/acs
+# entityID: https://identity.lurus.cn/saml/v2/metadata
+# ACS:      https://identity.lurus.cn/saml/v2/acs
 
 # 4. 测试登录
-curl -L "https://auth.lurus.cn/oauth/v2/authorize?client_id=$CID&..."
+curl -L "https://identity.lurus.cn/oauth/v2/authorize?client_id=$CID&..."
 ```
 
 **部署要点**：

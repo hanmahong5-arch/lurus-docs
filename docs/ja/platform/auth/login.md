@@ -7,7 +7,7 @@ description: Lurus がサポートするログイン方式（パスワード、P
 
 # ログインと多要素認証
 
-Lurus のすべての製品は同一の身元認証インフラ（**Casdoor**、外部公開は `auth.lurus.cn`）を共有します。Lurus API、Switch、Lucrum、Forge のいずれを利用する場合でも、ログインは同じ入口を経由し、一度ログインすれば全製品で通用します。
+Lurus のすべての製品は同一の身元認証インフラ（**Casdoor**、外部公開は `identity.lurus.cn`）を共有します。Lurus API、Switch、Lucrum、Forge のいずれを利用する場合でも、ログインは同じ入口を経由し、一度ログインすれば全製品で通用します。
 
 ---
 
@@ -17,11 +17,11 @@ Lurus のすべての製品は同一の身元認証インフラ（**Casdoor**、
   <p class="lurus-section-head__lede">OIDC Authorization Code Flow + PKCE。クライアントは一切の秘密鍵を保存しません。</p>
 </div>
 
-ユーザーが任意の製品にアクセスした際に有効なセッションがない場合、アプリケーションはブラウザを `auth.lurus.cn` にリダイレクトし、認証後に認可コードを付けて元のページへ戻します。
+ユーザーが任意の製品にアクセスした際に有効なセッションがない場合、アプリケーションはブラウザを `identity.lurus.cn` にリダイレクトし、認証後に認可コードを付けて元のページへ戻します。
 
 <ArchitectureDiagram
   title="Authorization Code + PKCE フロー"
-  chart="sequenceDiagram; participant B as ユーザーブラウザ; participant P as Lurus 製品; participant A as auth.lurus.cn; B->>P: 製品ページにアクセス; P-->>B: 302 リダイレクト; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: ログインページ メール/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: 認可コード; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: ログイン成功、製品へ進入"
+  chart="sequenceDiagram; participant B as ユーザーブラウザ; participant P as Lurus 製品; participant A as identity.lurus.cn; B->>P: 製品ページにアクセス; P-->>B: 302 リダイレクト; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: ログインページ メール/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: 認可コード; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: ログイン成功、製品へ進入"
 />
 
 **PKCE**：クライアントは認可リクエストを送る前にランダムな `code_verifier` を生成し、その SHA-256 ハッシュである `code_challenge` をリクエストとともに送信します。認可コードを取得した後は元の verifier で token と交換し、サーバーは両者の一致を検証してから発行します。たとえ認可コードが傍受されても token とは交換できません。
@@ -51,12 +51,12 @@ Passkey > ソーシャルログイン > メールパスワード。Passkey は�
 
 ## 3. Passkey / WebAuthn
 
-**原理**：**WebAuthn / FIDO2** に基づき、非対称暗号でパスワードを置き換えます。登録時にデバイスが鍵ペアを生成し、**秘密鍵はデバイスに留まり**（生体認証/PIN で保護）、公開鍵を `auth.lurus.cn` にアップロードします。ログイン時にはサーバーがチャレンジを送り、デバイスの秘密鍵で署名した後、サーバーが公開鍵で検証します。全行程で**パスワードの送信はゼロ**であり、データベースが漏洩しても得られるのは公開鍵だけです。
+**原理**：**WebAuthn / FIDO2** に基づき、非対称暗号でパスワードを置き換えます。登録時にデバイスが鍵ペアを生成し、**秘密鍵はデバイスに留まり**（生体認証/PIN で保護）、公開鍵を `identity.lurus.cn` にアップロードします。ログイン時にはサーバーがチャレンジを送り、デバイスの秘密鍵で署名した後、サーバーが公開鍵で検証します。全行程で**パスワードの送信はゼロ**であり、データベースが漏洩しても得られるのは公開鍵だけです。
 
 **登録（ユーザー操作）**：
 
 <ol class="lurus-steps">
-<li><code>auth.lurus.cn</code> にログインします。</li>
+<li><code>identity.lurus.cn</code> にログインします。</li>
 <li><strong>アカウント設定 → セキュリティ → Passkey を追加</strong> に進みます。</li>
 <li>Passkey に名前を付けます（例：「MacBook Touch ID」）。</li>
 <li>生体認証を完了します（Touch ID / Face ID / PIN / ハードウェアキー）。</li>
@@ -127,7 +127,7 @@ Casdoor は中間 IdP として機能し、1 つまたは複数の**上流の外
 
 <ArchitectureDiagram
   title="Identity Brokering 経路"
-  chart="graph LR; P[Lurus 製品] --> Z[auth.lurus.cn · Casdoor]; Z --> U[上流 IdP · Azure AD / Okta / GitHub …]; U -. ユーザー身元アサーション OIDC/SAML .-> Z; Z -. Lurus access_token / id_token を発行 .-> P"
+  chart="graph LR; P[Lurus 製品] --> Z[identity.lurus.cn · Casdoor]; Z --> U[上流 IdP · Azure AD / Okta / GitHub …]; U -. ユーザー身元アサーション OIDC/SAML .-> Z; Z -. Lurus access_token / id_token を発行 .-> P"
 />
 
 **いつ使うか**：企業顧客の B2B SSO（従業員が自社の Azure AD/Okta で直接ログインでき、登録不要）；ドメイン自動ルーティング（企業メールを入力するとドメインに応じて対応する IdP へジャンプ、Domain Discovery）；アカウント関連付け（既存の Lurus アカウントに GitHub/Google を関連付け）；Just-in-Time 作成（初回の外部 IdP ログイン時に自動でアカウントを作成しデフォルトロールを割り当て）。
@@ -193,7 +193,7 @@ B2B 組織にカスタムログインドメイン（`auth.client.com`）を設�
   :steps="[
     { text: 'OIDC / OAuth2 連携', link: '/ja/platform/auth/oidc', primary: true },
     { text: 'API 認証 (PAT / JWT)', link: '/ja/platform/auth/api-auth' },
-    { text: '認証コンソール', link: 'https://auth.lurus.cn', external: true },
+    { text: '認証コンソール', link: 'https://identity.lurus.cn', external: true },
   ]"
 />
 

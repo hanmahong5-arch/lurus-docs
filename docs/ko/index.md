@@ -140,7 +140,7 @@ description: LurusTech 플랫폼 문서 — API Reference · Quickstart · Integ
     :actions="[
       { label: '개요 및 접속점', href: '/ko/platform/auth/', primary: true },
       { label: '기업 SSO 페더레이션', href: '/ko/platform/auth/oidc' },
-      { label: '인증 콘솔', href: 'https://auth.lurus.cn', external: true },
+      { label: '인증 콘솔', href: 'https://identity.lurus.cn', external: true },
     ]"
   />
   <ActionCard

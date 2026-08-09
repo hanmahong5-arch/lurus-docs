@@ -43,7 +43,7 @@ description: "Ruta completa de migración de usuarios SCIM, federación SSO y co
 <ol class="lurus-steps">
 <li>
 
-**Crear la conexión de federación en la consola de Lurus** — Accede a `auth.lurus.cn` → Configuración de empresa → Proveedores de identidad → Nuevo → selecciona OIDC. Introduce los datos del IdP corporativo:
+**Crear la conexión de federación en la consola de Lurus** — Accede a `identity.lurus.cn` → Configuración de empresa → Proveedores de identidad → Nuevo → selecciona OIDC. Introduce los datos del IdP corporativo:
 
 - Issuer URL
 - Client ID
@@ -86,10 +86,10 @@ department:  department   # custom claim
 
 **Importación masiva a Lurus**
 
-<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="Importar usuarios de forma masiva (auth.lurus.cn)" />
+<ApiEndpoint method="POST" path="/admin/v1/scim/users:batchImport" description="Importar usuarios de forma masiva (identity.lurus.cn)" />
 
 ```bash
-curl -X POST https://auth.lurus.cn/admin/v1/scim/users:batchImport \
+curl -X POST https://identity.lurus.cn/admin/v1/scim/users:batchImport \
   -H "Authorization: Bearer $ADMIN_TOKEN" \
   -H "Content-Type: application/json" \
   -d @users.json

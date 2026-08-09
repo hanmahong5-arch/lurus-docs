@@ -7,7 +7,7 @@ description: Instance / Organization / Project / Application / User / Grant / Ad
 
 # 核心概念
 
-Lurus 用 [Casdoor](https://casdoor.com) 作统一 OIDC 身份提供方（IdP），公网入口 `auth.lurus.cn`。本页梳理对象模型层级。
+Lurus 用 [Casdoor](https://casdoor.com) 作统一 OIDC 身份提供方（IdP），公网入口 `identity.lurus.cn`。本页梳理对象模型层级。
 
 ---
 
@@ -38,7 +38,7 @@ Lurus 用 [Casdoor](https://casdoor.com) 作统一 OIDC 身份提供方（IdP）
 | 虚拟实例 | 通过 System API 可创建多个虚拟实例，适合 SaaS 多租户分发 |
 
 ::: tip Lurus 语境
-生产环境只有一个实例 **`lurus-prod`**（`auth.lurus.cn`）。无需虚拟实例，所有产品线共享同一 issuer。
+生产环境只有一个实例 **`lurus-prod`**（`identity.lurus.cn`）。无需虚拟实例，所有产品线共享同一 issuer。
 :::
 
 ---

@@ -141,7 +141,7 @@ graph TD
 | 评估 | 客户问"你们对比 X 怎么样" | 销售有 [能力矩阵](/cross/capability-matrix) | TCO 计算器 |
 | PoC | 数据导入费力 | 各产品手册核心数据流 + 数据契约章节（端到端示例待补充） | 数据迁移工具集 |
 | 私有化 | 部署文档分散 | [ops/deploy-r6](/ops/deploy-r6) | 一键私有化脚本 |
-| SSO 联邦 | casdoor 配联邦门槛高 | [adr/0002-casdoor-as-oidc](/adr/0002-casdoor-as-oidc) | 演示视频 + 模板 |
+| SSO 联邦 | 配联邦门槛高 | [adr/0002-zitadel-as-oidc](/adr/0002-zitadel-as-oidc) | 演示视频 + 模板 |
 | 续约 | 无月用量报告自动化 | Platform 后台手查 | 自动月报推送 |
 
 <div class="lurus-callout lurus-callout--info"><span class="lurus-callout__icon"><Icon name="activity" :size="18"/></span><div><p class="lurus-callout__title">"监控告警接通" 这一环</p><div class="lurus-callout__body">内部观测已统一到 <strong>Netdata 自托管 Agent</strong>；接入与查看入口见 <a href="/ops/observability">运维 · 可观测性</a>。</div></div></div>

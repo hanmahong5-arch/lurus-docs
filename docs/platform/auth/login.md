@@ -7,7 +7,7 @@ description: Lurus 支持的登录方式（密码、Passkey、社交登录、企
 
 # 登录与多因素认证
 
-Lurus 所有产品共用同一套身份认证基础设施（**Casdoor**，对外 `auth.lurus.cn`）。无论用 Lurus API、Switch、Lucrum 还是 Forge，登录都经同一入口，一次登录全线贯通。
+Lurus 所有产品共用同一套身份认证基础设施（**Casdoor**，对外 `identity.lurus.cn`）。无论用 Lurus API、Switch、Lucrum 还是 Forge，登录都经同一入口，一次登录全线贯通。
 
 ---
 
@@ -17,11 +17,11 @@ Lurus 所有产品共用同一套身份认证基础设施（**Casdoor**，对外
   <p class="lurus-section-head__lede">OIDC Authorization Code Flow + PKCE，客户端不存储任何密钥。</p>
 </div>
 
-用户访问任意产品时若无有效会话，应用将浏览器重定向到 `auth.lurus.cn` 验证后带授权码跳回。
+用户访问任意产品时若无有效会话，应用将浏览器重定向到 `identity.lurus.cn` 验证后带授权码跳回。
 
 <ArchitectureDiagram
   title="Authorization Code + PKCE 流程"
-  chart="sequenceDiagram; participant B as 用户浏览器; participant P as Lurus 产品; participant A as auth.lurus.cn; B->>P: 访问产品页面; P-->>B: 302 重定向; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: 登录页 邮箱/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: 授权码; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: 登录成功，进入产品"
+  chart="sequenceDiagram; participant B as 用户浏览器; participant P as Lurus 产品; participant A as identity.lurus.cn; B->>P: 访问产品页面; P-->>B: 302 重定向; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: 登录页 邮箱/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: 授权码; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: 登录成功，进入产品"
 />
 
 **PKCE**：客户端发授权请求前生成随机 `code_verifier`，将其 SHA-256 哈希 `code_challenge` 随请求发出；取回授权码后凭原始 verifier 换 token，服务器验两者一致才颁发。即使授权码被截获也无法换 token。
@@ -51,12 +51,12 @@ Passkey > 社交登录 > 邮箱密码。Passkey 无需记忆密码、抗钓鱼�
 
 ## 3. Passkey / WebAuthn
 
-**原理**：基于 **WebAuthn / FIDO2**，非对称加密替代密码。注册时设备生成密钥对，**私钥留设备**（受生物特征/PIN 保护），公钥上传 `auth.lurus.cn`；登录时服务器发挑战，设备私钥签名后服务器用公钥验证。全程**零密码传输**，数据库泄露也只得到公钥。
+**原理**：基于 **WebAuthn / FIDO2**，非对称加密替代密码。注册时设备生成密钥对，**私钥留设备**（受生物特征/PIN 保护），公钥上传 `identity.lurus.cn`；登录时服务器发挑战，设备私钥签名后服务器用公钥验证。全程**零密码传输**，数据库泄露也只得到公钥。
 
 **注册（用户操作）**：
 
 <ol class="lurus-steps">
-<li>登录 <code>auth.lurus.cn</code>。</li>
+<li>登录 <code>identity.lurus.cn</code>。</li>
 <li>进入 <strong>账户设置 → 安全 → 添加 Passkey</strong>。</li>
 <li>为 Passkey 命名（如 "MacBook Touch ID"）。</li>
 <li>完成生物识别（Touch ID / Face ID / PIN / 硬件密钥）。</li>
@@ -127,7 +127,7 @@ Casdoor 作中间 IdP，对接一个或多个**上游外部 IdP**（企业 Azure
 
 <ArchitectureDiagram
   title="Identity Brokering 链路"
-  chart="graph LR; P[Lurus 产品] --> Z[auth.lurus.cn · Casdoor]; Z --> U[上游 IdP · Azure AD / Okta / GitHub …]; U -. 用户身份断言 OIDC/SAML .-> Z; Z -. 颁发 Lurus access_token / id_token .-> P"
+  chart="graph LR; P[Lurus 产品] --> Z[identity.lurus.cn · Casdoor]; Z --> U[上游 IdP · Azure AD / Okta / GitHub …]; U -. 用户身份断言 OIDC/SAML .-> Z; Z -. 颁发 Lurus access_token / id_token .-> P"
 />
 
 **何时使用**：企业客户 B2B SSO（员工用自家 Azure AD/Okta 直接登录，无需注册）；域名自动路由（输企业邮箱后按域名跳对应 IdP，Domain Discovery）；账号关联（已有 Lurus 账号关联 GitHub/Google）；Just-in-Time 创建（首次外部 IdP 登录自动建账号并分配默认角色）。
@@ -193,7 +193,7 @@ Casdoor 作中间 IdP，对接一个或多个**上游外部 IdP**（企业 Azure
   :steps="[
     { text: 'OIDC / OAuth2 集成', link: '/platform/auth/oidc', primary: true },
     { text: 'API 认证 (PAT / JWT)', link: '/platform/auth/api-auth' },
-    { text: '认证控制台', link: 'https://auth.lurus.cn', external: true },
+    { text: '认证控制台', link: 'https://identity.lurus.cn', external: true },
   ]"
 />
 

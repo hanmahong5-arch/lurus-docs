@@ -7,7 +7,7 @@ description: Lurus가 지원하는 로그인 방식(비밀번호, Passkey, 소�
 
 # 로그인 및 다단계 인증
 
-Lurus의 모든 제품은 동일한 신원 인증 인프라(**Casdoor**, 대외적으로 `auth.lurus.cn`)를 공유합니다. Lurus API, Switch, Lucrum, Forge 중 무엇을 사용하든 로그인은 동일한 입구를 거치며, 한 번 로그인하면 전 라인이 연동됩니다.
+Lurus의 모든 제품은 동일한 신원 인증 인프라(**Casdoor**, 대외적으로 `identity.lurus.cn`)를 공유합니다. Lurus API, Switch, Lucrum, Forge 중 무엇을 사용하든 로그인은 동일한 입구를 거치며, 한 번 로그인하면 전 라인이 연동됩니다.
 
 ---
 
@@ -17,11 +17,11 @@ Lurus의 모든 제품은 동일한 신원 인증 인프라(**Casdoor**, 대외�
   <p class="lurus-section-head__lede">OIDC Authorization Code Flow + PKCE, 클라이언트는 어떠한 키도 저장하지 않습니다.</p>
 </div>
 
-사용자가 임의의 제품에 접근할 때 유효한 세션이 없으면, 애플리케이션은 브라우저를 `auth.lurus.cn`으로 리디렉션하여 검증한 뒤 인가 코드를 가지고 되돌아옵니다.
+사용자가 임의의 제품에 접근할 때 유효한 세션이 없으면, 애플리케이션은 브라우저를 `identity.lurus.cn`으로 리디렉션하여 검증한 뒤 인가 코드를 가지고 되돌아옵니다.
 
 <ArchitectureDiagram
   title="Authorization Code + PKCE 흐름"
-  chart="sequenceDiagram; participant B as 사용자 브라우저; participant P as Lurus 제품; participant A as auth.lurus.cn; B->>P: 제품 페이지 접근; P-->>B: 302 리디렉션; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: 로그인 페이지 이메일/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: 인가 코드; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: 로그인 성공, 제품 진입"
+  chart="sequenceDiagram; participant B as 사용자 브라우저; participant P as Lurus 제품; participant A as identity.lurus.cn; B->>P: 제품 페이지 접근; P-->>B: 302 리디렉션; B->>A: GET /authorize (client_id, code_challenge, scope); A-->>B: 로그인 페이지 이메일/Passkey/SSO; A-->>B: 302 redirect_uri?code; B->>P: 인가 코드; P->>A: POST /token (code + code_verifier); A-->>P: access_token / id_token; P-->>B: 로그인 성공, 제품 진입"
 />
 
 **PKCE**: 클라이언트는 인가 요청을 보내기 전에 무작위 `code_verifier`를 생성하고, 그 SHA-256 해시 `code_challenge`를 요청과 함께 전송합니다. 인가 코드를 받은 뒤 원래의 verifier로 token을 교환하며, 서버는 둘이 일치하는지 검증해야만 발급합니다. 인가 코드가 가로채여도 token으로 교환할 수 없습니다.
@@ -51,12 +51,12 @@ Passkey > 소셜 로그인 > 이메일 비밀번호. Passkey는 비밀번호를 
 
 ## 3. Passkey / WebAuthn
 
-**원리**: **WebAuthn / FIDO2** 기반으로, 비대칭 암호화가 비밀번호를 대체합니다. 등록 시 기기가 키 쌍을 생성하며, **개인 키는 기기에 남고**(생체 인식/PIN으로 보호) 공개 키는 `auth.lurus.cn`에 업로드됩니다. 로그인 시 서버가 챌린지를 보내면 기기 개인 키가 서명하고 서버가 공개 키로 검증합니다. 전 과정 **비밀번호 전송이 전혀 없으며**, 데이터베이스가 유출되어도 공개 키만 얻을 수 있습니다.
+**원리**: **WebAuthn / FIDO2** 기반으로, 비대칭 암호화가 비밀번호를 대체합니다. 등록 시 기기가 키 쌍을 생성하며, **개인 키는 기기에 남고**(생체 인식/PIN으로 보호) 공개 키는 `identity.lurus.cn`에 업로드됩니다. 로그인 시 서버가 챌린지를 보내면 기기 개인 키가 서명하고 서버가 공개 키로 검증합니다. 전 과정 **비밀번호 전송이 전혀 없으며**, 데이터베이스가 유출되어도 공개 키만 얻을 수 있습니다.
 
 **등록(사용자 조작)**:
 
 <ol class="lurus-steps">
-<li><code>auth.lurus.cn</code>에 로그인합니다.</li>
+<li><code>identity.lurus.cn</code>에 로그인합니다.</li>
 <li><strong>계정 설정 → 보안 → Passkey 추가</strong>로 이동합니다.</li>
 <li>Passkey에 이름을 붙입니다(예: "MacBook Touch ID").</li>
 <li>생체 인식을 완료합니다(Touch ID / Face ID / PIN / 하드웨어 키).</li>
@@ -127,7 +127,7 @@ Casdoor은 중간 IdP 역할을 하며, 하나 또는 여러 개의 **상위 외
 
 <ArchitectureDiagram
   title="Identity Brokering 링크"
-  chart="graph LR; P[Lurus 제품] --> Z[auth.lurus.cn · Casdoor]; Z --> U[상위 IdP · Azure AD / Okta / GitHub …]; U -. 사용자 신원 어서션 OIDC/SAML .-> Z; Z -. Lurus access_token / id_token 발급 .-> P"
+  chart="graph LR; P[Lurus 제품] --> Z[identity.lurus.cn · Casdoor]; Z --> U[상위 IdP · Azure AD / Okta / GitHub …]; U -. 사용자 신원 어서션 OIDC/SAML .-> Z; Z -. Lurus access_token / id_token 발급 .-> P"
 />
 
 **사용 시점**: 기업 고객 B2B SSO(직원이 자사 Azure AD/Okta로 직접 로그인, 가입 불필요), 도메인 자동 라우팅(기업 이메일 입력 후 도메인에 따라 해당 IdP로 이동, Domain Discovery), 계정 연결(기존 Lurus 계정에 GitHub/Google 연결), Just-in-Time 생성(첫 외부 IdP 로그인 시 자동으로 계정을 만들고 기본 역할 할당).
@@ -193,7 +193,7 @@ B2B 조직에 사용자 지정 로그인 도메인(`auth.client.com`)을 구성�
   :steps="[
     { text: 'OIDC / OAuth2 통합', link: '/ko/platform/auth/oidc', primary: true },
     { text: 'API 인증 (PAT / JWT)', link: '/ko/platform/auth/api-auth' },
-    { text: '인증 콘솔', link: 'https://auth.lurus.cn', external: true },
+    { text: '인증 콘솔', link: 'https://identity.lurus.cn', external: true },
   ]"
 />
 

@@ -140,7 +140,7 @@ This isn’t a tool purchase — it’s an infrastructure replacement. Look at T
     :actions="[
       { label: 'Overview & Endpoints', href: '/en/platform/auth/', primary: true },
       { label: 'Enterprise SSO Federation', href: '/en/platform/auth/oidc' },
-      { label: 'Auth Console', href: 'https://auth.lurus.cn', external: true },
+      { label: 'Auth Console', href: 'https://identity.lurus.cn', external: true },
     ]"
   />
   <ActionCard

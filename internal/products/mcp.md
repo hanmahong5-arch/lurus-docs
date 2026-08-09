@@ -39,7 +39,7 @@ sourcePath: 2l-svc-casdoor-mcp, 2l-svc-k8s-mcp, 2l-svc-platform-mcp
 | 目录 | `2l-svc-casdoor-mcp` | `2l-svc-k8s-mcp` | `2l-svc-platform-mcp` |
 | 传输协议 | stdio（无网络端口） | stdio（无网络端口） | stdio（无网络端口） |
 | 鉴权方式 | Service Account JWT-bearer | SSH key（host 继承） | INTERNAL_API_KEY bearer |
-| 后端目标 | `https://auth.lurus.cn` | `root@100.98.57.55` (SSH) | `https://identity.lurus.cn` |
+| 后端目标 | `https://identity.lurus.cn` | `root@100.98.57.55` (SSH) | `https://identity.lurus.cn` |
 | 版本 | v0.1.0 | v0.1.0 | v0.1.0 |
 | 语言 | Go 1.23 | Go 1.23 | Go 1.23 |
 | 写工具开关 | 无单独开关（默认全开） | `K8S_MCP_READONLY=1` | `PLATFORM_MCP_READONLY=1` |
@@ -59,7 +59,7 @@ flowchart LR
     end
 
     subgraph backends["后端目标"]
-        ZA["Casdoor\nauth.lurus.cn\n(Management + Admin API)"]
+        ZA["Casdoor\nidentity.lurus.cn\n(Management + Admin API)"]
         K3S["K3s Master\n100.98.57.55\n(kubectl + psql via SSH)"]
         PL["Platform Internal API\nidentity.lurus.cn\n/internal/v1/*"]
     end
@@ -112,7 +112,7 @@ sequenceDiagram
 sequenceDiagram
     participant BIN as casdoor-mcp binary
     participant FS as 本机文件系统
-    participant ZA as auth.lurus.cn /oauth/v2/token
+    participant ZA as identity.lurus.cn /oauth/v2/token
     participant API as Casdoor Management/Admin API
 
     BIN->>FS: 读取 SA JSON key\n(OIDC_SA_JSON 或 /etc/lurus/casdoor-admin-sa.json)
@@ -140,7 +140,7 @@ sequenceDiagram
 
 | 变量 | 默认值 | 说明 |
 |---|---|---|
-| `OIDC_ISSUER` | `https://auth.lurus.cn` | OAuth issuer，同时作为 JWT `aud` 和 token endpoint |
+| `OIDC_ISSUER` | `https://identity.lurus.cn` | OAuth issuer，同时作为 JWT `aud` 和 token endpoint |
 | `OIDC_SA_JSON` | `/etc/lurus/casdoor-admin-sa.json` | SA 私钥 JSON 路径 |
 
 SA JSON 文件格式（Casdoor 下载的 machine key）：
@@ -322,7 +322,7 @@ cd 2l-svc-platform-mcp && go build -o platform-mcp .
     "casdoor": {
       "command": "/path/to/casdoor-mcp",
       "env": {
-        "OIDC_ISSUER": "https://auth.lurus.cn",
+        "OIDC_ISSUER": "https://identity.lurus.cn",
         "OIDC_SA_JSON": "/etc/lurus/casdoor-admin-sa.json"
       }
     },
@@ -466,7 +466,7 @@ ssh root@100.98.57.55 "systemctl status k3s"
 
 ```bash
 # 检查本机时钟偏差
-date && curl -s https://auth.lurus.cn/.well-known/openid-configuration | python3 -c "import sys,json; print('ok')"
+date && curl -s https://identity.lurus.cn/.well-known/openid-configuration | python3 -c "import sys,json; print('ok')"
 
 # 若时钟偏差，同步
 w32tm /resync  # Windows
@@ -544,7 +544,7 @@ ssh root@100.98.57.55 "kubectl exec -i -n database lurus-pg-1 -- \
 三个 MCP server 均以 **stdio 模式**运行（无监听端口），由 MCP host（Claude Code / Switch）在需要时 spawn，不需要 systemd service 或 k8s pod：
 
 - 部署目标：开发者**本机**（Windows/macOS/Linux）
-- 网络访问：通过 **Tailscale** 内网（`100.98.57.55` / `auth.lurus.cn` / `identity.lurus.cn`），不暴露公网
+- 网络访问：通过 **Tailscale** 内网（`100.98.57.55` / `identity.lurus.cn`），不暴露公网
 - 进程生命周期：host 启动时 spawn，host 关闭时随之终止；异常退出 host 会自动 respawn
 - SSE 模式：协议支持但当前三个服务**未启用**；若需多用户共享单实例，可在二进制前加 SSE proxy（如 `mcp-proxy`），但会引入额外鉴权层——暂无此需求
 - 日志：`stderr` 输出，Claude Code 转存至 `~/.claude/logs/mcp-<name>.log`
@@ -600,7 +600,7 @@ sequenceDiagram
     participant ZM as casdoor-mcp\n(stdio)
     participant KM as k8s-mcp\n(stdio)
     participant PM as platform-mcp\n(stdio)
-    participant ZA as Casdoor Admin API\nauth.lurus.cn
+    participant ZA as Casdoor Admin API\nidentity.lurus.cn
     participant K3S as K3s Master\n100.98.57.55 (SSH)
     participant PL as Platform Internal API\nidentity.lurus.cn
 
@@ -660,7 +660,7 @@ ls -la /etc/lurus/casdoor-admin-sa.json   # 应输出 -rw------- (600)
     "casdoor": {
       "command": "/Users/you/bin/casdoor-mcp",
       "env": {
-        "OIDC_ISSUER": "https://auth.lurus.cn",
+        "OIDC_ISSUER": "https://identity.lurus.cn",
         "OIDC_SA_JSON": "/etc/lurus/casdoor-admin-sa.json"
       }
     }
@@ -745,7 +745,7 @@ mcp.ServeStdio(tools)
 | 2 | ✗ 不要直接执行无摘要的写操作 | agent 直接无提示执行写工具，员工无法在 chat 记录中还原"谁批准了什么操作"，审计链路断裂。 |
 | 3 | ✓ 每个 tool call 写审计日志 | 三个 server 均将 tool 名称、参数摘要、执行结果输出到 `stderr`。运维机器上收集 `~/.claude/logs/mcp-*.log` 即可形成操作日志。建议定期归档。 |
 | 4 | ✗ 不要静默吞掉 tool call 结果 | agent 收到 `"isError":true` 的响应应立即停止后续关联操作并告知员工，不要继续用错误数据执行下一步。 |
-| 5 | ✓ MCP server 只暴露给受信内网（Tailscale） | casdoor-mcp / k8s-mcp 的目标均为 Tailscale 内网地址（`100.98.57.55` / `auth.lurus.cn`）；二进制本身不开端口。确保 Tailscale 在线，不要把 MCP server 的 SA 凭证或 INTERNAL_API_KEY 暴露在公网可达位置。 |
+| 5 | ✓ MCP server 只暴露给受信内网（Tailscale） | casdoor-mcp / k8s-mcp 的目标均为 Tailscale 内网地址（`100.98.57.55` / `identity.lurus.cn`）；二进制本身不开端口。确保 Tailscale 在线，不要把 MCP server 的 SA 凭证或 INTERNAL_API_KEY 暴露在公网可达位置。 |
 | 6 | ✗ 不要在公网或共享环境中运行 MCP server | stdio 模式天然绑定本机进程，但若误用 SSE 模式并暴露端口到公网，任何可连接该端口的客户端均可执行所有 tool，包括写操作。 |
 | 7 | ✓ 只读场景启用 READONLY 开关 | 客服查询场景、新员工上手阶段，设置 `K8S_MCP_READONLY=1` 和 `PLATFORM_MCP_READONLY=1`，彻底排除误触写工具的可能。 |
 | 8 | ✗ 不要一个 server 开放全权限 | 写工具与读工具混在一起且无 READONLY 开关时，agent 的任何误判都可能触发写操作。只读 vs 写操作应当在配置层面分离。 |

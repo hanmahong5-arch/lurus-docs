@@ -9,11 +9,11 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 
 **一次登录，全站通行。** Lurus API、Lucrum、Switch、Creator、Lutu、Admin、Forge 等所有产品共享同一身份体系——用户在任意产品登录，其余产品自动识别；权限与配额在账户维度统一结算；企业客户可对接自家 SSO 完成员工接入。
 
-该体系由 `auth.lurus.cn` 提供服务，底层基于开源身份基础设施 [Casdoor](https://casdoor.com) 自建部署，完整实现 OIDC / OAuth2 / SAML 标准协议，用户数据全程保留在 Lurus 自有 K8s 集群内。
+该体系由 `identity.lurus.cn` 提供服务，底层基于开源身份基础设施 [Casdoor](https://casdoor.com) 自建部署，完整实现 OIDC / OAuth2 / SAML 标准协议，用户数据全程保留在 Lurus 自有 K8s 集群内。
 
 ::: tip 快速入口
-- 用户自助管理：[auth.lurus.cn](https://auth.lurus.cn) — 修改密码、管理 Passkey、绑定 MFA、查看登录历史
-- 组织/项目管理：[auth.lurus.cn](https://auth.lurus.cn)（Casdoor 组织控制台）— 企业客户成员邀请、权限分配、审计；或联系商务开通企业组织管理
+- 用户自助管理：[identity.lurus.cn](https://identity.lurus.cn) — 修改密码、管理 Passkey、绑定 MFA、查看登录历史
+- 组织/项目管理：[identity.lurus.cn](https://identity.lurus.cn)（Casdoor 组织控制台）— 企业客户成员邀请、权限分配、审计；或联系商务开通企业组织管理
 :::
 
 ---
@@ -26,11 +26,11 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 
 | 端点 | URL | 说明 |
 |------|-----|------|
-| 控制台 | `https://auth.lurus.cn` | 用户自助管理账号、安全设备、会话 |
-| OIDC Discovery | `https://auth.lurus.cn/.well-known/openid-configuration` | SDK 自动发现，含所有端点与支持能力 |
-| OAuth2 授权 | `https://auth.lurus.cn/oauth/v2/authorize` | 标准授权码 / PKCE 流程入口 |
-| Token 端点 | `https://auth.lurus.cn/oauth/v2/token` | 换取 access token / refresh token |
-| 用户信息 | `https://auth.lurus.cn/oidc/v1/userinfo` | 读取当前用户 claims |
+| 控制台 | `https://identity.lurus.cn` | 用户自助管理账号、安全设备、会话 |
+| OIDC Discovery | `https://identity.lurus.cn/.well-known/openid-configuration` | SDK 自动发现，含所有端点与支持能力 |
+| OAuth2 授权 | `https://identity.lurus.cn/oauth/v2/authorize` | 标准授权码 / PKCE 流程入口 |
+| Token 端点 | `https://identity.lurus.cn/oauth/v2/token` | 换取 access token / refresh token |
+| 用户信息 | `https://identity.lurus.cn/oidc/v1/userinfo` | 读取当前用户 claims |
 
 ---
 
@@ -69,12 +69,12 @@ description: Lurus 全产品线共享的身份体系：一次登录全站通行�
 
 | 概念 | 含义 | 在 Lurus 中的映射 |
 |------|------|-----------------|
-| **Instance** | 顶层部署单元，独立数据库与配置 | Lurus 运营单一 Instance，托管于 `auth.lurus.cn` |
+| **Instance** | 顶层部署单元，独立数据库与配置 | Lurus 运营单一 Instance，托管于 `identity.lurus.cn` |
 | **Organization** | 租户隔离单元，独立用户库与登录策略 | 个人用户归属 `lurus.cn` 主组织；企业客户申请独立 Organization，可配自家域名和 IdP |
 | **Project** | Organization 下的应用集合，统一管理 roles 和 grants | 每个产品线（Lurus API、Lucrum、Switch、Forge…）对应一个 Project |
 | **Application** | Project 内的具体客户端，持有 `client_id` / `client_secret` | 每个前端、桌面端、服务端分别注册一个 Application |
 | **User** | 可登录账号，分 Human（真人）与 Service User（机器） | 终端用户为 Human；后端服务间调用使用 Service User + JWT Profile |
-| **Grant** | 将 Project Role 授予某 User 的绑定关系 | 控制用户在具体产品内的权限等级；以 [auth.lurus.cn](https://auth.lurus.cn)（Casdoor）组织设置为准 |
+| **Grant** | 将 Project Role 授予某 User 的绑定关系 | 控制用户在具体产品内的权限等级；以 [identity.lurus.cn](https://identity.lurus.cn)（Casdoor）组织设置为准 |
 
 ---
 

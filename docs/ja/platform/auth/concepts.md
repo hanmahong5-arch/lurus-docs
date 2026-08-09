@@ -7,7 +7,7 @@ description: Instance / Organization / Project / Application / User / Grant / Ad
 
 # コアコンセプト
 
-Lurus は [Casdoor](https://casdoor.com) を統一 OIDC ID プロバイダー（IdP）として利用しており、公開エンドポイントは `auth.lurus.cn` です。本ページではオブジェクトモデルの階層構造を整理します。
+Lurus は [Casdoor](https://casdoor.com) を統一 OIDC ID プロバイダー（IdP）として利用しており、公開エンドポイントは `identity.lurus.cn` です。本ページではオブジェクトモデルの階層構造を整理します。
 
 ---
 
@@ -38,7 +38,7 @@ Lurus は [Casdoor](https://casdoor.com) を統一 OIDC ID プロバイダー（
 | 仮想インスタンス | System API により複数の仮想インスタンスを作成可能。SaaS のマルチテナント配信に適する |
 
 ::: tip Lurus におけるコンテキスト
-本番環境にはインスタンスが 1 つだけ **`lurus-prod`**（`auth.lurus.cn`）存在します。仮想インスタンスは不要で、すべてのプロダクトラインが同一の issuer を共有します。
+本番環境にはインスタンスが 1 つだけ **`lurus-prod`**（`identity.lurus.cn`）存在します。仮想インスタンスは不要で、すべてのプロダクトラインが同一の issuer を共有します。
 :::
 
 ---

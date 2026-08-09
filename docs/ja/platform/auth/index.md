@@ -9,11 +9,11 @@ description: Lurus 全製品ラインで共有される ID 基盤。一度のロ
 
 **一度ログインすれば、全サイトを横断利用。** Lurus API、Lucrum、Switch、Creator、Lutu、Admin、Forge などすべての製品が同一の ID 基盤を共有します。ユーザーがいずれかの製品でログインすると、残りの製品も自動的に認識します。権限とクォータはアカウント単位で一元的に精算され、エンタープライズ顧客は自社の SSO を接続して従業員のオンボーディングを完了できます。
 
-この基盤は `auth.lurus.cn` がサービスを提供し、オープンソースの ID インフラ [Casdoor](https://casdoor.com) をベースに自社構築・デプロイされています。OIDC / OAuth2 / SAML の標準プロトコルを完全実装し、ユーザーデータは終始 Lurus 自社の K8s クラスター内に保持されます。
+この基盤は `identity.lurus.cn` がサービスを提供し、オープンソースの ID インフラ [Casdoor](https://casdoor.com) をベースに自社構築・デプロイされています。OIDC / OAuth2 / SAML の標準プロトコルを完全実装し、ユーザーデータは終始 Lurus 自社の K8s クラスター内に保持されます。
 
 ::: tip クイック入口
-- ユーザーセルフサービス管理：[auth.lurus.cn](https://auth.lurus.cn) — パスワード変更、Passkey 管理、MFA バインド、ログイン履歴の確認
-- 組織 / プロジェクト管理：[auth.lurus.cn](https://auth.lurus.cn)（Casdoor 組織コンソール）— エンタープライズ顧客のメンバー招待、権限割り当て、監査。または商談窓口へ連絡してエンタープライズ組織管理を開設
+- ユーザーセルフサービス管理：[identity.lurus.cn](https://identity.lurus.cn) — パスワード変更、Passkey 管理、MFA バインド、ログイン履歴の確認
+- 組織 / プロジェクト管理：[identity.lurus.cn](https://identity.lurus.cn)（Casdoor 組織コンソール）— エンタープライズ顧客のメンバー招待、権限割り当て、監査。または商談窓口へ連絡してエンタープライズ組織管理を開設
 :::
 
 ---
@@ -26,11 +26,11 @@ description: Lurus 全製品ラインで共有される ID 基盤。一度のロ
 
 | エンドポイント | URL | 説明 |
 |------|-----|------|
-| コンソール | `https://auth.lurus.cn` | ユーザーがアカウント、セキュリティデバイス、セッションをセルフサービスで管理 |
-| OIDC Discovery | `https://auth.lurus.cn/.well-known/openid-configuration` | SDK の自動ディスカバリー。すべてのエンドポイントとサポート機能を含む |
-| OAuth2 認可 | `https://auth.lurus.cn/oauth/v2/authorize` | 標準の認可コード / PKCE フローの入口 |
-| Token エンドポイント | `https://auth.lurus.cn/oauth/v2/token` | access token / refresh token の取得 |
-| ユーザー情報 | `https://auth.lurus.cn/oidc/v1/userinfo` | 現在のユーザーの claims を読み取り |
+| コンソール | `https://identity.lurus.cn` | ユーザーがアカウント、セキュリティデバイス、セッションをセルフサービスで管理 |
+| OIDC Discovery | `https://identity.lurus.cn/.well-known/openid-configuration` | SDK の自動ディスカバリー。すべてのエンドポイントとサポート機能を含む |
+| OAuth2 認可 | `https://identity.lurus.cn/oauth/v2/authorize` | 標準の認可コード / PKCE フローの入口 |
+| Token エンドポイント | `https://identity.lurus.cn/oauth/v2/token` | access token / refresh token の取得 |
+| ユーザー情報 | `https://identity.lurus.cn/oidc/v1/userinfo` | 現在のユーザーの claims を読み取り |
 
 ---
 
@@ -69,12 +69,12 @@ description: Lurus 全製品ラインで共有される ID 基盤。一度のロ
 
 | 概念 | 意味 | Lurus におけるマッピング |
 |------|------|-----------------|
-| **Instance** | 最上位のデプロイ単位。独立したデータベースと設定を持つ | Lurus は単一の Instance を運用し、`auth.lurus.cn` でホスティング |
+| **Instance** | 最上位のデプロイ単位。独立したデータベースと設定を持つ | Lurus は単一の Instance を運用し、`identity.lurus.cn` でホスティング |
 | **Organization** | テナント分離単位。独立したユーザーストアとログインポリシーを持つ | 個人ユーザーは `lurus.cn` メイン組織に所属。エンタープライズ顧客は独立した Organization を申請でき、自社ドメインと IdP を設定可能 |
 | **Project** | Organization 配下のアプリケーション集合。roles と grants を一元管理 | 各製品ライン（Lurus API、Lucrum、Switch、Forge…）が一つの Project に対応 |
 | **Application** | Project 内の具体的なクライアント。`client_id` / `client_secret` を保持 | 各フロントエンド、デスクトップ、サーバーサイドがそれぞれ一つの Application を登録 |
 | **User** | ログイン可能なアカウント。Human（実在の人）と Service User（マシン）に分かれる | エンドユーザーは Human。バックエンドサービス間の呼び出しには Service User + JWT Profile を使用 |
-| **Grant** | Project Role を特定の User に付与するバインド関係 | ユーザーの具体的な製品内での権限レベルを制御。[auth.lurus.cn](https://auth.lurus.cn)（Casdoor）の組織設定を正とする |
+| **Grant** | Project Role を特定の User に付与するバインド関係 | ユーザーの具体的な製品内での権限レベルを制御。[identity.lurus.cn](https://identity.lurus.cn)（Casdoor）の組織設定を正とする |
 
 ---
 
