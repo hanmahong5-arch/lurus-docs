@@ -9,6 +9,9 @@ docs/.vitepress/cache/
 internal/.vitepress/cache/
 dist-internal/
 internal/public/build-meta.json
+# 运行 server/index.ts 时它从 ./static 取静态文件（镜像里由 Dockerfile 拷进去）。
+# 本地调试路由时会把 dist 复制到这里，别让它进仓。
+static/
 
 # IDE
 .vscode/
