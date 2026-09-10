@@ -101,3 +101,17 @@ code, pre, kbd {
 .VPFeature:hover {
   box-shadow: 0 12px 32px rgba(255, 93, 31, 0.16);
 }
+
+/* ─── 平板宽度的导航栏溢出 ───────────────────────────────────
+ * VitePress 默认在 ≥768px 就把汉堡菜单换成完整横向导航。本站顶栏有
+ * 七个一级入口 + 语言 + 明暗 + GitHub，768px 根本排不下 ——
+ * 实测每一页在 768px 视口下 document.scrollWidth = 893px（溢出 125px，
+ * 溢出者是 .VPNavBarMenu 而不是正文），于是全站在平板竖屏出现横向滚动条。
+ * 把切换点推到 960px：768–959 之间继续用汉堡菜单，也就是 <768 时本来
+ * 就在用的那套交互，不引入新形态。
+ * 复验：node measure.mjs <url> 768 1000 应报「无横向溢出」。
+ */
+@media (min-width: 768px) and (max-width: 959px) {
+  .VPNavBar .VPNavBarMenu.menu { display: none; }
+  .VPNavBar .VPNavBarHamburger { display: block; }
+}

@@ -40,6 +40,16 @@ description: "Lurus Tally 是 AI-native 智能进销存 SaaS：拍照入库、�
 
 > Tally 面向年营收 5000 万以下的中小商户。更大型企业的总账凭证场景请使用专业财务软件。
 
+## 数据怎么隔离
+
+同一套系统服务多个租户，最要紧的问题是「A 商户会不会看见 B 商户的库存」。Tally 的答案不在应用代码里，而在数据库：每个请求由 adapter 层开一条**已绑定 `tenant_id` GUC 的连接**，PostgreSQL 行级安全（RLS）在库侧强制过滤——应用层就算写漏了一个 `WHERE tenant_id = ?`，也拿不到别人的行。
+
+<DiagramFigure
+  caption="Go 后端的分层与租户隔离边界。三层主要向内依赖零依赖的 domain 核心，但图上标出了一处**有据可查的例外**：部分 app 层用例直接 import 了 adapter 包，而不是走注入的 Repository 接口 —— 这是记录在案的分层破例，不是图画错了。底部那条是 PostgreSQL RLS 边界，租户隔离在这条线上生效。"
+  source="2b-svc-tally · 与仓库 README 同一张图">
+  <TallyArchitecture />
+</DiagramFigure>
+
 <NextSteps
   title="下一步"
   :steps="[

@@ -104,16 +104,11 @@ CRC32 校验防损坏；Power-of-2 环形缓冲高效利用存储；锁顺序 **
   <p class="lurus-section-head__lede">REST/SDK/gRPC/MCP 接入 · Kova Core 调度 · WAL 持久化恢复。</p>
 </div>
 
-<ArchitectureDiagram
-  title="Kova 执行架构"
-  chart="graph LR
-  A[Client SDK / gRPC / REST] --> B[Kova Core]
-  B --> C[WAL Writer<br/>CRC32]
-  B --> D[Scheduler<br/>FIFO]
-  B --> E[Tool Runtime<br/>MCP]
-  C -.recover.-> B
-  D --> F[LLM Provider<br/>via Lurus API]"
-/>
+<DiagramFigure
+  caption="多个前端入口共用同一个队列引擎；每条指令、结果、任务在被认为「完成」之前都先落 WAL，重启时把日志重放回 Agent 循环（橙色路径），已完成的 LLM 调用不重复计费。图例区标了线型语义 —— 虚线是可选 / 实验性路径，不代表默认配置下会执行。"
+  source="2b-svc-kova · 与仓库 README 同一张图">
+  <KovaArchitecture />
+</DiagramFigure>
 
 ```
 Kova REST API (Axum: 35+ endpoints, WebSocket)

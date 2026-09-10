@@ -102,6 +102,12 @@ Forge 当前定位为 Lurus **内部 R&D 工具**（ontology 驱动的需求管�
 
 ## 技术栈
 
+<DiagramFigure
+  caption="Canvas 与 Web 两个前端调同一个 FastAPI 后端，状态落 Postgres。往外的四条边 —— 外部 MCP 工具/客户端、Kova 执行引擎、LLM 网关、platform-core 计费 —— 代码都接好了，但**各自的环境变量没配就是关的**（例如 MCP 的 env 未设时 `/api/mcp/sse` 直接 503，不是静默降级）。图例把这一档单独标了出来，别把「代码里有」读成「默认在跑」。"
+  source="2b-bs-forge · 与仓库 README 同一张图">
+  <ForgeArchitecture />
+</DiagramFigure>
+
 | 层级 | 技术 |
 |------|------|
 | 前端 | TypeScript + React (Turbo monorepo) |

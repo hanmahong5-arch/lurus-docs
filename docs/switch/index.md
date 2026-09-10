@@ -52,22 +52,42 @@ description: 桌面应用，一个界面管理 5 款主流 AI 编程 CLI 的配�
 
 ## 工作原理
 
-Switch 在本地暴露一个兼容 OpenAI API 的端点（默认 `http://localhost:11434/v1`），你的应用只需将 `base_url` 改为这个本地地址，后续路由完全由 Switch 接管。
+### 四种运行模式
 
-<ArchitectureDiagram
-  title="本地代理 + 多提供商路由"
-  chart="graph TD
-    App[你的应用<br/>OpenAI SDK] --> SW[Lurus Switch<br/>localhost:11434]
-    SW --> L[Lurus API]
-    SW --> O[OpenAI 直连]
-    SW --> OL[Ollama<br/>本地模型]"
-/>
+首次启动时 Switch 让你选一种运行模式，之后整个界面按这个模式裁剪。白标分发出去的 EndUser 构建会跳过这一步——它出厂就锁定在 EndUser 模式，直接进激活流程。
+
+<DiagramFigure
+  caption="四种模式（Personal / Reseller / Enterprise / EndUser）从首次启动分叉；只有 EndUser 这一支带激活状态机 —— 未激活 → 激活（心跳运行中）→ 心跳校验失败则落到「已吊销 / 指纹不匹配」需要重新激活。回到未激活只有手动清除激活信息一条路，心跳失败不会把设备退回未激活态。"
+  source="2c-gui-switch · 与仓库 README 同一张图">
+  <SwitchArchitecture />
+</DiagramFigure>
+
+### 本地网关
+
+Switch 内置一个本地网关，在 `127.0.0.1` 上暴露 OpenAI 兼容端点，把应用的调用统一转发到你配置的上游：
+
+| 项 | 值 | 说明 |
+|---|---|---|
+| 默认端口 | `19090` | 在设置里可改，改完下次启动生效 |
+| 默认是否自启 | **否** | `autoStart` 默认 false，要手动开或在设置里打开 |
+| 启动前置 | **必须先配上游地址** | 未配置时启动直接报错退出，不会静默起一个转发不出去的端口 |
+| 监听地址 | 仅 `127.0.0.1` | 不对局域网暴露 |
+
+暴露的路径：`/v1/chat/completions`、`/v1/completions`、`/v1/embeddings`、`/v1/models` 及 `/v1/` 兜底走通用代理；`/v1/messages` 走单独的 Anthropic Messages 格式处理；另有免鉴权的 `/health` 与 `/switch/v1/status`、`/switch/v1/balance`。上游支持按优先级排序的回落链，前一个不可用时依次尝试下一个。
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="plug-zap" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">零侵入接入</p>
-    <div class="lurus-callout__body">只改一处 <code>base_url</code>，原有 OpenAI SDK 调用全部接通；路由规则在 Switch 里集中维护，应用代码无需感知。</div>
+    <p class="lurus-callout__title">接入只改一处 base_url</p>
+    <div class="lurus-callout__body">网关起来之后把应用的 <code>base_url</code> 指到 <code>http://localhost:19090/v1</code>，原有 OpenAI SDK 调用即可接通；回落与路由规则在 Switch 里集中维护，应用代码无需感知。</div>
+  </div>
+</div>
+
+<div class="lurus-callout lurus-callout--tip">
+  <span class="lurus-callout__icon"><Icon name="search" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">本地模型是「探测」不是「代理」</p>
+    <div class="lurus-callout__body">Switch 会扫描本机的 Ollama（<code>http://127.0.0.1:11434</code>）并把可直接使用的环境变量片段列出来供你复制。<strong>那个端口是 Ollama 的，不是 Switch 的</strong>——本地模型的流量不经过 Switch 网关。</div>
   </div>
 </div>
 

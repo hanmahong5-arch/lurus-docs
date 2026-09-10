@@ -37,8 +37,24 @@ import ComparisonTable from './components/landing/ComparisonTable.vue'
 import RelatedProducts from './components/landing/RelatedProducts.vue'
 import NextSteps from './components/landing/NextSteps.vue'
 import MetricStats from './components/landing/MetricStats.vue'
+// 静态架构图：SVG 写在 template 里 → 首屏 HTML 就有图。
+// 与 landing/ArchitectureDiagram.vue（客户端跑 mermaid）并存，新页面用这一套。
+// diagrams/*Architecture.vue 由 `bun run diagrams` 从各产品仓的
+// docs/diagrams/architecture.svg 生成（README 用的同一张图，只换肤不改图形）。
+import DiagramFigure from './components/diagrams/DiagramFigure.vue'
+import KovaArchitecture from './components/diagrams/KovaArchitecture.vue'
+import MemxArchitecture from './components/diagrams/MemxArchitecture.vue'
+import LumenArchitecture from './components/diagrams/LumenArchitecture.vue'
+import ForgeArchitecture from './components/diagrams/ForgeArchitecture.vue'
+import SwitchArchitecture from './components/diagrams/SwitchArchitecture.vue'
+import HubArchitecture from './components/diagrams/HubArchitecture.vue'
+import TallyArchitecture from './components/diagrams/TallyArchitecture.vue'
+// 这两张是平台级手写图，没有对应的产品仓源 SVG，不受 `bun run diagrams` 管辖
+import PlatformLayers from './components/diagrams/PlatformLayers.vue'
+import RelayRequestPath from './components/diagrams/RelayRequestPath.vue'
 import './style.css'
 import './custom.css'
+import './diagrams.css'
 import './lurus-utilities.css'
 
 export default {
@@ -83,5 +99,15 @@ export default {
     app.component('RelatedProducts', RelatedProducts)
     app.component('NextSteps', NextSteps)
     app.component('MetricStats', MetricStats)
+    app.component('DiagramFigure', DiagramFigure)
+    app.component('KovaArchitecture', KovaArchitecture)
+    app.component('MemxArchitecture', MemxArchitecture)
+    app.component('LumenArchitecture', LumenArchitecture)
+    app.component('ForgeArchitecture', ForgeArchitecture)
+    app.component('SwitchArchitecture', SwitchArchitecture)
+    app.component('HubArchitecture', HubArchitecture)
+    app.component('TallyArchitecture', TallyArchitecture)
+    app.component('PlatformLayers', PlatformLayers)
+    app.component('RelayRequestPath', RelayRequestPath)
   }
 } satisfies Theme

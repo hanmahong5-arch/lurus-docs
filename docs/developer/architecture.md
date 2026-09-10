@@ -19,54 +19,35 @@ Lurus 采用混合云架构，基于 Kubernetes + GitOps 构建统一的服务�
 
 <p class="arch-lede"><span class="lurus-tag"><Icon name="layers" :size="13" /> 分层视图</span> 从 C 端产品到运维底座，五层自上而下；下层为上层提供能力，上层不感知下层实现。</p>
 
-<ArchitectureDiagram title="分层架构" chart="graph TB
-  subgraph C[C 端产品层]
-    Lucrum[Lucrum 量化]
-    Switch[Switch 桌面]
-    Creator[Creator 内容]
-    Lutu[Lutu 移动]
-  end
-  subgraph B[B 端产品层]
-    API[Lurus API LLM 网关]
-    Forge[Forge 工作台]
-    Lumen[Lumen 开发者工具]
-  end
-  subgraph E[核心引擎层]
-    Kova[Kova 持久执行 Rust]
-    MemX[MemX 智能记忆 Python]
-  end
-  subgraph I[基础设施层]
-    Platform[Platform 账号计费]
-    Auth[Auth OIDC]
-    Notify[Notification 多渠道通知]
-  end
-  subgraph O[运维层]
-    Ops[K8s Traefik ArgoCD Prometheus Grafana Jaeger Loki]
-  end
-  C --> B
-  B --> E
-  E --> I
-  I --> O" />
+<DiagramFigure
+  caption="每个产品方块上的成熟度标（已上线 / 开发中 / 内测）取自本站产品数据的同一个字段，也就是各产品页顶部那枚状态标 —— 两处不会各说各话。第四层用强调色标出：它是上面每一个产品共用的账号、计费、身份与通知底座，「12 个产品共享同一套底座」这句话的实体就是它。最下面一层只画能力类别不点名工具，因为本站没有为具体运维工具承诺过可用性。"
+  source="成熟度真源 · docs/.vitepress/data/products.ts">
+  <PlatformLayers />
+</DiagramFigure>
 
 ::: details 文本版分层图（无障碍 / 复制用）
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      C 端产品层                                  │
-│  Lucrum (量化) · Switch (桌面) · Creator (内容) · Lutu (移动)    │
-├─────────────────────────────────────────────────────────────────┤
-│                      B 端产品层                                  │
-│  Lurus API (LLM 网关) · Forge (工作台) · Lumen (开发者工具)     │
-├─────────────────────────────────────────────────────────────────┤
-│                      核心引擎层                                  │
-│  Kova (持久执行, Rust) · MemX (智能记忆, Python)                │
-├─────────────────────────────────────────────────────────────────┤
-│                      基础设施层                                  │
-│  Platform (账号/计费) · Auth (OIDC) · Notification (多渠道通知)  │
-├─────────────────────────────────────────────────────────────────┤
-│                      运维层                                      │
-│  K8s · Traefik · ArgoCD · Prometheus · Grafana · Jaeger · Loki  │
-└─────────────────────────────────────────────────────────────────┘
+依赖方向 ↓ —— 上层依赖下层，下层不感知上层
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ L1  C 端产品层     面向个人用户的成品应用                             │
+│     Lucrum[已上线] · Switch[开发中] · Creator[开发中] · Lutu[内测]    │
+├──────────────────────────────────────────────────────────────────────┤
+│ L2  B 端产品层     面向企业与开发者的服务                             │
+│     Lurus Hub[已上线] · Forge[内测] · Lumen[开发中] · Tally[内测]     │
+├──────────────────────────────────────────────────────────────────────┤
+│ L3  核心引擎层     可脱离上层单独使用                                 │
+│     Kova[开发中, 持久执行] · MemX[开发中, 智能记忆]                   │
+├══════════════════════════════════════════════════════════════════════┤
+│ L4  基础设施层     上面每一个产品都共用这一层  ← 全平台共用底座        │
+│     账号与计费[已上线] · 统一身份[已上线, OIDC] · 通知[platform 内置] │
+├──────────────────────────────────────────────────────────────────────┤
+│ L5  运维底座       产品不感知的能力，非对外承诺项                     │
+│     容器编排 · 入口网关 · 持续交付 · 可观测                           │
+└──────────────────────────────────────────────────────────────────────┘
 ```
+方括号里的成熟度与各产品页顶部的状态标同源（`docs/.vitepress/data/products.ts`）。
+L5 只列能力类别、不点名具体工具——本站没有为运维工具承诺过可用性。
 :::
 
 ## 设计原则
@@ -78,7 +59,7 @@ Lurus 采用混合云架构，基于 Kubernetes + GitOps 构建统一的服务�
   title="核心设计"
   :items="[
     { title: '统一网关', body: 'Traefik 入口，TLS 终止，通配符证书自动管理', icon: 'network' },
-    { title: '多模型 AI 网关', body: '50+ LLM 渠道统一接入（OpenAI / Claude / Gemini / Deepseek / Qwen / Moonshot 等），per-channel 熔断保护', icon: 'layers' },
+    { title: '多模型 AI 网关', body: '50+ LLM 渠道统一接入，跨三种上游 API 形态自动互转，per-channel 熔断保护', icon: 'layers' },
     { title: 'GitOps 部署', body: 'GitHub Actions → GHCR 容器镜像 → ArgoCD 自动同步', icon: 'git-merge' },
     { title: '全栈可观测性', body: 'Prometheus 指标 + Grafana 仪表盘 + Loki 日志 + Jaeger 分布式追踪', icon: 'activity' },
     { title: '高可用设计', body: '渠道故障自动转移，优先级 + 权重路由，PodDisruptionBudget 保护', icon: 'shield-check' },
@@ -87,21 +68,44 @@ Lurus 采用混合云架构，基于 Kubernetes + GitOps 构建统一的服务�
 
 ## 请求处理流程
 
-<p class="arch-lede"><span class="lurus-tag"><Icon name="workflow" :size="13" /> 数据流</span> 一次 LLM 请求从入口到上游，途经认证、限流、熔断、计费、日志五道关卡。</p>
+<p class="arch-lede"><span class="lurus-tag"><Icon name="workflow" :size="13" /> 数据流</span> 一次模型调用在打到上游之前，要按固定顺序穿过十道中间件；其中四处的**先后关系是有硬性理由的**，排错位就会静默出错。</p>
 
-<ArchitectureDiagram title="请求链路" chart="graph LR
-  Client[Client] --> Traefik[Traefik TLS]
-  Traefik --> GW[API Gateway]
-  GW --> Route[智能路由]
-  Route --> Up[上游 AI 50+ 提供商]
-  Up --> Resp[响应]
-  GW -.-> Mid[认证 / 限流 / 熔断 / 计费 / 日志]" />
+<DiagramFigure
+  caption="十道门按注册顺序执行，顺序不是随手排的 —— 圈出来的四处各有硬性约束，见下方说明。"
+  source="2b-svc-newhub · internal/adapter/handler/router/relay-router.go">
+  <RelayRequestPath />
+</DiagramFigure>
 
-API Gateway 根据模型名称自动匹配可用渠道，支持优先级排序和权重随机分配。当高优先级渠道故障时，per-channel 熔断器自动隔离故障渠道，流量切换到备选渠道。
+图上圈出的四处顺序约束：
+
+1. **标记响应格式必须是第一个。** 路由框架在挂载中间件时就把整条链快照下来了；晚于此处标记，后面任何一道门的**拒绝响应**都会用默认格式返回，调用方按自己的格式解析就会失败。
+2. **租户额度池闸必须夹在鉴权之后、费用尖峰保护之前。** 它要读鉴权阶段才写入的租户上下文；而放在费用保护之前，是为了让额度耗尽能直接短路整条链，不再做后面那些检查。
+3. **并发占用上限默认是关的。** 不显式配置每令牌 / 每租户的并发上限，这道门就不生效——它在图上是虚线，不要读成「平台默认给你兜住了并发」。
+4. **按模型维度限流只能挂在分发之后。** 请求里的模型名要到选渠道那一步才进入上下文，挂在前面拿不到模型名，限流规则会静默失配。
+
+选渠道阶段按模型名匹配可用渠道，支持优先级排序与权重随机分配；高优先级渠道故障时，per-channel 熔断器隔离故障渠道，流量切到备选。
 
 ## 技术栈总览
 
-<p class="arch-lede"><span class="lurus-tag"><Icon name="package" :size="13" /> 技术选型</span> 多语言混合栈，按业务匹配最合适的运行时。</p>
+<p class="arch-lede"><span class="lurus-tag"><Icon name="package" :size="13" /> 技术选型</span> 多语言混合栈，按业务匹配最合适的运行时。<strong>本表只列真正在跑的东西</strong>——写进来的每一项都能在集群里查到实例。</p>
+
+<!--
+  2026-09-10 核实后移除了两行，别凭"代码里有"就加回来：
+
+  · 「工作流 | Temporal (订阅续费/定时任务)」
+    两台机上都不存在该组件的实例。核验命令（正对照同时确认查询手段可信）：
+      R1: kubectl get pods -A | grep -ci temporal  → 0（该机共 63 个 pod）
+      R6: kubectl get pods -A | grep -ci temporal  → 0（该机共 87 个 pod）
+          docker ps | grep -ci temporal            → 0（该机共 51 个容器）
+    代码里有 workflow 定义 ≠ 它在跑。要加回来，先给出实例存在的证据。
+
+  · 「身份认证 | Casdoor (OIDC)」
+    lurus.yaml 记的是"IdP 正从 Zitadel 迁往 Casdoor"（provider 值 owner-gated），
+    属于声明的目标态；实际在服务的是 Zitadel（R6 上 2 个 pod，全平台 0 个 casdoor pod）。
+    与其押注哪一家，不如按平台自己的 ADR 方向写成 vendor-neutral OIDC ——
+    产品侧本来就只依赖标准发现端点，换 IdP 不改业务代码，这句话两种状态下都成立。
+-->
+
 
 | 层级 | 技术选型 |
 |------|---------|
@@ -111,8 +115,7 @@ API Gateway 根据模型名称自动匹配可用渠道，支持优先级排序�
 | 数据库 | PostgreSQL (CNPG)，按服务 schema 隔离 |
 | 缓存 | Redis，按服务 DB 隔离 |
 | 消息 | NATS JetStream (事件广播) |
-| 工作流 | Temporal (订阅续费/定时任务) |
-| 身份认证 | Casdoor (OIDC) |
+| 身份认证 | 标准 OIDC —— vendor-neutral，产品侧只依赖 `.well-known/openid-configuration` 发现，换 IdP 不改业务代码 |
 | 容器 | scratch/alpine 最小镜像，多阶段构建 |
 | 安全 | Kyverno 策略引擎 + NetworkPolicy + Trivy 容器扫描 |
 

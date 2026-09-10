@@ -1,0 +1,43 @@
+/**
+ * 图表语义 token —— 站内架构图专用
+ *
+ * 站内图与各仓 README 里的 `docs/diagrams/architecture.svg` 是**同一张图**：
+ * README 版必须自带系统字体回退栈、且明暗各出一份（GitHub 的 CSP 拦截外链
+ * Web 字体，`<picture>` 负责切换）；站内版把同样的语义角色接到下面这组变量，
+ * 于是**一份 SVG 就跟随站点明暗**，不用维护第二份。
+ *
+ * 取值来自 diagram-design 的 Lurus skin，与 custom.css 的品牌 token 同源：
+ * paper/ink/accent 直接复用 `--vp-c-*`（改品牌色时图表自动跟随）；
+ * muted/soft/node/link 是 VitePress 没有对应物的角色，在此明暗各写一份。
+ *
+ * 🔴 `--lurus-dg-link` 暗色是 #5A7BC7 而不是亮色那个 #2D4A8A ——
+ * 后者对暗底实测对比度仅 2.14，不达 WCAG AA。别把两处写成同一个值。
+ */
+
+:root {
+  --lurus-dg-paper:      var(--vp-c-bg);        /* 图底 */
+  --lurus-dg-paper-2:    var(--vp-c-bg-soft);   /* 次级容器底 */
+  --lurus-dg-ink:        var(--vp-c-text-1);    /* 主文字 / 主描边 */
+  --lurus-dg-accent:     var(--vp-c-brand-1);   /* 焦点，每图 1–2 处封顶 */
+  --lurus-dg-muted:      #3D3B33;               /* 次级文字 / 默认箭头 */
+  --lurus-dg-soft:       #6B6860;               /* 子标签 / 边界标注 */
+  --lurus-dg-node:       #ffffff;               /* backend 节点填充（高于图底一档） */
+  --lurus-dg-rule-solid: #D6D2C2;               /* 实线分隔 / 基线 */
+  --lurus-dg-link:       #2D4A8A;               /* HTTP / 对外调用 */
+
+  /* 图内标题的衬线族。Fraunces 是 www 的品牌展示字，文档站没有加载它，
+   * 所以实际会落到 Georgia —— 写在首位是为了将来站点若加载 Fraunces 自动升级。
+   * 🔴 中文回退**走黑体不走宋体**：Fraunces/Georgia 都不含汉字，若把 Songti SC
+   * 放进来，混排标题会一半衬线一半宋体，与全站黑体观感冲突（www 曾踩过，
+   * 结果是字阶系统被架空、8 个 h2 各写各的样式）。 */
+  --lurus-dg-serif: 'Fraunces', Georgia, 'Times New Roman',
+                    'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', serif;
+}
+
+.dark {
+  --lurus-dg-muted:      #D6D2C2;
+  --lurus-dg-soft:       #A19C89;
+  --lurus-dg-node:       #25221C;
+  --lurus-dg-rule-solid: #25221C;
+  --lurus-dg-link:       #5A7BC7;
+}

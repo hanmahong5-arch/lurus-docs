@@ -1,0 +1,15 @@
+# 站内架构图清单 —— 每行: <产品仓目录>	<组件名>	<id 前缀>	<落点文档>
+# 源图是各仓的 docs/diagrams/architecture.svg（README 也用它，逐边核查过）。
+# 跑 `bun run diagrams` 按本清单重新生成 theme/components/diagrams/*.vue。
+#
+# 未列入者及原因：
+#   2c-cli-acest —— 有已核查的架构图，但文档站还没有 ACEST 章节，
+#                   图先不生成；等 docs/acest/ 建起来再把这行取消注释。
+# 2c-cli-acest	AcestArchitecture	acest	docs/acest/index.md
+2b-svc-kova	KovaArchitecture	kova	docs/kova/index.md
+2b-svc-memorus	MemxArchitecture	memx	docs/memx/index.md
+2c-cli-lumen	LumenArchitecture	lumen	docs/lumen/index.md
+2b-bs-forge	ForgeArchitecture	forge	docs/forge/index.md
+2c-gui-switch	SwitchArchitecture	switch	docs/switch/index.md
+2b-svc-newhub	HubArchitecture	hub	docs/hub/index.md
+2b-svc-tally	TallyArchitecture	tally	docs/tally/index.md

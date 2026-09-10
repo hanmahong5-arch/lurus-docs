@@ -49,17 +49,11 @@ description: 基于 ACE v2.0 构建的 AI 记忆引擎，智能蒸馏、仿生�
 
 知识从对话流入，依次经过蒸馏、隐私过滤、去重，落入向量与元数据存储；检索请求走四层混合管道，衰减引擎在后台持续维护记忆活跃度。
 
-<ArchitectureDiagram
-  title="ACE 引擎数据流"
-  chart="graph TB
-  Input[对话流] --> Reflector[Reflector 知识蒸馏]
-  Reflector --> PII[PII 过滤 12 规则]
-  PII --> Curator[Curator 语义去重]
-  Curator --> Store[(向量 + 元数据)]
-  Store --> Decay[Decay Engine Ebbinghaus]
-  Query[检索请求] --> Hybrid[四层混合检索]
-  Hybrid --> Store"
-/>
+<DiagramFigure
+  caption="CLI、语言绑定、REST/MCP/daemon 服务端都调同一个 Memory API，后面接 ACE 的 reflect–curate–decay–generate 管道。图例只分两档：「默认接线」与「opt-in 或未接线」—— reranker 默认 enabled:false，graph-store 四个后端引擎里没有调用方，都归后者。子标签写的是「几个后端 · 其中几个真接上」，不是「支持几个后端」。"
+  source="2b-svc-memorus · 与仓库 README 同一张图">
+  <MemxArchitecture />
+</DiagramFigure>
 
 ## 适用场景
 

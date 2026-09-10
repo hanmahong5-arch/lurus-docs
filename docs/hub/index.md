@@ -23,7 +23,7 @@ description: Lurus Hub（hub.lurus.cn）是 Lurus 的统一大模型网关与 AI
   title="Hub 四大能力"
   :items="[
     { title: '多租户隔离', body: '按 tenant_slug 划分租户，数据库层自动注入租户标识；控制台区分 admin / user / billing_manager 角色', icon: 'users' },
-    { title: '统一网关', body: '一个 OpenAI 兼容入口接入 OpenAI / Claude / Gemini / DeepSeek / Qwen / GLM 等厂商，并在格式之间自动转换', icon: 'shuffle' },
+    { title: '统一网关', body: '一个 OpenAI 兼容入口接入 20+ 家上游厂商，跨三种上游 API 形态自动互转', icon: 'shuffle' },
     { title: '用量与日志', body: '调用日志全文检索（Meilisearch），按租户、令牌、模型维度统计用量', icon: 'search' },
     { title: '计费打通', body: '与 Lurus Platform 通过内部接口对接，用量直接结算到统一钱包', icon: 'coins' },
   ]"
@@ -34,6 +34,12 @@ description: Lurus Hub（hub.lurus.cn）是 Lurus 的统一大模型网关与 AI
 ---
 
 ## 两个 API 面
+
+<DiagramFigure
+  caption="OpenAI 兼容的调用方打到 relay 路由器，由它分发到 20+ 家上游适配器，调用结果记进 data hub 做打分与用量聚合；多租户管理 REST 面是另一条独立路径，与 relay 共用同一套 Postgres 与 Redis。右下角到计费服务的 gRPC 上报是可选边 —— 图例里标为 Optional，不配置就不上报。"
+  source="2b-svc-newhub · 与仓库 README 同一张图">
+  <HubArchitecture />
+</DiagramFigure>
 
 Hub 同时保留两套 HTTP 接口，用途不同：
 
@@ -49,14 +55,14 @@ Relay 面的常用端点（均为 `POST`，除模型列表外）：
 | --- | --- |
 | `GET /v1/models` | 列出当前令牌可用的模型 |
 | `POST /v1/chat/completions` | 对话补全（OpenAI 格式） |
-| `POST /v1/messages` | 对话补全（Claude 格式） |
+| `POST /v1/messages` | 对话补全（Anthropic Messages 格式） |
 | `POST /v1/responses` | Responses 格式 |
 | `POST /v1/embeddings` | 向量嵌入 |
 | `POST /v1/images/generations` | 图像生成 |
 | `POST /v1/audio/transcriptions` | 语音转文字 |
 | `POST /v1/audio/speech` | 文字转语音 |
 
-Gemini 原生格式走 `/v1beta/*`。完整的请求体字段与错误码，以 [API 参考](/api/overview) 为准。
+Google 的原生格式走 `/v1beta/*`。完整的请求体字段与错误码，以 [API 参考](/api/overview) 为准。
 
 ---
 

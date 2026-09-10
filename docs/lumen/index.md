@@ -40,6 +40,12 @@ graph = workflow.compile(
   <div class="lurus-stat"><span class="lurus-stat__value">v0.1.0</span><span class="lurus-stat__label">lumen-cli</span></div>
 </div>
 
+<DiagramFigure
+  caption="两段式：你的代码照常直接调自己的模型服务商，Python SDK 只在旁边把 trace 写成磁盘上的 JSON；内嵌的 Rust 核心与 CLI 事后读这份文件来做重放、算成本、渲染面板。橙色那条是 trace 落盘，也是全图的关键路径 —— Lumen 自己从不代你调模型，所以接入它不改变你的调用链路，也不多花一次 token。"
+  source="2c-cli-lumen · 与仓库 README 同一张图">
+  <LumenArchitecture />
+</DiagramFigure>
+
 ---
 
 <div class="lurus-section-head">
