@@ -239,7 +239,7 @@ kova mcp serve --port 3333`,
     id: 'memx',
     name: 'MemX',
     fullName: 'MemX — AI 自适应记忆引擎',
-    tagline: '零 LLM 成本的 AI 记忆引擎 · 仿生遗忘曲线 · 12 种 PII 过滤',
+    tagline: 'AI 记忆引擎 · 抽取、去重、衰减、混合检索 · 早期试点',
     status: 'dev',
     category: 'ai-service',
     audiences: ['developer', 'decider'],
@@ -247,56 +247,39 @@ kova mcp serve --port 3333`,
     icon: 'brain',
     home: '/memx/',
     highlights: [
-      { title: 'ACE v2.0 知识蒸馏', body: '规则预筛 + LLM 精炼混合模式，LLM 不可用时自动降级', icon: 'filter' },
-      { title: 'Ebbinghaus 衰退', body: '半衰期 30 天，高频召回条目永久保留，模拟人类遗忘', icon: 'timer' },
-      { title: '四层混合检索', body: '向量 + BM25 + 规则 + 衰减加权，可配优先级', icon: 'search' },
-      { title: '12 种 PII 过滤', body: 'API Key / 密码 / 私钥 / 手机号等敏感信息永不入向量库', icon: 'shield-check' },
+      { title: '默认不调外部模型', body: '默认按本地规则抽取；需要时可切换模式', icon: 'filter' },
+      { title: '随时间衰减', body: '久未被用到的记忆权重下降，检索命中会让权重回升', icon: 'timer' },
+      { title: '四层混合检索', body: '多路打分后乘以衰减权重与时效因子', icon: 'search' },
+      { title: '先脱敏再落库', body: '13 层内置脱敏规则不能单独关闭；脱敏失败整条不写入', icon: 'shield-check' },
     ],
     metrics: [
-      { label: 'PII 规则', value: '12 种' },
+      { label: '内置脱敏', value: '13 层' },
       { label: '混合检索', value: '4 层' },
-      { label: '交付形态', value: 'Python + REST + MCP' },
+      { label: '接入', value: 'CLI + REST + MCP' },
     ],
     codeExamples: [
       {
-        lang: 'python',
-        label: 'Python',
-        code: `from memx import Memory
-
-m = Memory(config={"ace_enabled": True})
-
-m.add([
-    {"role": "user", "content": "pytest 超时怎么办？"},
-    {"role": "assistant", "content": "用 pytest -x --timeout=30 逐个排查"},
-], user_id="dev1", scope="project:backend")
-
-results = m.search("pytest 调试", user_id="dev1")`,
-      },
-      {
         lang: 'bash',
         label: 'REST',
-        code: `curl -X POST https://memx.lurus.cn/v1/memories \\
-  -H "Authorization: Bearer $MEMX_KEY" \\
-  -d '{"messages": [...], "user_id": "dev1"}'`,
+        code: `# 写入
+curl -X POST http://localhost:8880/api/v1/memories \
+  -H "Authorization: Bearer $MEMORUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"content":"部署前必须运行 go test -race ./...","user_id":"dev1","scope":"project:backend"}'
+
+# 检索
+curl "http://localhost:8880/api/v1/memories/search?query=部署前检查&user_id=dev1&limit=5" \
+  -H "Authorization: Bearer $MEMORUS_API_KEY"`,
       },
     ],
     architectureDiagram: `graph TB
-  Input[对话流] --> Reflector[Reflector<br/>知识蒸馏]
-  Reflector --> PII[PII 过滤 12 规则]
-  PII --> Curator[Curator<br/>语义去重]
-  Curator --> Store[(向量 + 元数据)]
-  Store --> Decay[Decay Engine<br/>Ebbinghaus]
+  Input[写入请求] --> PII[脱敏 13 层]
+  PII --> Reflector[抽取]
+  Reflector --> Curator[语义去重]
+  Curator --> Store[(存储 + 变更历史)]
+  Store --> Decay[衰减]
   Query[检索请求] --> Hybrid[四层混合检索]
   Hybrid --> Store`,
-    comparison: {
-      competitors: ['mem0', 'LangMem', 'LlamaIndex Memory'],
-      rows: [
-        { dimension: 'LLM 蒸馏成本', self: '零（规则降级）', alt: { mem0: '每次调用', LangMem: '每次调用', 'LlamaIndex Memory': '每次调用' } },
-        { dimension: '衰退机制', self: 'Ebbinghaus 曲线', alt: { mem0: '无', LangMem: '时间窗口', 'LlamaIndex Memory': '无' } },
-        { dimension: 'PII 过滤', self: '12 种不可绕过', alt: { mem0: '需自实现', LangMem: '需自实现', 'LlamaIndex Memory': '需自实现' } },
-        { dimension: '检索维度', self: '向量+BM25+规则+衰减', alt: { mem0: '向量', LangMem: '向量', 'LlamaIndex Memory': '向量+BM25' } },
-      ],
-    },
     scenarios: [
       { role: '开发者', title: '给客服 Agent 加长期记忆', summary: 'MemX + Kova 搭可记忆 AI 客服', link: '/tutorials/memory-agent' },
     ],

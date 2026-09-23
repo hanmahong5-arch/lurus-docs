@@ -1,167 +1,106 @@
 ---
 title: MemX 架构设计
-description: MemX 管道架构详解，包括写入管道、检索管道和组件独立降级设计。
+description: MemX 的组成、写入与检索数据流、存储与嵌入默认值、部署形态。
 ---
 
 <div class="memx-page">
 
 # 架构设计
 
-MemX 采用管道（Pipeline）架构，写入和检索分别由独立管道编排，所有组件支持独立失败和优雅降级。
+MemX 是一个 Rust 工作区：一套核心引擎，对外提供命令行、REST 接口、MCP 服务，以及 Python / Node.js / C FFI 绑定。成熟度：早期试点。
 
-<MetricStats
-  :items="[
-    { label: 'Memory API', value: '5 方法', hint: 'add / search / status / detect_conflicts / export' },
-    { label: '核心管道', value: '2 条', hint: 'Ingest 写入 + Retrieval 检索' },
-    { label: '降级', value: '组件级', hint: '单组件失败不中断服务' },
-  ]"
-/>
+<ArchitectureDiagram title="MemX 组成" chart="graph TB
+  Surfaces[命令行 memorus-r · 语言绑定]
+  Server[memorus-server<br/>REST · MCP · daemon]
+  Surfaces --> Core[Memory API]
+  Server --> Core
+  Core --> Ingest[写入：脱敏 → 抽取 → 去重]
+  Core --> Search[检索：四层打分 → 核验 → 召回回升]
+  Ingest --> Store[(存储<br/>默认 SQLite)]
+  Search --> Store" />
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="network" :size="14" /> 拓扑</span>
-  <h2 class="lurus-section-head__title">系统总览</h2>
-  <p class="lurus-section-head__lede">两条独立管道汇入 Decay Engine 与向量存储。</p>
-</div>
+## 组成
 
-<ArchitectureDiagram title="MemX 管道架构" chart="graph TB
-  API[Memory API<br/>add / search / status / detect_conflicts / export]
-  API --> Ingest[IngestPipeline 写入]
-  API --> Retrieval[RetrievalPipeline 检索]
-  Ingest --> I1[Privacy Sanitizer] --> I2[Reflector] --> I3[Curator] --> I4[mem0.add]
-  Retrieval --> R1[Generator L1-L4] --> R2[ScoreMerger] --> R3[TokenBudgetTrimmer] --> R4[RecallReinforcer]
-  I4 --> Decay[Decay Engine<br/>异步衰减计算]
-  R4 --> Decay
-  Decay --> Store[(Vector Store<br/>mem0 Backend)]" />
+| 模块 | 作用 |
+|------|------|
+| `memorus-core` | 记忆引擎：配置、存储接口、租户、变更历史 |
+| `memorus-ace` | Reflector / Curator / Decay / Generator 与脱敏 |
+| `memorus-providers` | 向量库、嵌入、模型、重排序等后端适配 |
+| `memorus-server` | REST 接口、MCP 服务、daemon（二进制 `memorus-server`） |
+| `memorus-cli` | 本地管理命令行（二进制 `memorus-r`） |
+| `memorus-bindings-*`、`memorus-ffi` | Python / Node.js / WASM 绑定与 C FFI；WASM 绑定是另一套独立实现 |
 
-## 写入管道 — IngestPipeline
+## 写入
 
-<div class="lurus-callout lurus-callout--key">
-  <span class="lurus-callout__icon"><Icon name="shield-check" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">隐私网关不可绕过</p>
-    <div class="lurus-callout__body"><p>Privacy Sanitizer 是管道首站且无法跳过，12 条内置敏感信息规则在数据写入向量库前完成拦截，净化器永不抛异常。</p></div>
-  </div>
-</div>
+ACE 开启时（默认），一次写入依次经过：
 
-`Raw Input` 依次经过：
+1. **脱敏** — 13 层内置规则 + 配置中的自定义正则。这一步失败时整条写入不落库。
+2. **抽取（Reflector）** — 识别 → 评分 → 候选脱敏 → 提炼。
+3. **去重（Curator）** — 新增、合并或跳过；标记冲突；同一事实出现新值时取代旧记忆。
+4. **持久化** — 写入存储；新增、修改、删除都记入变更历史，可按条查询（REST：`GET /api/v1/memories/{id}/history`）。
 
-1. **Privacy Sanitizer**（不可绕过）— 12 条内置敏感信息规则 + 自定义正则；净化器永不抛异常。
-2. **Reflector** — hybrid 模式（规则预筛 + LLM 精炼）：PatternDetector（5 种模式检测）→ KnowledgeScorer（评分+分类）→ PrivacySanitizer（候选知识脱敏）→ BulletDistiller（压缩为精炼条目）。失败时回退原始 add。
-3. **Curator** — 余弦相似度去重：≥0.8 合并（merge_content/keep_best）、0.5-0.8 标记潜在冲突、<0.5 独立知识通过。失败时跳过去重直接写入。
-4. **BulletFactory** — 元数据格式转换 → `mem0.add()` 持久化到向量数据库。
+写入时显式带了源文件锚点的记忆不走抽取，但仍先经过同一套脱敏。ACE 关闭时写入不经脱敏。
 
-### 写入管道的降级路径
+## 检索
 
-每个阶段都有独立的错误处理：
+1. 从存储取回一批候选。
+2. **四层打分** — 精确关键词、词干模糊、元数据、语义相似度，融合后乘以衰减、时效、作用域因子（见 [核心概念](/memx/concepts)）。
+3. **核验** — 带锚点的记忆重新核对源文件，附上核验状态；陈旧记忆默认只标注。
+4. **召回回升** — 命中记忆的召回次数加一，影响后续衰减。
 
-| 阶段 | 失败行为 | 数据影响 |
-|------|---------|---------|
-| Privacy Sanitizer | 永不失败（内部 try-catch） | 原始数据通过 |
-| Reflector | 回退到原始 `mem0.add()` | 知识不经提炼直接存储 |
-| Curator | 跳过去重 | 可能产生重复条目 |
-| mem0.add | 抛出异常 | 写入失败 |
+## 存储与嵌入的默认值
 
-## 检索管道 — RetrievalPipeline
+- 服务端默认构建只链接 SQLite 存储；未设路径时为内存态。其他向量库后端需在构建时显式开启。
+- 零配置默认使用确定性的哈希向量，不携带语义；此时语义层实际不起作用，检索主要靠关键词层。要做语义检索，需要配置嵌入服务，或以 `onnx-embedding` 构建选项开启本地嵌入。
+- 配置文件位于 `~/.memorus-r/config.toml`，各项归到 `[memory]` / `[ace]` 等表下。
 
-`Query` 依次经过：
+## 服务端
 
-1. **Generator Engine** — L1 ExactMatcher（精确词）/ L2 FuzzyMatcher（模糊 Token）/ L3 MetadataMatcher（元数据 Jaccard）/ L4 VectorSearcher（向量语义）。L4 失败 → 纯关键词模式。
-2. **ScoreMerger**（加权融合）：`NormKW = (L1+L2+L3)/35`；`Blended = KW×0.6 + S×0.4`；`Final = Blended×Decay×Recency×Scope`。
-3. **TokenBudgetTrimmer**（双重约束）：`max_results=5` + `token_budget=2000`，CJK 感知 Token 估算。
-4. 返回结果给调用方，同时异步 **RecallReinforcer** 递增被命中记忆的 `recall_count`（不阻塞搜索响应）。
+`memorus-server` 有三个子命令：
 
-## 数据模型
+| 子命令 | 说明 |
+|------|------|
+| `serve` | REST 接口（`/api/v1/*`、`/health`），同时在 `POST /mcp` 提供 HTTP 形式的 MCP 端点（仅单租户部署可用） |
+| `mcp` | 本地 stdio 形式的 MCP 服务 |
+| `daemon` | 后台进程 |
 
-每条记忆（Bullet）携带的完整元数据：
+鉴权与租户：
 
-```python
-{
-    "id": "mem_a1b2c3d4",
-    "content": "pytest 超时问题：使用 -x --timeout=30 逐个运行",
-    "section": "DEBUGGING",
-    "knowledge_type": "TRICK",
-    "instructivity_score": 78,
-    "source_type": "INTERACTION",
+- `serve` 在非本机地址上启动时必须配置 API 密钥（`--api-key` 或 `MEMORUS_API_KEY`），否则拒绝启动。请求头用 `Authorization: Bearer <key>` 或 `X-API-Key: <key>`。
+- 可选按密钥区分租户（默认关闭）；提供按用户擦除数据的接口 `POST /api/v1/users/{user_id}/erase`。
 
-    # Decay tracking
-    "recall_count": 3,
-    "decay_weight": 0.89,
-    "created_at": "2026-02-20T10:30:00Z",
-    "last_recalled_at": "2026-02-27T15:00:00Z",
+## 部署形态
 
-    # Taxonomy
-    "related_tools": ["pytest"],
-    "key_entities": ["timeout", "test-isolation"],
-    "tags": ["python", "testing"],
-    "scope": "project:my-backend"
-}
-```
+有面向客户环境的 Docker Compose 部署包：一个应用容器加一个一次性初始化容器，内置 SQLite 存储，不依赖我们这边的任何基础设施。镜像可随交付以离线包提供，并附 SHA256 校验和；没有离线包时从源码构建。
 
-## 本地嵌入
+## 配置示例
 
-MemX 用 ONNX Runtime 在本地运行嵌入模型，无需外部 API，完全离线无隐私泄露：模型 all-MiniLM-L6-v2、维度 384、存储 `~/.memx/models/`、首次下载约 90MB、推理 < 5ms/条。
+```toml
+[ace]
+enabled = true
 
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">all-MiniLM-L6-v2</span><span class="lurus-stat__label">嵌入模型</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">384</span><span class="lurus-stat__label">向量维度</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">~90MB</span><span class="lurus-stat__label">首次下载</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">&lt;5ms</span><span class="lurus-stat__label">单条推理</span></div>
-</div>
+[ace.reflector]
+mode = "rules"        # rules（默认）| hybrid | llm
+min_score = 30.0
 
-## 守护进程模式
+[ace.curator]
+dedup_threshold = 0.9
 
-可选后台守护进程，多 Agent/多进程（Agent A/B/C）经 **MemX Daemon（IPC Socket）** 共享同一 Vector Store。IPC Socket 通信避免数据库连接竞争；空闲超时自动退出（默认 300 秒）；适用 IDE 插件、多窗口等。
+[ace.decay]
+half_life = 30.0
+boost_factor = 0.1
+protection_days = 7.0
+permanent_threshold = 15
 
-<ArchitectureDiagram title="守护进程共享拓扑" chart="graph LR
-  A[Agent A] --> D[MemX Daemon<br/>IPC Socket]
-  B[Agent B] --> D
-  C[Agent C] --> D
-  D --> S[(共享 Vector Store)]" />
+[ace.retrieval]
+token_budget = 4096
+scope_boost = 1.5
 
-## 配置参考
+[ace.verification]
+policy = "flag"       # flag（默认）| demote | drop
 
-```python
-from memx import Memory
-
-m = Memory(config={
-    # ACE Engine
-    "ace_enabled": True,
-
-    # Reflector — hybrid mode: rule pre-filter + LLM refinement
-    "reflector": {
-        "mode": "hybrid",       # "rules" | "hybrid"(default) | "llm"
-        "min_score": 30.0,      # minimum knowledge score threshold
-        "llm_model": "openai/gpt-4o-mini",
-    },
-
-    # Curator — semantic deduplication
-    "curator": {
-        "similarity_threshold": 0.8,    # auto-merge threshold
-        "merge_strategy": "keep_best",  # "keep_best" or "merge_content"
-    },
-
-    # Decay — bionic forgetting curve
-    "decay": {
-        "half_life_days": 30.0,         # days to decay to 50%
-        "boost_factor": 0.1,            # recall reinforcement coefficient
-        "permanent_threshold": 15,      # min recalls for permanent memory
-    },
-
-    # Retrieval — hybrid 4-layer search
-    "retrieval": {
-        "keyword_weight": 0.6,
-        "semantic_weight": 0.4,
-        "max_results": 5,
-        "token_budget": 2000,
-    },
-
-    # Privacy — sensitive data filtering (secrets / tokens / local paths)
-    "privacy": {
-        "custom_patterns": [
-            r"INTERNAL_KEY_\w+"
-        ],
-    },
-})
+[privacy]
+redaction_patterns = ['INTERNAL_KEY_\w+']
 ```
 
 ---
@@ -169,23 +108,10 @@ m = Memory(config={
 <NextSteps
   title="下一步"
   :steps="[
-    { text: '核心概念 — 深入理解 ACE 引擎的四大核心模块', link: '/memx/concepts', primary: true },
-    { text: '快速开始 — 5 分钟体验 MemX 核心功能', link: '/memx/quickstart' },
-    { text: '常见问题 — 使用中的常见问题解答', link: '/memx/faq' },
+    { text: '核心概念 — 各阶段的规则与默认值', link: '/memx/concepts', primary: true },
+    { text: '快速开始', link: '/memx/quickstart' },
+    { text: '常见问题', link: '/memx/faq' },
   ]"
 />
 
 </div>
-
-<style>
-.memx-page .lurus-section-head {
-  margin-top: 2.5rem;
-}
-.memx-page .metric-stats,
-.memx-page .lurus-stat-strip {
-  margin: 1.5rem 0 2rem;
-}
-.memx-page .lurus-callout {
-  margin: 1.25rem 0;
-}
-</style>

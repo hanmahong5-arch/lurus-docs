@@ -1,216 +1,122 @@
 ---
 title: MemX 快速开始
-description: 5 分钟内体验 MemX AI 自适应记忆引擎的核心功能。
+description: 部署 MemX 服务，写入并检索第一条记忆。
 ---
 
 <div class="memx-qs">
 
 # 快速开始
 
-5 分钟体验 MemX 核心功能：安装 → 初始化 → 写入 → 检索 → 查看状态。
+部署 → 写入 → 检索。MemX 目前处于早期试点，未发布到公共包仓库；部署包与源码随交付提供。
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">前置条件</p>
-    <div class="lurus-callout__body"><p>Python 3.9+ · pip · Lurus <Term t="API Key">API Key</Term>（<a href="/guide/get-api-key">获取方式</a>，hybrid 模式下用于 LLM 精炼）。预计 5 分钟。</p></div>
+    <div class="lurus-callout__body"><p>Docker Engine 与 Docker Compose v2。使用随交付提供的离线镜像包时不需要外网，也不需要 Rust 工具链。</p></div>
   </div>
 </div>
-
-## 选择接入方式
-
-MemX 提供 **Python SDK / REST / MCP** 三种接入形态。下面用「写入 + 检索」演示，选你习惯的方式（参数三者对齐）：
-
-:::tabs
-== Python SDK
-
-```python
-from memx import Memory
-
-m = Memory(config={"ace_enabled": True})
-
-# 从一段对话中学习
-m.add([
-    {"role": "user", "content": "pytest 超时怎么办？"},
-    {"role": "assistant", "content": "用 pytest -x --timeout=30 逐个排查"},
-], user_id="dev1", scope="project:backend")
-
-# 检索
-results = m.search("pytest 调试", user_id="dev1")
-```
-
-== REST
-
-```bash
-# 写入（POST /v1/memories）
-curl -X POST https://memx.lurus.cn/v1/memories \
-  -H "Authorization: Bearer $MEMX_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","content":"pytest 超时怎么办？"}],"user_id":"dev1"}'
-
-# 检索（GET /v1/memories/search）
-curl "https://memx.lurus.cn/v1/memories/search?query=pytest+调试&user_id=dev1&limit=5" \
-  -H "Authorization: Bearer $MEMX_KEY"
-```
-
-== MCP
-
-MemX 以 MCP server 形态把记忆操作暴露为 agent 工具，供 Claude / Codex 等 MCP 客户端调用（参数与 REST 对齐）：
-
-- `memory_add` — 写入知识（`content`、`user_id`）
-- `memory_search` — 语义检索（`query`、`limit`、`user_id`）
-- `memory_delete` — 删除条目（`memory_id`）
-:::
-
-下面的分步教程以 Python SDK 为例，REST / MCP 同理。
 
 <ol class="lurus-steps">
 
 <li>
 
-**安装**
+**准备配置**
+
+在交付的源码根目录执行：
 
 ```bash
-pip install git+https://github.com/UU114/memx.git
-# 完整安装：pip install "git+https://github.com/UU114/memx.git#egg=memx[all]"
+cp deploy/customer/.env.customer.example deploy/customer/.env
+openssl rand -hex 32   # 生成一个密钥，填入 .env 的 MEMORUS_API_KEY=
 ```
 
-需 Python 3.9+。首次运行自动下载本地嵌入模型（约 90MB）到 `~/.memx/models/`。
+服务在非本机地址上启动时必须配置 API 密钥，否则拒绝启动。
 
 </li>
 
 <li>
 
-**初始化**
+**加载镜像并启动**
 
-```python
-from memx import Memory
-m = Memory(config={"ace_enabled": True})   # 开启 ACE 引擎（核心功能）
+```bash
+sha256sum -c SHA256SUMS                       # 校验离线镜像包
+docker load -i memorus-image-<version>.tar    # 记下输出的镜像标签，填入 .env 的 MEMORUS_IMAGE=
+docker compose -f deploy/customer/docker-compose.customer.yml \
+  --env-file deploy/customer/.env up -d
+curl -i http://localhost:8880/health
 ```
 
-ACE 开启后所有写入和检索都经智能管道处理；默认配置即可满足大多数场景。
+没有离线镜像包时，可以从源码构建，步骤见交付包内的 `deploy/customer/INSTALL.md`。
 
 </li>
 
 <li>
 
-**写入知识**
+**写入与检索**
 
-从对话中自动提取和学习知识：
+:::tabs
+== REST
 
-```python
-# 从一段对话中学习
-result = m.add(
-    [
-        {"role": "user", "content": "pytest 总是超时怎么办？"},
-        {"role": "assistant", "content": "试试 pytest -x --timeout=30，逐个测试跑可以定位慢的用例"}
-    ],
-    user_id="developer_1",
-    scope="project:my-backend"
-)
+```bash
+# 写入
+curl -X POST http://localhost:8880/api/v1/memories \
+  -H "Authorization: Bearer $MEMORUS_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"content":"部署前必须运行 go test -race ./...","user_id":"dev1","scope":"project:backend"}'
 
-print(result)
-# {
-#   "ace_ingest": {
-#     "bullets_added": 1,
-#     "bullets_merged": 0,
-#     "bullets_skipped": 0,
-#     "privacy_filtered": 0
-#   }
-# }
+# 检索
+curl "http://localhost:8880/api/v1/memories/search?query=部署前检查&user_id=dev1&limit=5" \
+  -H "Authorization: Bearer $MEMORUS_API_KEY"
 ```
 
-也可以手动注入知识：
+检索结果包含每条记忆的总分；带锚点的记忆还会附上核验状态。
 
-```python
-# 手动添加一条经验
-m.add(
-    "部署前必须运行 go test -race ./... 检查竞态条件",
-    user_id="developer_1",
-    scope="project:my-backend",
-    metadata={"knowledge_type": "method", "section": "workflow"}
-)
+== 命令行
+
+```bash
+memorus-r learn "部署前必须运行 go test -race ./..." --user-id dev1
+memorus-r search "部署前检查" --limit 10 --threshold 0.3
 ```
 
-</li>
+== MCP
 
-<li>
+MemX 以 MCP 服务的形式把记忆操作暴露为工具，共 9 个：`search_memory`、`add_memory`、`list_memories`、`forget_memory`、`memory_status`、`detect_conflicts`、`run_decay_sweep`、`export_memories`、`import_memories`。
 
-**检索知识**
-
-```python
-results = m.search(
-    "pytest 调试技巧",
-    user_id="developer_1",
-    scope="project:my-backend"
-)
-
-for item in results["results"]:
-    print(f"[{item['score']:.2f}] {item['memory']}")
-# [0.87] pytest 超时问题：使用 -x --timeout=30 逐个运行定位慢用例
-```
-
-检索自动融合四层搜索结果（精确 + 模糊 + 元数据 + 语义），并考虑时间衰减和作用域匹配。
-
-</li>
-
-<li>
-
-**查看知识库状态**
-
-```python
-status = m.status(user_id="developer_1")
-print(status)
-# {
-#   "total_memories": 42,
-#   "by_section": {"debugging": 12, "workflow": 8, "tools": 6, ...},
-#   "avg_decay_weight": 0.73,
-#   "permanent_count": 5,
-#   "archive_candidates": 2
-# }
-```
+- 本地：`memorus-server mcp`（stdio）。
+- 服务端：`serve` 启动后的 `POST /mcp` 端点，目前仅支持单租户部署。
+:::
 
 </li>
 
 </ol>
 
-## CLI 快速体验
+## 命令行常用子命令
 
 ```bash
-memx status                              # 知识库统计
-memx search "pytest 调试"                # 搜索
-memx learn "always use -v flag ..."      # 手动添加
-memx list --scope project:my-backend     # 列出指定作用域
-memx forget <memory-id>                  # 删除
-memx sweep                               # 手动触发衰减计算
-memx conflicts                           # 检测矛盾知识
-memx export --format json > knowledge.json   # 导出
-memx import knowledge.json                   # 导入
+memorus-r status                      # 知识库统计
+memorus-r search "查询"               # 检索
+memorus-r learn "一条经验"            # 手动写入
+memorus-r list --limit 20             # 列出记忆
+memorus-r forget <memory-id>          # 删除
+memorus-r sweep                       # 触发衰减清理
+memorus-r conflicts                   # 查看互相矛盾的记忆
+memorus-r verify --stale-only         # 核对带锚点的记忆
+memorus-r export --format json -o knowledge.json
+memorus-r import -i knowledge.json
 ```
 
-## 纯 mem0 兼容模式
+## 注意
 
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="git-merge" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">可从 mem0 无缝迁移</p>
-    <div class="lurus-callout__body"><p>只需基础记忆功能时关闭 ACE，行为与 mem0 100% 一致（ACE 关闭时零开销透传，可先迁移再逐步开启）。</p></div>
-  </div>
-</div>
-
-```python
-m = Memory()  # ace_enabled 默认 False
-m.add("some knowledge", user_id="user1")
-results = m.search("query", user_id="user1")
-```
+- 零配置默认使用确定性的哈希向量，不是真实的语义嵌入；要做语义检索，需要配置嵌入服务。
+- 目前经服务接口写入的记忆还没有来源记录。
 
 ## 下一步
 
 <NextSteps
   :steps="[
-    { text: '核心概念 — 深入 ACE 引擎的四大核心模块', link: '/memx/concepts', primary: true },
-    { text: '架构设计 — 完整的管道架构和数据流', link: '/memx/architecture' },
-    { text: '常见问题 — 使用中遇到问题？', link: '/memx/faq' },
+    { text: '核心概念 — 抽取、去重、衰减、检索', link: '/memx/concepts', primary: true },
+    { text: '架构设计 — 写入与检索的数据流', link: '/memx/architecture' },
+    { text: '常见问题', link: '/memx/faq' },
   ]"
 />
 

@@ -1,204 +1,120 @@
 ---
 title: MemX 核心概念
-description: MemX ACE 引擎的四大核心模块：智能蒸馏、语义去重、衰退遗忘和混合检索。
+description: MemX 的四个处理阶段：抽取、去重、衰减、检索，以及脱敏与检索时核验。
 ---
 
 <div class="memx-page">
 
 # 核心概念
 
-MemX 的 ACE（Adaptive Context Engine）引擎由四大核心模块组成，独立运作、协同配合，实现知识的完整生命周期管理。
+MemX 的处理管线叫 ACE，由四个阶段组成：Reflector（抽取）→ Curator（去重）→ Decay（衰减）→ Generator（检索）。ACE 默认开启；关闭时写入不经抽取、去重，也不经脱敏。
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="brain" :size="14" /> ACE 引擎</span>
-  <h2 class="lurus-section-head__title">四大核心模块</h2>
-  <p class="lurus-section-head__lede">蒸馏 → 去重 → 衰减 → 检索，覆盖知识的完整生命周期。</p>
-</div>
+本页的默认值均取自引擎源码的配置默认值，可在配置文件 `[ace.*]` 表下调整。
 
 <CapabilityGrid
   accent="var(--lurus-color-memx)"
   :items="[
-    { title: 'Reflector · 知识蒸馏', body: 'hybrid 模式规则预筛 + LLM 精炼，5 种检测规则，相比全量 LLM 减少 90%+ 调用。', icon: 'filter' },
-    { title: 'Curator · 语义去重', body: '余弦相似度三级去重：≥0.8 合并、0.5~0.8 标记冲突、低于 0.5 独立写入。', icon: 'database-backup' },
-    { title: 'Decay · 时间衰减', body: 'Ebbinghaus 遗忘曲线，半衰期 30 天，召回增强 + 永久记忆三层保护。', icon: 'timer' },
-    { title: 'Generator · 混合检索', body: '四层搜索 L1~L4，关键词 0.6 + 语义 0.4 融合，再乘衰减/新近/作用域加成。', icon: 'search' },
+    { title: 'Reflector · 抽取', body: '识别 → 评分 → 隐私脱敏 → 提炼，四步把原始输入变成一条条记忆。', icon: 'filter' },
+    { title: 'Curator · 去重', body: '按相似度决定新增、合并或跳过；标记语义相关但结论相反的记忆。', icon: 'database-backup' },
+    { title: 'Decay · 衰减', body: '半衰期衰减 + 保护期 + 召回回升；召回足够多次后不再衰减。', icon: 'timer' },
+    { title: 'Generator · 检索', body: '四层信号融合为一个排序分，再乘以衰减、时效与作用域因子。', icon: 'search' },
   ]"
 />
 
-## <Term t="Reflector">Reflector</Term> — 知识蒸馏引擎
+## <Term t="Reflector">Reflector</Term> — 抽取
 
-Reflector 是 MemX 最核心的创新：**极低成本**的智能知识提取。传统 AI 记忆系统每次靠 LLM 从对话提取知识，消耗 2-5K tokens。Reflector 默认 **hybrid** 模式：规则预筛选 + 仅对有价值候选项调 LLM 精炼，相比全量 LLM 减少 90%+ 调用开销。
+### 三种模式
 
-### 三种运行模式
+| 模式 | 说明 |
+|------|------|
+| `rules`（默认） | 纯规则模式匹配，完全本地，不调用任何外部模型 |
+| `hybrid` | 规则预筛后再交给模型精炼，需显式开启并配置模型服务 |
+| `llm` | 由模型抽取，需显式开启并配置模型服务 |
 
-| 模式 | 说明 | LLM 开销 |
-|------|------|---------|
-| `rules` | 纯规则引擎，完全基于模式匹配 | 零 LLM 调用 |
-| `hybrid`（默认） | 规则预筛选 + LLM 精炼，取平均分数 | 仅对候选项调用，减少 90%+ |
-| `llm` | 完全依赖 LLM 提取知识 | 每次 2-5K tokens |
+### 五条检测规则
 
-**hybrid 工作流程**：原始对话 → PatternDetector（规则检测）→ 候选知识项 → LLM 评估+蒸馏（仅候选项）→ 取规则分数与 LLM 分数的平均值 → KnowledgeScorer（评分分类）→ PrivacySanitizer（隐私脱敏）→ BulletDistiller（压缩精炼）。
+`rules` 模式下由五条规则识别值得留下的内容：错误修复（ErrorFix）、多次重试后成功（RetrySuccess）、配置变更（ConfigChange）、首次使用新工具（NewTool）、重复操作（RepetitiveOp）。
 
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="shield-check" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">默认混合模式 + 自动降级</p>
-    <div class="lurus-callout__body"><p>LLM 不可用时自动切换纯规则模式，零调用零成本。</p></div>
-  </div>
-</div>
+### 评分与分类
 
-### 五种检测规则
+每条候选获得 0–100 的教学价值评分（instructivity score），低于 `min_score`（默认 30）的候选被丢弃。留下的记忆按两个维度分类：
 
-| 规则 | 检测逻辑 | 置信度 | 典型场景 |
-|------|---------|--------|---------|
-| ErrorFixRule | 识别「报错 → 解决方案」结构 | 0.8 | "TypeError: ... → 原来要加类型断言" |
-| RetrySuccessRule | 检测多次尝试后的成功路径 | 0.7 | "试了 A、B 都不行，最后 C 方案解决" |
-| ConfigChangeRule | 匹配配置/环境变量修改 | 0.6 | "把 MAX_POOL_SIZE 从 10 改到 50" |
-| NewToolRule | 识别首次使用的工具/库 | 0.65 | "第一次用 pnpm，比 npm 快多了" |
-| RepetitiveOpRule | 统计重复操作（≥3 次触发） | 0.5+ | "每次部署都要手动清理缓存" |
+- **Section**（主题）：`commands` · `debugging` · `architecture` · `workflow` · `tools` · `patterns` · `preferences` · `general`
+- **KnowledgeType**（性质）：`method` · `trick` · `pitfall` · `preference` · `knowledge`
 
-### 知识分类体系
+## <Term t="Curator">Curator</Term> — 去重与冲突
 
-每条知识自动归入 **Section**（主题）和 **KnowledgeType**（类型）两维度：
+新记忆写入时与已有记忆比对相似度（有嵌入时用余弦相似度，没有时退化为词集合的 Jaccard 相似度）：
 
-- **8 种 Section**：`COMMANDS` · `DEBUGGING` · `ARCHITECTURE` · `WORKFLOW` · `TOOLS` · `PATTERNS` · `PREFERENCES` · `GENERAL`
-- **5 种 KnowledgeType**：`METHOD`（方法论）· `TRICK`（技巧）· `PITFALL`（踩坑）· `PREFERENCE`（偏好）· `KNOWLEDGE`（事实）
+- 相似度达到 `dedup_threshold`（默认 0.9）→ 合并，或在几乎相同时直接跳过；
+- 相似度落在冲突区间（默认 0.5–0.8）→ 检查是否互相矛盾，矛盾的会被标记；
+- 其余 → 作为新记忆写入。
 
-### Instructivity Score
+同一件事出现了新值（例如阈值从 300ms 改成 500ms）时，旧记忆保留为历史、标记为已被取代并指向新记忆，检索时排在后面。命令行可随时查看冲突：`memorus-r conflicts`。
 
-每条知识获 0-100 **教学价值评分**，由模式匹配置信度 + 具体性/可操作性 + 是否含明确因果关系综合计算。低于 `min_score`（默认 30）的候选项被丢弃。
-
-## <Term t="Curator">Curator</Term> — 语义去重引擎
-
-Curator 在每次写入时自动处理重复和矛盾。
-
-### 三级去重策略
-
-新知识写入 → 计算与现有知识的余弦相似度：**≥ 0.8** 自动合并（keep_best 或 merge_content）；**0.5~0.8** 标记潜在冲突等待确认；**< 0.5** 视为独立知识正常写入。
-
-**合并策略**：`keep_best`（默认，保留 instructivity_score 更高的版本）/ `merge_content`（合并两条内容，生成更完整版本）。
-
-### 冲突检测
-
-主动扫描矛盾记忆（例：相似度 0.72 但结论相反 — "Redis 连接池设 10 即可" vs "至少 50 才稳定"，建议确认最佳实践删过时版本）。CLI 随时检测：`memx conflicts`。
-
-## <Term t="Decay">Decay</Term> — 时间衰减引擎
-
-模拟人类记忆的自然遗忘曲线，确保知识库始终保持"新鲜"。
-
-### 衰减公式
+## <Term t="Decay">Decay</Term> — 衰减
 
 ```
-base_weight = 2^(-age_days / half_life)
-boosted     = base_weight × (1 + boost_factor × recall_count)
-final       = clamp(boosted, 0.0, 1.0)
+weight = 2^(-age_days / half_life) × (1 + boost_factor × recall_count)，上限 1.0
 ```
-
-**核心参数**:
 
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
-| `half_life` | 30 天 | 权重衰减到 50% 所需的天数 |
-| `boost_factor` | 0.1 | 每次召回的权重加成系数 |
+| `half_life` | 30 天 | 无召回时权重减半所需天数 |
+| `boost_factor` | 0.1 | 每次召回带来的回升系数 |
+| `protection_days` | 7 天 | 保护期内权重固定为 1.0 |
+| `permanent_threshold` | 15 次 | 召回次数达到后不再衰减 |
+| `archive_threshold` | 0.02 | 权重低于此值的记忆在清理时移出活跃检索范围 |
 
-**数值示例**（half_life=30, boost_factor=0.1）:
+衰减清理由命令行（`memorus-r sweep`）或 MCP 工具（`run_decay_sweep`）触发。
 
-| 场景 | age_days | recall_count | base_weight | final |
-|------|----------|-------------|-------------|-------|
-| 刚写入 | 0 | 0 | 1.0 | **1.0**（保护期）|
-| 30 天未用 | 30 | 0 | 0.5 | **0.5** |
-| 60 天未用 | 60 | 0 | 0.25 | **0.25** |
-| 30 天，被检索 5 次 | 30 | 5 | 0.5 | **0.75** |
-| 90 天，被检索 15 次 | 90 | 15 | 0.125 | **1.0**（recall>=15 触发永久记忆，跳过公式）|
+## Generator — 混合检索
 
-### 三层保护机制
+| 层 | 匹配方式 |
+|------|---------|
+| L1 | 精确关键词：查询词是否原样出现在正文中 |
+| L2 | 模糊：对查询与正文取词干后比较 |
+| L3 | 元数据：查询词是否命中工具、实体、标签字段 |
+| L4 | 语义：查询向量与记忆向量的余弦相似度 |
 
-<div class="lurus-callout lurus-callout--key">
-  <span class="lurus-callout__icon"><Icon name="lock" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">三层保护</p>
-    <div class="lurus-callout__body"><ul><li><code>recall_count ≥ 15</code> → 永久记忆（weight 固定 1.0）</li><li><code>age ≤ 7 天</code> → 保护期（weight 固定 1.0）</li><li><code>weight &lt; 0.02</code> → 归档候选（可清理）</li></ul></div>
-  </div>
-</div>
-
-直觉：刚学的（7 天内）记得清楚；常回忆的越来越牢；用 15 次以上成"肌肉记忆"；久不用逐渐遗忘。
-
-### 检索时的衰减影响
-
-衰减权重直接参与检索排序的最终评分：
+融合方式：
 
 ```
-Final Score = Blended Search Score × DecayWeight × RecencyBoost × ScopeBoost
+norm_keyword = min((L1 + L2 + L3) / 满分, 1.0)
+blended      = norm_keyword × 0.6 + L4 × 0.4
+final        = blended × 衰减权重 × 时效因子 × 作用域因子，截断到 [0, 1]
 ```
 
-- `RecencyBoost`: 7 天内创建的知识获得 1.2x 加成
-- `ScopeBoost`: 匹配当前作用域的知识获得 1.3x 加成
+- 没有查询向量时（未配置嵌入）退化为纯关键词：权重变为 1.0 / 0.0。
+- 时效因子：7 天内的新记忆最多加成 20%，随天数线性归零。
+- 作用域因子：命中查询指定作用域的记忆乘以 1.5。
+- 中文按字符二元组（bigram）切词，不是词典分词。
 
-## Generator — 混合检索引擎
+各层分项得分目前只在引擎内部计算，接口只返回总分。「混合检索优于纯向量检索」目前没有可复现的基准数字支撑。
 
-突破纯<Term t="Vector Search">向量搜索</Term>局限，四层搜索覆盖精确匹配到语义理解的完整频谱。
+## 作用域
 
-### 四层搜索架构
+每条记忆带一个作用域：全局（默认）、某个项目或某个团队。按项目检索时返回该项目与全局的并集；按团队检索同理。
 
-| 层级 | 引擎 | 匹配方式 | 优势场景 |
-|------|------|---------|---------|
-| L1 | ExactMatcher | 精确词匹配 | "pytest -v"、API 名称 |
-| L2 | FuzzyMatcher | 模糊 Token 匹配 | 拼写变体、形态变化 |
-| L3 | MetadataMatcher | tools / entities / tags 的 Jaccard 相似度 | "关于 Redis 的知识" |
-| L4 | VectorSearcher | 向量嵌入语义搜索 | "如何提升测试性能" |
+## 检索时核验
 
-### 分数融合公式
-
-```
-NormKeyword = (L1 + L2 + L3) / 35.0        # 归一化到 [0, 1]
-Blended     = NormKeyword × 0.6 + Semantic × 0.4
-Final       = Blended × DecayWeight × RecencyBoost × ScopeBoost
-```
-
-关键词搜索权重（0.6）高于语义搜索（0.4），确保精确匹配的结果优先展示。
-
-**数值示例**: 查询 "pytest timeout"，某条记忆的得分计算：
-- L1(精确)=8, L2(模糊)=5, L3(元数据)=3 → NormKeyword = (8+5+3)/35 = 0.457
-- L4(语义) = 0.72
-- Blended = 0.457×0.6 + 0.72×0.4 = 0.562
-- DecayWeight=0.89, RecencyBoost=1.0, ScopeBoost=1.3
-- **Final = 0.562 × 0.89 × 1.0 × 1.3 = 0.650**
-
-### 优雅降级
-
-L4 向量搜索不可用时（嵌入模型加载失败）自动降级纯关键词模式（`keyword_weight=1.0, semantic_weight=0.0`）。任何单一搜索层故障都不中断服务。
-
-## Token 预算管理
-
-检索结果双重约束：`max_results`（最大返回条数，默认 5）+ `token_budget`（最大 Token 预算，默认 2000）。
-
-**CJK 感知**（确保中文不因错误 Token 估算被过度裁剪）：CJK 字符 1.5 字符/token；拉丁字符 4.0 字符/token。
-
-## 层级作用域
-
-知识按层级组织实现访问控制：`global`（所有项目可见）→ `project:my-backend`（仅该项目）→ `workspace:feat-auth`（仅该工作区）。匹配当前 scope 的知识获 1.3x 评分加成；上层 scope 对下层可见（global 对所有项目），下层对上层不可见。
+记忆可以锚定到某个源文件里的一段文字。检索时重新核对这段文字是否还在，标为 `verified`（已核验）、`stale`（陈旧）或 `unverifiable`（无法核验）。对陈旧记忆默认只标注；也可以配置为降权（`demote`）或直接剔除（`drop`）。
 
 ---
 
 <NextSteps
   title="下一步"
   :steps="[
-    { text: '架构设计 — 完整的管道架构和数据流', link: '/memx/architecture', primary: true },
-    { text: '快速开始 — 5 分钟体验 MemX 核心功能', link: '/memx/quickstart' },
-    { text: '常见问题 — 使用中的常见问题解答', link: '/memx/faq' },
+    { text: '架构设计 — 写入与检索的数据流', link: '/memx/architecture', primary: true },
+    { text: '快速开始', link: '/memx/quickstart' },
+    { text: '常见问题', link: '/memx/faq' },
   ]"
 />
 
 </div>
 
 <style>
-.memx-page .lurus-section-head {
-  margin-top: 2.5rem;
-}
 .memx-page .cap-grid {
   margin: 1.5rem 0 2.25rem;
-}
-.memx-page .lurus-callout {
-  margin: 1.25rem 0;
 }
 </style>

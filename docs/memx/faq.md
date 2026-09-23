@@ -12,27 +12,33 @@ description: MemX AI 记忆引擎的常见问题与解答。
   <h2 class="lurus-section-head__title">基础问题</h2>
 </div>
 
-<details class="lurus-faq-item"><summary>MemX 和 mem0 是什么关系？</summary>
+<details class="lurus-faq-item"><summary>MemX 现在成熟到什么程度？</summary>
 
-MemX 是 [mem0](https://github.com/mem0ai/mem0) 的增强版（超集），新增 ACE 智能记忆管理层。`ace_enabled=False` 时与 mem0 行为完全一致、零开销。
+早期试点。当前版本在预发与演示环境运行，未承载客户生产流量，尚未替换正在服务线上流量的上一代实现。未发布到公共包仓库，部署包与源码随交付提供。
+
+</details>
+
+<details class="lurus-faq-item"><summary>用什么语言实现？和 MemX、memorus 这两个名字是什么关系？</summary>
+
+引擎是 Rust 实现的原创工作区，不是任何上游项目的分支或移植。MemX 是本站对该产品的称呼；工程名为 memorus，命令行（`memorus-r`）与服务（`memorus-server`）的二进制沿用工程名。Python、Node.js 绑定与 C FFI 调用的是同一套 Rust 引擎。
+
+</details>
+
+<details class="lurus-faq-item"><summary>默认会调用外部模型吗？</summary>
+
+不会。抽取默认使用 `rules` 模式，完全本地；`hybrid` 与 `llm` 模式需要显式开启并配置模型服务。
 
 </details>
 
 <details class="lurus-faq-item"><summary>需要 GPU 吗？</summary>
 
-不需要。本地嵌入模型 all-MiniLM-L6-v2 经 ONNX Runtime 在 CPU 上运行（&lt; 5ms/条）；Reflector 规则预筛不依赖 GPU，hybrid 的 LLM 精炼走远程 API。
+默认配置不需要：规则抽取与关键词检索都在 CPU 上完成。要做语义检索，需要配置嵌入服务，或以 `onnx-embedding` 构建选项开启本地嵌入。
 
 </details>
 
-<details class="lurus-faq-item"><summary>会产生额外的 LLM Token 消耗吗？</summary>
+<details class="lurus-faq-item"><summary>数据存在哪里？</summary>
 
-默认 `hybrid` 仅对有价值候选项调 LLM，比 mem0 全量调用减少 90%+；LLM 不可用时自动降级纯规则、零成本。显式关闭设 `reflector.mode="rules"`。
-
-</details>
-
-<details class="lurus-faq-item"><summary>支持哪些向量数据库？</summary>
-
-继承 mem0 全部（Qdrant、Chroma、Pinecone、Weaviate、Milvus 等），默认内存存储适合开发测试。
+服务端默认构建只链接 SQLite 存储。客户环境部署包里，所有持久数据落在一个命名卷上，不依赖外部数据库、缓存或消息队列。其他向量库后端需在构建时显式开启。
 
 </details>
 
@@ -41,74 +47,52 @@ MemX 是 [mem0](https://github.com/mem0ai/mem0) 的增强版（超集），新�
   <h2 class="lurus-section-head__title">使用问题</h2>
 </div>
 
-<details class="lurus-faq-item"><summary>如何从 mem0 迁移？</summary>
-
-<ol class="lurus-steps">
-<li>
-
-`pip install git+https://github.com/UU114/memx.git`
-
-</li>
-<li>
-
-`from mem0 import Memory` 改为 `from memx import Memory`
-
-</li>
-<li>
-
-现有代码无需改动（ACE 默认关闭）。
-
-</li>
-<li>
-
-准备好后加 `config={"ace_enabled": True}` 开启智能功能。
-
-</li>
-</ol>
-
-</details>
-
-<details class="lurus-faq-item"><summary>数据存在哪里？</summary>
-
-取决于配置的向量数据库后端，默认内存（重启丢失），生产建议 Qdrant/Chroma 持久化。本地嵌入模型缓存在 `~/.memx/models/`。
-
-</details>
-
 <details class="lurus-faq-item"><summary>如何控制衰减速度？</summary>
 
-| 参数 | 效果 |
+| 参数（`[ace.decay]`） | 效果 |
 |------|------|
-| `decay.half_life_days` | 增大 → 衰减更慢（默认 30 天） |
-| `decay.boost_factor` | 增大 → 召回增强更明显（默认 0.1） |
-| `decay.permanent_threshold` | 减小 → 更易成永久记忆（默认 15 次） |
+| `half_life` | 增大 → 衰减更慢（默认 30 天） |
+| `boost_factor` | 增大 → 每次召回回升更多（默认 0.1） |
+| `protection_days` | 新记忆保持满权重的天数（默认 7 天） |
+| `permanent_threshold` | 减小 → 更容易成为不再衰减的记忆（默认 15 次） |
+
+衰减清理由 `memorus-r sweep` 或 MCP 工具 `run_decay_sweep` 触发。
 
 </details>
 
-<details class="lurus-faq-item"><summary>误判的知识怎么处理？</summary>
+<details class="lurus-faq-item"><summary>记错了的内容怎么处理？</summary>
 
 <ol class="lurus-steps">
 <li>
 
-`memx list --scope project:my-app` — 查看
+`memorus-r list` 或 `memorus-r conflicts` — 找到它
 
 </li>
 <li>
 
-`memx forget <memory-id>` — 删除
+`memorus-r forget <memory-id>` — 删除
 
 </li>
 <li>
 
-`memx learn "correct knowledge"` — 手动添加
+`memorus-r learn "正确的内容"` — 手动写入
 
 </li>
 </ol>
 
+同一事实出现新值时，引擎会把旧记忆标记为已被取代，检索时排在后面；每条记忆的变更历史可以通过 `GET /api/v1/memories/{id}/history` 查询。
+
 </details>
 
-<details class="lurus-faq-item"><summary>多人 / 多 Agent 如何共享记忆？</summary>
+<details class="lurus-faq-item"><summary>记忆指向的代码改了怎么办？</summary>
 
-启用守护进程模式，多 Agent 经 IPC Socket 共享同一知识库（IDE 插件、团队协作），用 `scope` 区分项目/工作区。
+锚定到源文件的记忆在检索时会重新核对，标为已核验、陈旧或无法核验。对陈旧记忆默认只标注；可配置 `[ace.verification] policy` 为 `demote`（降权）或 `drop`（剔除）。也可以用 `memorus-r verify` 批量核对。
+
+</details>
+
+<details class="lurus-faq-item"><summary>多个用户或 Agent 如何隔离？</summary>
+
+每条记忆带用户、Agent 标识与作用域（全局、项目、团队）。服务端可选按 API 密钥区分租户（默认关闭）。服务端 MCP 端点目前仅支持单租户部署。
 
 </details>
 
@@ -120,35 +104,42 @@ MemX 是 [mem0](https://github.com/mem0ai/mem0) 的增强版（超集），新�
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="lock" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">过滤不可关闭</p>
-    <div class="lurus-callout__body"><p>12 条内置敏感信息过滤规则是不可禁用的安全底线，只能通过 <code>privacy_custom_patterns</code> 添加额外规则。</p></div>
+    <p class="lurus-callout__title">内置规则不能单独关闭</p>
+    <div class="lurus-callout__body"><p>13 层内置脱敏规则不能单独关闭或移除，只能通过 <code>[privacy] redaction_patterns</code> 追加规则。脱敏属于 ACE 处理管线，管线默认开启；关闭 ACE 时写入不经脱敏。</p></div>
   </div>
 </div>
 
-<details class="lurus-faq-item"><summary>支持哪些敏感信息类型的过滤？</summary>
+<details class="lurus-faq-item"><summary>内置规则覆盖哪些类型？</summary>
 
-| 类型 | 示例 |
+按从具体到一般的顺序依次应用：
+
+| 类型 | 替换为 |
 |---------|------|
-| PEM 私钥 | `-----BEGIN RSA PRIVATE KEY-----` |
-| Bearer / JWT Token | `Bearer eyJhbG...` |
-| Anthropic API Key | `sk-ant-api03-*` |
-| OpenAI API Key | `sk-proj-*` |
-| GitHub Token | `ghp_*`, `github_pat_*` |
-| AWS Access Key | `AKIA*` |
-| AWS Secret Key | 40 字符 base64 |
-| 数据库连接串 | `postgres://user:pass@host/db` |
-| 操作系统路径 | `/home/user/.ssh/id_rsa` |
-| 自定义规则 | 通过 `privacy_custom_patterns` 添加 |
-
-::: info
-这 12 条规则聚焦于**密钥与本地路径**类的敏感信息（secrets + user paths），并非传统意义的 PII（邮箱 / 电话 / 身份证等）。如需 PII 过滤，请通过 `privacy_custom_patterns` 自行扩展。
-:::
+| API 密钥（常见服务商前缀、代码仓库平台令牌） | `[REDACTED:API_KEY]` |
+| OAuth 令牌 | `[REDACTED:OAUTH_TOKEN]` |
+| JWT | `[REDACTED:JWT]` |
+| `api_key=` / `access_token=` 等参数 | `[REDACTED:API_KEY_PARAM]` |
+| 云访问凭证 | `[REDACTED:AWS_CREDENTIALS]` |
+| 邮箱 | `[REDACTED:EMAIL]` |
+| 电话 | `[REDACTED:PHONE]` |
+| 银行卡号 | `[REDACTED:CREDIT_CARD]` |
+| 社会保障号 | `[REDACTED:SSN]` |
+| 私钥块 | `[REDACTED:PRIVATE_KEY]` |
+| 数据库连接串 | `[REDACTED:DB_CONNECTION]` |
+| 密码、令牌等通用密钥字段 | `[REDACTED:SECRET]` |
+| 本地用户路径 | `[USER_PATH]` |
 
 </details>
 
-<details class="lurus-faq-item"><summary>过滤后的原始值去哪了？</summary>
+<details class="lurus-faq-item"><summary>脱敏失败会怎样？</summary>
 
-替换为占位符（如 `[REDACTED:api_key]`），原始值不存储在任何地方。过滤在写入管道最前端执行。
+写入时先脱敏再处理。脱敏这一步失败时，这次写入整条不落库，不会把原文存进去。配置里的自定义正则无法编译时，服务直接报错，不会静默跳过。
+
+</details>
+
+<details class="lurus-faq-item"><summary>能按用户删除数据吗？</summary>
+
+可以。REST 提供 `POST /api/v1/users/{user_id}/erase`，删除该用户的记忆。
 
 </details>
 
@@ -157,26 +148,9 @@ MemX 是 [mem0](https://github.com/mem0ai/mem0) 的增强版（超集），新�
   <h2 class="lurus-section-head__title">性能问题</h2>
 </div>
 
-<details class="lurus-faq-item"><summary>能存多少条记忆？</summary>
+<details class="lurus-faq-item"><summary>检索延迟、容量有多大？</summary>
 
-取决于向量数据库后端容量，MemX 本身无硬限制；衰减引擎自动归档，保持活跃规模合理。
-
-</details>
-
-<details class="lurus-faq-item"><summary>RecallReinforcer 会影响搜索性能吗？</summary>
-
-不会。异步后台线程，返回结果后才更新 `recall_count`，不阻塞搜索。
-
-</details>
-
-<details class="lurus-faq-item"><summary>检索延迟有多大？（&lt; 10,000 条记忆）</summary>
-
-| 操作 | 延迟 |
-|------|------|
-| 四层混合搜索 | 10-50ms |
-| 纯关键词搜索（L4 降级） | 5-20ms |
-| 本地嵌入计算 | &lt; 5ms |
-| 写入（含 Reflector + Curator） | 20-100ms |
+目前没有可复现的基准数字，所以这里不写数字。
 
 </details>
 
@@ -184,9 +158,9 @@ MemX 是 [mem0](https://github.com/mem0ai/mem0) 的增强版（超集），新�
 
 <NextSteps
   :steps="[
-    { text: '快速开始 — 5 分钟体验核心功能', link: '/memx/quickstart', primary: true },
-    { text: '核心概念 — 深入 ACE 引擎', link: '/memx/concepts' },
-    { text: '架构设计 — 完整系统架构', link: '/memx/architecture' },
+    { text: '快速开始', link: '/memx/quickstart', primary: true },
+    { text: '核心概念', link: '/memx/concepts' },
+    { text: '架构设计', link: '/memx/architecture' },
   ]"
 />
 
