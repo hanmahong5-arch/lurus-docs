@@ -141,6 +141,12 @@ const navZh = [
     text: '产品',
     items: [
       {
+        text: '受托运维',
+        items: [
+          { text: 'Lurus Witness · 见证', link: '/witness/' },
+        ]
+      },
+      {
         text: 'AI 服务',
         items: [
           { text: 'Lurus API', link: '/guide/introduction' },
@@ -238,6 +244,18 @@ const sidebarZh = {
         { text: '快速开始', link: '/lucrum/quickstart' },
         { text: '策略市场', link: '/lucrum/strategies' },
         { text: '常见问题', link: '/lucrum/faq' },
+      ]
+    }
+  ],
+  '/witness/': [
+    {
+      text: 'Lurus Witness · 见证',
+      collapsed: false,
+      items: [
+        { text: '简介', link: '/witness/' },
+        { text: '核心概念', link: '/witness/evidence' },
+        { text: '部署', link: '/witness/deploy' },
+        { text: '恢复演练与月度报告', link: '/witness/drills' },
       ]
     }
   ],
