@@ -38,7 +38,7 @@ description: "Creator 데스크톱 콘텐츠 팩토리의 다운로드 및 설�
 1. `LurusCreator-windows-amd64.exe`를 다운로드하고 더블 클릭하여 실행합니다.
 2. 「Windows에서 PC를 보호했습니다」 창이 나타나면 「추가 정보」 → 「실행」을 클릭합니다.
 3. 설치 마법사를 완료하고 바탕화면 바로 가기에서 실행합니다.
-4. **최초 설정**: [api.lurus.cn](https://api.lurus.cn)에서 Key를 발급받아 Creator 설정에 붙여 넣습니다（AI 재작성에 사용）.
+4. **최초 설정**: [hub.lurus.cn](https://hub.lurus.cn)에서 Key를 발급받아 Creator 설정에 붙여 넣습니다（AI 재작성에 사용）.
 5. 작업 디렉터리（비디오/문구 저장 위치）를 선택합니다.
 
 == macOS

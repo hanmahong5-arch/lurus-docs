@@ -34,7 +34,7 @@ const activeLang = ref<LangId>('python')
 const snippet = computed(() => {
   const model = selected.value
   if (activeLang.value === 'curl') {
-    return `curl https://api.lurus.cn/v1/chat/completions \\
+    return `curl https://hub.lurus.cn/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer $LURUS_API_KEY" \\
   -d '{
@@ -46,7 +46,7 @@ const snippet = computed(() => {
     return `import OpenAI from "openai";
 
 const client = new OpenAI({
-  baseURL: "https://api.lurus.cn/v1",
+  baseURL: "https://hub.lurus.cn/v1",
   apiKey: process.env.LURUS_API_KEY,
 });
 
@@ -59,7 +59,7 @@ console.log(response.choices[0].message.content);`
   return `from openai import OpenAI
 import os
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key=os.environ["LURUS_API_KEY"])
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key=os.environ["LURUS_API_KEY"])
 
 response = client.chat.completions.create(
     model="${model}",

@@ -89,7 +89,7 @@ Puntos clave: los errores de autenticación (401) no se reintentan y se propagan
 from openai import OpenAI, APIError, RateLimitError, AuthenticationError
 import time
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-api-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-api-key")
 
 def chat_with_retry(messages, max_retries=3):
     for attempt in range(max_retries):
@@ -113,7 +113,7 @@ def chat_with_retry(messages, max_retries=3):
 ```javascript
 import OpenAI from 'openai';
 
-const client = new OpenAI({ baseURL: 'https://api.lurus.cn/v1', apiKey: 'sk-your-api-key' });
+const client = new OpenAI({ baseURL: 'https://hub.lurus.cn/v1', apiKey: 'sk-your-api-key' });
 
 async function chatWithRetry(messages, maxRetries = 3) {
   for (let attempt = 0; attempt < maxRetries; attempt++) {

@@ -22,7 +22,7 @@ description: 在 OpenCat iOS/macOS 客户端中配置 Lurus API。
 在浏览器或备忘录中点击以下链接，可一键跳转到 OpenCat 并自动填入配置：
 
 ```
-opencat://team/join?domain=https://api.lurus.cn&token=YOUR_API_KEY
+opencat://team/join?domain=https://hub.lurus.cn&token=YOUR_API_KEY
 ```
 
 将 `YOUR_API_KEY` 替换为你的 Key（`sk-xxxxxxxxxxxxxxxx`），在 Safari 中打开即可。
@@ -51,7 +51,7 @@ opencat://team/join?domain=https://api.lurus.cn&token=YOUR_API_KEY
 
 选择「**自定义 API**」，填入：
 
-- **API Host**：`https://api.lurus.cn`
+- **API Host**：`https://hub.lurus.cn`
 - **API Key**：你的 Key（`sk-xxxxxxxxxxxxxxxx`）
 
 </li>
@@ -85,9 +85,9 @@ OpenCat 不会自动拉取模型列表，需手动输入模型名称。常用模
 <details class="lurus-faq-item">
 <summary>连接测试失败，提示"无效密钥"</summary>
 
-- 确认 API Host 末尾**不带斜杠**（`https://api.lurus.cn`，不是 `https://api.lurus.cn/`）
+- 确认 API Host 末尾**不带斜杠**（`https://hub.lurus.cn`，不是 `https://hub.lurus.cn/`）
 - 确认 API Key 格式正确（以 `sk-` 开头）
-- 在 [Lurus 控制台](https://api.lurus.cn) 确认 Key 状态为「启用」
+- 在 [Lurus 控制台](https://hub.lurus.cn) 确认 Key 状态为「启用」
 
 </details>
 

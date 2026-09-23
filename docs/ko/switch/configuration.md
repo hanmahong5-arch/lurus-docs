@@ -35,7 +35,7 @@ description: Switch의 AI 도구 구성, MCP 서버 관리 및 비용 모니터�
 
 | 제공자 | API Base URL | API Key |
 |------|------|------|
-| **Lurus API** <span class="lurus-tag">권장</span> | `https://api.lurus.cn/v1` | Lurus Key(`sk-`로 시작); 모델은 "자동 감지" 클릭 |
+| **Lurus API** <span class="lurus-tag">권장</span> | `https://hub.lurus.cn/v1` | Lurus Key(`sk-`로 시작); 모델은 "자동 감지" 클릭 |
 | **OpenAI** | `https://api.openai.com/v1` | `sk-...`(공식) |
 | **Anthropic** | `https://api.anthropic.com/v1` | `sk-ant-...` |
 | **Ollama**(로컬) | `http://localhost:11434/v1` | (비워 둠) |
@@ -113,7 +113,7 @@ Switch 구성은 다음 위치에 저장됩니다:
   "providers": [
     {
       "name": "Lurus API",
-      "base_url": "https://api.lurus.cn/v1",
+      "base_url": "https://hub.lurus.cn/v1",
       "api_key": "sk-your-lurus-key",
       "enabled": true
     },

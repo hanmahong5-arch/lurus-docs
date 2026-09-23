@@ -26,7 +26,7 @@ description: Lurus 統合アカウント体系、サブスクリプションプ�
 
 ## 統合アカウント
 
-任意の Lurus 製品（[api.lurus.cn](https://api.lurus.cn)、[lucrum.lurus.cn](https://lucrum.lurus.cn) など）にアクセスすれば、登録・ログインできます。**ログイン方式**：メール+パスワード、GitHub（OAuth）、Google（OAuth）。
+任意の Lurus 製品（[hub.lurus.cn](https://hub.lurus.cn)、[lucrum.lurus.cn](https://lucrum.lurus.cn) など）にアクセスすれば、登録・ログインできます。**ログイン方式**：メール+パスワード、GitHub（OAuth）、Google（OAuth）。
 
 登録が完了すると、以下が得られます：
 

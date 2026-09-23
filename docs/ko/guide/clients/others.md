@@ -15,7 +15,7 @@ OpenAI API를 지원하는 모든 클라이언트에서 Lurus API를 사용할 �
 
 | 설정 항목 | 값 |
 |--------|-----|
-| API Base URL | `https://api.lurus.cn/v1` |
+| API Base URL | `https://hub.lurus.cn/v1` |
 | API Key | `sk-your-api-key` |
 
 <div class="lurus-callout lurus-callout--info">
@@ -135,7 +135,7 @@ OpenAI API를 지원하는 모든 클라이언트에서 Lurus API를 사용할 �
 </li>
 <li>
 
-**Base URL**: `https://api.lurus.cn/v1`.
+**Base URL**: `https://hub.lurus.cn/v1`.
 
 </li>
 </ol>
@@ -151,7 +151,7 @@ OpenAI API를 지원하는 모든 클라이언트에서 Lurus API를 사용할 �
       "title": "Lurus DeepSeek",
       "provider": "openai",
       "model": "deepseek-chat",
-      "apiBase": "https://api.lurus.cn/v1",
+      "apiBase": "https://hub.lurus.cn/v1",
       "apiKey": "sk-your-api-key"
     }
   ]

@@ -57,7 +57,7 @@ export const glossary: Record<string, GlossaryEntry> = {
     tags: ['general'],
   },
   'Base URL': {
-    zh: 'API 的根地址。Lurus 的 Base URL 是 https://api.lurus.cn/v1。',
+    zh: 'API 的根地址。Lurus 的 Base URL 是 https://hub.lurus.cn/v1。',
     tags: ['general'],
   },
   'GitOps': {

@@ -24,7 +24,7 @@ description: Pasos completos para registrar una cuenta de Lurus y obtener una AP
 <ol class="lurus-steps">
 <li>
 
-Accede a la [consola de Lurus](https://api.lurus.cn) → «Registrarse» → introduce el correo y la contraseña → completa la verificación del correo.
+Accede a la [consola de Lurus](https://hub.lurus.cn) → «Registrarse» → introduce el correo y la contraseña → completa la verificación del correo.
 
 </li>
 <li>
@@ -95,7 +95,7 @@ Desactívala o elimínala de inmediato y crea una nueva Key.
 <details class="lurus-faq-item">
 <summary>¿Se agotó la cuota?</summary>
 
-Recarga por tu cuenta o mejora tu plan: primero consulta los niveles (Free / Basic / Pro) en [Detalles de facturación](/es/platform/billing) y luego recarga o mejora el plan en la [consola](https://api.lurus.cn).
+Recarga por tu cuenta o mejora tu plan: primero consulta los niveles (Free / Basic / Pro) en [Detalles de facturación](/es/platform/billing) y luego recarga o mejora el plan en la [consola](https://hub.lurus.cn).
 
 </details>
 

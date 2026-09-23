@@ -45,7 +45,7 @@ description: 一个 API Key 接入 50+ 主流 AI 模型，完全兼容 OpenAI SD
 替换两行代码即可迁移，所有 OpenAI SDK 功能完全兼容：
 ```python
 # 改这两行，其余代码不动
-base_url="https://api.lurus.cn/v1"
+base_url="https://hub.lurus.cn/v1"
 api_key="sk-your-lurus-key"
 ```
 :::
@@ -72,7 +72,7 @@ api_key="sk-your-lurus-key"
 
 ```python
 from openai import OpenAI
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-api-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-api-key")
 # model 可填 deepseek-chat / gpt-4o / claude-3-5-sonnet / gemini-3-pro-preview
 response = client.chat.completions.create(model="deepseek-chat", messages=[{"role": "user", "content": "你好"}])
 ```
@@ -157,7 +157,7 @@ response = client.chat.completions.create(model="deepseek-chat", messages=[{"rol
   :steps="[
     { text: '快速开始', link: '/guide/quickstart', primary: true },
     { text: '支持的模型', link: '/guide/models' },
-    { text: '控制台', link: 'https://api.lurus.cn', external: true },
+    { text: '控制台', link: 'https://hub.lurus.cn', external: true },
   ]"
 />
 

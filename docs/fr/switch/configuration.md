@@ -35,7 +35,7 @@ Onglet « **<Term t="Provider">Fournisseur</Term>** » → « **Ajouter un fourn
 
 | Fournisseur | API Base URL | API Key |
 |------|------|------|
-| **Lurus API** <span class="lurus-tag">recommandé</span> | `https://api.lurus.cn/v1` | Lurus Key (commençant par `sk-`) ; pour les modèles, cliquez sur « Détection automatique » |
+| **Lurus API** <span class="lurus-tag">recommandé</span> | `https://hub.lurus.cn/v1` | Lurus Key (commençant par `sk-`) ; pour les modèles, cliquez sur « Détection automatique » |
 | **OpenAI** | `https://api.openai.com/v1` | `sk-...` (officiel) |
 | **Anthropic** | `https://api.anthropic.com/v1` | `sk-ant-...` |
 | **Ollama** (local) | `http://localhost:11434/v1` | (laisser vide) |
@@ -113,7 +113,7 @@ Exemple complet de `config.json` :
   "providers": [
     {
       "name": "Lurus API",
-      "base_url": "https://api.lurus.cn/v1",
+      "base_url": "https://hub.lurus.cn/v1",
       "api_key": "sk-your-lurus-key",
       "enabled": true
     },

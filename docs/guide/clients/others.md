@@ -15,7 +15,7 @@ description: 在其他兼容 OpenAI API 的客户端中配置 Lurus API。
 
 | 配置项 | 值 |
 |--------|-----|
-| API Base URL | `https://api.lurus.cn/v1` |
+| API Base URL | `https://hub.lurus.cn/v1` |
 | API Key | `sk-your-api-key` |
 
 <div class="lurus-callout lurus-callout--info">
@@ -135,7 +135,7 @@ description: 在其他兼容 OpenAI API 的客户端中配置 Lurus API。
 </li>
 <li>
 
-**Base URL**：`https://api.lurus.cn/v1`。
+**Base URL**：`https://hub.lurus.cn/v1`。
 
 </li>
 </ol>
@@ -151,7 +151,7 @@ description: 在其他兼容 OpenAI API 的客户端中配置 Lurus API。
       "title": "Lurus DeepSeek",
       "provider": "openai",
       "model": "deepseek-chat",
-      "apiBase": "https://api.lurus.cn/v1",
+      "apiBase": "https://hub.lurus.cn/v1",
       "apiKey": "sk-your-api-key"
     }
   ]

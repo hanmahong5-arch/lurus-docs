@@ -129,7 +129,7 @@ Como `deepseek-chat` con 64K o `gemini-3-pro-preview` con 1M, cuando se supera e
 <details class="lurus-faq-item">
 <summary>Petición agotada / sin respuesta durante mucho tiempo</summary>
 
-1. Comprueba la conectividad de red: `curl https://api.lurus.cn/v1/models`
+1. Comprueba la conectividad de red: `curl https://hub.lurus.cn/v1/models`
 2. Reduce `max_tokens`
 3. Que los modelos de razonamiento (`deepseek-reasoner`) tarden en pensar es normal
 4. El tiempo de espera por defecto del SDK es de unos 60 segundos; puedes aumentar `timeout`

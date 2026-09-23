@@ -33,7 +33,7 @@ Authorization: Bearer sk-your-api-key
 ## Ejemplo de solicitud
 
 ```bash
-curl https://api.lurus.cn/v1/chat/completions \
+curl https://hub.lurus.cn/v1/chat/completions \
   -H "Authorization: Bearer sk-your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"model": "deepseek-chat", "messages": [{"role": "user", "content": "Hi"}]}'
@@ -45,7 +45,7 @@ curl https://api.lurus.cn/v1/chat/completions \
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.lurus.cn/v1",
+    base_url="https://hub.lurus.cn/v1",
     api_key="sk-your-api-key",  # 建议改为 os.environ.get("LURUS_API_KEY")
 )
 ```
@@ -54,7 +54,7 @@ client = OpenAI(
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.lurus.cn/v1',
+  baseURL: 'https://hub.lurus.cn/v1',
   apiKey: 'sk-your-api-key',  // 建议改为 process.env.LURUS_API_KEY
 });
 ```
@@ -76,7 +76,7 @@ LURUS_API_KEY=sk-your-api-key
 import os
 from openai import OpenAI
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key=os.environ.get("LURUS_API_KEY"))
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key=os.environ.get("LURUS_API_KEY"))
 ```
 
 ## Errores de autenticación

@@ -42,7 +42,7 @@ Cherry Studio **설정**을 엽니다.
 | 필드 | 값 |
 |------|-----|
 | 이름 | Lurus API |
-| API Base URL | `https://api.lurus.cn/v1` |
+| API Base URL | `https://hub.lurus.cn/v1` |
 | API Key | 본인의 API Key (`sk-xxx`) |
 
 </li>
@@ -74,7 +74,7 @@ cherrystudio://providers/api-keys?v=1&data={cherryConfig}
 
 - API Key가 올바른지 확인하세요
 - 네트워크 연결이 정상인지 확인하세요
-- Base URL이 올바른지 확인하세요(`https://api.lurus.cn/v1`)
+- Base URL이 올바른지 확인하세요(`https://hub.lurus.cn/v1`)
 
 </details>
 

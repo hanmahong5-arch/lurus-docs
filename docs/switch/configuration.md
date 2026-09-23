@@ -35,7 +35,7 @@ description: Switch 的 AI 工具配置、MCP 服务器管理和成本监控设�
 
 | 提供商 | API Base URL | API Key |
 |------|------|------|
-| **Lurus API** <span class="lurus-tag">推荐</span> | `https://api.lurus.cn/v1` | Lurus Key（`sk-` 开头）；模型点「自动检测」 |
+| **Lurus API** <span class="lurus-tag">推荐</span> | `https://hub.lurus.cn/v1` | Lurus Key（`sk-` 开头）；模型点「自动检测」 |
 | **OpenAI** | `https://api.openai.com/v1` | `sk-...`（官方） |
 | **Anthropic** | `https://api.anthropic.com/v1` | `sk-ant-...` |
 | **Ollama**（本地） | `http://localhost:11434/v1` | （留空） |
@@ -113,7 +113,7 @@ Switch 配置保存在：
   "providers": [
     {
       "name": "Lurus API",
-      "base_url": "https://api.lurus.cn/v1",
+      "base_url": "https://hub.lurus.cn/v1",
       "api_key": "sk-your-lurus-key",
       "enabled": true
     },

@@ -129,7 +129,7 @@ For example `deepseek-chat` is 64K and `gemini-3-pro-preview` is 1M; when you ex
 <details class="lurus-faq-item">
 <summary>Request times out / no response for a long time</summary>
 
-1. Check network connectivity: `curl https://api.lurus.cn/v1/models`
+1. Check network connectivity: `curl https://hub.lurus.cn/v1/models`
 2. Reduce `max_tokens`
 3. Reasoning models (`deepseek-reasoner`) take a long time to think, which is normal
 4. The SDK’s default timeout is about 60 seconds; you can increase `timeout`

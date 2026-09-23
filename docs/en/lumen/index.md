@@ -135,7 +135,7 @@ model = "deepseek-chat"
 max_iterations = 20
 
 [agent.llm]
-base_url = "https://api.lurus.cn/v1"
+base_url = "https://hub.lurus.cn/v1"
 temperature = 0.7
 max_tokens = 4096
 

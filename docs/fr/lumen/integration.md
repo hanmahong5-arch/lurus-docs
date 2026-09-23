@@ -64,7 +64,7 @@ Lorsque vous appelez un LLM via Lurus API, la facturation des tokens et la laten
 from openai import OpenAI
 from lumen_ai import LumenTracer
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-...")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-...")
 tracer = LumenTracer()
 
 with tracer.span("classify"):

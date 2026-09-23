@@ -129,7 +129,7 @@ description: Lurus 全製品でよく発生する問題を 1 ページで特定 
 <details class="lurus-faq-item">
 <summary>リクエストのタイムアウト / 長時間応答なし</summary>
 
-1. ネットワーク接続を確認：`curl https://api.lurus.cn/v1/models`
+1. ネットワーク接続を確認：`curl https://hub.lurus.cn/v1/models`
 2. `max_tokens` を小さくする
 3. 推論モデル（`deepseek-reasoner`）は思考時間が長いのが正常
 4. SDK のデフォルトタイムアウトは約 60 秒、`timeout` を大きくできる

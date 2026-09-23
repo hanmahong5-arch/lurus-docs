@@ -35,7 +35,7 @@ Pestaña «**<Term t="Provider">Proveedor</Term>**» → «**Agregar proveedor**
 
 | Proveedor | API Base URL | API Key |
 |------|------|------|
-| **Lurus API** <span class="lurus-tag">Recomendado</span> | `https://api.lurus.cn/v1` | Lurus Key (comienza con `sk-`); en modelos haz clic en «Detección automática» |
+| **Lurus API** <span class="lurus-tag">Recomendado</span> | `https://hub.lurus.cn/v1` | Lurus Key (comienza con `sk-`); en modelos haz clic en «Detección automática» |
 | **OpenAI** | `https://api.openai.com/v1` | `sk-...` (oficial) |
 | **Anthropic** | `https://api.anthropic.com/v1` | `sk-ant-...` |
 | **Ollama** (local) | `http://localhost:11434/v1` | (dejar vacío) |
@@ -113,7 +113,7 @@ Ejemplo completo de `config.json`:
   "providers": [
     {
       "name": "Lurus API",
-      "base_url": "https://api.lurus.cn/v1",
+      "base_url": "https://hub.lurus.cn/v1",
       "api_key": "sk-your-lurus-key",
       "enabled": true
     },

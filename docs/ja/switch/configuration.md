@@ -35,7 +35,7 @@ description: Switch の AI ツール設定、MCP サーバー管理、コスト�
 
 | プロバイダー | API Base URL | API Key |
 |------|------|------|
-| **Lurus API** <span class="lurus-tag">推奨</span> | `https://api.lurus.cn/v1` | Lurus Key（`sk-` で始まる）；モデルは「自動検出」をクリック |
+| **Lurus API** <span class="lurus-tag">推奨</span> | `https://hub.lurus.cn/v1` | Lurus Key（`sk-` で始まる）；モデルは「自動検出」をクリック |
 | **OpenAI** | `https://api.openai.com/v1` | `sk-...`（公式） |
 | **Anthropic** | `https://api.anthropic.com/v1` | `sk-ant-...` |
 | **Ollama**（ローカル） | `http://localhost:11434/v1` | （空欄） |
@@ -113,7 +113,7 @@ Switch の設定は次の場所に保存されます：
   "providers": [
     {
       "name": "Lurus API",
-      "base_url": "https://api.lurus.cn/v1",
+      "base_url": "https://hub.lurus.cn/v1",
       "api_key": "sk-your-lurus-key",
       "enabled": true
     },

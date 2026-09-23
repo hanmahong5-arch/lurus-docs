@@ -45,7 +45,7 @@ description: Une seule API Key pour accéder à plus de 50 modèles d’IA majeu
 Remplacez deux lignes de code pour migrer, toutes les fonctionnalités du SDK OpenAI restent entièrement compatibles :
 ```python
 # 改这两行，其余代码不动
-base_url="https://api.lurus.cn/v1"
+base_url="https://hub.lurus.cn/v1"
 api_key="sk-your-lurus-key"
 ```
 :::
@@ -72,7 +72,7 @@ api_key="sk-your-lurus-key"
 
 ```python
 from openai import OpenAI
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-api-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-api-key")
 # model 可填 deepseek-chat / gpt-4o / claude-3-5-sonnet / gemini-3-pro-preview
 response = client.chat.completions.create(model="deepseek-chat", messages=[{"role": "user", "content": "你好"}])
 ```
@@ -157,7 +157,7 @@ La passerelle route selon la priorité des canaux configurée ; lorsqu’un four
   :steps="[
     { text: 'Démarrage rapide', link: '/fr/guide/quickstart', primary: true },
     { text: 'Modèles pris en charge', link: '/guide/models' },
-    { text: 'Console', link: 'https://api.lurus.cn', external: true },
+    { text: 'Console', link: 'https://hub.lurus.cn', external: true },
   ]"
 />
 

@@ -42,7 +42,7 @@ description: "Switch로 팀의 AI CLI 도구, MCP 서버, 모델 비용을 통�
 </li>
 <li>
 
-설정에서 Lurus <Term t="API Key">API Key</Term>([발급 방법](/ko/guide/get-api-key))를 입력하면, 모든 CLI가 `https://api.lurus.cn/v1`을 통해 통합으로 모델을 호출합니다 —— Key 하나, 청구서 하나.
+설정에서 Lurus <Term t="API Key">API Key</Term>([발급 방법](/ko/guide/get-api-key))를 입력하면, 모든 CLI가 `https://hub.lurus.cn/v1`을 통해 통합으로 모델을 호출합니다 —— Key 하나, 청구서 하나.
 
 </li>
 <li>

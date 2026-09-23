@@ -129,7 +129,7 @@ description: 一页定位 Lurus 全产品高频问题 —— 401 / 模型无渠�
 <details class="lurus-faq-item">
 <summary>请求超时 / 长时间无响应</summary>
 
-1. 检查网络连通：`curl https://api.lurus.cn/v1/models`
+1. 检查网络连通：`curl https://hub.lurus.cn/v1/models`
 2. 减小 `max_tokens`
 3. 推理模型（`deepseek-reasoner`）思考时间长属正常
 4. SDK 默认超时约 60 秒，可调大 `timeout`

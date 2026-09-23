@@ -25,7 +25,7 @@ Lurus API 完全兼容 OpenAI API 格式，你可以使用任何支持 OpenAI �
 <ol class="lurus-steps">
 <li>
 
-把 base URL 指向 `https://api.lurus.cn/v1`。
+把 base URL 指向 `https://hub.lurus.cn/v1`。
 
 </li>
 <li>
@@ -43,7 +43,7 @@ Lurus API 完全兼容 OpenAI API 格式，你可以使用任何支持 OpenAI �
 ## Base URL
 
 ```
-https://api.lurus.cn/v1
+https://hub.lurus.cn/v1
 ```
 
 ## 认证方式
@@ -139,7 +139,7 @@ Authorization: Bearer sk-your-api-key
 
 ```http
 POST /v1/chat/completions HTTP/1.1
-Host: api.lurus.cn
+Host: hub.lurus.cn
 Content-Type: application/json
 Authorization: Bearer sk-your-api-key
 
@@ -221,7 +221,7 @@ pip install openai
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.lurus.cn/v1",
+    base_url="https://hub.lurus.cn/v1",
     api_key="sk-your-api-key"
 )
 ```
@@ -236,7 +236,7 @@ npm install openai
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.lurus.cn/v1',
+  baseURL: 'https://hub.lurus.cn/v1',
   apiKey: 'sk-your-api-key'
 });
 ```
@@ -247,14 +247,14 @@ const client = new OpenAI({
 import "github.com/sashabaranov/go-openai"
 
 config := openai.DefaultConfig("sk-your-api-key")
-config.BaseURL = "https://api.lurus.cn/v1"
+config.BaseURL = "https://hub.lurus.cn/v1"
 client := openai.NewClientWithConfig(config)
 ```
 
 ### cURL
 
 ```bash
-curl https://api.lurus.cn/v1/chat/completions \
+curl https://hub.lurus.cn/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sk-your-api-key" \
   -d '{"model": "deepseek-chat", "messages": [{"role": "user", "content": "Hi"}]}'

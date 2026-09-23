@@ -42,7 +42,7 @@ Cherry Studio の**設定**を開きます。
 | フィールド | 値 |
 |------|-----|
 | 名称 | Lurus API |
-| API Base URL | `https://api.lurus.cn/v1` |
+| API Base URL | `https://hub.lurus.cn/v1` |
 | API Key | あなたの API Key (`sk-xxx`) |
 
 </li>
@@ -74,7 +74,7 @@ cherrystudio://providers/api-keys?v=1&data={cherryConfig}
 
 - API Key が正しいか確認してください
 - ネットワーク接続が正常か確認してください
-- Base URL が正しいか確認してください（`https://api.lurus.cn/v1`）
+- Base URL が正しいか確認してください（`https://hub.lurus.cn/v1`）
 
 </details>
 

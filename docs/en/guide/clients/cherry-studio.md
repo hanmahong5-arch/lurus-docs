@@ -42,7 +42,7 @@ Fill in the following:
 | Field | Value |
 |------|-----|
 | Name | Lurus API |
-| API Base URL | `https://api.lurus.cn/v1` |
+| API Base URL | `https://hub.lurus.cn/v1` |
 | API Key | Your API Key (`sk-xxx`) |
 
 </li>
@@ -74,7 +74,7 @@ Once configured, select **Lurus API** as the provider in Cherry Studio to use al
 
 - Check that the API Key is correct
 - Confirm your network connection is working
-- Check that the Base URL is correct (`https://api.lurus.cn/v1`)
+- Check that the Base URL is correct (`https://hub.lurus.cn/v1`)
 
 </details>
 

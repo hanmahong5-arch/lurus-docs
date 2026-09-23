@@ -26,7 +26,7 @@ description: Présentation du système de comptes unifiés, des plans d’abonne
 
 ## Compte unifié
 
-Rendez-vous sur n’importe quel produit Lurus ([api.lurus.cn](https://api.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn), etc.) pour vous inscrire / vous connecter. **Méthodes de connexion** : e-mail + mot de passe, GitHub (OAuth), Google (OAuth).
+Rendez-vous sur n’importe quel produit Lurus ([hub.lurus.cn](https://hub.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn), etc.) pour vous inscrire / vous connecter. **Méthodes de connexion** : e-mail + mot de passe, GitHub (OAuth), Google (OAuth).
 
 À l’inscription, vous obtenez :
 

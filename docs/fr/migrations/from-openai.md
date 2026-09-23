@@ -35,7 +35,7 @@ description: "Basculez vos appels OpenAI vers Lurus API en 5 minutes, sans touch
 +
 + client = OpenAI(
 +     api_key="sk-lurus-...",
-+     base_url="https://api.lurus.cn/v1",
++     base_url="https://hub.lurus.cn/v1",
 + )
 ```
 
@@ -79,7 +79,7 @@ import os, random
 def get_client():
     if random.random() < float(os.getenv("LURUS_TRAFFIC", "0.1")):
         return OpenAI(api_key=os.getenv("LURUS_API_KEY"),
-                      base_url="https://api.lurus.cn/v1")
+                      base_url="https://hub.lurus.cn/v1")
     return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 ```
 

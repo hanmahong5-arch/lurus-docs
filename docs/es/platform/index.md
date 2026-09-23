@@ -26,7 +26,7 @@ description: Descripción del sistema unificado de cuentas, los planes de suscri
 
 ## Cuenta unificada
 
-Visita cualquier producto de Lurus ([api.lurus.cn](https://api.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn), etc.) para registrarte o iniciar sesión. **Métodos de inicio de sesión**: correo + contraseña, GitHub (OAuth), Google (OAuth).
+Visita cualquier producto de Lurus ([hub.lurus.cn](https://hub.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn), etc.) para registrarte o iniciar sesión. **Métodos de inicio de sesión**: correo + contraseña, GitHub (OAuth), Google (OAuth).
 
 Al registrarte con éxito obtienes:
 

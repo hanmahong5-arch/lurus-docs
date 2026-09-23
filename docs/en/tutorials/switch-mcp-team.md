@@ -42,7 +42,7 @@ Install Switch following the [installation guide](/en/switch/install) (macOS / W
 </li>
 <li>
 
-In Settings, enter your Lurus <Term t="API Key">API Key</Term> ([how to get one](/en/guide/get-api-key)) so every CLI calls models uniformly through `https://api.lurus.cn/v1` — one key, one bill.
+In Settings, enter your Lurus <Term t="API Key">API Key</Term> ([how to get one](/en/guide/get-api-key)) so every CLI calls models uniformly through `https://hub.lurus.cn/v1` — one key, one bill.
 
 </li>
 <li>

@@ -26,7 +26,7 @@ description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제
 
 ## 통합 계정
 
-임의의 Lurus 제품([api.lurus.cn](https://api.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn) 등)에 접속하면 바로 가입/로그인할 수 있습니다. **로그인 방식**: 이메일+비밀번호, GitHub(OAuth), Google(OAuth).
+임의의 Lurus 제품([hub.lurus.cn](https://hub.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn) 등)에 접속하면 바로 가입/로그인할 수 있습니다. **로그인 방식**: 이메일+비밀번호, GitHub(OAuth), Google(OAuth).
 
 가입에 성공하면 다음을 받습니다:
 

@@ -64,7 +64,7 @@ graph.compile(checkpointer=LumenCheckpointer(kova_client=kova))
 from openai import OpenAI
 from lumen_ai import LumenTracer
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-...")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-...")
 tracer = LumenTracer()
 
 with tracer.span("classify"):

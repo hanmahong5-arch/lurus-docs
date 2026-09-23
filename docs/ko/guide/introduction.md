@@ -45,7 +45,7 @@ description: 하나의 API Key로 50개 이상의 주요 AI 모델에 연결하�
 두 줄의 코드만 교체하면 마이그레이션할 수 있으며, 모든 OpenAI SDK 기능이 완전히 호환됩니다:
 ```python
 # 改这两行，其余代码不动
-base_url="https://api.lurus.cn/v1"
+base_url="https://hub.lurus.cn/v1"
 api_key="sk-your-lurus-key"
 ```
 :::
@@ -72,7 +72,7 @@ api_key="sk-your-lurus-key"
 
 ```python
 from openai import OpenAI
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-api-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-api-key")
 # model 可填 deepseek-chat / gpt-4o / claude-3-5-sonnet / gemini-3-pro-preview
 response = client.chat.completions.create(model="deepseek-chat", messages=[{"role": "user", "content": "你好"}])
 ```
@@ -157,7 +157,7 @@ response = client.chat.completions.create(model="deepseek-chat", messages=[{"rol
   :steps="[
     { text: '빠른 시작', link: '/ko/guide/quickstart', primary: true },
     { text: '지원 모델', link: '/guide/models' },
-    { text: '콘솔', link: 'https://api.lurus.cn', external: true },
+    { text: '콘솔', link: 'https://hub.lurus.cn', external: true },
   ]"
 />
 

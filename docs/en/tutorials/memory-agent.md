@@ -52,7 +52,7 @@ from openai import OpenAI
 from memx import Memory
 from kova import KovaClient
 
-llm = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-...")
+llm = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-...")
 mem = Memory(config={"ace_enabled": True})
 kova = KovaClient("kova://localhost")
 ```

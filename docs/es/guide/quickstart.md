@@ -34,7 +34,7 @@ A continuación, crea una API Key:
 <ol class="lurus-steps">
 <li>
 
-Accede a [api.lurus.cn](https://api.lurus.cn) e inicia sesión o regístrate
+Accede a [hub.lurus.cn](https://hub.lurus.cn) e inicia sesión o regístrate
 
 </li>
 <li>
@@ -74,7 +74,7 @@ pip install openai
 from openai import OpenAI
 import os
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key=os.environ["LURUS_API_KEY"])
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key=os.environ["LURUS_API_KEY"])
 
 response = client.chat.completions.create(
     model="deepseek-chat",
@@ -89,7 +89,7 @@ print(response.choices[0].message.content)
 
 == cURL
 ```bash
-curl https://api.lurus.cn/v1/chat/completions \
+curl https://hub.lurus.cn/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $LURUS_API_KEY" \
   -d '{ "model": "deepseek-chat", "messages": [
@@ -107,7 +107,7 @@ npm install openai
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.lurus.cn/v1',
+  baseURL: 'https://hub.lurus.cn/v1',
   apiKey: process.env.LURUS_API_KEY
 });
 
@@ -139,7 +139,7 @@ import (
 
 func main() {
     cfg := openai.DefaultConfig(os.Getenv("LURUS_API_KEY"))
-    cfg.BaseURL = "https://api.lurus.cn/v1"
+    cfg.BaseURL = "https://hub.lurus.cn/v1"
     client := openai.NewClientWithConfig(cfg)
 
     resp, _ := client.CreateChatCompletion(context.Background(),

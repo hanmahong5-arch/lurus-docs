@@ -129,7 +129,7 @@ description: Lurus 전 제품의 빈발 문제를 한 페이지에서 진단 —
 <details class="lurus-faq-item">
 <summary>요청 타임아웃 / 장시간 무응답</summary>
 
-1. 네트워크 연결 점검: `curl https://api.lurus.cn/v1/models`
+1. 네트워크 연결 점검: `curl https://hub.lurus.cn/v1/models`
 2. `max_tokens` 축소
 3. 추론 모델(`deepseek-reasoner`)은 사고 시간이 긴 것이 정상
 4. SDK 기본 타임아웃은 약 60초이며 `timeout`을 늘릴 수 있음

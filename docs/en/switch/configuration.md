@@ -35,7 +35,7 @@ In the "**<Term t="Provider">Provider</Term>**" tab → "**Add Provider**", ente
 
 | Provider | API Base URL | API Key |
 |------|------|------|
-| **Lurus API** <span class="lurus-tag">Recommended</span> | `https://api.lurus.cn/v1` | Lurus Key (starts with `sk-`); for models, click "Auto-detect" |
+| **Lurus API** <span class="lurus-tag">Recommended</span> | `https://hub.lurus.cn/v1` | Lurus Key (starts with `sk-`); for models, click "Auto-detect" |
 | **OpenAI** | `https://api.openai.com/v1` | `sk-...` (official) |
 | **Anthropic** | `https://api.anthropic.com/v1` | `sk-ant-...` |
 | **Ollama** (local) | `http://localhost:11434/v1` | (leave empty) |
@@ -113,7 +113,7 @@ Full `config.json` example:
   "providers": [
     {
       "name": "Lurus API",
-      "base_url": "https://api.lurus.cn/v1",
+      "base_url": "https://hub.lurus.cn/v1",
       "api_key": "sk-your-lurus-key",
       "enabled": true
     },

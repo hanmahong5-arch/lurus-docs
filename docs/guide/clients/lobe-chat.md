@@ -22,7 +22,7 @@ description: 在 Lobe Chat 中配置 Lurus API 作为模型提供商。
 点击以下链接直接配置：
 
 ```
-https://chat-preview.lobehub.com/?settings={"keyVaults":{"openai":{"apiKey":"YOUR_API_KEY","baseURL":"https://api.lurus.cn/v1"}}}
+https://chat-preview.lobehub.com/?settings={"keyVaults":{"openai":{"apiKey":"YOUR_API_KEY","baseURL":"https://hub.lurus.cn/v1"}}}
 ```
 
 将 `YOUR_API_KEY` 替换为你的 API Key。
@@ -45,7 +45,7 @@ https://chat-preview.lobehub.com/?settings={"keyVaults":{"openai":{"apiKey":"YOU
 在 OpenAI 配置中填写：
 
 - **API Key**：输入你的 Lurus API Key
-- **API Proxy**：`https://api.lurus.cn/v1`
+- **API Proxy**：`https://hub.lurus.cn/v1`
 
 </li>
 <li>

@@ -42,7 +42,7 @@ Renseignez les informations suivantes :
 | Champ | Valeur |
 |------|-----|
 | Nom | Lurus API |
-| API Base URL | `https://api.lurus.cn/v1` |
+| API Base URL | `https://hub.lurus.cn/v1` |
 | API Key | Votre clé API (`sk-xxx`) |
 
 </li>
@@ -74,7 +74,7 @@ Une fois la configuration terminée, sélectionnez **Lurus API** comme fournisse
 
 - Vérifiez que la clé API est correcte
 - Assurez-vous que la connexion réseau fonctionne
-- Vérifiez que la Base URL est correcte (`https://api.lurus.cn/v1`)
+- Vérifiez que la Base URL est correcte (`https://hub.lurus.cn/v1`)
 
 </details>
 

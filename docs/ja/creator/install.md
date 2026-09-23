@@ -38,7 +38,7 @@ description: "Creator デスクトップコンテンツファクトリのダウ�
 1. `LurusCreator-windows-amd64.exe` をダウンロードしてダブルクリックで実行します。
 2. 「Windows によって PC が保護されました」と表示された場合は、「詳細情報」→「実行」をクリックします。
 3. インストールウィザードを完了し、デスクトップのショートカットから起動します。
-4. **初回設定**：[api.lurus.cn](https://api.lurus.cn) で Key を取得し、Creator の設定に貼り付けます（AI リライトに使用）。
+4. **初回設定**：[hub.lurus.cn](https://hub.lurus.cn) で Key を取得し、Creator の設定に貼り付けます（AI リライトに使用）。
 5. 作業ディレクトリ（動画/原稿の保存場所）を選択します。
 
 == macOS

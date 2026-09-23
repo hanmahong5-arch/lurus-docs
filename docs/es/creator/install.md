@@ -38,7 +38,7 @@ Tras la descarga, elige el método de instalación según tu sistema operativo.
 1. Descarga `LurusCreator-windows-amd64.exe` y haz doble clic para ejecutarlo.
 2. Si aparece «Windows protegió tu PC», haz clic en «Más información» → «Ejecutar de todos modos».
 3. Completa el asistente de instalación e inicia desde el acceso directo del escritorio.
-4. **Configuración inicial**: obtén tu Key en [api.lurus.cn](https://api.lurus.cn) y pégala en los ajustes de Creator (para la reescritura con IA).
+4. **Configuración inicial**: obtén tu Key en [hub.lurus.cn](https://hub.lurus.cn) y pégala en los ajustes de Creator (para la reescritura con IA).
 5. Selecciona el directorio de trabajo (ubicación de almacenamiento de vídeos/textos).
 
 == macOS

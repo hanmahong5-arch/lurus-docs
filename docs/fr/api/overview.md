@@ -25,7 +25,7 @@ L’API Lurus est entièrement compatible avec le format de l’API OpenAI : vou
 <ol class="lurus-steps">
 <li>
 
-Pointez l’URL de base vers `https://api.lurus.cn/v1`.
+Pointez l’URL de base vers `https://hub.lurus.cn/v1`.
 
 </li>
 <li>
@@ -43,7 +43,7 @@ Lancez une requête avec n’importe quel SDK OpenAI, sans modifier votre code m
 ## URL de base
 
 ```
-https://api.lurus.cn/v1
+https://hub.lurus.cn/v1
 ```
 
 ## Méthode d’authentification
@@ -139,7 +139,7 @@ Toutes les requêtes utilisent le format JSON :
 
 ```http
 POST /v1/chat/completions HTTP/1.1
-Host: api.lurus.cn
+Host: hub.lurus.cn
 Content-Type: application/json
 Authorization: Bearer sk-your-api-key
 
@@ -221,7 +221,7 @@ pip install openai
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.lurus.cn/v1",
+    base_url="https://hub.lurus.cn/v1",
     api_key="sk-your-api-key"
 )
 ```
@@ -236,7 +236,7 @@ npm install openai
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.lurus.cn/v1',
+  baseURL: 'https://hub.lurus.cn/v1',
   apiKey: 'sk-your-api-key'
 });
 ```
@@ -247,14 +247,14 @@ const client = new OpenAI({
 import "github.com/sashabaranov/go-openai"
 
 config := openai.DefaultConfig("sk-your-api-key")
-config.BaseURL = "https://api.lurus.cn/v1"
+config.BaseURL = "https://hub.lurus.cn/v1"
 client := openai.NewClientWithConfig(config)
 ```
 
 ### cURL
 
 ```bash
-curl https://api.lurus.cn/v1/chat/completions \
+curl https://hub.lurus.cn/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer sk-your-api-key" \
   -d '{"model": "deepseek-chat", "messages": [{"role": "user", "content": "Hi"}]}'

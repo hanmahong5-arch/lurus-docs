@@ -42,7 +42,7 @@ Instala Switch siguiendo la [guía de instalación](/es/switch/install) (macOS /
 </li>
 <li>
 
-En los ajustes, introduce tu <Term t="API Key">API Key</Term> de Lurus ([cómo obtenerla](/es/guide/get-api-key)) para que todas las CLI llamen a los modelos de forma unificada a través de `https://api.lurus.cn/v1` —— una sola Key, una sola factura.
+En los ajustes, introduce tu <Term t="API Key">API Key</Term> de Lurus ([cómo obtenerla](/es/guide/get-api-key)) para que todas las CLI llamen a los modelos de forma unificada a través de `https://hub.lurus.cn/v1` —— una sola Key, una sola factura.
 
 </li>
 <li>

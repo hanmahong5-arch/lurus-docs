@@ -64,7 +64,7 @@ Lurus API 経由で LLM を呼び出すと、Token 課金と所要時間が自�
 from openai import OpenAI
 from lumen_ai import LumenTracer
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-...")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-...")
 tracer = LumenTracer()
 
 with tracer.span("classify"):

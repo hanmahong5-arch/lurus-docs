@@ -19,7 +19,7 @@ description: Questions fréquentes et réponses sur l’utilisation de Lurus API
 <details class="lurus-faq-item">
 <summary>Comment s’inscrire ?</summary>
 
-Sur [api.lurus.cn](https://api.lurus.cn), renseignez votre e-mail et mot de passe (ou connectez-vous via GitHub/Google) ; vous obtenez automatiquement 5 鹿贝 + un quota gratuit, et tous les produits partagent le même compte.
+Sur [hub.lurus.cn](https://hub.lurus.cn), renseignez votre e-mail et mot de passe (ou connectez-vous via GitHub/Google) ; vous obtenez automatiquement 5 鹿贝 + un quota gratuit, et tous les produits partagent le même compte.
 
 </details>
 
@@ -110,7 +110,7 @@ Voir la tarification dans la [liste des modèles](/guide/models).
 <details class="lurus-faq-item">
 <summary>Que faire en cas de délai d’attente dépassé ?</summary>
 
-1. Vérifiez le réseau (`curl https://api.lurus.cn/v1/models`)
+1. Vérifiez le réseau (`curl https://hub.lurus.cn/v1/models`)
 2. Réduisez `max_tokens`
 3. Les modèles de raisonnement (`deepseek-reasoner`) ont un long temps de réflexion, c’est normal
 4. Le délai par défaut des SDK est d’environ 60 secondes, vous pouvez augmenter `timeout`

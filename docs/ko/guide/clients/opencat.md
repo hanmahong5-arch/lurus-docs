@@ -22,7 +22,7 @@ description: OpenCat iOS/macOS 클라이언트에서 Lurus API를 설정합니�
 브라우저나 메모 앱에서 아래 링크를 클릭하면 OpenCat으로 한 번에 이동하여 설정이 자동으로 입력됩니다:
 
 ```
-opencat://team/join?domain=https://api.lurus.cn&token=YOUR_API_KEY
+opencat://team/join?domain=https://hub.lurus.cn&token=YOUR_API_KEY
 ```
 
 `YOUR_API_KEY`를 본인의 Key(`sk-xxxxxxxxxxxxxxxx`)로 바꾼 뒤 Safari에서 열면 됩니다.
@@ -51,7 +51,7 @@ OpenCat 열기 → **설정**(우측 상단 프로필) → **API 설정**.
 
 「**사용자 지정 API**」를 선택하고 다음을 입력하세요:
 
-- **API Host**：`https://api.lurus.cn`
+- **API Host**：`https://hub.lurus.cn`
 - **API Key**：본인의 Key(`sk-xxxxxxxxxxxxxxxx`)
 
 </li>
@@ -85,9 +85,9 @@ OpenCat은 모델 목록을 자동으로 가져오지 않으므로 모델 이름
 <details class="lurus-faq-item">
 <summary>연결 테스트 실패, "유효하지 않은 키" 표시</summary>
 
-- API Host 끝에 **슬래시가 없는지** 확인하세요(`https://api.lurus.cn`이며, `https://api.lurus.cn/`가 아닙니다)
+- API Host 끝에 **슬래시가 없는지** 확인하세요(`https://hub.lurus.cn`이며, `https://hub.lurus.cn/`가 아닙니다)
 - API Key 형식이 올바른지 확인하세요(`sk-`로 시작)
-- [Lurus 콘솔](https://api.lurus.cn)에서 Key 상태가 「활성화」인지 확인하세요
+- [Lurus 콘솔](https://hub.lurus.cn)에서 Key 상태가 「활성화」인지 확인하세요
 
 </details>
 

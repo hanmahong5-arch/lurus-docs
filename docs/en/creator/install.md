@@ -38,7 +38,7 @@ After downloading, follow the steps for your operating system.
 1. Download `LurusCreator-windows-amd64.exe` and double-click to run it.
 2. If "Windows protected your PC" appears, click "More info" → "Run anyway".
 3. Complete the setup wizard and launch from the desktop shortcut.
-4. **First-time setup**: Get a Key at [api.lurus.cn](https://api.lurus.cn) and paste it into Creator's settings (used for AI rewriting).
+4. **First-time setup**: Get a Key at [hub.lurus.cn](https://hub.lurus.cn) and paste it into Creator's settings (used for AI rewriting).
 5. Choose a working directory (where videos/copy are stored).
 
 == macOS

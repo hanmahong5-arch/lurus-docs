@@ -26,7 +26,7 @@ description: Lurus unified account system, subscription plans, Lubei wallet, and
 
 ## Unified Account
 
-Visit any Lurus product ([api.lurus.cn](https://api.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn), etc.) to register or sign in. **Sign-in methods**: email + password, GitHub (OAuth), Google (OAuth).
+Visit any Lurus product ([hub.lurus.cn](https://hub.lurus.cn), [lucrum.lurus.cn](https://lucrum.lurus.cn), etc.) to register or sign in. **Sign-in methods**: email + password, GitHub (OAuth), Google (OAuth).
 
 A successful registration gives you:
 

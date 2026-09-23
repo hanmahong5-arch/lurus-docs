@@ -42,7 +42,7 @@ description: 在 Cherry Studio 中配置 Lurus API，一键接入 50+ AI 模型�
 | 字段 | 值 |
 |------|-----|
 | 名称 | Lurus API |
-| API Base URL | `https://api.lurus.cn/v1` |
+| API Base URL | `https://hub.lurus.cn/v1` |
 | API Key | 你的 API Key (`sk-xxx`) |
 
 </li>
@@ -74,7 +74,7 @@ cherrystudio://providers/api-keys?v=1&data={cherryConfig}
 
 - 检查 API Key 是否正确
 - 确认网络连接正常
-- 检查 Base URL 是否正确（`https://api.lurus.cn/v1`）
+- 检查 Base URL 是否正确（`https://hub.lurus.cn/v1`）
 
 </details>
 

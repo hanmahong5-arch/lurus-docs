@@ -24,7 +24,7 @@ description: Lurus 계정에 가입하고 API Key를 발급받는 전체 절차.
 <ol class="lurus-steps">
 <li>
 
-[Lurus 콘솔](https://api.lurus.cn) 접속 →「회원가입」→ 이메일·비밀번호 입력 → 이메일 인증 완료.
+[Lurus 콘솔](https://hub.lurus.cn) 접속 →「회원가입」→ 이메일·비밀번호 입력 → 이메일 인증 완료.
 
 </li>
 <li>
@@ -95,7 +95,7 @@ description: Lurus 계정에 가입하고 API Key를 발급받는 전체 절차.
 <details class="lurus-faq-item">
 <summary>한도를 다 썼나요?</summary>
 
-셀프 충전하거나 요금제를 업그레이드하세요 — 먼저 [요금 안내](/ko/platform/billing)에서 등급(Free / Basic / Pro)을 확인한 뒤, [콘솔](https://api.lurus.cn)에서 충전하거나 업그레이드하세요.
+셀프 충전하거나 요금제를 업그레이드하세요 — 먼저 [요금 안내](/ko/platform/billing)에서 등급(Free / Basic / Pro)을 확인한 뒤, [콘솔](https://hub.lurus.cn)에서 충전하거나 업그레이드하세요.
 
 </details>
 

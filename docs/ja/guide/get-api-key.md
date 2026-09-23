@@ -24,7 +24,7 @@ description: Lurus アカウントを登録し、API Key を取得するため�
 <ol class="lurus-steps">
 <li>
 
-[Lurus コンソール](https://api.lurus.cn) にアクセス →「登録」→ メールアドレスとパスワードを入力 → メール認証を完了。
+[Lurus コンソール](https://hub.lurus.cn) にアクセス →「登録」→ メールアドレスとパスワードを入力 → メール認証を完了。
 
 </li>
 <li>
@@ -95,7 +95,7 @@ description: Lurus アカウントを登録し、API Key を取得するため�
 <details class="lurus-faq-item">
 <summary>額度を使い切った？</summary>
 
-セルフチャージまたはプランのアップグレードを行います——まず [課金詳細](/ja/platform/billing) で各ティア（Free / Basic / Pro）を確認し、次に [コンソール](https://api.lurus.cn) でチャージまたはアップグレードしてください。
+セルフチャージまたはプランのアップグレードを行います——まず [課金詳細](/ja/platform/billing) で各ティア（Free / Basic / Pro）を確認し、次に [コンソール](https://hub.lurus.cn) でチャージまたはアップグレードしてください。
 
 </details>
 

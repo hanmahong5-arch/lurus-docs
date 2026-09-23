@@ -12,7 +12,7 @@ La API de conversación más usada, totalmente compatible con la interfaz Chat C
 <ApiEndpoint method="POST" path="/v1/chat/completions" description="Crear una conversación de chat" />
 
 ```
-POST https://api.lurus.cn/v1/chat/completions
+POST https://hub.lurus.cn/v1/chat/completions
 ```
 
 <div class="lurus-cards lurus-cards--compact">
@@ -89,7 +89,7 @@ La definición completa de todos los campos del cuerpo de la solicitud (`ChatCom
 ```python
 from openai import OpenAI
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-key")
 
 response = client.chat.completions.create(
     model="deepseek-chat",
@@ -107,7 +107,7 @@ print(f"Token 用量：{response.usage.total_tokens}")  # usage.total_tokens
 
 == cURL
 ```bash
-curl https://api.lurus.cn/v1/chat/completions \
+curl https://hub.lurus.cn/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $LURUS_API_KEY" \
   -d '{
@@ -125,7 +125,7 @@ curl https://api.lurus.cn/v1/chat/completions \
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.lurus.cn/v1',
+  baseURL: 'https://hub.lurus.cn/v1',
   apiKey: process.env.LURUS_API_KEY
 });
 
@@ -156,7 +156,7 @@ import (
 
 func main() {
     cfg := openai.DefaultConfig(os.Getenv("LURUS_API_KEY"))
-    cfg.BaseURL = "https://api.lurus.cn/v1"
+    cfg.BaseURL = "https://hub.lurus.cn/v1"
     client := openai.NewClientWithConfig(cfg)
 
     resp, _ := client.CreateChatCompletion(context.Background(),
@@ -245,7 +245,7 @@ Deja que la IA decida cuándo llamar a las funciones que le proporcionas y devue
 import json
 from openai import OpenAI
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-key")
 
 # 定义可调用的函数
 tools = [

@@ -38,7 +38,7 @@ description: Creator 桌面内容工厂的下载和安装步骤。
 1. 下载 `LurusCreator-windows-amd64.exe` 并双击运行。
 2. 若弹出「Windows 已保护你的电脑」，点「更多信息」→「仍要运行」。
 3. 完成安装向导，从桌面快捷方式启动。
-4. **首次配置**：在 [api.lurus.cn](https://api.lurus.cn) 获取 Key 粘贴到 Creator 设置（用于 AI 改写）。
+4. **首次配置**：在 [hub.lurus.cn](https://hub.lurus.cn) 获取 Key 粘贴到 Creator 设置（用于 AI 改写）。
 5. 选择工作目录（视频/文案存储位置）。
 
 == macOS

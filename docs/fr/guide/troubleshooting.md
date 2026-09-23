@@ -129,7 +129,7 @@ Par exemple `deepseek-chat` 64K, `gemini-3-pro-preview` 1M : lorsque vous dépas
 <details class="lurus-faq-item">
 <summary>Délai dépassé / aucune réponse pendant longtemps</summary>
 
-1. Vérifiez la connectivité réseau : `curl https://api.lurus.cn/v1/models`
+1. Vérifiez la connectivité réseau : `curl https://hub.lurus.cn/v1/models`
 2. Réduisez `max_tokens`
 3. Les modèles de raisonnement (`deepseek-reasoner`) ont un long temps de réflexion, c’est normal
 4. Le délai par défaut du SDK est d’environ 60 secondes ; vous pouvez augmenter `timeout`

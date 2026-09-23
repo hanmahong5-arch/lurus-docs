@@ -19,7 +19,7 @@ description: Common questions and answers for using the Lurus API, including bil
 <details class="lurus-faq-item">
 <summary>How do I sign up?</summary>
 
-At [api.lurus.cn](https://api.lurus.cn), enter your email and password (or sign in with GitHub/Google) to automatically receive 5 Lubei + a free quota. All products share the same account.
+At [hub.lurus.cn](https://hub.lurus.cn), enter your email and password (or sign in with GitHub/Google) to automatically receive 5 Lubei + a free quota. All products share the same account.
 
 </details>
 
@@ -110,7 +110,7 @@ See the pricing in the [model list](/guide/models).
 <details class="lurus-faq-item">
 <summary>What should I do about request timeouts?</summary>
 
-1. Check the network (`curl https://api.lurus.cn/v1/models`)
+1. Check the network (`curl https://hub.lurus.cn/v1/models`)
 2. Reduce `max_tokens`
 3. Reasoning models (`deepseek-reasoner`) take longer to think — this is normal
 4. The SDK default timeout is about 60 seconds; you can increase `timeout`

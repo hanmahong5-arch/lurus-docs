@@ -19,7 +19,7 @@ description: Lurus API 利用時のよくある質問と回答。課金、互換
 <details class="lurus-faq-item">
 <summary>どうやって登録しますか？</summary>
 
-[api.lurus.cn](https://api.lurus.cn) でメールアドレスとパスワードを入力（または GitHub/Google でログイン）すると、自動的に 5 鹿贝 + 無料枠が付与され、すべての製品で同一アカウントを共有します。
+[hub.lurus.cn](https://hub.lurus.cn) でメールアドレスとパスワードを入力（または GitHub/Google でログイン）すると、自動的に 5 鹿贝 + 無料枠が付与され、すべての製品で同一アカウントを共有します。
 
 </details>
 
@@ -110,7 +110,7 @@ OpenAI、Claude、Gemini、DeepSeek など。[モデル一覧](/guide/models) �
 <details class="lurus-faq-item">
 <summary>リクエストがタイムアウトする場合は？</summary>
 
-1. ネットワークを確認する（`curl https://api.lurus.cn/v1/models`）
+1. ネットワークを確認する（`curl https://hub.lurus.cn/v1/models`）
 2. `max_tokens` を小さくする
 3. 推論モデル（`deepseek-reasoner`）は思考時間が長く、正常です
 4. SDK のデフォルトタイムアウトは約 60 秒。`timeout` を大きくできます

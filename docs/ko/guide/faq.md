@@ -19,7 +19,7 @@ description: 과금, 호환성, 문제 해결을 포함한 Lurus API 사용 중 
 <details class="lurus-faq-item">
 <summary>어떻게 가입하나요?</summary>
 
-[api.lurus.cn](https://api.lurus.cn)에서 이메일과 비밀번호를 입력(또는 GitHub/Google 로그인)하면 자동으로 5 鹿贝 + 무료 할당량이 지급되며, 모든 제품이 동일한 계정을 공유합니다.
+[hub.lurus.cn](https://hub.lurus.cn)에서 이메일과 비밀번호를 입력(또는 GitHub/Google 로그인)하면 자동으로 5 鹿贝 + 무료 할당량이 지급되며, 모든 제품이 동일한 계정을 공유합니다.
 
 </details>
 
@@ -110,7 +110,7 @@ OpenAI, Claude, Gemini, DeepSeek 등이며, [모델 목록](/guide/models)을 �
 <details class="lurus-faq-item">
 <summary>요청이 타임아웃되면 어떻게 하나요?</summary>
 
-1. 네트워크 확인(`curl https://api.lurus.cn/v1/models`)
+1. 네트워크 확인(`curl https://hub.lurus.cn/v1/models`)
 2. `max_tokens` 줄이기
 3. 추론 모델(`deepseek-reasoner`)은 사고 시간이 길어도 정상입니다
 4. SDK 기본 타임아웃은 약 60초이며, `timeout`을 더 크게 조정할 수 있습니다

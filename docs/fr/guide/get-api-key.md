@@ -24,7 +24,7 @@ description: Étapes complètes pour créer un compte Lurus et obtenir une clé 
 <ol class="lurus-steps">
 <li>
 
-Accédez à la [console Lurus](https://api.lurus.cn) → « S’inscrire » → saisissez votre e-mail et votre mot de passe → validez votre e-mail.
+Accédez à la [console Lurus](https://hub.lurus.cn) → « S’inscrire » → saisissez votre e-mail et votre mot de passe → validez votre e-mail.
 
 </li>
 <li>
@@ -95,7 +95,7 @@ Désactivez ou supprimez immédiatement cette clé et créez-en une nouvelle.
 <details class="lurus-faq-item">
 <summary>Mon quota est épuisé ?</summary>
 
-Rechargez en libre-service ou passez à un forfait supérieur : consultez d’abord les paliers (Free / Basic / Pro) dans la [tarification détaillée](/fr/platform/billing), puis rendez-vous sur la [console](https://api.lurus.cn) pour recharger ou mettre à niveau.
+Rechargez en libre-service ou passez à un forfait supérieur : consultez d’abord les paliers (Free / Basic / Pro) dans la [tarification détaillée](/fr/platform/billing), puis rendez-vous sur la [console](https://hub.lurus.cn) pour recharger ou mettre à niveau.
 
 </details>
 

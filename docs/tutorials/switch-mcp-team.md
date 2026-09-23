@@ -42,7 +42,7 @@ description: 用 Switch 把团队的 AI CLI 工具、MCP 服务器和模型成�
 </li>
 <li>
 
-在设置里填入 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)），让所有 CLI 统一经 `https://api.lurus.cn/v1` 调模型 —— 一个 Key、一份账单。
+在设置里填入 Lurus <Term t="API Key">API Key</Term>（[获取方式](/guide/get-api-key)），让所有 CLI 统一经 `https://hub.lurus.cn/v1` 调模型 —— 一个 Key、一份账单。
 
 </li>
 <li>

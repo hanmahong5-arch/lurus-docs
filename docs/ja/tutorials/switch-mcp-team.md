@@ -42,7 +42,7 @@ description: "Switch でチームの AI CLI ツール、MCP サーバー、モ�
 </li>
 <li>
 
-設定画面で Lurus <Term t="API Key">API Key</Term>（[取得方法](/ja/guide/get-api-key)）を入力し、すべての CLI が `https://api.lurus.cn/v1` 経由で統一的にモデルを呼び出すようにします —— 1 つの Key、1 つの請求書。
+設定画面で Lurus <Term t="API Key">API Key</Term>（[取得方法](/ja/guide/get-api-key)）を入力し、すべての CLI が `https://hub.lurus.cn/v1` 経由で統一的にモデルを呼び出すようにします —— 1 つの Key、1 つの請求書。
 
 </li>
 <li>

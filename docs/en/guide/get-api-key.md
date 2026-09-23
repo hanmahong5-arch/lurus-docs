@@ -24,7 +24,7 @@ description: Complete steps for registering a Lurus account and obtaining an API
 <ol class="lurus-steps">
 <li>
 
-Go to the [Lurus console](https://api.lurus.cn) → "Sign up" → enter your email and password → complete email verification.
+Go to the [Lurus console](https://hub.lurus.cn) → "Sign up" → enter your email and password → complete email verification.
 
 </li>
 <li>
@@ -95,7 +95,7 @@ Disable or delete the Key immediately and create a new one.
 <details class="lurus-faq-item">
 <summary>Out of quota?</summary>
 
-Top up or upgrade your plan yourself — first check the tiers (Free / Basic / Pro) in [Billing details](/en/platform/billing), then top up or upgrade in the [console](https://api.lurus.cn).
+Top up or upgrade your plan yourself — first check the tiers (Free / Basic / Pro) in [Billing details](/en/platform/billing), then top up or upgrade in the [console](https://hub.lurus.cn).
 
 </details>
 

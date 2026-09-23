@@ -22,7 +22,7 @@ description: Configure the Lurus API in the OpenCat iOS/macOS client.
 Tap the link below in a browser or notes app to jump straight to OpenCat with the configuration filled in automatically:
 
 ```
-opencat://team/join?domain=https://api.lurus.cn&token=YOUR_API_KEY
+opencat://team/join?domain=https://hub.lurus.cn&token=YOUR_API_KEY
 ```
 
 Replace `YOUR_API_KEY` with your own key (`sk-xxxxxxxxxxxxxxxx`) and open it in Safari.
@@ -51,7 +51,7 @@ Open OpenCat → **Settings** (avatar in the top-right corner) → **API Setting
 
 Choose "**Custom API**" and fill in:
 
-- **API Host**: `https://api.lurus.cn`
+- **API Host**: `https://hub.lurus.cn`
 - **API Key**: your key (`sk-xxxxxxxxxxxxxxxx`)
 
 </li>
@@ -85,9 +85,9 @@ See the full list at [Supported Models](/guide/models).
 <details class="lurus-faq-item">
 <summary>Connection test fails with "Invalid key"</summary>
 
-- Confirm the API Host has **no trailing slash** (`https://api.lurus.cn`, not `https://api.lurus.cn/`)
+- Confirm the API Host has **no trailing slash** (`https://hub.lurus.cn`, not `https://hub.lurus.cn/`)
 - Confirm the API Key format is correct (starts with `sk-`)
-- In the [Lurus Console](https://api.lurus.cn), confirm the key’s status is "Enabled"
+- In the [Lurus Console](https://hub.lurus.cn), confirm the key’s status is "Enabled"
 
 </details>
 

@@ -12,7 +12,7 @@ description: Lurus Chat Completions API 레퍼런스, OpenAI 인터페이스 형
 <ApiEndpoint method="POST" path="/v1/chat/completions" description="채팅 대화 생성" />
 
 ```
-POST https://api.lurus.cn/v1/chat/completions
+POST https://hub.lurus.cn/v1/chat/completions
 ```
 
 <div class="lurus-cards lurus-cards--compact">
@@ -89,7 +89,7 @@ POST https://api.lurus.cn/v1/chat/completions
 ```python
 from openai import OpenAI
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-key")
 
 response = client.chat.completions.create(
     model="deepseek-chat",
@@ -107,7 +107,7 @@ print(f"Token 用量：{response.usage.total_tokens}")  # usage.total_tokens
 
 == cURL
 ```bash
-curl https://api.lurus.cn/v1/chat/completions \
+curl https://hub.lurus.cn/v1/chat/completions \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $LURUS_API_KEY" \
   -d '{
@@ -125,7 +125,7 @@ curl https://api.lurus.cn/v1/chat/completions \
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.lurus.cn/v1',
+  baseURL: 'https://hub.lurus.cn/v1',
   apiKey: process.env.LURUS_API_KEY
 });
 
@@ -156,7 +156,7 @@ import (
 
 func main() {
     cfg := openai.DefaultConfig(os.Getenv("LURUS_API_KEY"))
-    cfg.BaseURL = "https://api.lurus.cn/v1"
+    cfg.BaseURL = "https://hub.lurus.cn/v1"
     client := openai.NewClientWithConfig(cfg)
 
     resp, _ := client.CreateChatCompletion(context.Background(),
@@ -245,7 +245,7 @@ AI가 당신이 제공한 함수를 언제 호출할지 결정하도록 하고, 
 import json
 from openai import OpenAI
 
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-key")
 
 # 定义可调用的函数
 tools = [

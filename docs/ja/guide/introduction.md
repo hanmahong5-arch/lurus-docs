@@ -45,7 +45,7 @@ description: 1 つの API Key で 50 以上の主要 AI モデルに接続。Ope
 2 行のコードを置き換えるだけで移行でき、すべての OpenAI SDK 機能と完全互換です：
 ```python
 # この 2 行を変えるだけ、ほかのコードはそのまま
-base_url="https://api.lurus.cn/v1"
+base_url="https://hub.lurus.cn/v1"
 api_key="sk-your-lurus-key"
 ```
 :::
@@ -72,7 +72,7 @@ api_key="sk-your-lurus-key"
 
 ```python
 from openai import OpenAI
-client = OpenAI(base_url="https://api.lurus.cn/v1", api_key="sk-your-api-key")
+client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-your-api-key")
 # model 可填 deepseek-chat / gpt-4o / claude-3-5-sonnet / gemini-3-pro-preview
 response = client.chat.completions.create(model="deepseek-chat", messages=[{"role": "user", "content": "你好"}])
 ```
@@ -157,7 +157,7 @@ response = client.chat.completions.create(model="deepseek-chat", messages=[{"rol
   :steps="[
     { text: 'クイックスタート', link: '/ja/guide/quickstart', primary: true },
     { text: '対応モデル', link: '/guide/models' },
-    { text: 'コンソール', link: 'https://api.lurus.cn', external: true },
+    { text: 'コンソール', link: 'https://hub.lurus.cn', external: true },
   ]"
 />
 

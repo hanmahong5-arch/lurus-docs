@@ -74,7 +74,7 @@ data_dir = "./data"
 [llm]
 # 通过 Lurus API 接入所有模型
 provider = "openai-compatible"
-base_url = "https://api.lurus.cn/v1"
+base_url = "https://hub.lurus.cn/v1"
 api_key = "sk-your-lurus-key"
 default_model = "deepseek-chat"
 

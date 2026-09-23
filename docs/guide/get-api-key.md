@@ -24,7 +24,7 @@ description: 注册 Lurus 账号并获取 API Key 的完整步骤。
 <ol class="lurus-steps">
 <li>
 
-访问 [Lurus 控制台](https://api.lurus.cn) →「注册」→ 填邮箱密码 → 完成邮箱验证。
+访问 [Lurus 控制台](https://hub.lurus.cn) →「注册」→ 填邮箱密码 → 完成邮箱验证。
 
 </li>
 <li>
@@ -95,7 +95,7 @@ description: 注册 Lurus 账号并获取 API Key 的完整步骤。
 <details class="lurus-faq-item">
 <summary>额度用完了？</summary>
 
-自助充值或升级套餐——先在 [计费详解](/platform/billing) 看档位（Free / Basic / Pro），再到 [控制台](https://api.lurus.cn) 充值或升级。
+自助充值或升级套餐——先在 [计费详解](/platform/billing) 看档位（Free / Basic / Pro），再到 [控制台](https://hub.lurus.cn) 充值或升级。
 
 </details>
 

@@ -22,7 +22,7 @@ description: Configure the Lurus API as a model provider in Lobe Chat.
 Click the link below to configure it directly:
 
 ```
-https://chat-preview.lobehub.com/?settings={"keyVaults":{"openai":{"apiKey":"YOUR_API_KEY","baseURL":"https://api.lurus.cn/v1"}}}
+https://chat-preview.lobehub.com/?settings={"keyVaults":{"openai":{"apiKey":"YOUR_API_KEY","baseURL":"https://hub.lurus.cn/v1"}}}
 ```
 
 Replace `YOUR_API_KEY` with your API Key.
@@ -45,7 +45,7 @@ Select **Language Model**.
 In the OpenAI configuration, fill in:
 
 - **API Key**: Enter your Lurus API Key
-- **API Proxy**: `https://api.lurus.cn/v1`
+- **API Proxy**: `https://hub.lurus.cn/v1`
 
 </li>
 <li>

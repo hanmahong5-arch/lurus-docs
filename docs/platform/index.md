@@ -26,7 +26,7 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
 
 ## 统一账号
 
-访问任意 Lurus 产品（[api.lurus.cn](https://api.lurus.cn)、[lucrum.lurus.cn](https://lucrum.lurus.cn) 等）即可注册/登录。**登录方式**：邮箱+密码、GitHub（OAuth）、Google（OAuth）。
+访问任意 Lurus 产品（[hub.lurus.cn](https://hub.lurus.cn)、[lucrum.lurus.cn](https://lucrum.lurus.cn) 等）即可注册/登录。**登录方式**：邮箱+密码、GitHub（OAuth）、Google（OAuth）。
 
 注册成功获得：
 
