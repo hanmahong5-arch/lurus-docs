@@ -11,27 +11,16 @@ const root = ref<HTMLElement | null>(null)
 const tabs = products['lurus-api'].codeExamples || []
 
 const t = computed(() => uiFor(lang.value))
-/** Locale-prefixed path for in-set CTA targets (both are translated pages). */
+/** Locale prefix for the gateway quickstart (translated in every locale).
+ *  The witness docs exist only in zh, so that link always stays at the root. */
 const linkPrefix = computed(() => {
   const l = toLocale(lang.value)
   return l ? `/${l}` : ''
 })
-// The free-quota metric value carries a CJK unit ("次/天"); localize just the unit.
-const FREE_QUOTA: Record<string, string> = {
-  en: '100/day', ja: '100 回/日', ko: '100회/일', es: '100/día', fr: '100/jour',
-}
-const metrics = computed(() => {
-  const tt = t.value
-  const labels = tt ? tt.hero.metrics : ['产品矩阵', 'AI 模型接入', 'Kova 调度延迟', '免费额度']
-  const loc = toLocale(lang.value)
-  const freeVal = (loc && FREE_QUOTA[loc]) || '100 次/天'
-  return [
-    { label: labels[0], value: '12' },
-    { label: labels[1], value: '50+' },
-    { label: labels[2], value: '3μs' },
-    { label: labels[3], value: freeVal },
-  ]
-})
+// Number-style metrics were removed: none of them had a traceable source.
+// Keep the slot typed so a sourced metric can be added later; the block does
+// not render at all while the list is empty.
+const metrics: { label: string; value: string }[] = []
 
 let frame = 0
 function onMove(e: MouseEvent) {
@@ -57,23 +46,21 @@ onBeforeUnmount(() => root.value?.removeEventListener('mousemove', onMove))
     <div class="lurus-hero__content">
       <div class="lurus-hero__text">
         <span class="lurus-hero__name">Lurus</span>
-        <h1 class="lurus-hero__title">{{ t ? t.hero.title : 'AI 基础设施与产品平台' }}</h1>
+        <h1 class="lurus-hero__title">{{ t ? t.hero.title : '企业 AI 交付工程' }}</h1>
         <p class="lurus-hero__tagline">
           <template v-if="t">{{ t.hero.taglineLead }}<span class="lurus-hero__accent">{{ t.hero.taglineAccent }}</span>{{ t.hero.taglineTail }}</template>
-          <template v-else>不是又一层 SaaS。<span class="lurus-hero__accent">执行、记忆、网关、计费</span>各自能用，组合更强 —
-          像组合螺丝刀一样组合智能。</template>
+          <template v-else>让客户自有环境里的 AI 系统，<span class="lurus-hero__accent">状态可核查、数据可恢复、改动有记录</span>。</template>
         </p>
         <div class="lurus-hero__actions">
-          <a :href="`${linkPrefix}/guide/quickstart`" class="lurus-hero__btn lurus-hero__btn--primary">{{ t ? t.hero.btnStart : '3 分钟上手' }}</a>
-          <a :href="`${linkPrefix}/guide/get-api-key`" class="lurus-hero__btn lurus-hero__btn--alt">{{ t ? t.hero.btnKey : '获取 API Key' }}</a>
-          <a href="https://api.lurus.cn" target="_blank" rel="noopener noreferrer" class="lurus-hero__btn lurus-hero__btn--ghost">{{ t ? t.hero.btnConsole : '控制台 ↗' }}</a>
+          <a href="/witness/" class="lurus-hero__btn lurus-hero__btn--primary">{{ t ? t.hero.btnWitness : '见证文档' }}</a>
+          <a :href="`${linkPrefix}/guide/quickstart`" class="lurus-hero__btn lurus-hero__btn--alt">{{ t ? t.hero.btnGateway : '接入网关' }}</a>
         </div>
       </div>
       <div class="lurus-hero__code">
         <CodeShowcase v-if="tabs.length" :tabs="tabs" />
       </div>
     </div>
-    <MetricStats :items="metrics" />
+    <MetricStats v-if="metrics.length" :items="metrics" />
   </section>
 </template>
 
@@ -183,8 +170,6 @@ onBeforeUnmount(() => root.value?.removeEventListener('mousemove', onMove))
   border: 1px solid var(--vp-c-divider);
 }
 .lurus-hero__btn--alt:hover { border-color: var(--vp-c-brand-1); color: var(--vp-c-brand-1); }
-.lurus-hero__btn--ghost { color: var(--vp-c-text-2); }
-.lurus-hero__btn--ghost:hover { color: var(--vp-c-brand-1); }
 
 .lurus-hero__code {
   min-width: 0;

@@ -79,85 +79,62 @@ export const products: Record<string, Product> = {
   'lurus-api': {
     id: 'lurus-api',
     name: 'Lurus API',
-    fullName: 'Lurus API — LLM 统一网关',
-    tagline: '一个 API Key 接入 50+ AI 模型，完全兼容 OpenAI SDK',
+    fullName: 'Lurus API — 私有部署的多租户 LLM 网关',
+    tagline: '部署在客户自有环境的多租户 LLM 网关 · 基于开源 New API，AGPLv3',
     status: 'live',
     category: 'ai-service',
-    audiences: ['newbie', 'developer', 'decider'],
+    audiences: ['developer', 'decider'],
     colorToken: '--lurus-color-lurus-api',
     icon: 'plug-zap',
     home: '/guide/introduction',
-    consoleUrl: 'https://api.lurus.cn',
     highlights: [
-      { title: '50+ 模型一键切换', body: 'DeepSeek / 通义 / 智谱 / Claude / GPT 全覆盖，按 model 名称自动路由', icon: 'layers' },
-      { title: 'OpenAI SDK 即插即用', body: '改一行 base_url 即可迁移存量代码，无需重写业务逻辑', icon: 'repeat' },
-      { title: '智能路由与故障转移', body: '多渠道权重负载均衡、自动故障转移、per-channel 熔断保护', icon: 'zap' },
-      { title: '透明计费', body: '鹿贝钱包 · 按量扣费 · 详细用量报表 · 免费额度', icon: 'wallet' },
-    ],
-    metrics: [
-      { label: '接入模型', value: '50+' },
-      { label: '免费额度', value: '100 次/天' },
-      { label: '兼容性', value: 'OpenAI SDK' },
+      { title: '接入与路由', body: '多家上游模型服务走同一套接口；上游通道按权重加健康评分选择', icon: 'layers' },
+      { title: '租户与计量', body: '用量按租户、模型、通道分开记，按角色分级授权', icon: 'wallet' },
+      { title: '日志与留痕', body: '调用日志按租户隔离可检索；管理类写操作进入审计记录，可逐行校验', icon: 'repeat' },
+      { title: '许可与来源', body: '基于开源 New API（源自 One API），AGPLv3；条款以仓库 LICENSE 与 NOTICE 为准', icon: 'zap' },
     ],
     codeExamples: [
       {
         lang: 'bash',
         label: 'curl',
-        code: `curl https://api.lurus.cn/v1/chat/completions \\
-  -H "Authorization: Bearer $LURUS_API_KEY" \\
+        code: `# 网关地址与 Key 由你自己的部署提供
+curl https://<your-gateway>/v1/chat/completions \\
+  -H "Authorization: Bearer $GATEWAY_API_KEY" \\
   -H "Content-Type: application/json" \\
-  -d '{"model":"deepseek-chat","messages":[{"role":"user","content":"你好"}]}'`,
-      },
-      {
-        lang: 'python',
-        label: 'Python',
-        code: `from openai import OpenAI
-
-client = OpenAI(
-    api_key="sk-...",
-    base_url="https://api.lurus.cn/v1",
-)
-
-resp = client.chat.completions.create(
-    model="deepseek-chat",
-    messages=[{"role": "user", "content": "你好"}],
-)
-print(resp.choices[0].message.content)`,
+  -d '{"model":"<model-name>","messages":[{"role":"user","content":"你好"}]}'`,
       },
       {
         lang: 'typescript',
-        label: 'TypeScript',
-        code: `import OpenAI from 'openai'
-
-const client = new OpenAI({
-  apiKey: process.env.LURUS_API_KEY,
-  baseURL: 'https://api.lurus.cn/v1',
+        label: 'HTTP (fetch)',
+        code: `const res = await fetch('https://<your-gateway>/v1/chat/completions', {
+  method: 'POST',
+  headers: {
+    Authorization: \`Bearer \${process.env.GATEWAY_API_KEY}\`,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    model: '<model-name>',
+    messages: [{ role: 'user', content: '你好' }],
+  }),
 })
-
-const res = await client.chat.completions.create({
-  model: 'deepseek-chat',
-  messages: [{ role: 'user', content: '你好' }],
-})`,
+console.log(await res.json())`,
       },
     ],
     scenarios: [
-      { role: '新手', title: '3 分钟发起第一次 AI 调用', summary: '注册 → 领 API Key → curl 跑通', link: '/guide/quickstart' },
-      { role: '开发者', title: '从 OpenAI 无感迁移', summary: '只改一行 base_url，保留所有 SDK 调用', link: '/migrations/from-openai' },
-      { role: '决策者', title: '统一采购 50+ 模型', summary: '一张发票、一套账号、统一监控', link: '/solutions/ai-midware' },
+      { role: '开发者', title: '发起第一次调用', summary: '拿到自有部署的网关地址与 Key → curl 跑通', link: '/guide/quickstart' },
     ],
     relatedProducts: ['switch', 'kova', 'lumen', 'platform'],
     nextSteps: [
       { text: '快速开始', link: '/guide/quickstart', primary: true },
       { text: '支持的模型', link: '/guide/models' },
-      { text: '控制台', link: 'https://api.lurus.cn', external: true },
     ],
   },
 
   'kova': {
     id: 'kova',
     name: 'Kova',
-    fullName: 'Kova — AI Agent 持久执行引擎',
-    tagline: 'Rust 构建的 WAL-First Agent 引擎，崩溃自动恢复，3μs 调度',
+    fullName: 'Kova — 嵌入式持久执行引擎',
+    tagline: '每一步先写进预写日志再算完成，进程中断后从日志继续 · 早期试点',
     status: 'dev',
     category: 'ai-service',
     audiences: ['developer', 'decider'],
@@ -165,68 +142,25 @@ const res = await client.chat.completions.create({
     icon: 'bot',
     home: '/kova/',
     highlights: [
-      { title: 'WAL 崩溃恢复', body: '每步执行预写日志 + CRC32 校验，崩溃后从断点重放，不重调 LLM', icon: 'database-backup' },
-      { title: '3μs 调度延迟', body: 'FIFO 完整管道 Criterion 基准 3.17μs，315K ops/s 吞吐', icon: 'gauge' },
-      { title: '零外部依赖', body: '单二进制 < 10MB，无需 Redis/Postgres，本地 WAL 文件即可运行', icon: 'package' },
-      { title: '四种接入方式', body: 'Rust SDK / gRPC / REST / MCP，21 workspace crate 模块化', icon: 'puzzle' },
-    ],
-    metrics: [
-      { label: '调度延迟', value: '3μs' },
-      { label: '吞吐', value: '315K ops/s' },
-      { label: '代码量', value: '178K LOC' },
-      { label: 'Workspace', value: '21 crate' },
+      { title: '预写日志恢复', body: '每条日志记录带 CRC32 校验；进程中断后从日志继续，不重做已落盘的步骤', icon: 'database-backup' },
+      { title: '执行留痕、可离线回放', body: '可从预写日志离线重建某个任务的执行过程', icon: 'history' },
+      { title: '多种接入方式', body: 'gRPC / REST / MCP（stdio）', icon: 'puzzle' },
+      { title: '边界', body: '专有软件，按商业许可提供；未发布到公共包仓库；目前只在我们自己的环境里运行', icon: 'lock' },
     ],
     codeExamples: [
       {
-        lang: 'rust',
-        label: 'Rust SDK',
-        code: `use kova::prelude::*;
-
-let engine = KovaBuilder::new()
-    .wal_dir("./agent-state")
-    .build()?;
-
-let agent = engine.create_agent("researcher")
-    .model("deepseek-chat")
-    .tools(&["web_search", "file_read"])
-    .build()?;
-
-// Agent crashes → auto-resume from WAL, no LLM re-call
-agent.run("帮我调研 WASM Component Model").await?;`,
-      },
-      {
         lang: 'bash',
-        label: 'gRPC / REST',
-        code: `# REST
-curl http://localhost:8080/v1/agents/researcher/run \\
-  -H "Content-Type: application/json" \\
-  -d '{"input":"调研 WASM Component Model"}'
-
-# MCP 作为 Tool 暴露给 Claude/Codex
-kova mcp serve --port 3333`,
+        label: 'CLI',
+        code: `# 从预写日志离线重建任务 42 的执行过程
+kova evidence reconstruct --task-id 42 --wal-dir ./wal`,
       },
     ],
     architectureDiagram: `graph LR
-  A[Client SDK / gRPC / REST] --> B[Kova Core]
-  B --> C[WAL Writer<br/>CRC32]
-  B --> D[Scheduler<br/>FIFO]
-  B --> E[Tool Runtime<br/>MCP]
-  C -.recover.-> B
-  D --> F[LLM Provider<br/>via Lurus API]`,
-    scenarios: [
-      { role: '开发者', title: '5 分钟起一个持久化 Agent', summary: 'cargo add kova + 3 行代码', link: '/kova/quickstart' },
-      { role: '架构师', title: '替换 LangGraph Checkpointer', summary: '在 LangGraph 项目里用 Kova 存 checkpoint', link: '/tutorials/lumen-kova-langgraph' },
-    ],
-    comparison: {
-      competitors: ['Temporal', 'LangGraph', 'CrewAI'],
-      rows: [
-        { dimension: '调度延迟', self: '3μs (Criterion)', alt: { Temporal: '1-10ms', LangGraph: 'N/A (内存)', CrewAI: 'N/A (内存)' } },
-        { dimension: '崩溃恢复', self: 'WAL 自动重放', alt: { Temporal: 'Event Sourcing', LangGraph: 'SqliteSaver', CrewAI: '无' } },
-        { dimension: '外部依赖', self: '零', alt: { Temporal: 'Cassandra/MySQL', LangGraph: 'SQLite 可选', CrewAI: '无' } },
-        { dimension: '接入方式', self: 'SDK/gRPC/REST/MCP', alt: { Temporal: 'SDK', LangGraph: 'Python only', CrewAI: 'Python only' } },
-        { dimension: '二进制大小', self: '< 10MB', alt: { Temporal: 'JVM 数百 MB', LangGraph: 'Python pkg', CrewAI: 'Python pkg' } },
-      ],
-    },
+  A[gRPC / REST / MCP] --> B[Kova Core]
+  B --> C[预写日志<br/>CRC32]
+  C -.中断后继续.-> B
+  C --> D[离线重建<br/>evidence reconstruct]
+  B --> E[上游模型服务]`,
     relatedProducts: ['lumen', 'memx', 'lurus-api', 'forge'],
     nextSteps: [
       { text: '快速开始', link: '/kova/quickstart', primary: true },
@@ -294,8 +228,8 @@ curl "http://localhost:8880/api/v1/memories/search?query=部署前检查&user_id
   'lucrum': {
     id: 'lucrum',
     name: 'Lucrum',
-    fullName: 'Lucrum — AI 量化交易平台',
-    tagline: '自然语言描述策略，AI 生成 vnpy 代码并回测 · 11 个投资顾问',
+    fullName: 'Lucrum — 量化策略生成与回测',
+    tagline: '自然语言描述思路，生成可回测的策略 · 当前不在主动开发中',
     status: 'live',
     category: 'ai-service',
     audiences: ['player', 'developer'],
@@ -304,40 +238,13 @@ curl "http://localhost:8880/api/v1/memories/search?query=部署前检查&user_id
     home: '/lucrum/',
     consoleUrl: 'https://lucrum.lurus.cn',
     highlights: [
-      { title: '自然语言 → 策略代码', body: '中文描述思路 → AI 生成 vnpy CtaTemplate → 回测 → 评分', icon: 'sparkles' },
-      { title: '11 个投资顾问 Agent', body: '巴菲特 / 彼得林奇 / 利弗莫尔 / 西蒙斯 + 4 分析师 + 2 研究员 + 辩论主持', icon: 'users' },
-      { title: '金融级精度', body: 'Decimal.js 全精度 + 3157 Vitest 用例，零浮点误差', icon: 'calculator' },
-      { title: 'S/A/B/C/D 五级评分', body: '4 维加权：收益 30% + 风控 30% + 稳定性 25% + 效率 15%', icon: 'star' },
+      { title: '自然语言 → 策略代码', body: '用中文描述思路，生成可回测的策略代码', icon: 'sparkles' },
+      { title: '定点数回测', body: '回测引擎全程使用 Decimal.js 定点数，避免浮点误差', icon: 'calculator' },
+      { title: '多 Agent 投研问答', body: '从多个视角对策略给出分析意见', icon: 'users' },
+      { title: '现状', body: '当前不在主动开发中，只做修复与运维；交易能力仅限模拟盘', icon: 'star' },
     ],
-    metrics: [
-      { label: '投资顾问', value: '11 个' },
-      { label: '回测指标', value: '30+' },
-      { label: '测试用例', value: '3157+' },
-      { label: '精度', value: 'Decimal.js' },
-    ],
-    codeExamples: [
-      {
-        lang: 'text',
-        label: '自然语言',
-        code: `你: 双均线交叉策略，5 日线上穿 20 日线买入，下穿卖出，止损 5%
-
-AI: 已生成 vnpy CtaTemplate 策略代码。
-    回测结果 (2024-01 ~ 2025-12):
-    夏普比率: 1.42 | 最大回撤: 8.3% | 胜率: 62%
-    评级: A (收益优秀，风控良好)`,
-      },
-    ],
-    comparison: {
-      competitors: ['vnpy', '掘金', '米筐', '聚宽'],
-      rows: [
-        { dimension: '策略编写', self: '自然语言生成', alt: { vnpy: 'Python 手写', 掘金: 'Python 手写', 米筐: 'Python 手写', 聚宽: 'Python 手写' } },
-        { dimension: 'AI 投资顾问', self: '11 个多视角', alt: { vnpy: '无', 掘金: '无', 米筐: '无', 聚宽: '无' } },
-        { dimension: '精度', self: 'Decimal.js 全精度', alt: { vnpy: 'float', 掘金: 'float', 米筐: 'float', 聚宽: 'float' } },
-        { dimension: '策略市场', self: '内置 + 评级', alt: { vnpy: '无', 掘金: '有', 米筐: '有', 聚宽: '有' } },
-      ],
-    },
     scenarios: [
-      { role: '玩家', title: '从零开始跑第一个策略', summary: '写需求 → 回测 → 上架策略市场', link: '/tutorials/lucrum-strategy-workflow' },
+      { role: '玩家', title: '跑第一个策略', summary: '写需求 → 生成策略 → 回测', link: '/tutorials/lucrum-strategy-workflow' },
     ],
     relatedProducts: ['lurus-api', 'platform', 'auth'],
     nextSteps: [
@@ -350,8 +257,8 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
   'switch': {
     id: 'switch',
     name: 'Switch',
-    fullName: 'Switch — AI 工具管理中心',
-    tagline: '桌面端统一管理 5 款 AI 编程 CLI 配置 · MCP · 成本',
+    fullName: 'Switch — 桌面端 AI 工具配置管理',
+    tagline: '桌面端统一管理多款 AI 编程命令行工具的配置与 MCP · 当前不在主动开发中',
     status: 'dev',
     category: 'desktop',
     audiences: ['player', 'developer'],
@@ -359,25 +266,11 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
     icon: 'monitor',
     home: '/switch/',
     highlights: [
-      { title: '5 款 CLI 一站管理', body: 'Claude Code / Codex / Gemini / PicoClaw / NullClaw 配置统一', icon: 'layers' },
-      { title: 'MCP 可视化', body: '告别手写 JSON，MCP 服务器跨工具同步', icon: 'plug' },
-      { title: '成本仪表盘', body: '按工具/模型聚合，阈值告警，与 Lumen 协同', icon: 'bar-chart-3' },
-      { title: '单 exe 零依赖', body: 'Wails + Go 1.25 + React 18，< 15MB 启动 < 2s', icon: 'package' },
+      { title: '多款命令行工具一处管理', body: '把分散在各工具里的配置集中到一个桌面应用', icon: 'layers' },
+      { title: 'MCP 预设', body: '常用 MCP 服务器配置以预设形式管理，不必手写 JSON', icon: 'plug' },
+      { title: '本地计量代理', body: '经它转发的调用在本地记录用量', icon: 'bar-chart-3' },
+      { title: '现状', body: '当前不在主动开发中', icon: 'package' },
     ],
-    metrics: [
-      { label: '管理 CLI', value: '5 款' },
-      { label: '包体积', value: '<15MB' },
-      { label: '启动', value: '<2s' },
-    ],
-    comparison: {
-      competitors: ['Aider', 'Cursor', '手动管理'],
-      rows: [
-        { dimension: 'CLI 覆盖', self: '5 款统一', alt: { Aider: '1 款', Cursor: '内置 IDE', 手动管理: 'N/A' } },
-        { dimension: 'MCP 管理', self: '可视化 + 同步', alt: { Aider: '无', Cursor: '单独配', 手动管理: '手写 JSON' } },
-        { dimension: '成本监控', self: '聚合仪表盘', alt: { Aider: '无', Cursor: '无', 手动管理: '无' } },
-        { dimension: '团队同步', self: 'Git + Vault', alt: { Aider: '无', Cursor: '无', 手动管理: '无' } },
-      ],
-    },
     relatedProducts: ['lurus-api', 'lumen', 'creator'],
     nextSteps: [
       { text: '安装指南', link: '/switch/install', primary: true },
@@ -389,8 +282,8 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
   'creator': {
     id: 'creator',
     name: 'Creator',
-    fullName: 'Creator — AI 内容工厂',
-    tagline: '粘贴视频链接，AI 三平台改写 + 自动发布',
+    fullName: 'Creator — 内容改写与发布工具',
+    tagline: '视频链接 → 转写 → 多平台文案改写 → 发布 · 当前不在主动开发中',
     status: 'dev',
     category: 'desktop',
     audiences: ['player'],
@@ -398,10 +291,10 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
     icon: 'clapperboard',
     home: '/creator/',
     highlights: [
-      { title: '一键流水线', body: 'yt-dlp 下载 → Whisper 转写 → LLM 改写 → chromedp 发布', icon: 'workflow' },
-      { title: '6 平台定制文案', body: '公众号 / 抖音 / 小红书 / YouTube / TikTok / Reels 一次生成', icon: 'share-2' },
-      { title: '视频源 1000+', body: 'yt-dlp 支持 YouTube / Bilibili 等全网站点', icon: 'video' },
-      { title: '单 exe 零依赖', body: 'Wails 构建，打开即用', icon: 'package' },
+      { title: '一条流水线', body: '下载 → 语音转写 → 文案改写 → 发布', icon: 'workflow' },
+      { title: '多平台文案', body: '按不同内容平台的习惯分别生成文案', icon: 'share-2' },
+      { title: '桌面应用', body: '单个可执行文件，打开即用', icon: 'package' },
+      { title: '现状', body: '当前不在主动开发中', icon: 'video' },
     ],
     relatedProducts: ['lurus-api', 'switch'],
     nextSteps: [
@@ -414,8 +307,8 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
   'lumen': {
     id: 'lumen',
     name: 'Lumen',
-    fullName: 'Lumen — Agent 可观测性与可靠性工具',
-    tagline: 'Replay · Crash Recovery · Cost Tracking — Agent 三合一',
+    fullName: 'Lumen — Agent 回放与成本审计工具',
+    tagline: '回放任意一次 Agent 运行、核算用量成本、中断后从检查点继续 · 早期试点',
     status: 'dev',
     category: 'ai-service',
     audiences: ['developer'],
@@ -423,33 +316,22 @@ AI: 已生成 vnpy CtaTemplate 策略代码。
     icon: 'zap',
     home: '/lumen/',
     highlights: [
-      { title: 'Replay 零成本重放', body: '记录 LLM 调用序列，本地回放不消耗 Token', icon: 'rewind' },
-      { title: 'Crash Recovery', body: 'LumenCheckpointer 替换 LangGraph SqliteSaver，微秒级 WAL 恢复', icon: 'life-buoy' },
-      { title: 'Cost Tracking', body: '按 Agent/Graph/Node 聚合 Token 成本，实时告警', icon: 'coins' },
-      { title: 'Python SDK 优先', body: 'pip install lumen-ai，三行接入 LangGraph', icon: 'package-plus' },
+      { title: '确定性回放', body: '从运行记录回放，不再调用模型；可从中间某一步开始', icon: 'rewind' },
+      { title: '检查点恢复', body: '检查点落本地磁盘，不依赖外部服务；进程中断后从最近检查点继续', icon: 'life-buoy' },
+      { title: '成本核算', body: '按 Agent、按模型汇总用量成本，标出异常的运行', icon: 'coins' },
+      { title: '边界', body: '早期阶段；未发布到公共包仓库，目前只能从源码构建', icon: 'package-plus' },
     ],
     codeExamples: [
       {
-        lang: 'python',
-        label: 'Python',
-        code: `pip install lumen-ai
+        lang: 'bash',
+        label: 'CLI',
+        code: `# 回放一次运行（不调用模型），可从第 N 步开始
+lumen replay <trace-id> --from-step 3
 
-from lumen_ai import LumenTracer, LumenCheckpointer
-
-graph = workflow.compile(
-    checkpointer=LumenCheckpointer(),   # 崩溃恢复
-    callbacks=[LumenTracer()],           # 执行追踪 + 成本
-)`,
+# 最近 24 小时的成本报告
+lumen cost --last 24h`,
       },
     ],
-    comparison: {
-      competitors: ['Temporal', 'LangGraph Checkpointer', 'Conductor'],
-      rows: [
-        { dimension: 'Replay', self: '零成本 LLM 重放', alt: { Temporal: 'Event replay', 'LangGraph Checkpointer': '部分', Conductor: 'Workflow replay' } },
-        { dimension: '接入成本', self: '3 行代码', alt: { Temporal: 'Worker + SDK', 'LangGraph Checkpointer': '配置', Conductor: 'Worker' } },
-        { dimension: 'Cost 追踪', self: '内置', alt: { Temporal: '无', 'LangGraph Checkpointer': '无', Conductor: '无' } },
-      ],
-    },
     relatedProducts: ['kova', 'lurus-api', 'memx'],
     nextSteps: [
       { text: '快速开始', link: '/lumen/quickstart', primary: true },
@@ -461,8 +343,8 @@ graph = workflow.compile(
   'forge': {
     id: 'forge',
     name: 'Forge',
-    fullName: 'Forge — AI 产品开发工作台',
-    tagline: '"一切皆对话" · Ontology + Session 双核心（内部 R&D）',
+    fullName: 'Forge — 内部工作流画布',
+    tagline: '拖拽搭建并运行 Agent 工作流的可视化画布 · 内部工具，不对外商业化',
     status: 'beta',
     category: 'ai-service',
     audiences: ['developer'],
@@ -470,10 +352,10 @@ graph = workflow.compile(
     icon: 'hammer',
     home: '/forge/',
     highlights: [
-      { title: 'Ontology 本体论', body: '树状结构管理产品用户故事、架构、技术栈、设计规范', icon: 'network' },
-      { title: 'Session 对话驱动', body: 'PM / Architect / Code Agent 在 Session 中协作产出 PR', icon: 'messages-square' },
-      { title: 'WAL 决策回溯', body: '基于 Kova 引擎，每个决策可回溯到对话上下文', icon: 'history' },
-      { title: '内部 R&D 工具', body: '仅受邀内测，不对外商业化', icon: 'lock' },
+      { title: '可视化画布', body: '把组件拖到画布上连成流程并运行', icon: 'network' },
+      { title: 'MCP 双向', body: '流程可以调用外部 MCP 工具，保存的流程也可作为 MCP 工具暴露', icon: 'messages-square' },
+      { title: '持久执行', body: '少数需要持久化的组件（等待、重试、Agent 运行）交给 Kova 执行', icon: 'history' },
+      { title: '内部工具', body: '目前作为内部工作流工具使用，多数高级能力默认关闭', icon: 'lock' },
     ],
     relatedProducts: ['kova', 'memx', 'lurus-api'],
     nextSteps: [
@@ -486,19 +368,18 @@ graph = workflow.compile(
   'platform': {
     id: 'platform',
     name: '账号与计费',
-    fullName: 'Lurus Platform — 账号与计费',
-    tagline: '统一账号 · 订阅计划 · 鹿贝钱包 · VIP 体系',
+    fullName: 'Lurus Platform — 内部账号与用量核算底座',
+    tagline: '内部底座：统一账号与内部用量核算 · 不作为独立产品对外提供',
     status: 'live',
     category: 'platform',
-    audiences: ['newbie', 'decider'],
+    audiences: ['developer'],
     colorToken: '--lurus-color-platform',
     icon: 'wallet',
     home: '/platform/',
     highlights: [
-      { title: '统一账号', body: '跨所有 Lurus 产品共享同一身份、余额、订阅', icon: 'user-check' },
-      { title: '鹿贝钱包', body: '统一计费单位，按量扣费，实时余额查询', icon: 'coins' },
-      { title: '订阅计划', body: '免费额度 + 按需付费 + 企业套餐', icon: 'package-2' },
-      { title: 'VIP 体系', body: '消费升级，解锁专属模型与客服', icon: 'crown' },
+      { title: '统一账号', body: '各 Lurus 服务共用同一套账号', icon: 'user-check' },
+      { title: '内部用量核算', body: '各服务的用量在这里计量与记账', icon: 'coins' },
+      { title: '内部底座', body: '供自家服务调用，不单独对外销售', icon: 'package-2' },
     ],
     relatedProducts: ['auth', 'lurus-api', 'lucrum'],
     nextSteps: [
@@ -511,20 +392,19 @@ graph = workflow.compile(
   'auth': {
     id: 'auth',
     name: '统一身份认证',
-    fullName: 'Lurus Auth — 统一身份认证',
-    tagline: '全产品 SSO · Passkey · MFA · OIDC/OAuth2 · 企业 SSO 联邦',
+    fullName: 'Lurus Auth — 统一身份认证（内部底座）',
+    tagline: '各 Lurus 服务共用的登录与身份 · 标准 OIDC / OAuth2 · 内部底座',
     status: 'live',
     category: 'platform',
-    audiences: ['developer', 'decider'],
+    audiences: ['developer'],
     colorToken: '--lurus-color-auth',
     icon: 'shield-check',
     home: '/platform/auth/',
     consoleUrl: 'https://identity.lurus.cn',
     highlights: [
-      { title: '全产品 SSO', body: '一次登录，所有 Lurus 产品畅通', icon: 'key-round' },
-      { title: 'Passkey + MFA', body: 'WebAuthn / TOTP / 备份码多因素组合', icon: 'shield' },
-      { title: 'OIDC / OAuth2', body: '标准协议，Casdoor 实现，第三方接入无障碍', icon: 'link' },
-      { title: '企业 SSO 联邦', body: '接入企业 IdP（Okta / Azure AD / 自建 Keycloak）', icon: 'building-2' },
+      { title: '单点登录', body: '一次登录，在各 Lurus 服务间通用', icon: 'key-round' },
+      { title: 'OIDC / OAuth2', body: '标准协议，接入方按标准流程对接', icon: 'link' },
+      { title: '内部底座', body: '供自家服务使用，不单独对外销售', icon: 'shield' },
     ],
     relatedProducts: ['platform', 'lurus-api', 'lucrum'],
     nextSteps: [
@@ -538,8 +418,8 @@ graph = workflow.compile(
   'api-ref': {
     id: 'api-ref',
     name: 'API 参考',
-    fullName: 'API 参考 — OpenAI 兼容端点手册',
-    tagline: '完整端点文档 · 错误码 · 请求示例',
+    fullName: 'API 参考 — 网关端点手册',
+    tagline: '端点文档 · 错误码 · 请求示例',
     status: 'live',
     category: 'platform',
     audiences: ['developer'],
@@ -547,9 +427,9 @@ graph = workflow.compile(
     icon: 'book-open',
     home: '/api/overview',
     highlights: [
-      { title: 'OpenAI 兼容', body: '所有端点路径与语义对齐 OpenAI，SDK 零改动', icon: 'shuffle' },
-      { title: '完整错误码', body: '每个错误均有 code + message + 建议动作', icon: 'alert-circle' },
-      { title: '多种认证', body: 'Bearer Token / PAT / JWT 多种方式', icon: 'key' },
+      { title: '兼容主流 API 格式', body: '端点路径与请求格式沿用业界通行的对话接口格式', icon: 'shuffle' },
+      { title: '错误码', body: '错误返回带 code 与 message', icon: 'alert-circle' },
+      { title: '认证方式', body: 'Bearer Token 等方式', icon: 'key' },
     ],
     relatedProducts: ['lurus-api', 'auth'],
     nextSteps: [
@@ -562,8 +442,8 @@ graph = workflow.compile(
   'arch': {
     id: 'arch',
     name: '系统架构',
-    fullName: '系统架构 — 混合云 · GitOps · 可观测性',
-    tagline: '12 产品共享基础设施，一张图讲清',
+    fullName: '系统架构 — 集群 · GitOps · 监控',
+    tagline: '各服务共用的基础设施，一张图讲清',
     status: 'live',
     category: 'platform',
     audiences: ['developer', 'decider'],
@@ -571,9 +451,9 @@ graph = workflow.compile(
     icon: 'network',
     home: '/developer/architecture',
     highlights: [
-      { title: '混合云集群', body: '三丰云 + 阿里云双公网入口，K3s + Docker-Compose 混部', icon: 'cloud' },
-      { title: 'GitOps 部署', body: 'GitHub Actions → GHCR → ArgoCD 全流程自动化', icon: 'git-merge' },
-      { title: '全栈可观测', body: 'Grafana + Prometheus + Jaeger + Loki 统一面板', icon: 'activity' },
+      { title: '集群', body: 'K3s 与 Docker Compose 混合部署', icon: 'cloud' },
+      { title: 'GitOps 部署', body: '部署清单以 git 为准：CI 构建镜像 → 镜像仓库 → ArgoCD 同步', icon: 'git-merge' },
+      { title: '监控', body: 'Netdata 采集主机与服务指标，业务服务侧不做改动', icon: 'activity' },
     ],
     relatedProducts: ['platform', 'auth'],
     nextSteps: [

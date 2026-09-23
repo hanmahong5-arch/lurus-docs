@@ -47,7 +47,7 @@ export const glossary: Record<string, GlossaryEntry> = {
     tags: ['general'],
   },
   'SDK': {
-    zh: '软件开发工具包，提供封装好的函数和类，简化 API 调用。Lurus 兼容 OpenAI SDK。',
+    zh: '软件开发工具包，提供封装好的函数和类，简化 API 调用。Lurus 网关采用通用的 Chat Completions 接口格式。',
     en: 'Software Development Kit',
     tags: ['general'],
   },
@@ -343,15 +343,11 @@ export const glossary: Record<string, GlossaryEntry> = {
     tags: ['switch', 'kova'],
   },
   'Provider': {
-    zh: '模型提供商，如 Lurus API、OpenAI、Anthropic、Ollama。Switch 支持配置多个 Provider 并按规则路由。',
-    tags: ['switch'],
-  },
-  'CLAUDE.md': {
-    zh: '放置在项目根目录的指令文件，AI 编程工具读取它来理解项目上下文、编码规范和工作流程。',
+    zh: '模型提供商，即上游模型服务（云端 API 或本地推理服务）。Switch 支持配置多个 Provider 并按规则路由。',
     tags: ['switch'],
   },
   'Proxy': {
-    zh: '代理，Switch 在本地启动的 OpenAI 兼容 API 端点，将请求按路由规则转发到不同 Provider。',
+    zh: '代理，Switch 在本地启动的 API 端点（Chat Completions 格式），将请求按路由规则转发到不同 Provider。',
     tags: ['switch'],
   },
 
@@ -368,10 +364,6 @@ export const glossary: Record<string, GlossaryEntry> = {
   },
 
   // ─── Lumen ───────────────────────────────────────────────
-  'Whisper': {
-    zh: 'OpenAI 开源的语音识别模型，Creator / Lumen 用它做音频转写。',
-    tags: ['lumen', 'general'],
-  },
   'Dependency Guardian': {
     zh: 'Forge 规划中的依赖关系哨兵，自动检测跨 Epic / Story 的接口破坏。',
     tags: ['lumen'],

@@ -17,10 +17,8 @@ export interface UiTr {
     taglineLead: string
     taglineAccent: string
     taglineTail: string
-    btnStart: string
-    btnKey: string
-    btnConsole: string
-    metrics: string[]
+    btnWitness: string
+    btnGateway: string
   }
   related: { heading: string; paired: string; referenced: string }
   term: { more: string }
@@ -30,8 +28,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
   "en": {
     "lurus-api": {
       "name": "Lurus API",
-      "fullName": "Lurus API — Unified LLM Gateway",
-      "tagline": "One API Key for 50+ AI models, fully compatible with the OpenAI SDK",
+      "fullName": "Lurus API — Privately Deployed Multi-Tenant LLM Gateway",
+      "tagline": "A multi-tenant LLM gateway deployed in the customer's own environment · Based on the open-source New API, AGPLv3",
       "nextSteps": [
         "Quickstart",
         "Supported Models",
@@ -40,8 +38,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "kova": {
       "name": "Kova",
-      "fullName": "Kova — Durable Execution Engine for AI Agents",
-      "tagline": "A WAL-First agent engine built in Rust — auto-recovers from crashes, 3μs scheduling",
+      "fullName": "Kova — Embedded Durable Execution Engine",
+      "tagline": "Each step counts as done only after it is written to the write-ahead log; after a process interruption, execution resumes from the log · Early pilot",
       "nextSteps": [
         "Quickstart",
         "Core Concepts",
@@ -51,7 +49,7 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     "memx": {
       "name": "MemX",
       "fullName": "MemX — Adaptive Memory Engine for AI",
-      "tagline": "Zero-LLM-cost AI memory engine · bio-inspired forgetting curve · 12 PII filters",
+      "tagline": "AI memory engine · extraction, deduplication, decay, hybrid retrieval · Early pilot",
       "nextSteps": [
         "Quickstart",
         "Core Concepts",
@@ -60,8 +58,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lucrum": {
       "name": "Lucrum",
-      "fullName": "Lucrum — AI Quantitative Trading Platform",
-      "tagline": "Describe strategies in natural language — AI generates vnpy code and backtests · 11 investment advisors",
+      "fullName": "Lucrum — Quantitative Strategy Generation and Backtesting",
+      "tagline": "Describe an idea in natural language and get a strategy you can backtest · Not under active development",
       "nextSteps": [
         "Quickstart",
         "Strategy Marketplace",
@@ -70,8 +68,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "switch": {
       "name": "Switch",
-      "fullName": "Switch — AI Tooling Control Center",
-      "tagline": "Manage config, MCP, and cost for 5 AI coding CLIs from one desktop app",
+      "fullName": "Switch — Desktop Configuration Manager for AI Tools",
+      "tagline": "Manage configuration and MCP for multiple AI coding command-line tools from one desktop app · Not under active development",
       "nextSteps": [
         "Installation",
         "Configuration",
@@ -80,8 +78,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "creator": {
       "name": "Creator",
-      "fullName": "Creator — AI Content Factory",
-      "tagline": "Paste a video link — AI rewrites for three platforms and auto-publishes",
+      "fullName": "Creator — Content Rewriting and Publishing Tool",
+      "tagline": "Video link → transcription → copy rewritten for multiple platforms → publishing · Not under active development",
       "nextSteps": [
         "Installation",
         "User Guide",
@@ -90,8 +88,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lumen": {
       "name": "Lumen",
-      "fullName": "Lumen — Observability and Reliability for Agents",
-      "tagline": "Replay · Crash Recovery · Cost Tracking — three tools in one for agents",
+      "fullName": "Lumen — Agent Replay and Cost Audit Tool",
+      "tagline": "Replay any agent run, account for usage cost, and resume from a checkpoint after an interruption · Early pilot",
       "nextSteps": [
         "Quickstart",
         "Python SDK",
@@ -100,8 +98,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "forge": {
       "name": "Forge",
-      "fullName": "Forge — AI Product Development Workbench",
-      "tagline": "\"Everything is a conversation\" · dual-core Ontology + Session (internal R&D)",
+      "fullName": "Forge — Internal Workflow Canvas",
+      "tagline": "A visual canvas for building agent workflows by drag and drop and running them · Internal tool, not offered commercially",
       "nextSteps": [
         "Product Philosophy",
         "Ontology",
@@ -110,8 +108,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "platform": {
       "name": "Accounts & Billing",
-      "fullName": "Lurus Platform — Accounts & Billing",
-      "tagline": "Unified accounts · subscription plans · Lubei wallet · VIP tiers",
+      "fullName": "Lurus Platform — Internal Accounts and Usage Accounting Foundation",
+      "tagline": "Internal foundation: unified accounts and internal usage accounting · Not offered as a standalone product",
       "nextSteps": [
         "Platform Overview",
         "Billing Details",
@@ -120,8 +118,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "auth": {
       "name": "Unified Identity",
-      "fullName": "Lurus Auth — Unified Identity",
-      "tagline": "Cross-product SSO · Passkey · MFA · OIDC/OAuth2 · enterprise SSO federation",
+      "fullName": "Lurus Auth — Unified Identity (Internal Foundation)",
+      "tagline": "Sign-in and identity shared by Lurus services · Standard OIDC / OAuth2 · Internal foundation",
       "nextSteps": [
         "Overview & Endpoints",
         "OIDC / OAuth2",
@@ -131,8 +129,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "api-ref": {
       "name": "API Reference",
-      "fullName": "API Reference — OpenAI-Compatible Endpoints",
-      "tagline": "Complete endpoint docs · error codes · request examples",
+      "fullName": "API Reference — Gateway Endpoint Manual",
+      "tagline": "Endpoint docs · error codes · request examples",
       "nextSteps": [
         "API Overview",
         "Authentication",
@@ -141,8 +139,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "arch": {
       "name": "System Architecture",
-      "fullName": "System Architecture — Hybrid Cloud · GitOps · Observability",
-      "tagline": "Infrastructure shared across 12 products, explained in one diagram",
+      "fullName": "System Architecture — Cluster · GitOps · Monitoring",
+      "tagline": "The infrastructure shared by the services, explained in one diagram",
       "nextSteps": [
         "View Architecture"
       ]
@@ -151,8 +149,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
   "ja": {
     "lurus-api": {
       "name": "Lurus API",
-      "fullName": "Lurus API — LLM 統合ゲートウェイ",
-      "tagline": "1 つの API Key で 50+ の AI モデルに接続、OpenAI SDK と完全互換",
+      "fullName": "Lurus API — プライベートデプロイ型マルチテナント LLM ゲートウェイ",
+      "tagline": "顧客自身の環境にデプロイするマルチテナント LLM ゲートウェイ · オープンソースの New API がベース、AGPLv3",
       "nextSteps": [
         "クイックスタート",
         "対応モデル",
@@ -161,8 +159,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "kova": {
       "name": "Kova",
-      "fullName": "Kova — AI Agent 永続実行エンジン",
-      "tagline": "Rust で構築した WAL-First Agent エンジン、クラッシュ時に自動復旧、3μs スケジューリング",
+      "fullName": "Kova — 組み込み型の永続実行エンジン",
+      "tagline": "各ステップは先行書き込みログに記録されてから完了とみなし、プロセスが中断してもログから再開 · 早期パイロット",
       "nextSteps": [
         "クイックスタート",
         "コアコンセプト",
@@ -171,8 +169,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "memx": {
       "name": "MemX",
-      "fullName": "MemX — AI 適応型メモリエンジン",
-      "tagline": "LLM コストゼロの AI メモリエンジン · 生体模倣の忘却曲線 · 12 種類の PII フィルタ",
+      "fullName": "MemX — AI 向け適応型メモリエンジン",
+      "tagline": "AI メモリエンジン · 抽出・重複排除・減衰・ハイブリッド検索 · 早期パイロット",
       "nextSteps": [
         "クイックスタート",
         "コアコンセプト",
@@ -181,8 +179,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lucrum": {
       "name": "Lucrum",
-      "fullName": "Lucrum — AI クオンツ取引プラットフォーム",
-      "tagline": "自然言語で戦略を記述し、AI が vnpy コードを生成してバックテスト · 11 名の投資アドバイザー",
+      "fullName": "Lucrum — クオンツ戦略の生成とバックテスト",
+      "tagline": "自然言語でアイデアを記述し、バックテスト可能な戦略を生成 · 現在は積極的に開発していません",
       "nextSteps": [
         "クイックスタート",
         "戦略マーケット",
@@ -191,8 +189,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "switch": {
       "name": "Switch",
-      "fullName": "Switch — AI ツール管理センター",
-      "tagline": "デスクトップで 5 つの AI コーディング CLI の設定 · MCP · コストを一元管理",
+      "fullName": "Switch — デスクトップ版 AI ツール設定管理",
+      "tagline": "複数の AI コーディング用コマンドラインツールの設定と MCP をデスクトップで一元管理 · 現在は積極的に開発していません",
       "nextSteps": [
         "インストールガイド",
         "設定方法",
@@ -201,8 +199,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "creator": {
       "name": "Creator",
-      "fullName": "Creator — AI コンテンツファクトリー",
-      "tagline": "動画リンクを貼り付けるだけ、AI が 3 プラットフォーム向けにリライト + 自動投稿",
+      "fullName": "Creator — コンテンツのリライト・公開ツール",
+      "tagline": "動画リンク → 文字起こし → 複数プラットフォーム向けのコピーをリライト → 公開 · 現在は積極的に開発していません",
       "nextSteps": [
         "インストールガイド",
         "ユーザーマニュアル",
@@ -211,8 +209,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lumen": {
       "name": "Lumen",
-      "fullName": "Lumen — Agent 可観測性・信頼性ツール",
-      "tagline": "Replay · Crash Recovery · Cost Tracking — Agent 向け 3-in-1",
+      "fullName": "Lumen — エージェントのリプレイ・コスト監査ツール",
+      "tagline": "任意のエージェント実行をリプレイし、利用コストを算出、中断後はチェックポイントから再開 · 早期パイロット",
       "nextSteps": [
         "クイックスタート",
         "Python SDK",
@@ -221,8 +219,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "forge": {
       "name": "Forge",
-      "fullName": "Forge — AI プロダクト開発ワークベンチ",
-      "tagline": "「すべては対話」 · Ontology + Session のデュアルコア（社内 R&D）",
+      "fullName": "Forge — 社内ワークフローキャンバス",
+      "tagline": "ドラッグ＆ドロップでエージェントワークフローを構築・実行するビジュアルキャンバス · 社内ツール、外部向けの商用提供はしません",
       "nextSteps": [
         "プロダクト哲学",
         "Ontology",
@@ -231,8 +229,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "platform": {
       "name": "アカウントと課金",
-      "fullName": "Lurus Platform — アカウントと課金",
-      "tagline": "統合アカウント · サブスクリプションプラン · Lubei ウォレット · VIP 体系",
+      "fullName": "Lurus Platform — 社内アカウント・利用量集計の基盤",
+      "tagline": "社内基盤：統合アカウントと社内の利用量集計 · 単独製品としては外部提供しません",
       "nextSteps": [
         "プラットフォーム概要",
         "課金の詳細",
@@ -241,8 +239,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "auth": {
       "name": "統合 ID 認証",
-      "fullName": "Lurus Auth — 統合 ID 認証",
-      "tagline": "全プロダクト SSO · Passkey · MFA · OIDC/OAuth2 · エンタープライズ SSO フェデレーション",
+      "fullName": "Lurus Auth — 統合認証（社内基盤）",
+      "tagline": "各 Lurus サービスで共通のログインと ID · 標準 OIDC / OAuth2 · 社内基盤",
       "nextSteps": [
         "概要と接続ポイント",
         "OIDC / OAuth2",
@@ -252,8 +250,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "api-ref": {
       "name": "API リファレンス",
-      "fullName": "API リファレンス — OpenAI 互換エンドポイントマニュアル",
-      "tagline": "完全なエンドポイントドキュメント · エラーコード · リクエスト例",
+      "fullName": "API リファレンス — ゲートウェイ エンドポイント マニュアル",
+      "tagline": "エンドポイントドキュメント · エラーコード · リクエスト例",
       "nextSteps": [
         "API 概要",
         "認証",
@@ -262,8 +260,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "arch": {
       "name": "システムアーキテクチャ",
-      "fullName": "システムアーキテクチャ — ハイブリッドクラウド · GitOps · 可観測性",
-      "tagline": "12 のプロダクトが共有する基盤を 1 枚の図で明快に",
+      "fullName": "システムアーキテクチャ — クラスタ · GitOps · 監視",
+      "tagline": "各サービスが共有するインフラを 1 枚の図で説明",
       "nextSteps": [
         "アーキテクチャを見る"
       ]
@@ -272,8 +270,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
   "ko": {
     "lurus-api": {
       "name": "Lurus API",
-      "fullName": "Lurus API — LLM 통합 게이트웨이",
-      "tagline": "하나의 API Key로 50+ AI 모델 연동, OpenAI SDK와 완전 호환",
+      "fullName": "Lurus API — 프라이빗 배포형 멀티테넌트 LLM 게이트웨이",
+      "tagline": "고객 자체 환경에 배포하는 멀티테넌트 LLM 게이트웨이 · 오픈소스 New API 기반, AGPLv3",
       "nextSteps": [
         "빠른 시작",
         "지원 모델",
@@ -282,8 +280,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "kova": {
       "name": "Kova",
-      "fullName": "Kova — AI Agent 지속 실행 엔진",
-      "tagline": "Rust로 구축한 WAL-First Agent 엔진, 크래시 시 자동 복구, 3μs 스케줄링",
+      "fullName": "Kova — 임베디드 지속 실행 엔진",
+      "tagline": "각 단계는 선행 기록 로그에 먼저 기록된 뒤에야 완료로 간주하며, 프로세스가 중단되면 로그에서 이어서 실행 · 초기 파일럿",
       "nextSteps": [
         "빠른 시작",
         "핵심 개념",
@@ -293,7 +291,7 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     "memx": {
       "name": "MemX",
       "fullName": "MemX — AI 적응형 메모리 엔진",
-      "tagline": "LLM 비용 제로의 AI 메모리 엔진 · 생체모방 망각 곡선 · 12종 PII 필터링",
+      "tagline": "AI 메모리 엔진 · 추출, 중복 제거, 감쇠, 하이브리드 검색 · 초기 파일럿",
       "nextSteps": [
         "빠른 시작",
         "핵심 개념",
@@ -302,8 +300,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lucrum": {
       "name": "Lucrum",
-      "fullName": "Lucrum — AI 퀀트 트레이딩 플랫폼",
-      "tagline": "자연어로 전략을 기술하면 AI가 vnpy 코드를 생성하고 백테스트 · 11명의 투자 어드바이저",
+      "fullName": "Lucrum — 퀀트 전략 생성 및 백테스트",
+      "tagline": "자연어로 아이디어를 설명하면 백테스트 가능한 전략을 생성 · 현재 적극적으로 개발하지 않음",
       "nextSteps": [
         "빠른 시작",
         "전략 마켓",
@@ -312,8 +310,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "switch": {
       "name": "Switch",
-      "fullName": "Switch — AI 도구 관리 센터",
-      "tagline": "데스크톱에서 5종 AI 코딩 CLI의 설정 · MCP · 비용을 통합 관리",
+      "fullName": "Switch — 데스크톱 AI 도구 설정 관리",
+      "tagline": "여러 AI 코딩 명령줄 도구의 설정과 MCP를 데스크톱에서 통합 관리 · 현재 적극적으로 개발하지 않음",
       "nextSteps": [
         "설치 가이드",
         "설정 설명",
@@ -322,8 +320,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "creator": {
       "name": "Creator",
-      "fullName": "Creator — AI 콘텐츠 팩토리",
-      "tagline": "영상 링크를 붙여넣으면 AI가 3개 플랫폼용으로 리라이팅 + 자동 게시",
+      "fullName": "Creator — 콘텐츠 재작성 및 게시 도구",
+      "tagline": "동영상 링크 → 전사 → 여러 플랫폼용 문안 재작성 → 게시 · 현재 적극적으로 개발하지 않음",
       "nextSteps": [
         "설치 가이드",
         "사용 매뉴얼",
@@ -332,8 +330,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lumen": {
       "name": "Lumen",
-      "fullName": "Lumen — Agent 가관측성 및 신뢰성 도구",
-      "tagline": "Replay · Crash Recovery · Cost Tracking — Agent 올인원",
+      "fullName": "Lumen — 에이전트 재생 및 비용 감사 도구",
+      "tagline": "모든 에이전트 실행을 재생하고, 사용 비용을 산정하며, 중단 후 체크포인트에서 이어서 실행 · 초기 파일럿",
       "nextSteps": [
         "빠른 시작",
         "Python SDK",
@@ -342,8 +340,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "forge": {
       "name": "Forge",
-      "fullName": "Forge — AI 제품 개발 워크벤치",
-      "tagline": "\"모든 것은 대화\" · Ontology + Session 듀얼 코어 (내부 R&D)",
+      "fullName": "Forge — 내부 워크플로 캔버스",
+      "tagline": "드래그 앤 드롭으로 에이전트 워크플로를 구성하고 실행하는 시각적 캔버스 · 내부 도구, 외부 상용화하지 않음",
       "nextSteps": [
         "제품 철학",
         "Ontology",
@@ -352,8 +350,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "platform": {
       "name": "계정 및 과금",
-      "fullName": "Lurus Platform — 계정 및 과금",
-      "tagline": "통합 계정 · 구독 플랜 · Lubei 지갑 · VIP 체계",
+      "fullName": "Lurus Platform — 내부 계정 및 사용량 집계 기반",
+      "tagline": "내부 기반: 통합 계정과 내부 사용량 집계 · 독립 제품으로 외부에 제공하지 않음",
       "nextSteps": [
         "플랫폼 개요",
         "과금 상세",
@@ -362,8 +360,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "auth": {
       "name": "통합 ID 인증",
-      "fullName": "Lurus Auth — 통합 ID 인증",
-      "tagline": "전 제품 SSO · Passkey · MFA · OIDC/OAuth2 · 엔터프라이즈 SSO 페더레이션",
+      "fullName": "Lurus Auth — 통합 인증(내부 기반)",
+      "tagline": "각 Lurus 서비스가 공유하는 로그인과 신원 · 표준 OIDC / OAuth2 · 내부 기반",
       "nextSteps": [
         "개요 및 연동 지점",
         "OIDC / OAuth2",
@@ -373,8 +371,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "api-ref": {
       "name": "API 레퍼런스",
-      "fullName": "API 레퍼런스 — OpenAI 호환 엔드포인트 매뉴얼",
-      "tagline": "전체 엔드포인트 문서 · 오류 코드 · 요청 예시",
+      "fullName": "API 참조 — 게이트웨이 엔드포인트 매뉴얼",
+      "tagline": "엔드포인트 문서 · 오류 코드 · 요청 예시",
       "nextSteps": [
         "API 개요",
         "인증",
@@ -383,8 +381,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "arch": {
       "name": "시스템 아키텍처",
-      "fullName": "시스템 아키텍처 — 하이브리드 클라우드 · GitOps · 가관측성",
-      "tagline": "12개 제품이 공유하는 인프라를 한 장의 그림으로 설명",
+      "fullName": "시스템 아키텍처 — 클러스터 · GitOps · 모니터링",
+      "tagline": "각 서비스가 공유하는 인프라를 한 장의 그림으로 설명",
       "nextSteps": [
         "아키텍처 보기"
       ]
@@ -393,8 +391,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
   "es": {
     "lurus-api": {
       "name": "Lurus API",
-      "fullName": "Lurus API — gateway unificado de LLM",
-      "tagline": "Una sola API Key para acceder a más de 50 modelos de IA, totalmente compatible con el SDK de OpenAI",
+      "fullName": "Lurus API — Gateway LLM multiinquilino de despliegue privado",
+      "tagline": "Gateway LLM multiinquilino desplegado en el entorno propio del cliente · Basado en el proyecto de código abierto New API, AGPLv3",
       "nextSteps": [
         "Inicio rápido",
         "Modelos compatibles",
@@ -403,8 +401,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "kova": {
       "name": "Kova",
-      "fullName": "Kova — motor de ejecución persistente para agentes de IA",
-      "tagline": "Motor de agentes WAL-First construido en Rust, con recuperación automática ante fallos y planificación de 3μs",
+      "fullName": "Kova — Motor de ejecución duradera embebido",
+      "tagline": "Cada paso se da por completado solo tras escribirse en el registro de escritura anticipada; si el proceso se interrumpe, continúa desde el registro · Piloto inicial",
       "nextSteps": [
         "Inicio rápido",
         "Conceptos básicos",
@@ -413,8 +411,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "memx": {
       "name": "MemX",
-      "fullName": "MemX — motor de memoria adaptativa para IA",
-      "tagline": "Motor de memoria para IA con cero coste de LLM · curva de olvido biomimética · 12 filtros de PII",
+      "fullName": "MemX — Motor de memoria adaptativa para IA",
+      "tagline": "Motor de memoria para IA · extracción, deduplicación, decaimiento, recuperación híbrida · Piloto inicial",
       "nextSteps": [
         "Inicio rápido",
         "Conceptos básicos",
@@ -423,8 +421,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lucrum": {
       "name": "Lucrum",
-      "fullName": "Lucrum — plataforma de trading cuantitativo con IA",
-      "tagline": "Describe la estrategia en lenguaje natural, la IA genera el código vnpy y ejecuta el backtest · 11 asesores de inversión",
+      "fullName": "Lucrum — Generación y backtesting de estrategias cuantitativas",
+      "tagline": "Describe una idea en lenguaje natural y genera una estrategia que se puede someter a backtesting · Sin desarrollo activo actualmente",
       "nextSteps": [
         "Inicio rápido",
         "Mercado de estrategias",
@@ -433,8 +431,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "switch": {
       "name": "Switch",
-      "fullName": "Switch — centro de gestión de herramientas de IA",
-      "tagline": "Gestión unificada en el escritorio de la configuración de 5 CLI de programación con IA · MCP · costes",
+      "fullName": "Switch — Gestión de configuración de herramientas de IA para escritorio",
+      "tagline": "Gestiona desde el escritorio la configuración y el MCP de varias herramientas de programación con IA de línea de comandos · Sin desarrollo activo actualmente",
       "nextSteps": [
         "Guía de instalación",
         "Configuración",
@@ -443,8 +441,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "creator": {
       "name": "Creator",
-      "fullName": "Creator — fábrica de contenido con IA",
-      "tagline": "Pega el enlace de un vídeo y la IA lo reescribe para tres plataformas y lo publica automáticamente",
+      "fullName": "Creator — Herramienta de reescritura y publicación de contenido",
+      "tagline": "Enlace de vídeo → transcripción → reescritura de textos para varias plataformas → publicación · Sin desarrollo activo actualmente",
       "nextSteps": [
         "Guía de instalación",
         "Manual de uso",
@@ -453,8 +451,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lumen": {
       "name": "Lumen",
-      "fullName": "Lumen — herramienta de observabilidad y fiabilidad para agentes",
-      "tagline": "Replay · Crash Recovery · Cost Tracking — tres en uno para agentes",
+      "fullName": "Lumen — Herramienta de reproducción y auditoría de costes de agentes",
+      "tagline": "Reproduce cualquier ejecución de un agente, contabiliza el coste de uso y reanuda desde un punto de control tras una interrupción · Piloto inicial",
       "nextSteps": [
         "Inicio rápido",
         "Python SDK",
@@ -463,8 +461,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "forge": {
       "name": "Forge",
-      "fullName": "Forge — banco de trabajo para el desarrollo de productos con IA",
-      "tagline": "\"Todo es conversación\" · doble núcleo Ontology + Session (I+D interno)",
+      "fullName": "Forge — Lienzo interno de flujos de trabajo",
+      "tagline": "Lienzo visual para construir flujos de trabajo de agentes arrastrando y soltando, y ejecutarlos · Herramienta interna, sin comercialización externa",
       "nextSteps": [
         "Filosofía del producto",
         "Ontology",
@@ -473,8 +471,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "platform": {
       "name": "Cuenta y facturación",
-      "fullName": "Lurus Platform — cuenta y facturación",
-      "tagline": "Cuenta unificada · planes de suscripción · monedero Lubei · sistema VIP",
+      "fullName": "Lurus Platform — Base interna de cuentas y contabilización de uso",
+      "tagline": "Base interna: cuentas unificadas y contabilización interna del uso · No se ofrece como producto independiente",
       "nextSteps": [
         "Descripción de la plataforma",
         "Detalles de la facturación",
@@ -483,8 +481,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "auth": {
       "name": "Identidad unificada",
-      "fullName": "Lurus Auth — identidad unificada",
-      "tagline": "SSO para todos los productos · Passkey · MFA · OIDC/OAuth2 · federación de SSO empresarial",
+      "fullName": "Lurus Auth — Identidad unificada (base interna)",
+      "tagline": "Inicio de sesión e identidad compartidos por los servicios de Lurus · OIDC / OAuth2 estándar · Base interna",
       "nextSteps": [
         "Descripción y puntos de acceso",
         "OIDC / OAuth2",
@@ -494,8 +492,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "api-ref": {
       "name": "Referencia de la API",
-      "fullName": "Referencia de la API — manual de endpoints compatibles con OpenAI",
-      "tagline": "Documentación completa de endpoints · códigos de error · ejemplos de solicitud",
+      "fullName": "Referencia de la API — Manual de endpoints del gateway",
+      "tagline": "Documentación de endpoints · códigos de error · ejemplos de solicitudes",
       "nextSteps": [
         "Descripción de la API",
         "Autenticación",
@@ -504,8 +502,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "arch": {
       "name": "Arquitectura del sistema",
-      "fullName": "Arquitectura del sistema — nube híbrida · GitOps · observabilidad",
-      "tagline": "La infraestructura compartida por los 12 productos, explicada en un solo diagrama",
+      "fullName": "Arquitectura del sistema — Clúster · GitOps · Monitorización",
+      "tagline": "La infraestructura compartida por los servicios, explicada en un solo diagrama",
       "nextSteps": [
         "Ver la arquitectura"
       ]
@@ -514,8 +512,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
   "fr": {
     "lurus-api": {
       "name": "Lurus API",
-      "fullName": "Lurus API — passerelle LLM unifiée",
-      "tagline": "Une seule API Key pour accéder à 50+ modèles d'IA, entièrement compatible avec le SDK OpenAI",
+      "fullName": "Lurus API — Passerelle LLM multi-locataire en déploiement privé",
+      "tagline": "Passerelle LLM multi-locataire déployée dans l'environnement propre du client · Basée sur le projet open source New API, AGPLv3",
       "nextSteps": [
         "Démarrage rapide",
         "Modèles pris en charge",
@@ -524,8 +522,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "kova": {
       "name": "Kova",
-      "fullName": "Kova — moteur d'exécution persistante pour agents IA",
-      "tagline": "Moteur d'agents WAL-First écrit en Rust, reprise automatique après crash, ordonnancement en 3μs",
+      "fullName": "Kova — Moteur d'exécution durable embarqué",
+      "tagline": "Chaque étape n'est considérée comme terminée qu'une fois écrite dans le journal d'écriture anticipée ; après une interruption du processus, l'exécution reprend depuis le journal · Pilote initial",
       "nextSteps": [
         "Démarrage rapide",
         "Concepts clés",
@@ -534,8 +532,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "memx": {
       "name": "MemX",
-      "fullName": "MemX — moteur de mémoire adaptative pour l'IA",
-      "tagline": "Moteur de mémoire IA sans coût LLM · courbe d'oubli biomimétique · 12 filtres PII",
+      "fullName": "MemX — Moteur de mémoire adaptative pour l'IA",
+      "tagline": "Moteur de mémoire pour l'IA · extraction, déduplication, atténuation, recherche hybride · Pilote initial",
       "nextSteps": [
         "Démarrage rapide",
         "Concepts clés",
@@ -544,8 +542,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lucrum": {
       "name": "Lucrum",
-      "fullName": "Lucrum — plateforme de trading quantitatif IA",
-      "tagline": "Décrivez votre stratégie en langage naturel, l'IA génère le code vnpy et le backteste · 11 conseillers en investissement",
+      "fullName": "Lucrum — Génération et backtest de stratégies quantitatives",
+      "tagline": "Décrivez une idée en langage naturel pour générer une stratégie testable en backtest · Pas en développement actif actuellement",
       "nextSteps": [
         "Démarrage rapide",
         "Marché des stratégies",
@@ -554,8 +552,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "switch": {
       "name": "Switch",
-      "fullName": "Switch — centre de gestion des outils IA",
-      "tagline": "Gérez de façon unifiée la configuration de 5 CLI de programmation IA · MCP · coûts, depuis le bureau",
+      "fullName": "Switch — Gestion de configuration des outils IA sur poste de travail",
+      "tagline": "Gérez depuis le bureau la configuration et le MCP de plusieurs outils de programmation IA en ligne de commande · Pas en développement actif actuellement",
       "nextSteps": [
         "Guide d'installation",
         "Configuration",
@@ -564,8 +562,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "creator": {
       "name": "Creator",
-      "fullName": "Creator — usine à contenu IA",
-      "tagline": "Collez un lien vidéo, l'IA le réécrit pour trois plateformes et le publie automatiquement",
+      "fullName": "Creator — Outil de réécriture et de publication de contenu",
+      "tagline": "Lien vidéo → transcription → réécriture des textes pour plusieurs plateformes → publication · Pas en développement actif actuellement",
       "nextSteps": [
         "Guide d'installation",
         "Manuel d'utilisation",
@@ -574,8 +572,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "lumen": {
       "name": "Lumen",
-      "fullName": "Lumen — outil d'observabilité et de fiabilité pour agents",
-      "tagline": "Replay · Crash Recovery · Cost Tracking — trois fonctions en une pour vos agents",
+      "fullName": "Lumen — Outil de relecture et d'audit des coûts des agents",
+      "tagline": "Rejouez n'importe quelle exécution d'agent, calculez le coût d'utilisation et reprenez depuis un point de contrôle après une interruption · Pilote initial",
       "nextSteps": [
         "Démarrage rapide",
         "SDK Python",
@@ -584,8 +582,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "forge": {
       "name": "Forge",
-      "fullName": "Forge — atelier de développement de produits IA",
-      "tagline": "\"Tout est conversation\" · Ontology + Session, deux cœurs (R&D interne)",
+      "fullName": "Forge — Canevas interne de workflows",
+      "tagline": "Canevas visuel pour construire des workflows d'agents par glisser-déposer et les exécuter · Outil interne, non commercialisé",
       "nextSteps": [
         "Philosophie du produit",
         "Ontology",
@@ -594,8 +592,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "platform": {
       "name": "Comptes et facturation",
-      "fullName": "Lurus Platform — comptes et facturation",
-      "tagline": "Compte unifié · forfaits d'abonnement · portefeuille Lubei · système VIP",
+      "fullName": "Lurus Platform — Socle interne de comptes et de décompte d'usage",
+      "tagline": "Socle interne : comptes unifiés et décompte interne de l'usage · Non proposé comme produit autonome",
       "nextSteps": [
         "Présentation de la plateforme",
         "Facturation en détail",
@@ -604,8 +602,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "auth": {
       "name": "Authentification d'identité unifiée",
-      "fullName": "Lurus Auth — authentification d'identité unifiée",
-      "tagline": "SSO sur tous les produits · Passkey · MFA · OIDC/OAuth2 · fédération SSO d'entreprise",
+      "fullName": "Lurus Auth — Identité unifiée (socle interne)",
+      "tagline": "Connexion et identité partagées par les services Lurus · OIDC / OAuth2 standard · Socle interne",
       "nextSteps": [
         "Présentation et points d'accès",
         "OIDC / OAuth2",
@@ -615,8 +613,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "api-ref": {
       "name": "Référence API",
-      "fullName": "Référence API — manuel des endpoints compatibles OpenAI",
-      "tagline": "Documentation complète des endpoints · codes d'erreur · exemples de requêtes",
+      "fullName": "Référence de l'API — Manuel des endpoints de la passerelle",
+      "tagline": "Documentation des endpoints · codes d'erreur · exemples de requêtes",
       "nextSteps": [
         "Présentation de l'API",
         "Authentification",
@@ -625,8 +623,8 @@ export const productTr: Record<Locale, Record<string, ProductTr>> = {
     },
     "arch": {
       "name": "Architecture système",
-      "fullName": "Architecture système — cloud hybride · GitOps · observabilité",
-      "tagline": "L'infrastructure partagée des 12 produits, expliquée d'un seul schéma",
+      "fullName": "Architecture du système — Cluster · GitOps · Supervision",
+      "tagline": "L'infrastructure partagée par les services, expliquée en un seul schéma",
       "nextSteps": [
         "Voir l'architecture"
       ]
@@ -642,7 +640,7 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "Streaming": "A streaming response where the AI model returns results token by token rather than waiting for full generation, reducing time to first token.",
     "Token": "The smallest unit an LLM uses to process text. Roughly 1.5 characters per token for Chinese and 4 characters per token for English.",
     "Webhook": "A server-initiated push of event notifications to a URL you specify, such as payment success or subscription expiry.",
-    "SDK": "A software development kit providing ready-made functions and classes to simplify API calls. Lurus is compatible with the OpenAI SDK.",
+    "SDK": "A software development kit providing ready-made functions and classes to simplify API calls. The Lurus gateway uses the common Chat Completions interface format.",
     "Endpoint": "An API endpoint — a callable URL path such as /v1/chat/completions.",
     "Base URL": "The root address of the API. The Lurus Base URL is https://api.lurus.cn/v1.",
     "GitOps": "Using a Git repository as the source of truth for deployments, with automation tools such as ArgoCD syncing the desired state to the cluster.",
@@ -701,12 +699,10 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "vnpy": "An open-source Python quantitative-trading framework. Lucrum's AI-generated strategy code is built on the vnpy CtaTemplate.",
     "鹿贝": "Lurus's unified billing unit (Lubei). All product usage is charged in Lubei; 1 Lubei equals one US cent.",
     "MCP Server": "A tool service process that implements the MCP protocol, exposing callable tool capabilities (GitHub, databases, etc.) to AI agents.",
-    "Provider": "A model provider such as Lurus API, OpenAI, Anthropic, or Ollama. Switch supports configuring multiple Providers and routing by rule.",
-    "CLAUDE.md": "An instruction file placed at the project root that AI coding tools read to understand project context, coding conventions, and workflow.",
-    "Proxy": "An OpenAI-compatible API endpoint that Switch runs locally, forwarding requests to different Providers according to routing rules.",
+    "Provider": "A model provider, i.e. an upstream model service (a cloud API or a local inference service). Switch supports configuring multiple Providers and routing by rule.",
+    "Proxy": "An API endpoint (Chat Completions format) that Switch runs locally, forwarding requests to different Providers according to routing rules.",
     "SM4-GCM": "The Chinese-national SM4 block cipher in GCM authenticated-encryption mode — the go-to symmetric encryption for SM-cryptography compliance scenarios.",
     "TCO": "Total Cost of Ownership — the full-lifecycle cost covering licensing, deployment, operations, and migration in a procurement decision.",
-    "Whisper": "OpenAI's open-source speech-recognition model, used by Creator and Lumen for audio transcription.",
     "Dependency Guardian": "A planned dependency sentinel in Forge that automatically detects interface breakage across Epics and Stories.",
     "Session": "In Forge, the context container for a single product discussion, holding the complete timeline of dialogue, decisions, and agent output."
   },
@@ -717,7 +713,7 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "Streaming": "ストリーミング応答。AI モデルが結果を Token 単位で逐次返す（全生成を待たない）方式で、最初の文字までの遅延を低減します。",
     "Token": "LLM がテキストを処理する最小単位です。中国語は約 1.5 文字/token、英語は約 4 文字/token です。",
     "Webhook": "サーバー側から指定した URL へ、支払い成功やサブスクリプション期限切れなどのイベント通知を能動的に送信する仕組みです。",
-    "SDK": "ソフトウェア開発キット。あらかじめラップされた関数やクラスを提供し、API 呼び出しを簡素化します。Lurus は OpenAI SDK と互換です。",
+    "SDK": "ソフトウェア開発キット。あらかじめラップされた関数やクラスを提供し、API 呼び出しを簡素化します。Lurus ゲートウェイは汎用的な Chat Completions インターフェース形式を採用しています。",
     "Endpoint": "API エンドポイント。/v1/chat/completions のような、呼び出し可能な URL パスです。",
     "Base URL": "API のルートアドレス。Lurus の Base URL は https://api.lurus.cn/v1 です。",
     "GitOps": "Git リポジトリをデプロイの真実の源とし、ArgoCD などの自動化ツールで期待状態をクラスタに同期する手法です。",
@@ -776,12 +772,10 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "vnpy": "Python のクオンツ取引オープンソースフレームワークで、Lurus の AI が生成する戦略コードは vnpy CtaTemplate に基づきます。",
     "鹿贝": "Lurus プラットフォームの統合課金単位（Lubei）です。すべての製品の消費は Lubei で課金され、1 Lubei = 1 米セント相当です。",
     "MCP Server": "MCP プロトコルを実装したツールサービスプロセスで、GitHub やデータベースなど呼び出し可能なツール機能を AI Agent に公開します。",
-    "Provider": "モデルプロバイダー。Lurus API、OpenAI、Anthropic、Ollama などを指します。Switch は複数の Provider を設定しルールに従ってルーティングできます。",
-    "CLAUDE.md": "プロジェクトのルートディレクトリに置く指示ファイルで、AI コーディングツールがこれを読み取りプロジェクトの文脈・コーディング規約・ワークフローを把握します。",
-    "Proxy": "プロキシ。Switch がローカルで起動する OpenAI 互換 API エンドポイントで、リクエストをルーティングルールに従って異なる Provider へ転送します。",
+    "Provider": "モデルプロバイダー。上流のモデルサービス（クラウド API またはローカル推論サービス）を指します。Switch は複数の Provider を設定しルールに従ってルーティングできます。",
+    "Proxy": "プロキシ。Switch がローカルで起動する API エンドポイント（Chat Completions 形式）で、リクエストをルーティングルールに従って異なる Provider へ転送します。",
     "SM4-GCM": "国家暗号 SM4 ブロック暗号 + GCM 認証付き暗号化モードで、国産暗号のコンプライアンスが求められる場面で対称暗号の第一候補となります。",
     "TCO": "総所有コスト（Total Cost of Ownership）。調達の意思決定において、ライセンス / デプロイ / 運用 / 移行までの全工程のコストを網羅します。",
-    "Whisper": "OpenAI がオープンソース公開した音声認識モデルで、Creator / Lumen が音声の書き起こしに使用します。",
     "Dependency Guardian": "Forge が計画中の依存関係センチネルで、Epic / Story をまたぐインターフェースの破壊を自動検出します。",
     "Session": "Forge における一度のプロダクト議論のコンテキストコンテナで、対話・意思決定・Agent の成果物からなる完全なタイムラインを保持します。"
   },
@@ -792,7 +786,7 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "Streaming": "스트리밍 응답으로, AI 모델이 전체 생성을 기다리지 않고 결과를 Token 단위로 반환하여 첫 글자 지연을 줄입니다.",
     "Token": "LLM이 텍스트를 처리하는 최소 단위입니다. 중국어는 약 1.5자/token, 영어는 약 4자/token입니다.",
     "Webhook": "서버가 결제 성공, 구독 만료 등 이벤트 알림을 지정한 URL로 능동적으로 푸시하는 방식입니다.",
-    "SDK": "소프트웨어 개발 키트로, 캡슐화된 함수와 클래스를 제공하여 API 호출을 단순화합니다. Lurus는 OpenAI SDK와 호환됩니다.",
+    "SDK": "소프트웨어 개발 키트로, 캡슐화된 함수와 클래스를 제공하여 API 호출을 단순화합니다. Lurus 게이트웨이는 범용 Chat Completions 인터페이스 형식을 사용합니다.",
     "Endpoint": "API 엔드포인트로, /v1/chat/completions와 같이 호출 가능한 URL 경로입니다.",
     "Base URL": "API의 루트 주소입니다. Lurus의 Base URL은 https://api.lurus.cn/v1입니다.",
     "GitOps": "Git 저장소를 배포의 진실 원천으로 삼아, ArgoCD 같은 자동화 도구로 원하는 상태를 클러스터에 동기화하는 방식입니다.",
@@ -851,12 +845,10 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "vnpy": "Python 퀀트 트레이딩 오픈소스 프레임워크로, Lucrum AI가 생성하는 전략 코드는 vnpy CtaTemplate을 기반으로 합니다.",
     "鹿贝": "Lurus 플랫폼의 통합 과금 단위(Lubei)입니다. 모든 제품 소비는 Lubei로 차감되며, 1 Lubei = 1센트 상당입니다.",
     "MCP Server": "MCP 프로토콜을 구현한 도구 서비스 프로세스로, AI Agent에게 GitHub, 데이터베이스 등 호출 가능한 도구 기능을 노출합니다.",
-    "Provider": "모델 제공자로, Lurus API, OpenAI, Anthropic, Ollama 등을 말합니다. Switch는 여러 Provider 설정과 규칙 기반 라우팅을 지원합니다.",
-    "CLAUDE.md": "프로젝트 루트 디렉터리에 두는 지시 파일로, AI 코딩 도구가 이를 읽어 프로젝트 컨텍스트, 코딩 규범, 워크플로우를 이해합니다.",
-    "Proxy": "프록시로, Switch가 로컬에서 시작하는 OpenAI 호환 API 엔드포인트이며, 요청을 라우팅 규칙에 따라 서로 다른 Provider로 전달합니다.",
+    "Provider": "모델 제공자로, 업스트림 모델 서비스(클라우드 API 또는 로컬 추론 서비스)를 말합니다. Switch는 여러 Provider 설정과 규칙 기반 라우팅을 지원합니다.",
+    "Proxy": "프록시로, Switch가 로컬에서 시작하는 API 엔드포인트(Chat Completions 형식)이며, 요청을 라우팅 규칙에 따라 서로 다른 Provider로 전달합니다.",
     "SM4-GCM": "국산 암호 SM4 블록 암호 + GCM 인증 암호화 모드로, 국산 암호 규정 준수가 필요한 시나리오에서 대칭 암호화의 우선 선택지입니다.",
     "TCO": "총소유비용(Total Cost of Ownership)으로, 구매 결정에서 라이선스 / 배포 / 운영 / 마이그레이션을 아우르는 전 과정 비용입니다.",
-    "Whisper": "OpenAI가 공개한 음성 인식 모델로, Creator / Lumen이 이를 사용해 오디오를 텍스트로 변환합니다.",
     "Dependency Guardian": "Forge가 기획 중인 의존 관계 감시자로, Epic / Story 간 인터페이스 파손을 자동으로 탐지합니다.",
     "Session": "Forge에서 한 차례의 제품 논의에 대한 컨텍스트 컨테이너로, 대화, 의사결정, Agent 산출물의 전체 타임라인을 담습니다."
   },
@@ -867,7 +859,7 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "Streaming": "Respuesta en streaming: el modelo de IA devuelve el resultado token a token (en lugar de esperar a generarlo por completo), reduciendo la latencia del primer carácter.",
     "Token": "La unidad mínima con la que un LLM procesa el texto. En chino, aproximadamente 1,5 caracteres/token; en inglés, aproximadamente 4 caracteres/token.",
     "Webhook": "El servidor envía de forma proactiva notificaciones de eventos a la URL que indiques, como un pago correcto o el vencimiento de una suscripción.",
-    "SDK": "Kit de desarrollo de software que ofrece funciones y clases ya encapsuladas para simplificar las llamadas a la API. Lurus es compatible con el SDK de OpenAI.",
+    "SDK": "Kit de desarrollo de software que ofrece funciones y clases ya encapsuladas para simplificar el uso de la API. El gateway de Lurus usa el formato de interfaz común Chat Completions.",
     "Endpoint": "Endpoint de la API: una ruta de URL invocable, como /v1/chat/completions.",
     "Base URL": "La dirección raíz de la API. La Base URL de Lurus es https://api.lurus.cn/v1.",
     "GitOps": "Usa un repositorio Git como fuente de verdad del despliegue y, mediante herramientas de automatización (como ArgoCD), sincroniza el estado deseado con el clúster.",
@@ -895,7 +887,7 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "CRC32": "Algoritmo de comprobación de redundancia cíclica que detecta errores en la transmisión o el almacenamiento de datos. Cada registro del WAL de Kova incluye una suma de comprobación CRC32.",
     "FIFO": "First In, First Out (cola de primero en entrar, primero en salir). La planificación de tareas de Kova usa la estrategia FIFO de forma predeterminada.",
     "System Prompt": "Prompt del sistema que define el rol, los límites de capacidad y las normas de comportamiento de la IA. Se coloca como primer elemento del array de mensajes.",
-    "Tool Call": "Durante el razonamiento, el modelo de IA decide invocar una herramienta externa (como una búsqueda o una consulta a la base de datos) y devuelve parámetros de llamada estructurados.",
+    "Tool Call": "Durante el razonamiento, el modelo de IA decide invocar una herramienta externa (como una búsqueda o una consulta a la base de datos) y devuelve parámetros de invocación estructurados.",
     "Replay": "Reproducción: usa la secuencia de eventos ya persistida para reproducir el proceso de ejecución del agente; la depuración local no consume tokens adicionales del LLM.",
     "ACE": "Adaptive Context Engine (motor de contexto adaptativo). La capa de inteligencia central de MemX, que incluye cuatro módulos: destilación de conocimiento, deduplicación, decaimiento y recuperación.",
     "Embedding": "Vector de incrustación: convierte el texto en un vector numérico de alta dimensión, de modo que los textos semánticamente similares queden próximos en el espacio vectorial. MemX los genera con un modelo ONNX local.",
@@ -926,12 +918,10 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "vnpy": "Framework de código abierto de trading cuantitativo en Python. El código de estrategia que genera la IA de Lucrum se basa en CtaTemplate de vnpy.",
     "鹿贝": "La unidad de facturación unificada de la plataforma Lurus (Lubei). Todo el consumo de los productos se cobra en Lubei; 1 Lubei equivale a 1 centavo de dólar.",
     "MCP Server": "Proceso de servicio de herramientas que implementa el protocolo MCP y expone capacidades de herramientas invocables a los agentes de IA (como GitHub, bases de datos, etc.).",
-    "Provider": "Proveedor de modelos, como Lurus API, OpenAI, Anthropic u Ollama. Switch permite configurar varios Provider y enrutar según reglas.",
-    "CLAUDE.md": "Archivo de instrucciones colocado en el directorio raíz del proyecto que las herramientas de programación con IA leen para entender el contexto del proyecto, las normas de codificación y el flujo de trabajo.",
-    "Proxy": "Proxy: un endpoint de API compatible con OpenAI que Switch arranca localmente y que reenvía las solicitudes a distintos Provider según las reglas de enrutamiento.",
+    "Provider": "Proveedor de modelos, es decir, un servicio de modelos ascendente (una API en la nube o un servicio de inferencia local). Switch permite configurar varios Provider y enrutar según reglas.",
+    "Proxy": "Proxy: un endpoint de API (formato Chat Completions) que Switch arranca localmente y que reenvía las solicitudes a distintos Provider según las reglas de enrutamiento.",
     "SM4-GCM": "Cifrado de bloques SM4 del estándar criptográfico chino + modo de cifrado autenticado GCM, la opción preferida de cifrado simétrico en escenarios de cumplimiento de la criptografía nacional china.",
     "TCO": "Coste total de propiedad (Total Cost of Ownership): en las decisiones de compra, abarca el coste de extremo a extremo de licencias, despliegue, operación y migración.",
-    "Whisper": "Modelo de reconocimiento de voz de código abierto de OpenAI que Creator y Lumen utilizan para la transcripción de audio.",
     "Dependency Guardian": "El centinela de dependencias previsto en Forge, que detecta automáticamente las rupturas de interfaces entre Epics y Stories.",
     "Session": "En Forge, el contenedor de contexto de una sesión de discusión de producto, que recoge la línea de tiempo completa de la conversación, las decisiones y los resultados del agente."
   },
@@ -942,7 +932,7 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "Streaming": "Réponse en flux : le modèle d'IA renvoie le résultat token par token (au lieu d'attendre la génération complète), ce qui réduit la latence du premier caractère.",
     "Token": "Unité la plus petite que le LLM utilise pour traiter le texte. Environ 1,5 caractère/token pour le chinois, 4 caractères/token pour l'anglais.",
     "Webhook": "Notification d'événement que le serveur envoie spontanément à l'URL que vous indiquez, par exemple un paiement réussi ou l'expiration d'un abonnement.",
-    "SDK": "Kit de développement logiciel fournissant des fonctions et classes prêtes à l'emploi pour simplifier les appels à l'API. Lurus est compatible avec le SDK OpenAI.",
+    "SDK": "Kit de développement logiciel fournissant des fonctions et classes prêtes à l'emploi pour simplifier les appels à l'API. La passerelle Lurus utilise le format d'interface courant Chat Completions.",
     "Endpoint": "Endpoint d'API : un chemin d'URL appelable, par exemple /v1/chat/completions.",
     "Base URL": "Adresse racine de l'API. La Base URL de Lurus est https://api.lurus.cn/v1.",
     "GitOps": "Pratique utilisant un dépôt Git comme source de vérité du déploiement, des outils automatisés (comme ArgoCD) synchronisant l'état souhaité vers le cluster.",
@@ -1001,12 +991,10 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
     "vnpy": "Framework open source de trading quantitatif en Python ; le code de stratégie généré par l'IA de Lucrum repose sur le CtaTemplate de vnpy.",
     "鹿贝": "Unité de facturation unifiée de la plateforme Lurus (Lubei). Toute consommation de produit est débitée en Lubei, 1 Lubei équivalant à 1 cent de dollar.",
     "MCP Server": "Processus de service d'outils implémentant le protocole MCP, qui expose aux agents IA des capacités d'outils appelables (GitHub, base de données, etc.).",
-    "Provider": "Fournisseur de modèles, tel que Lurus API, OpenAI, Anthropic ou Ollama. Switch permet de configurer plusieurs Provider et de router selon des règles.",
-    "CLAUDE.md": "Fichier d'instructions placé à la racine du projet, que les outils de programmation IA lisent pour comprendre le contexte du projet, les normes de codage et le flux de travail.",
-    "Proxy": "Proxy : endpoint d'API compatible OpenAI que Switch lance en local et qui transmet les requêtes à différents Provider selon les règles de routage.",
+    "Provider": "Fournisseur de modèles, c'est-à-dire un service de modèles en amont (API cloud ou service d'inférence local). Switch permet de configurer plusieurs Provider et de router selon des règles.",
+    "Proxy": "Proxy : endpoint d'API (format Chat Completions) que Switch lance en local et qui transmet les requêtes à différents Provider selon les règles de routage.",
     "SM4-GCM": "Chiffrement par bloc SM4 (cryptographie nationale chinoise) en mode d'authentification GCM, premier choix de chiffrement symétrique dans les contextes de conformité cryptographique chinoise.",
     "TCO": "Coût total de possession (Total Cost of Ownership) : dans une décision d'achat, il couvre la totalité des coûts — licences, déploiement, exploitation et migration.",
-    "Whisper": "Modèle de reconnaissance vocale open source d'OpenAI, que Creator / Lumen utilisent pour la transcription audio.",
     "Dependency Guardian": "Sentinelle des dépendances prévue dans Forge, qui détecte automatiquement les ruptures d'interface entre Epic et Story.",
     "Session": "Dans Forge, conteneur de contexte d'une discussion produit, qui porte la chronologie complète des conversations, décisions et productions de l'agent."
   }
@@ -1015,19 +1003,12 @@ export const glossaryDefs: Record<Locale, Record<string, string>> = {
 export const uiTr: Record<Locale, UiTr> = {
   "en": {
     "hero": {
-      "title": "AI Infrastructure and Product Platform",
-      "taglineLead": "Not just another layer of SaaS.",
-      "taglineAccent": "Execution, Memory, Gateway, Billing",
-      "taglineTail": "useful on their own, stronger together — compose intelligence like a multi-bit screwdriver.",
-      "btnStart": "Get started in 3 minutes",
-      "btnKey": "Get an API Key",
-      "btnConsole": "Console ↗",
-      "metrics": [
-        "Product Matrix",
-        "AI Models Integrated",
-        "Kova Scheduling Latency",
-        "Free Quota"
-      ]
+      "title": "Enterprise AI Delivery Engineering",
+      "taglineLead": "AI systems in the customer's own environment: ",
+      "taglineAccent": "status you can verify, data you can restore, changes on record",
+      "taglineTail": ".",
+      "btnWitness": "Witness docs",
+      "btnGateway": "Gateway integration"
     },
     "related": {
       "heading": "Related Products",
@@ -1040,19 +1021,12 @@ export const uiTr: Record<Locale, UiTr> = {
   },
   "ja": {
     "hero": {
-      "title": "AI 基盤・プロダクトプラットフォーム",
-      "taglineLead": "もう一層の SaaS ではありません。",
-      "taglineAccent": "実行・記憶・ゲートウェイ・課金",
-      "taglineTail": "それぞれ単独でも使え、組み合わせればさらに強力に — ドライバーのビットを組み替えるように知能を組み合わせます。",
-      "btnStart": "3 分で始める",
-      "btnKey": "API Key を取得",
-      "btnConsole": "コンソール ↗",
-      "metrics": [
-        "プロダクトマトリクス",
-        "AI モデル接続",
-        "Kova スケジューリング遅延",
-        "無料枠"
-      ]
+      "title": "企業向け AI デリバリーエンジニアリング",
+      "taglineLead": "顧客自身の環境で動く AI システムを、",
+      "taglineAccent": "状態は検証でき、データは復元でき、変更は記録に残る",
+      "taglineTail": "ものにします。",
+      "btnWitness": "Witness のドキュメント",
+      "btnGateway": "ゲートウェイ接続"
     },
     "related": {
       "heading": "関連プロダクト",
@@ -1065,19 +1039,12 @@ export const uiTr: Record<Locale, UiTr> = {
   },
   "ko": {
     "hero": {
-      "title": "AI 인프라 및 제품 플랫폼",
-      "taglineLead": "또 하나의 SaaS 계층이 아닙니다.",
-      "taglineAccent": "실행·기억·게이트웨이·과금",
-      "taglineTail": "각각 단독으로도 쓸 수 있고, 조합하면 더 강력합니다 — 조합형 드라이버처럼 지능을 조합하세요.",
-      "btnStart": "3분 만에 시작",
-      "btnKey": "API Key 발급",
-      "btnConsole": "콘솔 ↗",
-      "metrics": [
-        "제품 매트릭스",
-        "AI 모델 연동",
-        "Kova 스케줄링 지연",
-        "무료 크레딧"
-      ]
+      "title": "기업 AI 딜리버리 엔지니어링",
+      "taglineLead": "고객 자체 환경의 AI 시스템을 ",
+      "taglineAccent": "상태는 검증할 수 있고, 데이터는 복구할 수 있으며, 변경은 기록되도록",
+      "taglineTail": " 만듭니다.",
+      "btnWitness": "Witness 문서",
+      "btnGateway": "게이트웨이 연동"
     },
     "related": {
       "heading": "관련 제품",
@@ -1090,19 +1057,12 @@ export const uiTr: Record<Locale, UiTr> = {
   },
   "es": {
     "hero": {
-      "title": "Plataforma de infraestructura y productos de IA",
-      "taglineLead": "No es otra capa de SaaS más.",
-      "taglineAccent": "Ejecución, memoria, gateway, facturación",
-      "taglineTail": "Cada uno funciona por sí solo y juntos son más potentes — combina inteligencia como quien combina puntas de destornillador.",
-      "btnStart": "Empieza en 3 minutos",
-      "btnKey": "Obtener API Key",
-      "btnConsole": "Consola ↗",
-      "metrics": [
-        "Matriz de productos",
-        "Acceso a modelos de IA",
-        "Latencia de planificación de Kova",
-        "Cuota gratuita"
-      ]
+      "title": "Ingeniería de entrega de IA para empresas",
+      "taglineLead": "Sistemas de IA en el entorno propio del cliente: ",
+      "taglineAccent": "estado verificable, datos recuperables, cambios registrados",
+      "taglineTail": ".",
+      "btnWitness": "Documentación de Witness",
+      "btnGateway": "Integrar el gateway"
     },
     "related": {
       "heading": "Productos relacionados",
@@ -1115,19 +1075,12 @@ export const uiTr: Record<Locale, UiTr> = {
   },
   "fr": {
     "hero": {
-      "title": "Plateforme d'infrastructure et de produits IA",
-      "taglineLead": "Pas une couche SaaS de plus.",
-      "taglineAccent": "Exécution, mémoire, passerelle, facturation",
-      "taglineTail": "Utilisables séparément, plus puissants combinés — composez l'intelligence comme un tournevis à embouts.",
-      "btnStart": "Prise en main en 3 minutes",
-      "btnKey": "Obtenir une API Key",
-      "btnConsole": "Console ↗",
-      "metrics": [
-        "Matrice de produits",
-        "Modèles d'IA intégrés",
-        "Latence d'ordonnancement Kova",
-        "Quota gratuit"
-      ]
+      "title": "Ingénierie de livraison d'IA pour les entreprises",
+      "taglineLead": "Des systèmes d'IA dans l'environnement propre du client : ",
+      "taglineAccent": "état vérifiable, données restaurables, modifications tracées",
+      "taglineTail": ".",
+      "btnWitness": "Documentation Witness",
+      "btnGateway": "Intégrer la passerelle"
     },
     "related": {
       "heading": "Produits associés",
