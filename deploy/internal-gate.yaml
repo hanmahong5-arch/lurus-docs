@@ -1,0 +1,54 @@
+# internal.lurus.cn —— 内部文档站的入口(R1 k3s Traefik,ns lurus-system)
+#
+# 2026-10-09(platform R56)起,入口鉴权从共享 BasicAuth(Middleware lurus-internal-basicauth)
+# 换成平台统一门:浏览器带平台会话 cookie(.lurus.cn)→ Traefik ForwardAuth 问
+# https://identity.lurus.cn/api/v1/auth/gate?redirect=1 →
+#   未登录   302 到平台 /login?return_to=<原地址>(登录后回到这里)
+#   非平台管理员 403
+#   平台管理员 200,放行到 R6 上的内部文档(Service r6-internal-docs:8881)
+# 平台侧的登记在 lurus-platform 仓 deploy/k8s/base/configmap.yaml 的 GATE_ROUTES。
+#
+# 此前这两个对象只存在于集群(162 天未进 git);本文件是它们的真源。
+#
+# 回滚 = 把下面 IngressRoute 的 middlewares 改回 lurus-internal-basicauth 再 apply
+# (BasicAuth 的 Middleware 与 Secret 保留不删,就是为了这一步)。
+#
+# trustForwardHeader: false —— Traefik 自己写 X-Forwarded-Host/-Uri/-Proto,
+# 不转发客户端自带的同名头,统一门判断的 host 只能来自真实请求。
+# authResponseHeaders 只取统一门回的三个身份头,覆盖客户端可能伪造的同名头。
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: lurus-internal-gate
+  namespace: lurus-system
+  labels:
+    app: lurus-internal-docs
+spec:
+  forwardAuth:
+    address: https://identity.lurus.cn/api/v1/auth/gate?redirect=1
+    trustForwardHeader: false
+    authResponseHeaders:
+      - X-Lurus-Account-Id
+      - X-Lurus-Email
+      - X-Lurus-Platform-Admin
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: lurus-internal-docs-route
+  namespace: lurus-system
+  labels:
+    app: lurus-internal-docs
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`internal.lurus.cn`)
+      middlewares:
+        - name: lurus-internal-gate
+      services:
+        - name: r6-internal-docs
+          port: 8881
+  tls:
+    secretName: lurus-cn-wildcard-tls
