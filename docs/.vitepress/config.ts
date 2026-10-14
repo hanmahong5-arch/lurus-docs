@@ -399,6 +399,18 @@ const sidebarZh = {
         { text: '内容', link: '/solutions/industry-content' },
         { text: '开发工具', link: '/solutions/industry-devtools' },
       ]
+    },
+    {
+      text: '开源 AI 系统备份与恢复',
+      collapsed: false,
+      items: [
+        { text: 'AnythingLLM', link: '/solutions/ops/anything-llm-backup' },
+        { text: 'Dify', link: '/solutions/ops/dify-backup' },
+        { text: 'Flowise', link: '/solutions/ops/flowise-backup' },
+        { text: 'n8n', link: '/solutions/ops/n8n-backup' },
+        { text: 'OpenClaw', link: '/solutions/ops/openclaw-backup' },
+        { text: 'Open WebUI', link: '/solutions/ops/open-webui-backup' },
+      ]
     }
   ],
   '/migrations/': [
