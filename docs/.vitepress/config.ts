@@ -408,6 +408,7 @@ const sidebarZh = {
         { text: 'Dify', link: '/solutions/ops/dify-backup' },
         { text: 'Flowise', link: '/solutions/ops/flowise-backup' },
         { text: 'n8n', link: '/solutions/ops/n8n-backup' },
+        { text: 'OpenClaw', link: '/solutions/ops/openclaw-backup' },
         { text: 'Open WebUI', link: '/solutions/ops/open-webui-backup' },
       ]
     }
