@@ -22,7 +22,7 @@ description: "Ruta completa de migración de usuarios SCIM, federación SSO y co
   <div class="lurus-card lurus-card--auth">
     <span class="lurus-card__icon"><Icon name="import" :size="20" /></span>
     <div class="lurus-card__title">Estrategia B: Migración completa</div>
-    <p class="lurus-card__body">El Keycloak/Auth0 original se exporta mediante SCIM a Lurus Auth (Casdoor), que pasa a ser la única fuente de verdad.</p>
+    <p class="lurus-card__body">El Keycloak/Auth0 original se exporta mediante SCIM a Lurus Auth (Zitadel), que pasa a ser la única fuente de verdad.</p>
   </div>
 </div>
 
@@ -35,7 +35,7 @@ description: "Ruta completa de migración de usuarios SCIM, federación SSO y co
 ### Estrategia B — Topología de migración
 
 <ArchitectureDiagram title="Estrategia B: Migración" chart="graph LR
-  KC[Keycloak/Auth0 original] -->|Exportación SCIM| LA[Lurus Auth · Casdoor]
+  KC[Keycloak/Auth0 original] -->|Exportación SCIM| LA[Lurus Auth · Zitadel]
   LA --> D[Todos los sistemas posteriores]" />
 
 ## <Icon name="building-2" :size="20" /> Pasos de la estrategia A (recomendada)

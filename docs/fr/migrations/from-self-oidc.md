@@ -22,7 +22,7 @@ description: "Le parcours complet : migration des utilisateurs SCIM, fédératio
   <div class="lurus-card lurus-card--auth">
     <span class="lurus-card__icon"><Icon name="import" :size="20" /></span>
     <div class="lurus-card__title">Stratégie B : déménagement complet</div>
-    <p class="lurus-card__body">Le Keycloak/Auth0 d'origine est exporté via SCIM vers Lurus Auth (Casdoor), qui devient l'unique source de vérité.</p>
+    <p class="lurus-card__body">Le Keycloak/Auth0 d'origine est exporté via SCIM vers Lurus Auth (Zitadel), qui devient l'unique source de vérité.</p>
   </div>
 </div>
 
@@ -35,7 +35,7 @@ description: "Le parcours complet : migration des utilisateurs SCIM, fédératio
 ### Stratégie B — topologie de déménagement
 
 <ArchitectureDiagram title="策略 B：搬家" chart="graph LR
-  KC[原 Keycloak/Auth0] -->|SCIM 导出| LA[Lurus Auth · Casdoor]
+  KC[原 Keycloak/Auth0] -->|SCIM 导出| LA[Lurus Auth · Zitadel]
   LA --> D[所有下游]" />
 
 ## <Icon name="building-2" :size="20" /> Étapes de la stratégie A (recommandée)

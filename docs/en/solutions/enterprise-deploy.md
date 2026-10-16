@@ -69,7 +69,7 @@ description: "Comparison of three deployment models — SaaS, on-premises, and h
 
 Employees use their existing enterprise IdP (Okta / Azure AD / self-hosted Keycloak) to sign in with their company account:
 
-<ArchitectureDiagram title="Enterprise IdP Federated Login" chart="graph LR; A[Enterprise IdP] -->|OIDC| B[Lurus Casdoor]; B --> C[All Lurus Products]" />
+<ArchitectureDiagram title="Enterprise IdP Federated Login" chart="graph LR; A[Enterprise IdP] -->|OIDC| B[Lurus Zitadel]; B --> C[All Lurus Products]" />
 
 Supported protocols: OIDC / OAuth 2.0 / SAML 2.0 / SCIM (user lifecycle).
 

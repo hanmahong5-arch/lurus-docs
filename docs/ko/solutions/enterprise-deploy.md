@@ -69,7 +69,7 @@ description: "SaaS / 온프레미스 / 하이브리드 클라우드 세 가지 �
 
 기업의 기존 IdP（Okta / Azure AD / 자체 구축 Keycloak）로 직원이 회사 계정을 사용해 로그인합니다:
 
-<ArchitectureDiagram title="기업 IdP 페더레이션 로그인" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Casdoor]; B --> C[所有 Lurus 产品]" />
+<ArchitectureDiagram title="기업 IdP 페더레이션 로그인" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Zitadel]; B --> C[所有 Lurus 产品]" />
 
 지원 프로토콜: OIDC / OAuth 2.0 / SAML 2.0 / SCIM（사용자 라이프사이클）.
 

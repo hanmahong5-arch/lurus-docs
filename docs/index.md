@@ -30,8 +30,8 @@ description: 让客户自有环境里的 AI 系统，状态可核查、数据可
     <p>私有部署的多租户 LLM 网关，基于开源 New API（AGPLv3）。接口细节见 <a href="/api/overview">API 参考</a>。</p>
   </li>
   <li>
-    <a class="home-parts__name" href="/platform/">平台底座</a><Badge type="tip" text="内部生产使用" />
-    <p>各构件共用的账号与登录。它是底座，不单独对外提供。</p>
+    <a class="home-parts__name" href="/platform/">Lugo · 账号与计费</a><Badge type="tip" text="内部生产使用" />
+    <p>各构件共用的登录、钱包与收款底座；也可以按客户独立安装，见 <a href="/platform/self-host">私有化部署</a>。</p>
   </li>
 </ul>
 

@@ -69,7 +69,7 @@ description: "Comparaison des trois modèles de déploiement — SaaS / sur site
 
 Les employés utilisant l’IdP existant de l’entreprise (Okta / Azure AD / Keycloak auto-hébergé) se connectent avec leur compte d’entreprise :
 
-<ArchitectureDiagram title="Connexion fédérée via l’IdP de l’entreprise" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Casdoor]; B --> C[所有 Lurus 产品]" />
+<ArchitectureDiagram title="Connexion fédérée via l’IdP de l’entreprise" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Zitadel]; B --> C[所有 Lurus 产品]" />
 
 Protocoles pris en charge : OIDC / OAuth 2.0 / SAML 2.0 / SCIM (cycle de vie des utilisateurs).
 

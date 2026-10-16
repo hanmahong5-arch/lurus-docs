@@ -69,7 +69,7 @@ description: "SaaS / オンプレミス / ハイブリッドクラウドの3つ�
 
 既存の企業 IdP（Okta / Azure AD / 自社構築の Keycloak）を利用し、従業員は会社アカウントでログインできます。
 
-<ArchitectureDiagram title="企業 IdP フェデレーションログイン" chart="graph LR; A[企業 IdP] -->|OIDC| B[Lurus Casdoor]; B --> C[すべての Lurus 製品]" />
+<ArchitectureDiagram title="企業 IdP フェデレーションログイン" chart="graph LR; A[企業 IdP] -->|OIDC| B[Lurus Zitadel]; B --> C[すべての Lurus 製品]" />
 
 対応プロトコル：OIDC / OAuth 2.0 / SAML 2.0 / SCIM（ユーザーライフサイクル）。
 
