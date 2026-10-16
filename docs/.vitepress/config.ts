@@ -200,6 +200,9 @@ const sidebarZh = {
         { text: 'Cherry Studio', link: '/guide/clients/cherry-studio' },
         { text: 'Lobe Chat', link: '/guide/clients/lobe-chat' },
         { text: 'OpenCat', link: '/guide/clients/opencat' },
+        { text: 'OpenClaw', link: '/guide/clients/openclaw' },
+        { text: 'Hermes Agent', link: '/guide/clients/hermes' },
+        { text: '小智 ESP32', link: '/guide/clients/xiaozhi-esp32' },
         { text: '其他客户端', link: '/guide/clients/others' }
       ]
     }
