@@ -288,6 +288,7 @@ const sidebarZh = {
       items: [
         { text: '概述', link: '/platform/' },
         { text: '计费详解', link: '/platform/billing' },
+        { text: '私有化部署', link: '/platform/self-host' },
         { text: '常见问题', link: '/platform/faq' },
       ]
     },

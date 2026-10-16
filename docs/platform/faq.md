@@ -134,9 +134,14 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
   <h2 class="lurus-section-head__title">支付</h2>
 </div>
 
-支付方式：
+支付方式（某个渠道是否已开通，以充值页实际显示为准）：
 
 <div class="lurus-cards lurus-cards--compact">
+  <div class="lurus-card lurus-card--platform">
+    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
+    <div class="lurus-card__title">支付宝 / 微信支付</div>
+    <p class="lurus-card__body">直连收单，扫码 / 手机 / APP，按设备自动选择</p>
+  </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="receipt" :size="20" /></span>
     <div class="lurus-card__title">Stripe</div>
@@ -144,20 +149,15 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">Creem</div>
-    <p class="lurus-card__body">加密货币</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
-    <div class="lurus-card__title">Epay</div>
-    <p class="lurus-card__body">支付宝 / 微信，中国大陆</p>
+    <div class="lurus-card__title">对公转账</div>
+    <p class="lurus-card__body">企业充值，按附言码自动核销</p>
   </div>
 </div>
 
 <details class="lurus-faq-item">
 <summary>付款未到账怎么办？</summary>
 
-通常 1 分钟内确认；超 5 分钟未到账则检查支付平台是否扣款、查邮箱确认邮件、联系 [support@lurus.cn](mailto:support@lurus.cn) 提供支付订单号。
+通常 1 分钟内确认；平台会主动向渠道查单补漏，超 5 分钟仍未到账则检查支付平台是否扣款、查邮箱确认邮件、联系 [support@lurus.cn](mailto:support@lurus.cn) 提供支付订单号。
 
 </details>
 
