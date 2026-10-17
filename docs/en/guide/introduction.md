@@ -9,7 +9,7 @@ description: One API Key to access 50+ leading AI models, fully compatible with 
 
 <MetricStats :items="[
   { label: 'Models', value: '50+' },
-  { label: 'Free Tier', value: '100 calls/day' },
+  { label: 'Free Tier', value: 'Daily free quota' },
   { label: 'Compatibility', value: 'OpenAI SDK' },
 ]" />
 

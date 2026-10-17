@@ -18,7 +18,7 @@ description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제
     { title: '통합 계정', body: '모든 Lurus 제품에서 동일한 신원, 잔액, 구독을 공유', icon: 'user-check' },
     { title: '鹿贝 지갑', body: '통합 결제 단위, 사용량 기반 차감, 실시간 잔액 조회', icon: 'coins' },
     { title: '구독 플랜', body: '무료 한도 + 사용량 기반 결제 + 기업 패키지', icon: 'package-2' },
-    { title: 'VIP 체계', body: '사용액에 따른 등급 상승, 전용 모델과 고객 지원 잠금 해제', icon: 'crown' },
+    { title: 'VIP 체계', body: '누적 충전액에 따라 등급 상승, 구독 할인 적용', icon: 'crown' },
   ]"
 />
 
@@ -38,8 +38,8 @@ description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">초기 5 鹿贝</div>
-    <p class="lurus-card__body">최초 가입 시 바로 지급, 즉시 체험 가능</p>
+    <div class="lurus-card__title">鹿贝 지갑</div>
+    <p class="lurus-card__body">가입 시 바로 개설, 1위안 = 1 鹿贝, 모든 제품에서 공용</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
@@ -81,7 +81,7 @@ Lurus 는 「구독 + 사용량」 이중 트랙 결제 모델을 채택하여 �
 | **Pro 연간 결제** | Pro 연간 결제 할인 | 안정적인 사용자 |
 | **Enterprise** | 기업 맞춤 + SLA | 팀 / 기업 |
 
-구체적인 가격은 [identity.lurus.cn](https://identity.lurus.cn) 콘솔(구독 관리 페이지)을 기준으로 합니다.
+이 밖에 Claude Code 전용 독립 플랜도 있습니다. 구체적인 가격은 [identity.lurus.cn](https://identity.lurus.cn) 콘솔(구독 관리 페이지)을 기준으로 합니다.
 
 ### 사용량 기반 결제
 
@@ -91,7 +91,7 @@ Lurus 는 「구독 + 사용량」 이중 트랙 결제 모델을 채택하여 �
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">전체 가격, 할당량 규칙과 충전 비율이 궁금하신가요?</p>
-    <div class="lurus-callout__body"><a href="/ko/platform/billing">결제 상세</a> 에서 구독 플랜 비교, 할당량 계산, 鹿贝 환전 비율과 환불 정책을 분석합니다.</div>
+    <div class="lurus-callout__body"><a href="/ko/platform/billing">결제 상세</a> 에서 구독 플랜 비교, 할당량 계산, 鹿贝 충전 규칙과 환불 정책을 분석합니다.</div>
   </div>
 </div>
 
@@ -99,28 +99,23 @@ Lurus 는 「구독 + 사용량」 이중 트랙 결제 모델을 채택하여 �
 
 ## 鹿贝 지갑 {#wallet}
 
-**鹿贝(LB)** 는 Lurus 플랫폼의 범용 포인트 화폐로, 모든 초과 사용 요금을 결제하는 데 사용됩니다.
+**鹿贝(LB)** 는 Lurus 플랫폼 지갑의 회계 단위로, 1 鹿贝 = 1위안(CNY)이며 모든 제품의 사용량 기반 요금 결제에 사용됩니다.
 
 ### 鹿贝 획득
 
 | 경로 | 보상 | 설명 |
 |------|------|------|
-| **신규 사용자 가입** | 5 LB | 최초 가입 시 바로 지급 |
-| **첫 충전** | 10 LB 추가 보상 | 첫 충전 시 추가 증정 |
-| **첫 구독** | 30 LB 추가 보상 | 임의의 유료 플랜 첫 구독 |
-| **구독 갱신** | 충전 금액 x 5% | 처음 6회 갱신 시 리베이트 적용 |
-| **매일 출석 체크** | 랜덤 LB | 매일 출석 체크로 수령 |
-| **친구 추천** | 초대 보상 | 친구 가입 후 양쪽 모두 보상 획득 |
-| **전략 수익** | 분배 정산 | Lucrum 전략 구독 수익 |
-| **충전 구매** | 비율에 따라 환전 | 鹿贝 직접 구매 |
+| **충전 구매** | 1위안 = 1 鹿贝 | 충전한 만큼 그대로 입금; 충전 혜택이 있으면 충전 페이지 표시를 기준으로 함 |
+| **매일 출석 체크** | 하루 0.1 鹿贝 | 연속 출석 7일을 채울 때마다 보상 ×1.5, 하루 최대 1 鹿贝 |
+| **친구 추천** | 친구 1명당 최대 45 鹿贝 + 수수료 | 친구가 내 링크로 가입 시 5, 첫 유료 충전 시 +10, 첫 유료 구독 시 +30, 이후 유료 구독·갱신마다 5%(최대 6회); 초대 횟수 제한 없음 |
 
 ### 鹿贝 사용
 
-다음 용도로 사용할 수 있습니다: 구독 할당량을 초과한 API 호출 요금 결제, Lucrum 유료 전략 구독, 고급 기능/확장 패키지 구매.
+다음 용도로 사용할 수 있습니다: 구독 할당량을 초과한 API 호출 등 모든 제품의 사용량 기반 요금 결제, 그리고 구독 구매.
 
 ### VIP 등급
 
-누적 鹿贝 사용액에 따라 다단계 VIP 가 잠금 해제되며, 할인은 모든 鹿贝 소비에 자동 적용됩니다.
+누적 충전 금액(또는 연간 구독)에 따라 VIP 등급이 정해집니다. VIP 할인은 구독 구매 및 갱신 시 자동 적용되며, 충전과 사용량 기반 차감에는 할인이 적용되지 않습니다. 기본 기준은 누적 충전 ¥500 / ¥2,000 / ¥10,000 / ¥50,000이며 각각 2% / 5% / 8% / 10% 할인이고, 콘솔을 기준으로 합니다.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">입문</span></div>
@@ -148,7 +143,7 @@ Lurus 는 「구독 + 사용량」 이중 트랙 결제 모델을 채택하여 �
 
 ## 추천 프로그램
 
-[identity.lurus.cn](https://identity.lurus.cn) 에서 전용 추천 링크(추천 코드 포함)를 복사하여 친구에게 공유하세요. 보상: 친구가 링크를 통해 가입하면 양쪽 모두 鹿贝를 받습니다. 친구가 처음 유료 구독을 하면 구독 금액의 일정 비율을 추가 리베이트로 받습니다. 초대 횟수 제한은 없습니다.
+[identity.lurus.cn](https://identity.lurus.cn) 에서 전용 추천 링크(추천 코드 포함)를 복사하여 친구에게 공유하세요. 보상은 모두 추천인에게 지급됩니다: 친구 가입 시 5 鹿贝, 첫 유료 충전 시 +10, 첫 유료 구독 시 +30, 이후 유료 구독·갱신마다 금액의 5%(최대 6회). 실제 결제만 인정되며 증정 금액, 선불 교환 코드, 수동 개통은 제외됩니다. 초대 횟수 제한은 없습니다.
 
 ---
 

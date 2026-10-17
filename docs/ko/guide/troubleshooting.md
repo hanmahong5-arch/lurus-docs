@@ -105,7 +105,7 @@ description: Lurus 전 제품의 빈발 문제를 한 페이지에서 진단 —
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- 먼저 당일 무료 할당량을 모두 소진했는지 확인(Free 플랜 100회/일)
+- 먼저 당일 무료 할당량을 모두 소진했는지 확인(Free 플랜 일일 한도는 콘솔 기준)
 - 鹿贝 잔액 확인: [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
 - 셀프 충전 또는 플랜 업그레이드, 규칙은 [과금 설명](/ko/platform/billing)을 참고
 

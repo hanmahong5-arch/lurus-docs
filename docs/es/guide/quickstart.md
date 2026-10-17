@@ -25,7 +25,7 @@ Una cuenta de Lurus (al registrarte obtienes cuota gratuita; el primer paso te g
   <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Listo para usar al registrarte, sin pagar</p>
-    <div class="lurus-callout__body"><p>Las cuentas nuevas reciben automáticamente <strong>5 鹿贝 + cuota gratuita</strong> (plan Free: <strong>100 llamadas/día</strong>, incluye <code>deepseek-chat</code> y <code>gpt-3.5-turbo</code>), más que suficiente para este tutorial. Para detalles de cuota y mejoras de plan, consulta las <a href="/es/guide/faq">preguntas frecuentes</a> y la <a href="/es/platform/billing">guía de facturación</a>.</p></div>
+    <div class="lurus-callout__body"><p>Las cuentas nuevas empiezan en el plan Free con cuota gratuita diaria, más que suficiente para este tutorial; la cuota exacta y los modelos disponibles se rigen por la consola. Para detalles de cuota y mejoras de plan, consulta las <a href="/es/guide/faq">preguntas frecuentes</a> y la <a href="/es/platform/billing">guía de facturación</a>.</p></div>
   </div>
 </div>
 

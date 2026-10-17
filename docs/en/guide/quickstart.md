@@ -25,7 +25,7 @@ A Lurus account (sign up to get a free quota — step one walks you through crea
   <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Ready to use on sign-up, no payment required</p>
-    <div class="lurus-callout__body"><p>New accounts automatically receive <strong>5 Lubei + a free quota</strong> (Free plan, <strong>100 calls/day</strong>, including <code>deepseek-chat</code> and <code>gpt-3.5-turbo</code>) — more than enough to run this tutorial. For quota and upgrade details, see the <a href="/en/guide/faq">FAQ</a> and <a href="/en/platform/billing">Billing</a>.</p></div>
+    <div class="lurus-callout__body"><p>New accounts start on the Free plan with a daily free quota — more than enough to run this tutorial; the exact quota and available models are shown in the console. For quota and upgrade details, see the <a href="/en/guide/faq">FAQ</a> and <a href="/en/platform/billing">Billing</a>.</p></div>
   </div>
 </div>
 

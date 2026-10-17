@@ -19,7 +19,7 @@ description: Questions fréquentes et réponses sur l’utilisation de Lurus API
 <details class="lurus-faq-item">
 <summary>Comment s’inscrire ?</summary>
 
-Sur [hub.lurus.cn](https://hub.lurus.cn), renseignez votre e-mail et mot de passe (ou connectez-vous via GitHub/Google) ; vous obtenez automatiquement 5 鹿贝 + un quota gratuit, et tous les produits partagent le même compte.
+Sur [hub.lurus.cn](https://hub.lurus.cn), renseignez votre e-mail et mot de passe (ou connectez-vous via GitHub/Google) ; les nouveaux comptes démarrent sur le plan Free avec un quota gratuit quotidien, et tous les produits partagent le même compte et le même portefeuille.
 
 </details>
 

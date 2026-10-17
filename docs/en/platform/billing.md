@@ -11,10 +11,10 @@ Subscription plans, quota management, and the Lubei credit economy.
 
 <MetricStats
   :items="[
-    { label: 'Subscription plans', value: '4 tiers', hint: 'Free → Enterprise' },
+    { label: 'Subscription plans', value: '5 tiers', hint: 'Free → Enterprise, plus a Claude Code plan' },
     { label: 'Payment methods', value: '3 options', hint: 'Stripe / Creem / Epay' },
-    { label: 'Top-up rebate', value: 'Up to 5%', hint: 'First 6 renewals' },
-    { label: 'Refund window', value: '7 days', hint: 'Full refund on first subscription' },
+    { label: 'Lubei', value: '1 CNY = 1 LB', hint: 'You get exactly what you top up' },
+    { label: 'Refund window', value: '7 days', hint: 'Request the whole order within 7 days of payment' },
   ]"
 />
 
@@ -26,18 +26,20 @@ Subscription plans, quota management, and the Lubei credit economy.
   <p class="lurus-section-head__lede">From free trial to enterprise SLA — choose by your usage scale.</p>
 </div>
 
-| Plan | API Calls | Available Models | Lucrum | Support / Other |
-|------|---------|---------|--------|------------|
-| **Free** | 100/day | Basic (deepseek-chat, gpt-3.5-turbo) | AI assistant 10 conversations/day | Community support |
-| **Basic** | Entry-level monthly subscription; see the console for pricing | — | — | For individual developers getting started |
-| **Pro** (monthly/annual, annual gets a discount) | 10,000/month | All | Unlimited AI assistant; up to 3 strategy deployments | Email tickets (24h response) |
-| **Enterprise** (custom) | On demand | All + private deployment | Unlimited team members | SLA 99.9%; dedicated account manager + instant response; data center of your choice |
+| Plan | Positioning | Notes |
+|------|------|------|
+| **Free** | Free trial | Daily free quota, fewer models available |
+| **Basic** | Entry-level monthly subscription | Individual developers |
+| **Pro** | Advanced subscription, monthly or annual | Annual total costs less than 12 months of monthly billing |
+| **Enterprise** | Teams / enterprises | Private deployment, SLA, etc. per business agreement |
+
+Prices, daily quotas, and available models for each tier are determined by the [identity.lurus.cn](https://identity.lurus.cn) console (Subscription Management page); administrator changes take effect immediately, so this page does not keep a separate copy of the numbers. There is also a separate plan for Claude Code, likewise per the console.
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="briefcase" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Enterprise Plan</p>
-    <div class="lurus-callout__body">Need private deployment, a specific data center, or SLA 99.9%? Contact <a href="mailto:business@lurus.cn">business@lurus.cn</a>.</div>
+    <div class="lurus-callout__body">Need private deployment, a specific data center, or an SLA? Contact <a href="mailto:business@lurus.cn">business@lurus.cn</a>.</div>
   </div>
 </div>
 
@@ -46,18 +48,12 @@ Subscription plans, quota management, and the Lubei credit economy.
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="gauge" :size="14" /> Quota</span>
   <h2 class="lurus-section-head__title">Quota Management</h2>
-  <p class="lurus-section-head__lede">Each call is converted to quota by model and token usage; once the limit is exceeded, billing automatically switches to Lubei.</p>
+  <p class="lurus-section-head__lede">Your subscription quota is used first; after that, calls are charged from your Lubei wallet at each model’s unit price.</p>
 </div>
 
 ### Quota Calculation
 
-The quota consumed by each API call depends on the model and token usage:
-
-| Model Type | Quota Consumption Rule |
-|---------|-------------|
-| Basic models (deepseek-chat, etc.) | 1 call = 1 quota |
-| Advanced models (gpt-4o, etc.) | 1 call = 3 quota |
-| Image / video generation | 5–20 quota depending on task complexity |
+Each call is billed by the model’s unit price and token usage: chat models price input and output separately, while image generation and similar tasks are priced per call. Unit prices for each model are shown in the console.
 
 ### Handling Quota Overruns
 
@@ -74,62 +70,37 @@ Getting a `402` / `insufficient_quota`? See the troubleshooting steps at [Troubl
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">It Won’t Fail Silently</p>
-    <div class="lurus-callout__body">When your balance runs low, you get advance warning via email plus an in-app message, so service is never interrupted without your knowledge.</div>
+    <div class="lurus-callout__body">You get a reminder when your wallet balance drops below the threshold you set; when the balance is insufficient, requests return 402 right away — you never run into debt first and get chased for payment later.</div>
   </div>
 </div>
-
-### Quota Alerts
-
-| Alert Threshold | Notification Method |
-|---------|---------|
-| 30% remaining | In-app message |
-| 10% remaining | In-app message + email |
-| Quota exhausted | In-app message + email + WebSocket push |
 
 ---
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> Lubei</span>
   <h2 class="lurus-section-head__title">The Lubei Economy</h2>
-  <p class="lurus-section-head__lede">A unified credit currency, exchangeable for tokens and call counts at a fixed ratio.</p>
+  <p class="lurus-section-head__lede">The wallet’s accounting unit: 1 Lubei = 1 CNY.</p>
 </div>
 
-### Lubei Value
+### Top-up
 
-The baseline value of 1 Lubei (LB):
+Topping up 1 CNY credits 1 Lubei, with no tiered bonuses. If an administrator has set up a top-up promotion, the amount payable shown on the top-up page applies.
 
-| Resource | 1 LB Exchanges For |
-|------|------------|
-| Tokens (basic models) | ~10,000 tokens |
-| Tokens (advanced models) | ~3,000 tokens |
-| API calls | ~5–10 calls (depending on the model) |
+### VIP Discounts
 
-### Top-up Ratios
-
-| Top-up Amount (CNY) | Lubei Received | Unit Price |
-|----------------|---------|------|
-| ¥10 | 10 LB | ¥1.00/LB |
-| ¥50 | 55 LB | ¥0.91/LB |
-| ¥100 | 115 LB | ¥0.87/LB |
-| ¥500 | 600 LB | ¥0.83/LB |
-
-The more you top up, the lower the unit price.
-
-### Stacking VIP Discounts
-
-VIP discounts apply automatically when spending Lubei.
+VIP level is based on your cumulative top-up amount (or an annual subscription), and the discount applies automatically when you purchase or renew a subscription; top-ups and usage-based charges are not discounted.
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="crown" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Example: Gold Card 10% Off</p>
-    <div class="lurus-callout__body">A Gold Card user calling gpt-4o (3 LB/call) is actually charged = <code>3 × 0.9 = 2.7 LB/call</code>.</div>
+    <p class="lurus-callout__title">Example: Gold Card 5% Off</p>
+    <div class="lurus-callout__body">With the default thresholds, a cumulative top-up of ¥2,000 makes you Gold; renewing a ¥99 monthly subscription then costs <code>99 × 0.95 = ¥94.05</code>. Thresholds and discounts are per the console.</div>
   </div>
 </div>
 
 ### Lubei Validity
 
-Purchased Lubei never expires; promotional gifts follow the terms of their respective promotions; refunds cover only the cash-paid portion, and gifted Lubei is non-refundable.
+Topped-up balance never expires; credit granted in promotions may have an expiration date, subject to the terms of the promotion.
 
 ---
 
@@ -139,7 +110,7 @@ Purchased Lubei never expires; promotional gifts follow the terms of their respe
 </div>
 
 - **View bills** ([identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)): monthly spending summary, transaction details, Lubei income/expenses, quota usage statistics.
-- **Issue invoices** (general and special VAT invoices supported): "Bills" → "Request Invoice" → fill in the invoice details (auto-filled after the first save) → select the amount and month. Electronic invoices are usually emailed within 1 business day.
+- **Issue invoices**: you can request an invoice for each paid order by entering the invoice title and tax ID; it is issued manually and can then be downloaded from the console.
 
 ---
 
@@ -150,11 +121,11 @@ Purchased Lubei never expires; promotional gifts follow the terms of their respe
 
 | Type | Policy |
 |------|------|
-| Subscription refund | Full refund within 7 days of the first subscription |
-| Lubei top-up refund | Unused Lubei can be refunded (gifted portion deducted) |
+| Subscription | Request in the console within 7 days of payment; once approved, the whole order is refunded |
+| Top-up | Within 7 days of payment, a top-up that hasn’t been used can be refunded as a whole order |
 | Already-consumed portion | Not refundable |
 
-For refunds, contact [support@lurus.cn](mailto:support@lurus.cn).
+Alipay, WeChat Pay, and Stripe payments are refunded to the original payment method; other methods are refunded to your wallet.
 
 <NextSteps
   title="Next Steps"

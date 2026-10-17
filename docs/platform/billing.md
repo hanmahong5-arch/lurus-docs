@@ -11,10 +11,10 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 
 <MetricStats
   :items="[
-    { label: '订阅计划', value: '4 档', hint: 'Free → Enterprise' },
+    { label: '订阅计划', value: '5 档', hint: 'Free → Enterprise，另有 Claude Code 套餐' },
     { label: '支付方式', value: '5 类', hint: '支付宝 / 微信 / Stripe / 对公 / 备用' },
-    { label: '充值返利', value: '最高 5%', hint: '前 6 次续费' },
-    { label: '退款窗口', value: '7 天', hint: '首次订阅全额退' },
+    { label: '鹿贝', value: '1 元 = 1 LB', hint: '充值多少到账多少' },
+    { label: '退款窗口', value: '7 天', hint: '付款后 7 天内整笔申请' },
   ]"
 />
 
@@ -26,18 +26,20 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
   <p class="lurus-section-head__lede">从免费试用到企业 SLA，按使用量级选择。</p>
 </div>
 
-| 计划 | API 调用 | 可用模型 | Lucrum | 支持 / 其他 |
-|------|---------|---------|--------|------------|
-| **Free** | 100 次/天 | 基础（deepseek-chat、gpt-3.5-turbo） | AI 助手 10 次对话/天 | 社区支持 |
-| **Basic** | 入门月订阅，定价以控制台为准 | — | — | 个人开发者尝鲜 |
-| **Pro**（月/年付，年付享优惠） | 10,000 次/月 | 全部 | AI 助手无限；策略部署最多 3 个 | 邮件工单（24h 响应） |
-| **Enterprise**（定制） | 按需 | 全部 + 私有部署 | 团队成员无限 | SLA 99.9%；专属客户经理 + 即时响应；可指定数据中心 |
+| 计划 | 定位 | 说明 |
+|------|------|------|
+| **Free** | 免费试用 | 每日有免费额度，可用模型较少 |
+| **Basic** | 入门月订阅 | 个人开发者 |
+| **Pro** | 进阶订阅，可月付或年付 | 年付总价低于 12 个月月付 |
+| **Enterprise** | 团队 / 企业 | 私有部署、SLA 等按商务约定 |
+
+每档的价格、每日额度与可用模型以 [identity.lurus.cn](https://identity.lurus.cn) 控制台（订阅管理页）为准，管理员调整后即时生效，本页不另抄一份数字。另有面向 Claude Code 的独立套餐，同样以控制台为准。
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="briefcase" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">企业方案</p>
-    <div class="lurus-callout__body">需要私有部署、指定数据中心或 SLA 99.9%？联系 <a href="mailto:business@lurus.cn">business@lurus.cn</a>。</div>
+    <div class="lurus-callout__body">需要私有部署、指定数据中心或 SLA？联系 <a href="mailto:business@lurus.cn">business@lurus.cn</a>。</div>
   </div>
 </div>
 
@@ -46,18 +48,12 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="gauge" :size="14" /> 配额</span>
   <h2 class="lurus-section-head__title">配额管理</h2>
-  <p class="lurus-section-head__lede">每次调用按模型与 Token 用量折算配额，超限自动转鹿贝扣费。</p>
+  <p class="lurus-section-head__lede">先用订阅额度，用完按模型单价从鹿贝钱包扣费。</p>
 </div>
 
 ### 配额计算
 
-每次 API 调用消耗的配额与模型和 Token 用量相关：
-
-| 模型类型 | 配额消耗规则 |
-|---------|-------------|
-| 基础模型（deepseek-chat 等） | 1 次调用 = 1 配额 |
-| 高级模型（gpt-4o 等） | 1 次调用 = 3 配额 |
-| 图像/视频生成 | 根据任务复杂度 = 5-20 配额 |
+每次调用按模型单价与 Token 用量计费：对话类模型输入、输出分开计价，图像等按次计价。各模型单价以控制台显示为准。
 
 ### 配额超限处理
 
@@ -74,62 +70,37 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">不会悄悄失败</p>
-    <div class="lurus-callout__body">余额不足时会通过邮件 + 站内消息提前预警，不会在你不知情时中断服务。</div>
+    <div class="lurus-callout__body">钱包余额低于设定的阈值时会发出提醒；余额不足时请求直接返回 402，不会先欠费再催缴。</div>
   </div>
 </div>
-
-### 配额告警
-
-| 告警阈值 | 通知方式 |
-|---------|---------|
-| 剩余 30% | 站内消息 |
-| 剩余 10% | 站内消息 + 邮件 |
-| 配额耗尽 | 站内消息 + 邮件 + WebSocket 推送 |
 
 ---
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
   <h2 class="lurus-section-head__title">鹿贝经济</h2>
-  <p class="lurus-section-head__lede">统一积分货币，按比例兑换 Token 与调用次数。</p>
+  <p class="lurus-section-head__lede">钱包的记账单位，1 鹿贝 = 1 元人民币。</p>
 </div>
 
-### 鹿贝价值
+### 充值
 
-1 鹿贝（LB）的基准价值：
+充值 1 元到账 1 鹿贝，没有阶梯赠送。管理员如设置了充值优惠，以充值页显示的实付金额为准。
 
-| 资源 | 1 LB 可兑换 |
-|------|------------|
-| Token（基础模型） | 约 10,000 tokens |
-| Token（高级模型） | 约 3,000 tokens |
-| API 调用 | 约 5-10 次（取决于模型） |
+### VIP 折扣
 
-### 充值比例
-
-| 充值金额（CNY） | 获得鹿贝 | 单价 |
-|----------------|---------|------|
-| ¥10 | 10 LB | ¥1.00/LB |
-| ¥50 | 55 LB | ¥0.91/LB |
-| ¥100 | 115 LB | ¥0.87/LB |
-| ¥500 | 600 LB | ¥0.83/LB |
-
-充值越多，单价越低。
-
-### VIP 折扣叠加
-
-VIP 折扣在鹿贝消费时自动生效。
+按累计充值金额（或年付订阅）评定 VIP 等级，折扣在购买和续费订阅时自动生效；充值和按量扣费不打折。
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="crown" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">举例：金卡 9 折</p>
-    <div class="lurus-callout__body">金卡用户调用 gpt-4o（3 LB/次）实际扣费 = <code>3 × 0.9 = 2.7 LB/次</code>。</div>
+    <p class="lurus-callout__title">举例：金卡 95 折</p>
+    <div class="lurus-callout__body">默认门槛下，累计充值满 ¥2,000 为金卡；续费 ¥99 的月订阅实付 <code>99 × 0.95 = ¥94.05</code>。门槛与折扣以控制台为准。</div>
   </div>
 </div>
 
 ### 鹿贝有效期
 
-购买的鹿贝永久有效；活动赠送以活动说明为准；退款仅退现金支付部分，赠送鹿贝不退。
+充值得到的余额不过期；活动赠送的额度可能有有效期，以活动说明为准。
 
 ---
 
@@ -139,7 +110,7 @@ VIP 折扣在鹿贝消费时自动生效。
 </div>
 
 - **查看账单**（[identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)）：月度消费汇总、交易明细、鹿贝收支、配额使用统计。
-- **开具发票**（支持增值税普通/专用发票）：「账单」→「申请发票」→ 填发票信息（首次保存后自动填充）→ 选金额和月份。电子发票通常 1 个工作日内发邮箱。
+- **开具发票**：每笔已付款订单可申请发票，填写抬头与税号，由人工开具后可在控制台下载。
 
 ---
 
@@ -150,11 +121,11 @@ VIP 折扣在鹿贝消费时自动生效。
 
 | 类型 | 政策 |
 |------|------|
-| 订阅退款 | 首次订阅 7 天内可全额退款 |
-| 鹿贝充值退款 | 未使用的鹿贝可申请退款（扣除赠送部分） |
+| 订阅 | 付款后 7 天内可在控制台申请，审核通过后整笔退回 |
+| 充值 | 付款后 7 天内、这笔充值未动用时可整笔申请退款 |
 | 已消费部分 | 不支持退款 |
 
-退款请联系 [support@lurus.cn](mailto:support@lurus.cn)。
+支付宝、微信支付、Stripe 付款原路退回，其他方式退回钱包。
 
 <NextSteps
   title="下一步"
