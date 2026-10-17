@@ -18,7 +18,7 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
     { title: '统一账号', body: '跨所有 Lurus 产品共享同一身份、余额、订阅', icon: 'user-check' },
     { title: '鹿贝钱包', body: '统一计费单位，按量扣费，实时余额查询', icon: 'coins' },
     { title: '订阅计划', body: '免费额度 + 按需付费 + 企业套餐', icon: 'package-2' },
-    { title: 'VIP 体系', body: '消费升级，解锁专属模型与客服', icon: 'crown' },
+    { title: 'VIP 体系', body: '按累计充值升级，订阅享折扣', icon: 'crown' },
   ]"
 />
 
@@ -91,7 +91,7 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">想看完整定价、配额规则与充值比例？</p>
-    <div class="lurus-callout__body"><a href="/platform/billing">计费详解</a> 拆解了订阅计划对比、配额计算、鹿贝兑换比例与退款政策。</div>
+    <div class="lurus-callout__body"><a href="/platform/billing">计费详解</a> 拆解了订阅计划对比、配额计算、鹿贝充值规则与退款政策。</div>
   </div>
 </div>
 

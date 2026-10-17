@@ -18,7 +18,7 @@ description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제
     { title: '통합 계정', body: '모든 Lurus 제품에서 동일한 신원, 잔액, 구독을 공유', icon: 'user-check' },
     { title: '鹿贝 지갑', body: '통합 결제 단위, 사용량 기반 차감, 실시간 잔액 조회', icon: 'coins' },
     { title: '구독 플랜', body: '무료 한도 + 사용량 기반 결제 + 기업 패키지', icon: 'package-2' },
-    { title: 'VIP 체계', body: '사용액에 따른 등급 상승, 전용 모델과 고객 지원 잠금 해제', icon: 'crown' },
+    { title: 'VIP 체계', body: '누적 충전액에 따라 등급 상승, 구독 할인 적용', icon: 'crown' },
   ]"
 />
 
@@ -91,7 +91,7 @@ Lurus 는 「구독 + 사용량」 이중 트랙 결제 모델을 채택하여 �
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">전체 가격, 할당량 규칙과 충전 비율이 궁금하신가요?</p>
-    <div class="lurus-callout__body"><a href="/ko/platform/billing">결제 상세</a> 에서 구독 플랜 비교, 할당량 계산, 鹿贝 환전 비율과 환불 정책을 분석합니다.</div>
+    <div class="lurus-callout__body"><a href="/ko/platform/billing">결제 상세</a> 에서 구독 플랜 비교, 할당량 계산, 鹿贝 충전 규칙과 환불 정책을 분석합니다.</div>
   </div>
 </div>
 

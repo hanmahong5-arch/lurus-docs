@@ -18,7 +18,7 @@ description: Lurus 統合アカウント体系、サブスクリプションプ�
     { title: '統合アカウント', body: 'すべての Lurus 製品で同一のアイデンティティ・残高・サブスクリプションを共有', icon: 'user-check' },
     { title: '鹿贝ウォレット', body: '統一課金単位、従量課金、残高のリアルタイム照会', icon: 'coins' },
     { title: 'サブスクリプションプラン', body: '無料枠 + 従量課金 + エンタープライズプラン', icon: 'package-2' },
-    { title: 'VIP 体系', body: '利用額に応じてアップグレードし、専用モデルと専属サポートを解放', icon: 'crown' },
+    { title: 'VIP 体系', body: '累計チャージ額に応じて昇級し、サブスクリプションが割引に', icon: 'crown' },
   ]"
 />
 
@@ -91,7 +91,7 @@ Lurus は「サブスクリプション + 従量」のデュアルトラック�
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">完全な価格、枠のルール、チャージ比率を確認したいですか？</p>
-    <div class="lurus-callout__body"><a href="/ja/platform/billing">課金の詳細</a>では、サブスクリプションプランの比較、枠の計算、鹿贝の換算比率、返金ポリシーを分解して解説しています。</div>
+    <div class="lurus-callout__body"><a href="/ja/platform/billing">課金の詳細</a>では、サブスクリプションプランの比較、枠の計算、鹿贝のチャージ規則、返金ポリシーを分解して解説しています。</div>
   </div>
 </div>
 

@@ -18,7 +18,7 @@ description: Présentation du système de comptes unifiés, des plans d’abonne
     { title: 'Compte unifié', body: 'Une seule identité, un seul solde et un seul abonnement partagés par tous les produits Lurus', icon: 'user-check' },
     { title: 'Portefeuille 鹿贝', body: 'Unité de facturation unifiée, débit à l\'usage, consultation du solde en temps réel', icon: 'coins' },
     { title: 'Plans d\'abonnement', body: 'Quota gratuit + paiement à l\'usage + offres entreprise', icon: 'package-2' },
-    { title: 'Système VIP', body: 'Plus vous consommez, plus vous débloquez des modèles exclusifs et un support dédié', icon: 'crown' },
+    { title: 'Système VIP', body: 'Le niveau monte avec les recharges cumulées ; les abonnements sont remisés', icon: 'crown' },
   ]"
 />
 
@@ -91,7 +91,7 @@ Une fois le quota inclus dans l’abonnement dépassé, le débit s’effectue a
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Vous voulez voir les tarifs complets, les règles de quota et les ratios de recharge ?</p>
-    <div class="lurus-callout__body"><a href="/fr/platform/billing">Facturation en détail</a> décompose la comparaison des plans d’abonnement, le calcul des quotas, le ratio de conversion des 鹿贝 et la politique de remboursement.</div>
+    <div class="lurus-callout__body"><a href="/fr/platform/billing">Facturation en détail</a> décompose la comparaison des plans d’abonnement, le calcul des quotas, les règles de recharge des 鹿贝 et la politique de remboursement.</div>
   </div>
 </div>
 

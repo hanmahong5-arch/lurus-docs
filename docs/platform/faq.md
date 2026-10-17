@@ -123,7 +123,7 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
 <details class="lurus-faq-item">
 <summary>怎么查余额和收支记录？</summary>
 
-登录 [identity.lurus.cn](https://identity.lurus.cn) → 钱包，查看当前余额、收入明细（充值 / 奖励 / 策略收入）、支出明细（API 消费 / 策略订阅）。
+登录 [identity.lurus.cn](https://identity.lurus.cn) → 钱包，查看当前余额、收入明细（充值 / 奖励 / 退款）、支出明细（API 消费 / 订阅）。
 
 </details>
 
