@@ -105,7 +105,7 @@ description: 一页定位 Lurus 全产品高频问题 —— 401 / 模型无渠�
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- 先确认是否已用完当天免费配额（Free 套餐 100 次/天）
+- 先确认是否已用完当天免费配额（Free 套餐每日额度以控制台为准）
 - 查看鹿贝余额：[identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
 - 自助充值或升级套餐，规则见 [计费说明](/platform/billing)
 
