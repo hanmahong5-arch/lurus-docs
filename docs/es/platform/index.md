@@ -107,7 +107,7 @@ Una vez superada la cuota incluida en la suscripción, el cobro se realiza autom
 |------|------|------|
 | **Compra con recarga** | 1 CNY = 1 鹿贝 | Recibes exactamente lo que recargas; si hay una promoción de recarga, vale lo que muestre la página de recarga |
 | **Registro diario** | 0,1 鹿贝 al día | ×1,5 por cada racha completa de 7 días seguidos, máximo 1 鹿贝 al día |
-| **Recomendar amigos** | 5 鹿贝 por persona | Cuando un amigo se registra con tu enlace de recomendación, tú recibes 5 鹿贝; sin límite de invitaciones |
+| **Recomendar amigos** | Hasta 45 鹿贝 por amigo + comisiones | Tu amigo se registra con tu enlace: 5; su primera recarga pagada: +10; su primera suscripción pagada: +30; después, 5% de cada suscripción o renovación pagada (hasta 6 veces); sin límite de invitaciones |
 
 ### Usar 鹿贝
 
@@ -143,7 +143,7 @@ Todos los pagos se confirman de forma asíncrona mediante un Webhook seguro, par
 
 ## Programa de recomendación
 
-En [identity.lurus.cn](https://identity.lurus.cn) copia tu enlace de recomendación exclusivo (con código de referido) y compártelo con tus amigos. Recompensa: cuando un amigo se registra a través de tu enlace, tú recibes 5 鹿贝; sin límite de invitaciones.
+En [identity.lurus.cn](https://identity.lurus.cn) copia tu enlace de recomendación exclusivo (con código de referido) y compártelo con tus amigos. Recompensa (todo para quien recomienda): 5 鹿贝 cuando un amigo se registra, +10 en su primera recarga pagada, +30 en su primera suscripción pagada y después un 5% de cada suscripción o renovación pagada, hasta 6 veces. Solo cuentan pagos reales; el saldo regalado, los códigos prepago y las activaciones manuales no cuentan. Sin límite de invitaciones.
 
 ---
 

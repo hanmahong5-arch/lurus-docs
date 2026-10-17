@@ -107,7 +107,7 @@ Les **鹿贝 (LB)** sont l’unité de compte du portefeuille de la plateforme L
 |------|------|------|
 | **Achat par recharge** | 1 CNY = 1 鹿贝 | Vous recevez exactement le montant rechargé ; en cas d’offre de recharge, l’affichage de la page de recharge fait foi |
 | **Pointage quotidien** | 0,1 鹿贝 par jour | ×1,5 pour chaque série complète de 7 jours consécutifs, 1 鹿贝 maximum par jour |
-| **Parrainage d’amis** | 5 鹿贝 par filleul | Lorsqu’un ami s’inscrit via votre lien de parrainage, vous recevez 5 鹿贝 ; aucune limite de parrainages |
+| **Parrainage d’amis** | Jusqu’à 45 鹿贝 par filleul + commissions | Inscription via votre lien : 5 ; première recharge payée : +10 ; premier abonnement payé : +30 ; ensuite 5 % de chaque abonnement ou renouvellement payé (jusqu’à 6 fois) ; aucune limite de parrainages |
 
 ### Utiliser les 鹿贝
 
@@ -143,7 +143,7 @@ Tous les paiements sont confirmés de manière asynchrone via un Webhook sécuri
 
 ## Programme de parrainage
 
-Sur [identity.lurus.cn](https://identity.lurus.cn), copiez votre lien de parrainage personnel (incluant votre code de parrainage) et partagez-le avec vos amis. Récompense : lorsqu’un ami s’inscrit via votre lien, vous recevez 5 鹿贝 ; aucune limite au nombre de parrainages.
+Sur [identity.lurus.cn](https://identity.lurus.cn), copiez votre lien de parrainage personnel (incluant votre code de parrainage) et partagez-le avec vos amis. Récompense (entièrement pour le parrain) : 5 鹿贝 à l’inscription d’un ami, +10 à sa première recharge payée, +30 à son premier abonnement payé, puis 5 % de chaque abonnement ou renouvellement payé, jusqu’à 6 fois. Seuls les paiements réels comptent ; les crédits offerts, codes prépayés et activations manuelles ne comptent pas. Aucune limite au nombre de parrainages.
 
 ---
 
