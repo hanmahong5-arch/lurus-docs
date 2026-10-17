@@ -107,7 +107,7 @@ Once you exceed the quota included in your subscription, charges are automatical
 |------|------|------|
 | **Top-up** | 1 CNY = 1 Lubei | You receive exactly what you top up; any top-up promotion is shown on the top-up page |
 | **Daily check-in** | 0.1 Lubei per day | ×1.5 for every full 7-day streak, up to 1 Lubei per day |
-| **Refer a friend** | 5 Lubei per sign-up | When a friend registers via your referral link, you get 5 Lubei; no invitation limit |
+| **Refer a friend** | Up to 45 Lubei per friend + royalties | Your friend signs up via your link: 5; their first paid top-up: +10; first paid subscription: +30; then 5% of each paid subscription or renewal (up to 6 times); no invitation limit |
 
 ### Spending Lubei
 
@@ -143,7 +143,7 @@ All payments are confirmed asynchronously via secure webhooks to avoid duplicate
 
 ## Referral Program
 
-Copy your exclusive referral link (including your referral code) at [identity.lurus.cn](https://identity.lurus.cn) and share it with friends. Reward: when a friend registers via your link, you get 5 Lubei; there is no limit on invitations.
+Copy your exclusive referral link (including your referral code) at [identity.lurus.cn](https://identity.lurus.cn) and share it with friends. Reward (all paid to the referrer): 5 Lubei when a friend signs up, +10 on their first paid top-up, +30 on their first paid subscription, then a 5% royalty on each later paid subscription or renewal, up to 6 times. Only real payments count; gifted credit, prepaid redemption codes and manual activations do not. There is no limit on invitations.
 
 ---
 
