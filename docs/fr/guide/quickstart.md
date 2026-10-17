@@ -25,7 +25,7 @@ Un compte Lurus (l’inscription offre un quota gratuit ; la première étape vo
   <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Utilisable dès l’inscription, sans frais</p>
-    <div class="lurus-callout__body"><p>Tout nouveau compte reçoit automatiquement <strong>5 鹿贝 + un quota gratuit</strong> (offre Free <strong>100 appels/jour</strong>, incluant <code>deepseek-chat</code> et <code>gpt-3.5-turbo</code>), largement suffisant pour suivre ce tutoriel. Pour les détails sur les quotas et la mise à niveau, voir la <a href="/fr/guide/faq">Foire aux questions</a> et les <a href="/fr/platform/billing">explications de facturation</a>.</p></div>
+    <div class="lurus-callout__body"><p>Tout nouveau compte démarre sur l’offre Free avec un quota gratuit quotidien, largement suffisant pour suivre ce tutoriel ; le quota exact et les modèles disponibles font foi dans la console. Pour les détails sur les quotas et la mise à niveau, voir la <a href="/fr/guide/faq">Foire aux questions</a> et les <a href="/fr/platform/billing">explications de facturation</a>.</p></div>
   </div>
 </div>
 

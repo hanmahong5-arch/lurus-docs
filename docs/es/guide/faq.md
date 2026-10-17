@@ -19,7 +19,7 @@ description: Preguntas frecuentes y respuestas sobre el uso de la API de Lurus, 
 <details class="lurus-faq-item">
 <summary>¿Cómo me registro?</summary>
 
-En [hub.lurus.cn](https://hub.lurus.cn) introduce tu correo y contraseña (o inicia sesión con GitHub/Google), obtienes automáticamente 5 鹿贝 + cuota gratuita, y todos los productos comparten la misma cuenta.
+En [hub.lurus.cn](https://hub.lurus.cn) introduce tu correo y contraseña (o inicia sesión con GitHub/Google). Las cuentas nuevas empiezan en el plan Free con cuota gratuita diaria, y todos los productos comparten la misma cuenta y billetera.
 
 </details>
 

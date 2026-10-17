@@ -19,7 +19,7 @@ description: Lurus API 利用時のよくある質問と回答。課金、互換
 <details class="lurus-faq-item">
 <summary>どうやって登録しますか？</summary>
 
-[hub.lurus.cn](https://hub.lurus.cn) でメールアドレスとパスワードを入力（または GitHub/Google でログイン）すると、自動的に 5 鹿贝 + 無料枠が付与され、すべての製品で同一アカウントを共有します。
+[hub.lurus.cn](https://hub.lurus.cn) でメールアドレスとパスワードを入力（または GitHub/Google でログイン）すると、デフォルトで Free プランになり、毎日の無料枠があります。すべての製品で同一のアカウントとウォレットを共有します。
 
 </details>
 

@@ -25,7 +25,7 @@ Lurus アカウント 1 つ（登録するだけで無料枠が手に入りま�
   <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">登録するだけで使える、支払い不要</p>
-    <div class="lurus-callout__body"><p>新規アカウントには自動で <strong>5 鹿贝 + 無料枠</strong>（Free プラン <strong>100 回/日</strong>、<code>deepseek-chat</code>・<code>gpt-3.5-turbo</code> を含む）が付与され、本チュートリアルを動かすには十分すぎるほどです。枠とアップグレードの詳細は <a href="/ja/guide/faq">よくある質問</a> と <a href="/ja/platform/billing">料金について</a> をご覧ください。</p></div>
+    <div class="lurus-callout__body"><p>新規アカウントはデフォルトで Free プランになり、毎日の無料枠があるので、本チュートリアルを動かすには十分です。具体的な枠と利用可能なモデルはコンソールの表示を基準とします。枠とアップグレードの詳細は <a href="/ja/guide/faq">よくある質問</a> と <a href="/ja/platform/billing">料金について</a> をご覧ください。</p></div>
   </div>
 </div>
 

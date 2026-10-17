@@ -59,21 +59,21 @@ GitHub, Google OAuth ; à associer / dissocier dans les paramètres du compte.
 <details class="lurus-faq-item">
 <summary>Comment passer à un forfait supérieur / inférieur ?</summary>
 
-Connectez-vous sur [identity.lurus.cn](https://identity.lurus.cn) → Gestion des abonnements → « Changer de forfait » : la montée en gamme prend effet immédiatement avec un ajustement de prix au prorata ; la rétrogradation prend effet au prochain cycle de facturation.
+Connectez-vous sur [identity.lurus.cn](https://identity.lurus.cn) → Gestion des abonnements → « Changer de forfait » : montée comme descente en gamme prennent effet immédiatement, la différence au prorata des jours restants étant débitée du portefeuille ou remboursée sur celui-ci. Impossible de basculer directement entre paiement mensuel et annuel.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>Que se passe-t-il à l’expiration de l’abonnement ?</summary>
 
-Rétrogradation automatique vers Free ; la clé API reste valide mais soumise au quota Free, les données sont conservées et récupérables à tout moment par un renouvellement.
+Après l’expiration, un délai de grâce de 3 jours s’applique, puis vous repassez sur Free ; la clé API reste valide mais soumise au quota Free, les données sont conservées et récupérables à tout moment par un renouvellement.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>Quelle est la différence entre le paiement annuel et mensuel ?</summary>
 
-Paiement annuel à -20 % (≈ 2,4 mois gratuits) ; pendant la période annuelle, la rétrogradation est impossible mais la montée en gamme reste possible.
+Le total annuel coûte moins que 12 mois en mensuel ; les prix précis font foi sur la console. Impossible de basculer directement entre paiement annuel et mensuel.
 
 </details>
 
@@ -102,21 +102,21 @@ Console d’administration → Équipe → Inviter un membre → Saisir l’e-ma
 <details class="lurus-faq-item">
 <summary>À quoi servent les 鹿贝 ?</summary>
 
-À payer les appels API dépassant le quota d’abonnement, à souscrire aux stratégies payantes de Lucrum et à bénéficier de remises VIP.
+À payer les frais à l’usage de tous les produits (appels API dépassant le quota d’abonnement, etc.) ; ils servent aussi à acheter des abonnements. 1 鹿贝 = 1 CNY.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>Les 鹿贝 expirent-ils ?</summary>
 
-Ceux achetés sont valables à vie ; ceux offerts lors de promotions peuvent avoir une date d’expiration, selon les règles de la promotion.
+Le solde obtenu par recharge n’expire pas ; les crédits offerts lors de promotions peuvent avoir une date d’expiration, selon les règles de la promotion.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>Peut-on retirer ses 鹿贝 ?</summary>
 
-Les 鹿贝 achetés par recharge et non utilisés sont remboursables ; les 鹿贝 issus du règlement des revenus de stratégies Lucrum peuvent être retirés vers une carte bancaire.
+Non, ils ne peuvent pas être retirés. Une recharge non utilisée peut être remboursée en totalité dans les 7 jours suivant le paiement.
 
 </details>
 
@@ -164,7 +164,7 @@ La confirmation intervient généralement en moins d’une minute ; si rien n’
 <details class="lurus-faq-item">
 <summary>Comment demander une facture ?</summary>
 
-Console d’administration → Facturation → Demander une facture (TVA ordinaire / spéciale) ; envoyée par e-mail généralement sous 1 jour ouvré.
+Chaque commande payée peut faire l’objet d’une demande de facture dans la console, en indiquant la raison sociale et le numéro fiscal ; la facture est établie manuellement puis téléchargeable.
 
 </details>
 

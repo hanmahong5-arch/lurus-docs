@@ -11,10 +11,10 @@ Planes de suscripción, gestión de cuotas y sistema económico de 鹿贝.
 
 <MetricStats
   :items="[
-    { label: 'Planes de suscripción', value: '4 niveles', hint: 'Free → Enterprise' },
+    { label: 'Planes de suscripción', value: '5 niveles', hint: 'Free → Enterprise, más un plan para Claude Code' },
     { label: 'Métodos de pago', value: '3 tipos', hint: 'Stripe / Creem / Epay' },
-    { label: 'Bonificación por recarga', value: 'hasta 5%', hint: 'primeras 6 renovaciones' },
-    { label: 'Ventana de reembolso', value: '7 días', hint: 'reembolso íntegro en la primera suscripción' },
+    { label: '鹿贝', value: '1 CNY = 1 LB', hint: 'recibes exactamente lo que recargas' },
+    { label: 'Ventana de reembolso', value: '7 días', hint: 'pedido completo, dentro de los 7 días tras el pago' },
   ]"
 />
 
@@ -26,18 +26,20 @@ Planes de suscripción, gestión de cuotas y sistema económico de 鹿贝.
   <p class="lurus-section-head__lede">Desde la prueba gratuita hasta el SLA empresarial: elige según tu nivel de uso.</p>
 </div>
 
-| Plan | Llamadas a la API | Modelos disponibles | Lucrum | Soporte / Otros |
-|------|---------|---------|--------|------------|
-| **Free** | 100 veces/día | Básicos (deepseek-chat, gpt-3.5-turbo) | Asistente IA: 10 conversaciones/día | Soporte de la comunidad |
-| **Basic** | Suscripción mensual de iniciación, precio según la consola | — | — | Para que desarrolladores individuales lo prueben |
-| **Pro** (mensual/anual, descuento en el pago anual) | 10,000 veces/mes | Todos | Asistente IA ilimitado; despliegue de hasta 3 estrategias | Tickets por correo (respuesta en 24 h) |
-| **Enterprise** (personalizado) | Bajo demanda | Todos + despliegue privado | Miembros del equipo ilimitados | SLA 99.9%; gestor de cuenta dedicado + respuesta inmediata; centro de datos a elección |
+| Plan | Posicionamiento | Descripción |
+|------|------|------|
+| **Free** | Prueba gratuita | Cuota gratuita diaria, menos modelos disponibles |
+| **Basic** | Suscripción mensual de iniciación | Desarrolladores individuales |
+| **Pro** | Suscripción avanzada, mensual o anual | El pago anual cuesta menos en total que 12 meses de pago mensual |
+| **Enterprise** | Equipos / empresas | Despliegue privado, SLA, etc., según acuerdo comercial |
+
+El precio, la cuota diaria y los modelos disponibles de cada nivel se rigen por la consola de [identity.lurus.cn](https://identity.lurus.cn) (página de gestión de suscripciones); los cambios del administrador se aplican al instante, por lo que esta página no mantiene una copia de las cifras. También hay un plan independiente para Claude Code, que igualmente se rige por la consola.
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="briefcase" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Plan empresarial</p>
-    <div class="lurus-callout__body">¿Necesitas despliegue privado, centro de datos a elección o SLA 99.9%? Contacta con <a href="mailto:business@lurus.cn">business@lurus.cn</a>.</div>
+    <div class="lurus-callout__body">¿Necesitas despliegue privado, centro de datos a elección o SLA? Contacta con <a href="mailto:business@lurus.cn">business@lurus.cn</a>.</div>
   </div>
 </div>
 
@@ -46,18 +48,12 @@ Planes de suscripción, gestión de cuotas y sistema económico de 鹿贝.
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="gauge" :size="14" /> Cuota</span>
   <h2 class="lurus-section-head__title">Gestión de cuotas</h2>
-  <p class="lurus-section-head__lede">Cada llamada consume cuota según el modelo y el uso de Token; al superar el límite se cobra automáticamente en 鹿贝.</p>
+  <p class="lurus-section-head__lede">Primero se usa la cuota de la suscripción; al agotarse, se cobra de la billetera de 鹿贝 según el precio unitario del modelo.</p>
 </div>
 
 ### Cálculo de la cuota
 
-La cuota consumida en cada llamada a la API depende del modelo y del uso de Token:
-
-| Tipo de modelo | Regla de consumo de cuota |
-|---------|-------------|
-| Modelos básicos (deepseek-chat, etc.) | 1 llamada = 1 cuota |
-| Modelos avanzados (gpt-4o, etc.) | 1 llamada = 3 cuotas |
-| Generación de imágenes/vídeo | Según la complejidad de la tarea = 5-20 cuotas |
+Cada llamada se factura según el precio unitario del modelo y el uso de Token: los modelos de chat cobran la entrada y la salida por separado, y la generación de imágenes y similares se cobra por llamada. Los precios unitarios de cada modelo son los que muestra la consola.
 
 ### Gestión del exceso de cuota
 
@@ -74,62 +70,37 @@ La cuota consumida en cada llamada a la API depende del modelo y del uso de Toke
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">No falla en silencio</p>
-    <div class="lurus-callout__body">Cuando el saldo es insuficiente, se avisa con antelación por correo + mensaje interno; el servicio no se interrumpe sin que lo sepas.</div>
+    <div class="lurus-callout__body">Recibes un aviso cuando el saldo de la billetera baja del umbral que hayas configurado; si el saldo es insuficiente, la solicitud devuelve 402 directamente: no se genera una deuda para reclamarla después.</div>
   </div>
 </div>
-
-### Alertas de cuota
-
-| Umbral de alerta | Forma de notificación |
-|---------|---------|
-| 30% restante | Mensaje interno |
-| 10% restante | Mensaje interno + correo |
-| Cuota agotada | Mensaje interno + correo + notificación WebSocket |
 
 ---
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
   <h2 class="lurus-section-head__title">Economía de 鹿贝</h2>
-  <p class="lurus-section-head__lede">Moneda de puntos unificada, canjeable proporcionalmente por Token y número de llamadas.</p>
+  <p class="lurus-section-head__lede">La unidad contable de la billetera: 1 鹿贝 = 1 CNY.</p>
 </div>
 
-### Valor de 鹿贝
+### Recarga
 
-Valor de referencia de 1 鹿贝 (LB):
+Al recargar 1 CNY recibes 1 鹿贝, sin bonificaciones escalonadas. Si el administrador ha configurado una promoción de recarga, vale el importe a pagar que muestre la página de recarga.
 
-| Recurso | 1 LB equivale a |
-|------|------------|
-| Token (modelos básicos) | aprox. 10,000 tokens |
-| Token (modelos avanzados) | aprox. 3,000 tokens |
-| Llamadas a la API | aprox. 5-10 veces (depende del modelo) |
+### Descuentos VIP
 
-### Tasas de recarga
-
-| Importe de recarga (CNY) | 鹿贝 obtenidos | Precio unitario |
-|----------------|---------|------|
-| ¥10 | 10 LB | ¥1.00/LB |
-| ¥50 | 55 LB | ¥0.91/LB |
-| ¥100 | 115 LB | ¥0.87/LB |
-| ¥500 | 600 LB | ¥0.83/LB |
-
-Cuanto más recargues, menor será el precio unitario.
-
-### Descuentos VIP acumulables
-
-El descuento VIP se aplica automáticamente al gastar 鹿贝.
+El nivel VIP se determina por el importe acumulado de recargas (o por una suscripción anual), y el descuento se aplica automáticamente al comprar y renovar suscripciones; las recargas y los cargos por uso no tienen descuento.
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="crown" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Ejemplo: Tarjeta Oro con 10% de descuento</p>
-    <div class="lurus-callout__body">Un usuario con Tarjeta Oro que llama a gpt-4o (3 LB/vez) paga en realidad = <code>3 × 0.9 = 2.7 LB/次</code>.</div>
+    <p class="lurus-callout__title">Ejemplo: Tarjeta Oro con 5% de descuento</p>
+    <div class="lurus-callout__body">Con los umbrales predeterminados, alcanzas la Tarjeta Oro con ¥2,000 de recargas acumuladas; al renovar una suscripción mensual de ¥99 pagas <code>99 × 0.95 = ¥94.05</code>. Los umbrales y descuentos se rigen por la consola.</div>
   </div>
 </div>
 
 ### Vigencia de 鹿贝
 
-Los 鹿贝 comprados son válidos de forma permanente; los obtenidos en promociones se rigen por las condiciones de la promoción; los reembolsos solo cubren la parte pagada en efectivo, los 鹿贝 de regalo no se reembolsan.
+El saldo obtenido con recargas no caduca; los créditos de promociones pueden tener fecha de vencimiento, según las condiciones de la promoción.
 
 ---
 
@@ -139,7 +110,7 @@ Los 鹿贝 comprados son válidos de forma permanente; los obtenidos en promocio
 </div>
 
 - **Consultar la factura** ([identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)): resumen mensual de consumo, detalle de transacciones, movimientos de 鹿贝 y estadísticas de uso de cuota.
-- **Emitir comprobante** (admite factura del IVA ordinaria/especial): «Facturas» → «Solicitar comprobante» → completar los datos del comprobante (tras guardarlos la primera vez se rellenan automáticamente) → elegir el importe y el mes. El comprobante electrónico suele enviarse por correo en un plazo de 1 día hábil.
+- **Emitir comprobante**: puedes solicitar un comprobante por cada pedido pagado indicando la razón social y el número de identificación fiscal; se emite manualmente y después puedes descargarlo desde la consola.
 
 ---
 
@@ -150,11 +121,11 @@ Los 鹿贝 comprados son válidos de forma permanente; los obtenidos en promocio
 
 | Tipo | Política |
 |------|------|
-| Reembolso de suscripción | Reembolso íntegro dentro de los 7 días de la primera suscripción |
-| Reembolso de recarga de 鹿贝 | Los 鹿贝 no utilizados pueden solicitarse para reembolso (descontando la parte de regalo) |
+| Suscripción | Se solicita en la consola dentro de los 7 días tras el pago; una vez aprobada, se reembolsa el pedido completo |
+| Recarga | Dentro de los 7 días tras el pago, si esa recarga no se ha usado, puede solicitarse el reembolso del pedido completo |
 | Parte ya consumida | No reembolsable |
 
-Para reembolsos, contacta con [support@lurus.cn](mailto:support@lurus.cn).
+Los pagos con Alipay, WeChat Pay y Stripe se reembolsan al medio de pago original; los demás métodos se reembolsan a la billetera.
 
 <NextSteps
   title="Próximos pasos"
