@@ -22,7 +22,7 @@ description: "Complete path for SCIM user migration, SSO federation, and phased 
   <div class="lurus-card lurus-card--auth">
     <span class="lurus-card__icon"><Icon name="import" :size="20" /></span>
     <div class="lurus-card__title">Strategy B: Full Relocation</div>
-    <p class="lurus-card__body">Export your existing Keycloak/Auth0 to Lurus Auth (Casdoor) via SCIM and make it the single source of truth.</p>
+    <p class="lurus-card__body">Export your existing Keycloak/Auth0 to Lurus Auth (Zitadel) via SCIM and make it the single source of truth.</p>
   </div>
 </div>
 
@@ -35,7 +35,7 @@ description: "Complete path for SCIM user migration, SSO federation, and phased 
 ### Strategy B — Relocation Topology
 
 <ArchitectureDiagram title="Strategy B: Relocation" chart="graph LR
-  KC[Original Keycloak/Auth0] -->|SCIM Export| LA[Lurus Auth · Casdoor]
+  KC[Original Keycloak/Auth0] -->|SCIM Export| LA[Lurus Auth · Zitadel]
   LA --> D[All Downstream]" />
 
 ## <Icon name="building-2" :size="20" /> Strategy A Steps (Recommended)

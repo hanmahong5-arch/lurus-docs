@@ -22,7 +22,7 @@ description: "SCIM ユーザー移行、SSO フェデレーション、段階的
   <div class="lurus-card lurus-card--auth">
     <span class="lurus-card__icon"><Icon name="import" :size="20" /></span>
     <div class="lurus-card__title">戦略 B：完全に移行する</div>
-    <p class="lurus-card__body">既存の Keycloak/Auth0 を SCIM で Lurus Auth（Casdoor）へエクスポートし、唯一の真実の源とします。</p>
+    <p class="lurus-card__body">既存の Keycloak/Auth0 を SCIM で Lurus Auth（Zitadel）へエクスポートし、唯一の真実の源とします。</p>
   </div>
 </div>
 
@@ -35,7 +35,7 @@ description: "SCIM ユーザー移行、SSO フェデレーション、段階的
 ### 戦略 B — 移行構成
 
 <ArchitectureDiagram title="策略 B：搬家" chart="graph LR
-  KC[既存 Keycloak/Auth0] -->|SCIM エクスポート| LA[Lurus Auth · Casdoor]
+  KC[既存 Keycloak/Auth0] -->|SCIM エクスポート| LA[Lurus Auth · Zitadel]
   LA --> D[すべての下流]" />
 
 ## <Icon name="building-2" :size="20" /> 戦略 A の手順（推奨）

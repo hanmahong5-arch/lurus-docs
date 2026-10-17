@@ -55,7 +55,7 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
 
 **账号管理**（登录 [identity.lurus.cn](https://identity.lurus.cn) → 账号设置）：个人信息、登录历史、第三方绑定、安全设置（改密码、两步验证）。
 
-**一次登录，全站通行**：基于 OIDC 标准，登录任意产品即在所有产品间建立会话；支持 Passkey/WebAuthn 无密码、TOTP/硬件密钥 MFA、GitHub/Google 社交登录，企业可对接 Azure AD/飞书/Okta SSO。终端用户一份账号通吃 API/Lucrum/Switch/Creator/Lutu；开发者用 OIDC SDK 接入自有应用，后端用 Service User + JWT Profile；企业组织管理（成员/权限/审计）经 [identity.lurus.cn](https://identity.lurus.cn)（Casdoor 控制台）或联系商务开通。
+**一次登录，全站通行**：基于 OIDC 标准，登录任意产品即在所有产品间建立会话；支持 Passkey/WebAuthn 无密码、TOTP/硬件密钥 MFA、GitHub/Google 社交登录，企业可对接 Azure AD/飞书/Okta SSO。终端用户一份账号通吃 API/Lucrum/Switch/Creator/Lutu；开发者用 OIDC SDK 接入自有应用，后端用 Service User + JWT Profile；企业组织管理（成员/权限/审计）经 [identity.lurus.cn](https://identity.lurus.cn)（Zitadel 控制台）或联系商务开通。
 
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="key-round" :size="18" /></span>
@@ -136,13 +136,23 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 
 ## 支付方式
 
-所有支付经安全 Webhook 异步确认，避免网络波动重复扣费。
+所有渠道注册进同一个收款中心：回调逐笔验签并核对商户、金额与订单号，漏掉的回调由主动查单兜底，退款幂等、原路返回，渠道日对账单自动比对。
 
 | 方式 | 场景 | 说明 |
-|------|----------|------|
-| **Stripe** | 订阅 + 充值 | 信用卡/借记卡（Visa、Mastercard） |
-| **Creem** | 充值 | 加密货币支付 |
-| **Epay** | 充值 | 支付宝/微信支付（第三方） |
+|------|------|------|
+| **支付宝直连** | 充值 / 订阅 | 电脑端扫码、手机网站、电脑网站支付，按设备自动选择 |
+| **微信支付直连** | 充值 / 订阅 | 扫码、公众号 / 小程序、APP 支付 |
+| **Stripe** | 订阅 + 充值 | 国际信用卡 / 借记卡 |
+| **对公转账** | 企业充值 | 按附言码自动核销，网银流水导入查重 |
+| **Creem / 易支付** | 充值 | 备用渠道，按部署开启 |
+
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">现状</p>
+    <div class="lurus-callout__body">支付宝、微信支付直连的代码已就绪并有测试覆盖，但还没有用真实商户号跑通过；某个渠道是否已开通，以充值页实际显示为准。</div>
+  </div>
+</div>
 
 ---
 
@@ -224,7 +234,8 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 <NextSteps
   title="下一步"
   :steps="[
-    { text: '身份认证 (Casdoor)', link: '/platform/auth/', primary: true },
+    { text: '身份认证 (Zitadel)', link: '/platform/auth/', primary: true },
+    { text: '私有化部署', link: '/platform/self-host' },
     { text: '交互式 API 参考', link: 'https://identity.lurus.cn/docs/api', external: true },
     { text: '计费详解', link: '/platform/billing' },
     { text: '常见问题', link: '/platform/faq' },

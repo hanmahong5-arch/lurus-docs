@@ -12,7 +12,7 @@ description: Lurus 订阅计划、配额管理和鹿贝经济系统详细说明�
 <MetricStats
   :items="[
     { label: '订阅计划', value: '4 档', hint: 'Free → Enterprise' },
-    { label: '支付方式', value: '3 种', hint: 'Stripe / Creem / Epay' },
+    { label: '支付方式', value: '5 类', hint: '支付宝 / 微信 / Stripe / 对公 / 备用' },
     { label: '充值返利', value: '最高 5%', hint: '前 6 次续费' },
     { label: '退款窗口', value: '7 天', hint: '首次订阅全额退' },
   ]"

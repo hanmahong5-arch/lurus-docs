@@ -22,7 +22,7 @@ description: "SCIM 사용자 마이그레이션, SSO 페더레이션, 점진적 
   <div class="lurus-card lurus-card--auth">
     <span class="lurus-card__icon"><Icon name="import" :size="20" /></span>
     <div class="lurus-card__title">전략 B: 완전 이전</div>
-    <p class="lurus-card__body">기존 Keycloak/Auth0를 SCIM으로 Lurus Auth(Casdoor)에 내보내어 단일 진실 공급원으로 삼습니다.</p>
+    <p class="lurus-card__body">기존 Keycloak/Auth0를 SCIM으로 Lurus Auth(Zitadel)에 내보내어 단일 진실 공급원으로 삼습니다.</p>
   </div>
 </div>
 
@@ -35,7 +35,7 @@ description: "SCIM 사용자 마이그레이션, SSO 페더레이션, 점진적 
 ### 전략 B — 이전 토폴로지
 
 <ArchitectureDiagram title="전략 B: 이전" chart="graph LR
-  KC[기존 Keycloak/Auth0] -->|SCIM 내보내기| LA[Lurus Auth · Casdoor]
+  KC[기존 Keycloak/Auth0] -->|SCIM 내보내기| LA[Lurus Auth · Zitadel]
   LA --> D[모든 다운스트림]" />
 
 ## <Icon name="building-2" :size="20" /> 전략 A 단계(권장)

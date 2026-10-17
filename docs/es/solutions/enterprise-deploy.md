@@ -69,7 +69,7 @@ description: "Comparativa de tres modalidades de despliegue (SaaS / on-premise /
 
 Las empresas que ya cuentan con un IdP (Okta / Azure AD / Keycloak autogestionado) permiten a sus empleados iniciar sesión con la cuenta corporativa:
 
-<ArchitectureDiagram title="Inicio de sesión federado con el IdP empresarial" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Casdoor]; B --> C[所有 Lurus 产品]" />
+<ArchitectureDiagram title="Inicio de sesión federado con el IdP empresarial" chart="graph LR; A[企业 IdP] -->|OIDC| B[Lurus Zitadel]; B --> C[所有 Lurus 产品]" />
 
 Protocolos compatibles: OIDC / OAuth 2.0 / SAML 2.0 / SCIM (ciclo de vida de usuarios).
 
