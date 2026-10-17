@@ -45,7 +45,7 @@ openclaw config set models.providers.lurus '{
 | `baseUrl` | `https://hub.lurus.cn/v1` |
 | `apiKey` | `${LURUS_API_KEY}` |
 | `api` | `openai-completions` |
-| `models[].id` | Lurus 的模型 ID，见 [支持的模型](/guide/models) |
+| `models[].id` | Lurus 的模型 ID，见 [模型与价格](https://hub.lurus.cn/api/v1/models)（公开，人民币价格） |
 
 ## 3. 选模型并验证
 
@@ -55,7 +55,7 @@ openclaw config set models.providers.lurus '{
 curl https://hub.lurus.cn/v1/models -H "Authorization: Bearer $LURUS_API_KEY"
 ```
 
-返回的就是这个 Key 当前能用的全部模型，想加哪个，把它的 `id` 补进上面的 `models` 列表即可。
+返回的就是这个 Key 当前能用的全部模型，想加哪个，把它的 `id` 补进上面的 `models` 列表即可。各模型价格见 [hub.lurus.cn/api/v1/models](https://hub.lurus.cn/api/v1/models)，每次调用返回的 `usage.cost` 是这次实际扣的钱。
 
 ## 选型建议
 

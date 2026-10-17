@@ -1,6 +1,6 @@
 ---
 title: Hub 快速开始
-description: 登录 Lurus Hub 控制台、创建 API 令牌、发出第一个模型请求，以及用兑换码充值额度。
+description: 登录 Lurus Hub 控制台、创建 API 令牌、发出第一个模型请求，以及给账户钱包充值。
 ---
 
 # Hub 快速开始
@@ -23,8 +23,8 @@ description: 登录 Lurus Hub 控制台、创建 API 令牌、发出第一个模
 
 关于统一身份体系本身（账号如何创建、多因素、企业目录对接），见 [统一身份认证](/platform/auth/)。
 
-::: tip 还没有租户？
-Hub 是多租户网关，**账号需要归属到某个租户**。企业客户的租户由 Lurus 侧开通；如果你登录后提示租户不存在，请联系对接人开通，或改用 [Lurus API](/guide/quickstart) 的标准接入方式。
+::: tip 第一次登录
+用 Lurus 账号第一次登录时，Hub 会自动为你开通账户，不用另外申请。企业客户的独立租户由 Lurus 侧开通。
 :::
 
 ---
@@ -74,7 +74,9 @@ resp = client.chat.completions.create(
 print(resp.choices[0].message.content)
 ```
 
-想确认当前令牌能用哪些模型，先调 `GET /v1/models`——它返回的就是这个令牌的可用集合，比翻文档更准。
+想看有哪些模型、各自什么价格，打开 [hub.lurus.cn/api/v1/models](https://hub.lurus.cn/api/v1/models)：公开、不用令牌，OpenRouter 同款格式，`lurus` 字段里是人民币价格。想确认**当前令牌**能用哪些，调 `GET /v1/models`（要带令牌）。
+
+每次调用的返回里，`usage.cost` 就是这次调用实际扣你的钱（美元额度计）。
 
 Claude 格式请求发到 `POST /v1/messages`，Gemini 原生格式发到 `/v1beta/*`；Hub 会在格式之间自动转换，所以同一个令牌可以同时服务这三种客户端。
 
@@ -82,12 +84,9 @@ Claude 格式请求发到 `POST /v1/messages`，Gemini 原生格式发到 `/v1be
 
 ## 4. 充值额度
 
-两种方式：
+用量从你的 Lurus 账户钱包里扣，充值就是给钱包充值：打开 [identity.lurus.cn/topup](https://identity.lurus.cn/topup) 选金额付款，到账后 Hub 立刻可用。同一个钱包也用于 Lurus 的其他产品，账单见 [账号与计费](/platform/)。
 
-- **兑换码**——在控制台输入兑换码即可入账，对应接口 `POST /api/v2/{tenant_slug}/redeem`。经销商发放的激活码走的就是这条路径。
-- **统一钱包**——租户用量结算到 Lurus Platform 的统一钱包，充值与账单见 [账号与计费](/platform/)。
-
-具体开放了哪些充值渠道随部署配置而定，以控制台显示为准。
+**兑换码**（经销商发放的激活码）在控制台兑换，接口是 `POST /api/v2/{tenant_slug}/redeem`。账户已经接入统一钱包时，兑换会被拒绝并返回 `WALLET_IS_LEDGER`，请改用钱包充值。
 
 ---
 

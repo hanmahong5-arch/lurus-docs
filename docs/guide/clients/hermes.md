@@ -38,7 +38,7 @@ model:
 |------|-----|
 | `provider` | `custom` |
 | `base_url` | `https://hub.lurus.cn/v1` |
-| `default` | Lurus 的模型 ID，见 [支持的模型](/guide/models) |
+| `default` | Lurus 的模型 ID，见 [模型与价格](https://hub.lurus.cn/api/v1/models)（公开，人民币价格） |
 | `context_length` | 该模型的上下文长度。Hermes 至少需要约 64k，填小了会被截断 |
 
 ## 3. 运行
