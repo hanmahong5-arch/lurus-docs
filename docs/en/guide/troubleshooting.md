@@ -105,7 +105,7 @@ For retry code examples, see [Error handling · Best practices](/en/api/errors#e
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- First confirm whether you’ve used up today’s free quota (Free plan: 100 calls/day)
+- First confirm whether you’ve used up today’s free quota (the Free plan’s daily quota is shown in the console)
 - Check your 鹿贝 balance: [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
 - Top up yourself or upgrade your plan; for the rules, see [Billing](/en/platform/billing)
 

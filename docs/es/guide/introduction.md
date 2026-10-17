@@ -9,7 +9,7 @@ description: Una sola API Key para acceder a más de 50 modelos de IA líderes, 
 
 <MetricStats :items="[
   { label: 'Modelos disponibles', value: '50+' },
-  { label: 'Cuota gratuita', value: '100 / día' },
+  { label: 'Cuota gratuita', value: 'Diaria' },
   { label: 'Compatibilidad', value: 'OpenAI SDK' },
 ]" />
 

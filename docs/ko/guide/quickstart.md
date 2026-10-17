@@ -25,7 +25,7 @@ Lurus 계정 하나(가입하면 바로 무료 할당량 제공, 첫 단계에�
   <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">가입 즉시 사용, 결제 불필요</p>
-    <div class="lurus-callout__body"><p>신규 계정은 자동으로 <strong>5 鹿贝 + 무료 할당량</strong>(Free 플랜 <strong>일 100회</strong>, <code>deepseek-chat</code>、<code>gpt-3.5-turbo</code> 포함)을 받으며, 이 튜토리얼을 완주하기에 충분합니다. 할당량과 업그레이드 상세는 <a href="/ko/guide/faq">자주 묻는 질문</a>과 <a href="/ko/platform/billing">요금 안내</a>를 참고하세요.</p></div>
+    <div class="lurus-callout__body"><p>신규 계정은 기본적으로 Free 플랜이며 매일 무료 할당량이 제공되어, 이 튜토리얼을 완주하기에 충분합니다. 구체적인 할당량과 사용 가능 모델은 콘솔을 기준으로 합니다. 할당량과 업그레이드 상세는 <a href="/ko/guide/faq">자주 묻는 질문</a>과 <a href="/ko/platform/billing">요금 안내</a>를 참고하세요.</p></div>
   </div>
 </div>
 

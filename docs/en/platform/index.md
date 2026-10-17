@@ -38,8 +38,8 @@ A successful registration gives you:
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">5 Lubei to Start</div>
-    <p class="lurus-card__body">Granted on first registration, ready to use immediately</p>
+    <div class="lurus-card__title">Lubei Wallet</div>
+    <p class="lurus-card__body">Opened on sign-up; 1 CNY = 1 Lubei, shared across all products</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
@@ -81,7 +81,7 @@ Lurus uses a dual-track "subscription + usage" billing model that flexibly adapt
 | **Pro Annual** | Pro annual discount | Stable users |
 | **Enterprise** | Enterprise customization + SLA | Teams / enterprises |
 
-Exact pricing is determined by the [identity.lurus.cn](https://identity.lurus.cn) console (Subscription Management page).
+There is also a separate plan for Claude Code. Exact pricing is determined by the [identity.lurus.cn](https://identity.lurus.cn) console (Subscription Management page).
 
 ### Usage-Based Billing
 
@@ -99,28 +99,23 @@ Once you exceed the quota included in your subscription, charges are automatical
 
 ## Lubei Wallet {#wallet}
 
-**Lubei (LB)** is the universal credit currency of the Lurus platform, used to pay for all overage usage.
+**Lubei (LB)** is the accounting unit of the Lurus platform wallet: 1 Lubei = 1 CNY. It is used to pay usage-based charges across all products.
 
 ### Earning Lubei
 
 | Source | Reward | Notes |
 |------|------|------|
-| **New user registration** | 5 LB | Granted on first registration |
-| **First top-up** | 10 LB bonus | Extra bonus on your first top-up |
-| **First subscription** | 30 LB bonus | First subscription to any paid plan |
-| **Subscription renewal** | Top-up amount x 5% | Rebate on the first 6 renewals |
-| **Daily check-in** | Random LB | Claimed via daily check-in |
-| **Refer a friend** | Referral reward | Both parties earn after the friend registers |
-| **Strategy income** | Revenue-share settlement | Income from Lucrum strategy subscriptions |
-| **Direct purchase** | Exchanged at a set ratio | Buy Lubei directly |
+| **Top-up** | 1 CNY = 1 Lubei | You receive exactly what you top up; any top-up promotion is shown on the top-up page |
+| **Daily check-in** | 0.1 Lubei per day | ×1.5 for every full 7-day streak, up to 1 Lubei per day |
+| **Refer a friend** | 5 Lubei per sign-up | When a friend registers via your referral link, you get 5 Lubei; no invitation limit |
 
 ### Spending Lubei
 
-Usable for: paying for API calls beyond your subscription quota, subscribing to paid Lucrum strategies, and purchasing premium features / expansion packs.
+Usable for: usage-based charges across all products (such as API calls beyond your subscription quota), as well as purchasing subscriptions.
 
 ### VIP Levels
 
-Accumulated Lubei spending unlocks multiple VIP tiers, with discounts automatically applied to all Lubei spending.
+VIP level is based on your cumulative top-up amount (or an annual subscription). VIP discounts apply automatically when you purchase or renew a subscription; top-ups and usage-based charges are not discounted. Default thresholds are cumulative top-ups of ¥500 / ¥2,000 / ¥10,000 / ¥50,000, for 2% / 5% / 8% / 10% off respectively; the console is authoritative.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">Entry</span></div>
@@ -148,7 +143,7 @@ All payments are confirmed asynchronously via secure webhooks to avoid duplicate
 
 ## Referral Program
 
-Copy your exclusive referral link (including your referral code) at [identity.lurus.cn](https://identity.lurus.cn) and share it with friends. Rewards: when a friend registers via your link, both parties earn Lubei; when a friend makes their first paid subscription, you earn an additional rebate of a set percentage of the subscription amount; there is no limit on invitations.
+Copy your exclusive referral link (including your referral code) at [identity.lurus.cn](https://identity.lurus.cn) and share it with friends. Reward: when a friend registers via your link, you get 5 Lubei; there is no limit on invitations.
 
 ---
 
