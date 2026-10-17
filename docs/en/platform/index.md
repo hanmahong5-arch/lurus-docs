@@ -18,7 +18,7 @@ description: Lurus unified account system, subscription plans, Lubei wallet, and
     { title: 'Unified Account', body: 'One identity, balance, and subscription shared across every Lurus product', icon: 'user-check' },
     { title: 'Lubei Wallet', body: 'Unified billing unit, usage-based deduction, real-time balance lookup', icon: 'coins' },
     { title: 'Subscription Plans', body: 'Free quota + pay-as-you-go + enterprise packages', icon: 'package-2' },
-    { title: 'VIP Tiers', body: 'Spend more to unlock exclusive models and support', icon: 'crown' },
+    { title: 'VIP Tiers', body: 'Tier up with cumulative top-ups; subscriptions get a discount', icon: 'crown' },
   ]"
 />
 
@@ -91,7 +91,7 @@ Once you exceed the quota included in your subscription, charges are automatical
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Want full pricing, quota rules, and exchange ratios?</p>
-    <div class="lurus-callout__body"><a href="/en/platform/billing">Billing Details</a> breaks down subscription plan comparisons, quota calculation, Lubei exchange ratios, and the refund policy.</div>
+    <div class="lurus-callout__body"><a href="/en/platform/billing">Billing Details</a> breaks down subscription plan comparisons, quota calculation, Lubei top-up rules, and the refund policy.</div>
   </div>
 </div>
 

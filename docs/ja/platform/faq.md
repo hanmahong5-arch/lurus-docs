@@ -123,7 +123,7 @@ GitHub、Google OAuth に対応しており、アカウント設定で連携 / �
 <details class="lurus-faq-item">
 <summary>残高や収支記録はどう確認しますか？</summary>
 
-[identity.lurus.cn](https://identity.lurus.cn) にログイン → ウォレットで、現在の残高、収入明細（チャージ / 報酬 / ストラテジー収益）、支出明細（API 消費 / ストラテジー購読）を確認できます。
+[identity.lurus.cn](https://identity.lurus.cn) にログイン → ウォレットで、現在の残高、収入明細（チャージ / 報酬 / 返金）、支出明細（API 消費 / サブスクリプション）を確認できます。
 
 </details>
 

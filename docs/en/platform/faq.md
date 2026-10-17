@@ -123,7 +123,7 @@ No, it can’t be withdrawn. A top-up that hasn’t been used can be refunded as
 <details class="lurus-faq-item">
 <summary>How do I check my balance and transaction history?</summary>
 
-Log in to [identity.lurus.cn](https://identity.lurus.cn) → Wallet to view your current balance, income details (top-ups / rewards / strategy income), and spending details (API consumption / strategy subscriptions).
+Log in to [identity.lurus.cn](https://identity.lurus.cn) → Wallet to view your current balance, income details (top-ups / rewards / refunds), and spending details (API consumption / subscriptions).
 
 </details>
 

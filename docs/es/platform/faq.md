@@ -123,7 +123,7 @@ No se pueden retirar. Una recarga no utilizada puede reembolsarse como pedido co
 <details class="lurus-faq-item">
 <summary>¿Cómo consulto el saldo y el historial de movimientos?</summary>
 
-Inicia sesión en [identity.lurus.cn](https://identity.lurus.cn) → Billetera, para ver el saldo actual, el detalle de ingresos (recargas / recompensas / ingresos de estrategias) y el detalle de gastos (consumo de API / suscripciones a estrategias).
+Inicia sesión en [identity.lurus.cn](https://identity.lurus.cn) → Billetera, para ver el saldo actual, el detalle de ingresos (recargas / recompensas / reembolsos) y el detalle de gastos (consumo de API / suscripciones).
 
 </details>
 

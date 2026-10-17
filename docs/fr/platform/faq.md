@@ -123,7 +123,7 @@ Non, ils ne peuvent pas être retirés. Une recharge non utilisée peut être re
 <details class="lurus-faq-item">
 <summary>Comment consulter le solde et l’historique des opérations ?</summary>
 
-Connectez-vous sur [identity.lurus.cn](https://identity.lurus.cn) → Portefeuille, pour consulter le solde actuel, le détail des entrées (recharge / récompenses / revenus de stratégies) et le détail des sorties (consommation API / abonnement aux stratégies).
+Connectez-vous sur [identity.lurus.cn](https://identity.lurus.cn) → Portefeuille, pour consulter le solde actuel, le détail des entrées (recharge / récompenses / remboursements) et le détail des sorties (consommation API / abonnements).
 
 </details>
 

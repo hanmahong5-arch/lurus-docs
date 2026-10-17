@@ -18,7 +18,7 @@ description: Descripción del sistema unificado de cuentas, los planes de suscri
     { title: 'Cuenta unificada', body: 'Identidad, saldo y suscripción compartidos entre todos los productos de Lurus', icon: 'user-check' },
     { title: 'Billetera 鹿贝', body: 'Unidad de facturación unificada, cobro por uso y consulta de saldo en tiempo real', icon: 'coins' },
     { title: 'Planes de suscripción', body: 'Cuota gratuita + pago por uso + planes empresariales', icon: 'package-2' },
-    { title: 'Programa VIP', body: 'Sube de nivel con el consumo y desbloquea modelos y soporte exclusivos', icon: 'crown' },
+    { title: 'Programa VIP', body: 'Sube de nivel según tus recargas acumuladas; las suscripciones tienen descuento', icon: 'crown' },
   ]"
 />
 
@@ -91,7 +91,7 @@ Una vez superada la cuota incluida en la suscripción, el cobro se realiza autom
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">¿Quieres ver los precios completos, las reglas de cuota y los ratios de recarga?</p>
-    <div class="lurus-callout__body"><a href="/es/platform/billing">Detalles de facturación</a> desglosa la comparación de planes de suscripción, el cálculo de cuotas, el ratio de conversión de 鹿贝 y la política de reembolsos.</div>
+    <div class="lurus-callout__body"><a href="/es/platform/billing">Detalles de facturación</a> desglosa la comparación de planes de suscripción, el cálculo de cuotas, las reglas de recarga de 鹿贝 y la política de reembolsos.</div>
   </div>
 </div>
 

@@ -123,7 +123,7 @@ GitHub, Google OAuth를 지원하며, 계정 설정에서 연동 / 연동 해제
 <details class="lurus-faq-item">
 <summary>잔액과 입출금 내역은 어떻게 확인하나요?</summary>
 
-[identity.lurus.cn](https://identity.lurus.cn) 로그인 → 지갑에서 현재 잔액, 수입 내역(충전 / 보상 / 전략 수익), 지출 내역(API 사용 / 전략 구독)을 확인할 수 있습니다.
+[identity.lurus.cn](https://identity.lurus.cn) 로그인 → 지갑에서 현재 잔액, 수입 내역(충전 / 보상 / 환불), 지출 내역(API 사용 / 구독)을 확인할 수 있습니다.
 
 </details>
 
