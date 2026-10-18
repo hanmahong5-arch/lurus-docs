@@ -203,6 +203,7 @@ const sidebarZh = {
         { text: 'OpenClaw', link: '/guide/clients/openclaw' },
         { text: 'Hermes Agent', link: '/guide/clients/hermes' },
         { text: '小智 ESP32', link: '/guide/clients/xiaozhi-esp32' },
+        { text: 'Paperclip', link: '/guide/clients/paperclip' },
         { text: '其他客户端', link: '/guide/clients/others' }
       ]
     }
