@@ -114,7 +114,7 @@ description: AI 驱动的量化交易平台，支持策略市场、回测验证�
 </li>
 <li>
 
-**鹿贝余额兜底** — 配额用尽后自动从 [鹿贝钱包](/platform/billing#wallet) 扣费，1 鹿贝 = 10,000 tokens。
+**钱包余额兜底** — 配额用尽后从 [账号钱包](/platform/#wallet) 扣费。
 
 </li>
 </ol>

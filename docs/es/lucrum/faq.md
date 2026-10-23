@@ -22,7 +22,7 @@ En [lucrum.lurus.cn](https://lucrum.lurus.cn) inicia sesión con la cuenta unifi
 <details class="lurus-faq-item">
 <summary>¿Es de pago?</summary>
 
-Hay dos modalidades: gratuita y de pago; al superar la cuota gratuita se cobra desde el [monedero de 鹿贝](/es/platform/billing#wallet).
+Hay dos modalidades: gratuita y de pago; lo que supera la cuota gratuita se cobra desde la [billetera de la cuenta](/es/platform/#wallet).
 
 | Función | Gratuita | De pago |
 |------|------|------|
@@ -79,13 +79,6 @@ Sí. Describe la idea y la IA genera un esqueleto de código Python que puedes v
 <summary>¿Son fiables los datos de backtesting?</summary>
 
 Usa cotizaciones históricas reales, pero no considera el coste de impacto ni el slippage (hay diferencias con capital grande), la optimización excesiva tiende al sobreajuste y el pasado no garantiza el futuro. Se recomienda validar primero con una cuenta de simulación tras el backtesting.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>¿Cómo retiro los ingresos de las estrategias?</summary>
-
-Los ingresos entran al monedero en 鹿贝 → inicia sesión en [identity.lurus.cn](https://identity.lurus.cn) → «Monedero» → «Retirar» → introduce el importe y la tarjeta bancaria → normalmente el abono se realiza en 1-3 días hábiles.
 
 </details>
 

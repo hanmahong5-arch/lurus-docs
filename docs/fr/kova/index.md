@@ -1,28 +1,21 @@
 ---
 title: Kova — Moteur d’exécution persistante pour agents IA
-description: Architecture WAL-First construite en Rust, reprise automatique après crash, ordonnancement à la microseconde, zéro dépendance externe.
+description: Moteur d’exécution persistante WAL-First construit en Rust, qui reprend depuis le journal après une interruption du processus. Stade actuel : pilote précoce.
 ---
 
 <div class="kova-page">
 
 <ProductHero product-id="kova" />
 
-<MetricStats :items="[
-  { label: 'Ordonnancement FIFO', value: '3.17μs', hint: 'Pipeline complet Criterion' },
-  { label: 'Débit', value: '315K ops/s' },
-  { label: 'Volume de code', value: '178K LOC', hint: 'Workspace de 21 crates' },
-  { label: 'Dépendances externes', value: 'Zéro', hint: 'Sans Redis / Postgres' },
-]" />
-
 ## Qu’est-ce que Kova ?
 
-**Kova** est l’infrastructure d’agents IA au cœur de Lurus : un moteur d’exécution persistante haute performance construit en Rust, qui résout la question de **savoir comment un agent peut s’exécuter de manière fiable sur de longues durées, restaurer son état après un crash et coordonner des workflows complexes**. Les frameworks traditionnels (LangChain, CrewAI) s’exécutent en mémoire et perdent leur état dès que le processus se termine ; Kova adopte une architecture orientée <Term t="WAL">WAL (Write-Ahead Log)</Term>, où chaque étape d’exécution est enregistrée de façon persistante, ce qui permet, même après un crash, de reprendre précisément au point d’interruption — sans rappeler le LLM, sans perdre la progression et sans générer de coûts supplémentaires.
+**Kova** est l’infrastructure d’agents IA de Lurus : un moteur d’exécution persistante construit en Rust, qui résout la question de **savoir comment un agent peut s’exécuter de manière fiable sur de longues durées, restaurer son état après un crash et coordonner des workflows complexes**. Un agent qui ne s’exécute qu’en mémoire perd son état dès que le processus se termine ; Kova adopte une architecture orientée <Term t="WAL">WAL (Write-Ahead Log)</Term>, où chaque étape d’exécution est enregistrée de façon persistante, ce qui permet, même après un crash, de reprendre précisément au point d’interruption — sans rappeler le LLM, sans perdre la progression et sans générer de coûts supplémentaires.
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Indicateurs clés</p>
-    <div class="lurus-callout__body">Latence du pipeline complet <Term t="FIFO">FIFO</Term> de <strong>3.17μs</strong> (benchmark Criterion, voir <code>docs/benchmark-report.md</code>), débit de <strong>315K ops/s</strong>, <strong>zéro dépendance à un service externe</strong>.</div>
+    <p class="lurus-callout__title">Stade actuel</p>
+    <div class="lurus-callout__body">Pilote précoce. Dans la configuration par défaut, Kova fonctionne avec un fichier WAL local, sans service externe tel que Redis / Postgres.</div>
   </div>
 </div>
 
@@ -31,16 +24,15 @@ description: Architecture WAL-First construite en Rust, reprise automatique apr�
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="zap" :size="14" /> Capacités clés</span>
   <h2 class="lurus-section-head__title">Pourquoi choisir Kova</h2>
-  <p class="lurus-section-head__lede">Persistance WAL-First, ordonnancement à la microseconde, déploiement sans dépendance, quatre modes d’intégration.</p>
+  <p class="lurus-section-head__lede">Persistance WAL-First, fonctionnement sur simple fichier local, quatre modes d’intégration.</p>
 </div>
 
 <CapabilityGrid
   accent="var(--lurus-color-kova)"
   :items="[
     { title: 'Reprise après crash via WAL', body: 'Journal en écriture anticipée à chaque étape + vérification CRC32 ; rejeu depuis le point d’interruption après un crash, sans rappeler le LLM', icon: 'database-backup' },
-    { title: 'Latence d’ordonnancement de 3μs', body: 'Pipeline complet FIFO à 3.17μs (benchmark Criterion), débit de 315K ops/s', icon: 'gauge' },
     { title: 'Zéro dépendance externe', body: 'Aucun besoin de Redis / Postgres ; un simple fichier WAL local suffit à fonctionner', icon: 'package' },
-    { title: 'Quatre modes d’intégration', body: 'Rust SDK / gRPC / REST / MCP, modularité sur un workspace de 21 crates', icon: 'puzzle' },
+    { title: 'Quatre modes d’intégration', body: 'Rust SDK / gRPC / REST / MCP, modularité par crates du workspace', icon: 'puzzle' },
   ]"
 />
 
@@ -92,7 +84,7 @@ La vérification CRC32 protège contre la corruption ; un tampon circulaire en p
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="layers" :size="20" /></span>
     <div class="lurus-card__title">Prise en charge multi-modèle</div>
-    <p class="lurus-card__body">Accès, via l'<a href="/fr/guide/introduction">API Lurus</a>, à tous les principaux LLM (DeepSeek au quotidien / GPT-4o pour le raisonnement / Claude pour les textes longs / Gemini pour le multimodal), avec basculement dynamique selon la tâche à l’exécution.</p>
+    <p class="lurus-card__body">Accès à plusieurs fournisseurs de modèles via une passerelle compatible OpenAI telle que <a href="/hub/">Lurus Hub</a>, avec basculement selon la tâche à l’exécution.</p>
   </div>
 </div>
 
@@ -116,13 +108,11 @@ La vérification CRC32 protège contre la corruption ; un tampon circulaire en p
 />
 
 ```
-Kova REST API (Axum: 35+ endpoints, WebSocket)
+Kova REST API (Axum, WebSocket)
  → Kova Core: Agent Engine(单/多 Agent) + Workflow(有序编排)
               → WAL + Ring Buffer(持久化状态管理 CRC32)
               子 crate: kova-llm / kova-tools / kova-mcp
 ```
-
-Kova est un workspace de **21 crates Rust**, **178 284 lignes de code**, **plus de 1 565 tests** (concurrence loom / proptest / chaos) + **4 cibles de fuzzing**. Actuellement en **pré-version v0.2.0** (en route vers la 1.0.0-beta.1), avec des lints stricts pleinement activés (`#[deny(clippy::unwrap_used, clippy::panic, missing_docs)]`).
 
 ---
 
@@ -136,7 +126,7 @@ Kova est un workspace de **21 crates Rust**, **178 284 lignes de code**, **plus 
 | **Agents s’exécutant sur de longues durées** | Persistance WAL, reprise automatique après crash |
 | **Workflows complexes** | Orchestration multi-étapes, branches conditionnelles, exécution parallèle |
 | **Collaboration multi-agents** | Mode Swarm, communication directe entre agents |
-| **Déploiement en entreprise** | Performance de Rust, faible consommation de ressources, sans pauses GC |
+| **Déploiement auto-hébergé** | Binaire unique ou conteneur, WAL local, sans base de données externe |
 | **Intégration d’outils MCP** | Prise en charge native du Model Context Protocol |
 | **Contextes sensibles à la sécurité** | Chiffrement optionnel (SM4/AES), vérification d’intégrité HMAC du WAL |
 
@@ -147,26 +137,6 @@ Kova est un workspace de **21 crates Rust**, **178 284 lignes de code**, **plus 
     { role: 'Architecte', title: 'Remplacer le Checkpointer de LangGraph', summary: 'Utiliser Kova pour stocker les checkpoints dans un projet LangGraph', link: '/tutorials/lumen-kova-langgraph' },
   ]"
 />
-
----
-
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="layers" :size="14" /> Comparatif</span>
-  <h2 class="lurus-section-head__title">Comparaison avec d’autres frameworks d’agents</h2>
-</div>
-
-| Capacité | LangChain | CrewAI | AutoGen | **Kova** |
-|------|-----------|--------|---------|----------|
-| Langage | Python | Python | Python | **Rust** |
-| Persistance d’état | Aucune (externe requise) | Aucune | Aucune | **WAL-First** |
-| Reprise après crash | Aucune | Aucune | Aucune | **Reprise automatique** |
-| Performance | Moyenne | Moyenne | Moyenne | **Très élevée** |
-| Efficacité mémoire | Faible | Faible | Faible | **Très élevée** |
-| Prise en charge MCP | Tierce | Aucune | Aucune | **Native** |
-| Protocole A2A | Aucun | Aucun | Aucun | **Natif** |
-| Capacités de chiffrement | Aucune | Aucune | Aucune | **SM4-GCM / ChaCha20** |
-| Multi-protocole | Aucun | Aucun | Aucun | **Quatre modes d’intégration : Rust SDK / gRPC / REST / MCP** |
-| Forme de déploiement | Processus Python | Processus Python | Processus Python | **Binaire unique / conteneur / bibliothèque embarquée** |
 
 ---
 

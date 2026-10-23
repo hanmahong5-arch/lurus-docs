@@ -25,7 +25,7 @@ description: Une page pour localiser les problèmes fréquents de tous les produ
   <a class="lurus-card lurus-card--api" href="/fr/platform/billing">
     <span class="lurus-card__icon"><Icon name="wallet" :size="22" /></span>
     <div class="lurus-card__title">Facturation et quota</div>
-    <p class="lurus-card__body">Quota gratuit, plans d’abonnement, règles de débit des 鹿贝, et que faire une fois le quota épuisé.</p>
+    <p class="lurus-card__body">Plans d’abonnement, mode de débit du solde, et que faire une fois le quota épuisé.</p>
   </a>
   <a class="lurus-card lurus-card--api" href="/fr/guide/clients/others">
     <span class="lurus-card__icon"><Icon name="plug" :size="22" /></span>
@@ -105,9 +105,9 @@ Pour un exemple de code de réessai, voir [Gestion des erreurs · Bonnes pratiqu
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- Vérifiez d’abord si le quota gratuit du jour est épuisé (plan Free : 100 appels/jour)
-- Consultez le solde de 鹿贝 : [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
-- Rechargez en libre-service ou montez de plan ; pour les règles, voir [Facturation](/fr/platform/billing)
+- Vérifiez d’abord si le quota actuel est épuisé
+- Consultez le solde du compte : [identity.lurus.cn](https://identity.lurus.cn)
+- Rechargez ou montez de plan ; pour les règles, voir [Facturation en détail](/fr/platform/billing)
 
 </details>
 
@@ -152,7 +152,7 @@ Par exemple `deepseek-chat` 64K, `gemini-3-pro-preview` 1M : lorsque vous dépas
   :steps="[
     { text: 'Gestion des erreurs (codes d\'erreur complets)', link: '/fr/api/errors', primary: true },
     { text: 'Questions courantes', link: '/fr/guide/faq' },
-    { text: 'Facturation', link: '/fr/platform/billing' },
+    { text: 'Facturation en détail', link: '/fr/platform/billing' },
   ]"
 />
 

@@ -12,21 +12,13 @@ description: Make your first Lurus API call in under 5 minutes — Python, Node.
 </div>
 
 ::: info Prerequisites
-A Lurus account (sign up to get a free quota — step one walks you through creating one) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL (pick any) · basic terminal knowledge. Estimated 5 minutes.
+A Lurus account (step one walks you through creating one) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL (pick any) · basic terminal knowledge. Estimated 5 minutes.
 :::
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> Step 1</span>
-  <h2 class="lurus-section-head__title">Sign up — start for free</h2>
-  <p class="lurus-section-head__lede">Sign up to get a free quota; you can run this tutorial without topping up.</p>
-</div>
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">Ready to use on sign-up, no payment required</p>
-    <div class="lurus-callout__body"><p>New accounts automatically receive <strong>5 Lubei + a free quota</strong> (Free plan, <strong>100 calls/day</strong>, including <code>deepseek-chat</code> and <code>gpt-3.5-turbo</code>) — more than enough to run this tutorial. For quota and upgrade details, see the <a href="/en/guide/faq">FAQ</a> and <a href="/en/platform/billing">Billing</a>.</p></div>
-  </div>
+  <h2 class="lurus-section-head__title">Sign up</h2>
+  <p class="lurus-section-head__lede">Sign up or sign in, then create an API Key.</p>
 </div>
 
 Next, create an API Key:
@@ -161,7 +153,7 @@ func main() {
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">See a model reply? Your first call worked 🎉</p>
-    <div class="lurus-callout__body"><p>This request ran on the free quota that came with sign-up — it didn’t cost a cent. Next, try a different model — you’ll barely need to touch the code.</p></div>
+    <div class="lurus-callout__body"><p>Next, try a different model — you’ll barely need to touch the code.</p></div>
   </div>
 </div>
 

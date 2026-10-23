@@ -11,7 +11,6 @@ description: "Comparativa de TCO frente al desarrollo propio en las cuatro capac
 
 <MetricStats :items="[
   { label: 'Modelos accesibles vía gateway', value: '50+', hint: 'Una sola Key' },
-  { label: 'Planificación de Kova', value: '3μs', hint: 'Benchmark con Criterion' },
   { label: 'Identidad unificada', value: 'SSO/MFA', hint: 'Conecta con el IdP corporativo' },
   { label: 'Reglas PII de MemX', value: '12 tipos', hint: 'No evitables' },
 ]" />
@@ -39,7 +38,6 @@ description: "Comparativa de TCO frente al desarrollo propio en las cuatro capac
   self-label="Kova"
   :competitors="['Temporal propio', 'LangGraph + Redis propio']"
   :rows="[
-    { dimension: 'Latencia de planificación', self: '3μs', alt: { 'Temporal propio': '1-10ms', 'LangGraph + Redis propio': '5-20ms' } },
     { dimension: 'Recuperación ante fallos', self: 'WAL automático', alt: { 'Temporal propio': 'Event Sourcing', 'LangGraph + Redis propio': 'Semiautomática' } },
     { dimension: 'Dependencias externas', self: 'Ninguna', alt: { 'Temporal propio': 'Cassandra/MySQL', 'LangGraph + Redis propio': 'Redis/PG' } },
     { dimension: 'Meses-persona de ingeniería', self: '0', alt: { 'Temporal propio': '3-6 meses-persona', 'LangGraph + Redis propio': '2-4 meses-persona' } },

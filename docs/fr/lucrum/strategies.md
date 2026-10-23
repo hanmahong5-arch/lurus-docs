@@ -81,7 +81,7 @@ Choisissez une stratégie → page de détails (avec un **rapport de backtest co
 </li>
 </ol>
 
-**Frais** : certaines stratégies sont gratuites, d’autres sont sur abonnement mensuel ; les frais d’abonnement sont prélevés depuis le [portefeuille 鹿贝](/fr/platform/billing#wallet) ; les frais de courtage de transaction sont perçus par le courtier et n’ont aucun lien avec Lucrum.
+**Frais** : certaines stratégies sont gratuites, d’autres sont sur abonnement mensuel ; les frais d’abonnement sont prélevés depuis le [portefeuille du compte](/fr/platform/#wallet) ; les frais de courtage de transaction sont perçus par le courtier et n’ont aucun lien avec Lucrum.
 
 ---
 
@@ -120,7 +120,7 @@ Choisissez une stratégie → page de détails (avec un **rapport de backtest co
 </li>
 <li>
 
-**Perception des revenus**, réglés en 鹿贝 vers le portefeuille.
+**Perception des revenus**, réglés vers le portefeuille du compte.
 
 </li>
 </ol>
@@ -144,7 +144,7 @@ Les revenus d’abonnement générés par une stratégie sont répartis selon le
 | Auteur de la stratégie | **70%** |
 | Plateforme | **30%** |
 
-Les revenus sont réglés sous forme de 鹿贝 vers votre portefeuille et peuvent être retirés vers une carte bancaire.
+Les revenus sont réglés vers le portefeuille de votre compte.
 
 ### Packs de stratégies intégrés
 

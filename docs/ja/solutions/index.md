@@ -45,7 +45,7 @@ description: "業界と役割の入口別に Lurus のエンタープライズ�
   />
   <ActionCard
     name="PMO / 調達"
-    tagline="鹿貝ユニット課金 · 1 枚の請求書 · オンプレミスライセンス"
+    tagline="契約ベースの課金 · 法人向け請求書 · オンプレミスライセンス"
     icon="receipt"
     color="var(--lurus-color-platform)"
     :actions="[

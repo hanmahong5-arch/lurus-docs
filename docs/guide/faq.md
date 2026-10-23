@@ -19,7 +19,7 @@ description: Lurus API 使用中的常见问题与解答，包括计费、兼容
 <details class="lurus-faq-item">
 <summary>如何注册？</summary>
 
-[hub.lurus.cn](https://hub.lurus.cn) 填邮箱密码（或 GitHub/Google 登录），自动得 5 鹿贝 + 免费配额，所有产品共享同一账号。
+[hub.lurus.cn](https://hub.lurus.cn) 填邮箱密码（或 GitHub/Google 登录），所有产品共享同一账号。
 
 </details>
 

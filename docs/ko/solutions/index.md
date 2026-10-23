@@ -45,7 +45,7 @@ description: "산업 및 역할별 진입점으로 분류한 Lurus 엔터프라�
   />
   <ActionCard
     name="PMO / 구매"
-    tagline="루베이 단위 청구 · 한 장의 청구서 · 온프레미스 라이선스"
+    tagline="계약 기반 청구 · 법인 세금계산서 · 온프레미스 라이선스"
     icon="receipt"
     color="var(--lurus-color-platform)"
     :actions="[

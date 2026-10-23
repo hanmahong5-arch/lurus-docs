@@ -115,7 +115,6 @@ class MA_RSI_Strategy(CtaTemplate):
 | 전략명 | MA_RSI_A주 추세 v2 |
 | 분배 비율 | 작성자 70% / 플랫폼 30% |
 | 체험 기간 | 7일 |
-| 추천 구독가 | 99 루베이/월 |
 
 규정 준수 심사를 통과하면 [전략 마켓](/ko/lucrum/strategies)에 등록할 수 있습니다.
 

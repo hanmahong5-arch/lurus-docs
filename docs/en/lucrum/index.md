@@ -114,7 +114,7 @@ An open quantitative-strategy ecosystem that connects strategy developers and tr
 </li>
 <li>
 
-**Lubei balance fallback** — once the quota is exhausted, charges are automatically deducted from your [Lubei wallet](/platform/billing#wallet); 1 Lubei = 10,000 tokens.
+**Wallet balance fallback** — once the quota is exhausted, charges are deducted from your [account wallet](/en/platform/#wallet).
 
 </li>
 </ol>

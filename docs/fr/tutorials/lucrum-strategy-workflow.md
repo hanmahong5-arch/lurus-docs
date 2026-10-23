@@ -115,7 +115,6 @@ Acceptez les suggestions et relancez le backtest :
 | Nom de la stratégie | MA_RSI_A股趋势 v2 |
 | Partage des revenus | Auteur 70 % / Plateforme 30 % |
 | Période d’essai | 7 jours |
-| Prix d’abonnement recommandé | 99 Lubei/mois |
 
 Une fois la revue de conformité validée, la stratégie peut être publiée sur le [marché des stratégies](/fr/lucrum/strategies).
 

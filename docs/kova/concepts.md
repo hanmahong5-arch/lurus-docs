@@ -11,13 +11,6 @@ description: Kova 的 WAL、Agent Loop、Checkpoint 等核心架构组件和设�
   <p class="lurus-section-head__lede">从 Agent、Workflow、Swarm 到 WAL 持久化 —— 理解 Kova 的核心架构组件与设计哲学。</p>
 </div>
 
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3μs</span><span class="lurus-stat__label">调度延迟</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">315K</span><span class="lurus-stat__label">ops/s 吞吐</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">21</span><span class="lurus-stat__label">workspace crate</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">&lt;10MB</span><span class="lurus-stat__label">单二进制</span></div>
-</div>
-
 <div class="lurus-cards lurus-cards--compact">
   <a class="lurus-card lurus-card--kova" href="#agent"><span class="lurus-card__icon"><Icon name="bot" :size="22" /></span><div class="lurus-card__title">Agent</div><p class="lurus-card__body">基本执行单元：Prompt + Model + Tools + Memory</p></a>
   <a class="lurus-card lurus-card--kova" href="#workflow"><span class="lurus-card__icon"><Icon name="workflow" :size="22" /></span><div class="lurus-card__title">Workflow</div><p class="lurus-card__body">把多个 Agent 编排成有序执行管道</p></a>

@@ -81,7 +81,7 @@ En «**Mis estrategias**» elige la cuenta de trading y configura la asignación
 </li>
 </ol>
 
-**Costos**: algunas estrategias son gratuitas y otras tienen suscripción mensual; la cuota de suscripción se descuenta de la [billetera 鹿贝](/es/platform/billing#wallet); las comisiones de operación las cobra el bróker y no tienen relación con Lucrum.
+**Costos**: algunas estrategias son gratuitas y otras tienen suscripción mensual; la cuota de suscripción se descuenta de la [billetera de la cuenta](/es/platform/#wallet); las comisiones de operación las cobra el bróker y no tienen relación con Lucrum.
 
 ---
 
@@ -120,7 +120,7 @@ En «**Mis estrategias**» elige la cuenta de trading y configura la asignación
 </li>
 <li>
 
-**Obtención de ingresos**, liquidados en 鹿贝 a tu billetera.
+**Obtención de ingresos**, liquidados en la billetera de la cuenta.
 
 </li>
 </ol>
@@ -144,7 +144,7 @@ Los ingresos por suscripción que genere una estrategia se distribuyen en las si
 | Autor de la estrategia | **70%** |
 | Plataforma | **30%** |
 
-Los ingresos se liquidan en forma de 鹿贝 a tu billetera y se pueden retirar a una tarjeta bancaria.
+Los ingresos se liquidan en la billetera de tu cuenta.
 
 ### Paquetes de estrategias integrados
 

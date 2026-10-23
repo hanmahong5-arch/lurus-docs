@@ -119,7 +119,7 @@ Lurus ne requiert pas de champ `organization` ; sa présence superflue ne provoq
 <NextSteps :steps="[
   { text: 'Catalogue de modèles', link: '/fr/guide/models', primary: true },
   { text: 'Référence API', link: '/fr/api/overview' },
-  { text: 'Facturation Lubei', link: '/fr/platform/billing' },
+  { text: 'Facturation en détail', link: '/fr/platform/billing' },
 ]" />
 
 </div>

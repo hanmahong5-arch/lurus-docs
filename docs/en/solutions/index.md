@@ -45,7 +45,7 @@ Entry points built for decision-makers, procurement, architecture review, and co
   />
   <ActionCard
     name="PMO / Procurement"
-    tagline="Lubei unit billing · Single invoice · On-premise licensing"
+    tagline="Contract billing · Corporate invoicing · On-premise licensing"
     icon="receipt"
     color="var(--lurus-color-platform)"
     :actions="[

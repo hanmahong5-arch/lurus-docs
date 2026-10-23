@@ -11,7 +11,6 @@ description: "ゲートウェイ・Agent・記憶・アイデンティティの 
 
 <MetricStats :items="[
   { label: 'ゲートウェイ接続モデル', value: '50+', hint: '単一の Key' },
-  { label: 'Kova スケジューリング', value: '3μs', hint: 'Criterion ベンチマーク' },
   { label: '統一アイデンティティ', value: 'SSO/MFA', hint: '企業 IdP に接続' },
   { label: 'MemX PII ルール', value: '12 種', hint: '回避不可' },
 ]" />
@@ -39,7 +38,6 @@ description: "ゲートウェイ・Agent・記憶・アイデンティティの 
   self-label="Kova"
   :competitors="['自前構築 Temporal', '自前構築 LangGraph + Redis']"
   :rows="[
-    { dimension: 'スケジューリング遅延', self: '3μs', alt: { '自前構築 Temporal': '1-10ms', '自前構築 LangGraph + Redis': '5-20ms' } },
     { dimension: 'クラッシュ復旧', self: 'WAL 自動', alt: { '自前構築 Temporal': 'Event Sourcing', '自前構築 LangGraph + Redis': '半自動' } },
     { dimension: '外部依存', self: 'ゼロ', alt: { '自前構築 Temporal': 'Cassandra/MySQL', '自前構築 LangGraph + Redis': 'Redis/PG' } },
     { dimension: 'エンジニア工数（人月）', self: '0', alt: { '自前構築 Temporal': '3-6 人月', '自前構築 LangGraph + Redis': '2-4 人月' } },

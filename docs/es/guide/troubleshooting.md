@@ -25,7 +25,7 @@ description: Una sola página para localizar los problemas frecuentes de todos l
   <a class="lurus-card lurus-card--api" href="/es/platform/billing">
     <span class="lurus-card__icon"><Icon name="wallet" :size="22" /></span>
     <div class="lurus-card__title">Facturación y cuota</div>
-    <p class="lurus-card__body">Cuota gratuita, planes de suscripción, reglas de cobro de 鹿贝, y qué hacer cuando se agota la cuota.</p>
+    <p class="lurus-card__body">Planes de suscripción, forma de cobro del saldo y qué hacer cuando se agota la cuota.</p>
   </a>
   <a class="lurus-card lurus-card--api" href="/es/guide/clients/others">
     <span class="lurus-card__icon"><Icon name="plug" :size="22" /></span>
@@ -105,9 +105,9 @@ Un ejemplo de código de reintento está en [Manejo de errores · Buenas prácti
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- Comprueba primero si has agotado la cuota gratuita del día (el plan Free permite 100 veces/día)
-- Consulta el saldo de 鹿贝: [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
-- Recarga por autoservicio o sube de plan; las reglas están en [Información de facturación](/es/platform/billing)
+- Comprueba primero si has agotado la cuota actual
+- Consulta el saldo de la cuenta: [identity.lurus.cn](https://identity.lurus.cn)
+- Recarga o sube de plan; las reglas están en [Detalles de facturación](/es/platform/billing)
 
 </details>
 
@@ -152,7 +152,7 @@ Como `deepseek-chat` con 64K o `gemini-3-pro-preview` con 1M, cuando se supera e
   :steps="[
     { text: 'Manejo de errores (códigos de error completos)', link: '/es/api/errors', primary: true },
     { text: 'Preguntas frecuentes', link: '/es/guide/faq' },
-    { text: 'Información de facturación', link: '/es/platform/billing' },
+    { text: 'Detalles de facturación', link: '/es/platform/billing' },
   ]"
 />
 

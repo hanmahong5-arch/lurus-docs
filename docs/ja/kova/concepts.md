@@ -11,13 +11,6 @@ description: Kova の WAL、Agent Loop、Checkpoint などのコアアーキテ�
   <p class="lurus-section-head__lede">Agent、Workflow、Swarm から WAL 永続化まで —— Kova のコアアーキテクチャコンポーネントと設計思想を理解する。</p>
 </div>
 
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3μs</span><span class="lurus-stat__label">スケジューリング遅延</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">315K</span><span class="lurus-stat__label">ops/s スループット</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">21</span><span class="lurus-stat__label">workspace crate</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">&lt;10MB</span><span class="lurus-stat__label">単一バイナリ</span></div>
-</div>
-
 <div class="lurus-cards lurus-cards--compact">
   <a class="lurus-card lurus-card--kova" href="#agent"><span class="lurus-card__icon"><Icon name="bot" :size="22" /></span><div class="lurus-card__title">Agent</div><p class="lurus-card__body">基本的な実行単位：Prompt + Model + Tools + Memory</p></a>
   <a class="lurus-card lurus-card--kova" href="#workflow"><span class="lurus-card__icon"><Icon name="workflow" :size="22" /></span><div class="lurus-card__title">Workflow</div><p class="lurus-card__body">複数の Agent を順序付き実行パイプラインに編成する</p></a>

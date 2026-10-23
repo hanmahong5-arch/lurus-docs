@@ -19,7 +19,7 @@ description: 과금, 호환성, 문제 해결을 포함한 Lurus API 사용 중 
 <details class="lurus-faq-item">
 <summary>어떻게 가입하나요?</summary>
 
-[hub.lurus.cn](https://hub.lurus.cn)에서 이메일과 비밀번호를 입력(또는 GitHub/Google 로그인)하면 자동으로 5 鹿贝 + 무료 할당량이 지급되며, 모든 제품이 동일한 계정을 공유합니다.
+[hub.lurus.cn](https://hub.lurus.cn)에서 이메일과 비밀번호를 입력(또는 GitHub/Google 로그인)하면 가입되며, 모든 제품이 동일한 계정을 공유합니다.
 
 </details>
 

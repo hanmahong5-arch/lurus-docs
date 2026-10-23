@@ -11,13 +11,6 @@ description: Kova’s core architecture components and design philosophy — WAL
   <p class="lurus-section-head__lede">From Agent, Workflow, and Swarm to WAL persistence — understand Kova’s core architecture components and design philosophy.</p>
 </div>
 
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3μs</span><span class="lurus-stat__label">scheduling latency</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">315K</span><span class="lurus-stat__label">ops/s throughput</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">21</span><span class="lurus-stat__label">workspace crates</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">&lt;10MB</span><span class="lurus-stat__label">single binary</span></div>
-</div>
-
 <div class="lurus-cards lurus-cards--compact">
   <a class="lurus-card lurus-card--kova" href="#agent"><span class="lurus-card__icon"><Icon name="bot" :size="22" /></span><div class="lurus-card__title">Agent</div><p class="lurus-card__body">Basic unit of execution: Prompt + Model + Tools + Memory</p></a>
   <a class="lurus-card lurus-card--kova" href="#workflow"><span class="lurus-card__icon"><Icon name="workflow" :size="22" /></span><div class="lurus-card__title">Workflow</div><p class="lurus-card__body">Orchestrate multiple Agents into an ordered execution pipeline</p></a>

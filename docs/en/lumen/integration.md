@@ -13,7 +13,7 @@ As a semantic-layer observability tool, Lumen connects downward to the Kova exec
   <a class="lurus-card lurus-card--kova" href="#kova">
     <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
     <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">WAL persistence layer with microsecond-level crash recovery.</p>
+    <p class="lurus-card__body">WAL persistence layer that resumes from the breakpoint after a crash.</p>
   </a>
   <a class="lurus-card lurus-card--lumen" href="#langgraph">
     <span class="lurus-card__icon"><Icon name="repeat" :size="20" /></span>
@@ -34,7 +34,7 @@ As a semantic-layer observability tool, Lumen connects downward to the Kova exec
 
 ## With [Kova](/en/kova/) {#kova}
 
-Kova handles low-level WAL state persistence and microsecond-level crash recovery, while Lumen handles semantic-layer trace annotation and cost accounting.
+Kova handles low-level WAL state persistence and crash recovery, while Lumen handles semantic-layer trace annotation and cost accounting.
 
 ```python
 from lumen_ai import LumenCheckpointer
@@ -58,7 +58,7 @@ Drop-in Saver replacement (the API is fully compatible with `BaseCheckpointSaver
 
 ## With [Lurus API](/en/guide/introduction) {#lurus-api}
 
-When calling an LLM through the Lurus API, token billing and latency are automatically correlated to the Lumen trace:
+When calling an LLM through Lurus Hub, token billing and latency are automatically correlated to the Lumen trace:
 
 ```python
 from openai import OpenAI
@@ -69,7 +69,7 @@ tracer = LumenTracer()
 
 with tracer.span("classify"):
     resp = client.chat.completions.create(...)
-    # 调用自动记录，鹿贝消费可追溯
+    # Calls are recorded automatically; usage is traceable
 ```
 
 ## OpenTelemetry {#opentelemetry}

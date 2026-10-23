@@ -119,7 +119,7 @@ Lurus 不需要 `organization` 字段，多余不报错。
 <NextSteps :steps="[
   { text: '模型目录', link: '/guide/models', primary: true },
   { text: 'API 参考', link: '/api/overview' },
-  { text: '鹿贝计费', link: '/platform/billing' },
+  { text: '计费详解', link: '/platform/billing' },
 ]" />
 
 </div>

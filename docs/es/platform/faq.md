@@ -7,7 +7,7 @@ description: Preguntas frecuentes y respuestas sobre la cuenta, la facturación 
 
 # Preguntas frecuentes
 
-Preguntas frecuentes sobre la cuenta de la plataforma, la facturación de suscripciones, los 鹿贝 y la seguridad, agrupadas por tema.
+Preguntas frecuentes sobre la cuenta de la plataforma, la facturación de suscripciones, la billetera y la seguridad, agrupadas por tema.
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> Cuenta</span>
@@ -38,7 +38,7 @@ En la página de inicio de sesión haz clic en «Olvidé mi contraseña» y reci
 <details class="lurus-faq-item">
 <summary>¿Cómo elimino mi cuenta?</summary>
 
-Contacta a [support@lurus.cn](mailto:support@lurus.cn) para darla de baja; todos los datos (API Key / 鹿贝 / historial de transacciones) se eliminan permanentemente y no se pueden recuperar.
+Contacta a [support@lurus.cn](mailto:support@lurus.cn) para darla de baja; todos los datos (API Key / saldo de la billetera / historial de transacciones) se eliminan permanentemente y no se pueden recuperar.
 
 </details>
 
@@ -71,13 +71,6 @@ Se baja automáticamente a Free; la API Key sigue siendo válida pero queda limi
 </details>
 
 <details class="lurus-faq-item">
-<summary>¿Qué diferencia hay entre el pago anual y el mensual?</summary>
-
-El pago anual tiene un 20 % de descuento (≈ 2,4 meses gratis); durante el plazo anual no se puede bajar de plan, pero sí mejorarlo.
-
-</details>
-
-<details class="lurus-faq-item">
 <summary>¿Cómo agrego miembros al equipo en la edición Enterprise?</summary>
 
 Consola de administración → Equipo → Invitar miembros → introducir el correo y enviar la invitación → el miembro la acepta y se une → puedes asignar una API Key y una cuota independientes a cada miembro.
@@ -95,35 +88,14 @@ Consola de administración → Equipo → Invitar miembros → introducir el cor
 ---
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
-  <h2 class="lurus-section-head__title">鹿贝</h2>
+  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> Billetera</span>
+  <h2 class="lurus-section-head__title">Billetera</h2>
 </div>
-
-<details class="lurus-faq-item">
-<summary>¿Para qué sirven los 鹿贝?</summary>
-
-Para pagar llamadas a la API que superen la cuota de la suscripción, suscribirte a estrategias de pago de Lucrum y disfrutar de descuentos VIP.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>¿Los 鹿贝 caducan?</summary>
-
-Los comprados son válidos de forma permanente; los regalados en promociones pueden tener fecha de vencimiento, según las reglas de la promoción.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>¿Se pueden retirar los 鹿贝?</summary>
-
-Los comprados con recarga que no se hayan usado son reembolsables; los 鹿贝 liquidados como ingresos de estrategias de Lucrum se pueden retirar a una tarjeta bancaria.
-
-</details>
 
 <details class="lurus-faq-item">
 <summary>¿Cómo consulto el saldo y el historial de movimientos?</summary>
 
-Inicia sesión en [identity.lurus.cn](https://identity.lurus.cn) → Billetera, para ver el saldo actual, el detalle de ingresos (recargas / recompensas / ingresos de estrategias) y el detalle de gastos (consumo de API / suscripciones a estrategias).
+Inicia sesión en [identity.lurus.cn](https://identity.lurus.cn) → Billetera, para ver el saldo actual y el detalle de movimientos.
 
 </details>
 
@@ -134,25 +106,7 @@ Inicia sesión en [identity.lurus.cn](https://identity.lurus.cn) → Billetera, 
   <h2 class="lurus-section-head__title">Pagos</h2>
 </div>
 
-Métodos de pago:
-
-<div class="lurus-cards lurus-cards--compact">
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="receipt" :size="20" /></span>
-    <div class="lurus-card__title">Stripe</div>
-    <p class="lurus-card__body">Tarjeta de crédito / débito, a nivel mundial</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">Creem</div>
-    <p class="lurus-card__body">Criptomonedas</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
-    <div class="lurus-card__title">Epay</div>
-    <p class="lurus-card__body">Alipay / WeChat, China continental</p>
-  </div>
-</div>
+Los canales de pago disponibles son los que muestre la página de pago; los clientes empresariales pueden pagar por contrato y transferencia bancaria.
 
 <details class="lurus-faq-item">
 <summary>¿Qué hago si el pago no se acredita?</summary>

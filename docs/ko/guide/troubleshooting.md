@@ -25,7 +25,7 @@ description: Lurus 전 제품의 빈발 문제를 한 페이지에서 진단 —
   <a class="lurus-card lurus-card--api" href="/ko/platform/billing">
     <span class="lurus-card__icon"><Icon name="wallet" :size="22" /></span>
     <div class="lurus-card__title">과금과 할당량</div>
-    <p class="lurus-card__body">무료 한도, 구독 플랜, 鹿贝 차감 규칙, 그리고 할당량 소진 후 처리.</p>
+    <p class="lurus-card__body">구독 플랜, 잔액 차감 방식, 그리고 할당량 소진 후 처리.</p>
   </a>
   <a class="lurus-card lurus-card--api" href="/ko/guide/clients/others">
     <span class="lurus-card__icon"><Icon name="plug" :size="22" /></span>
@@ -105,9 +105,9 @@ description: Lurus 전 제품의 빈발 문제를 한 페이지에서 진단 —
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- 먼저 당일 무료 할당량을 모두 소진했는지 확인(Free 플랜 100회/일)
-- 鹿贝 잔액 확인: [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
-- 셀프 충전 또는 플랜 업그레이드, 규칙은 [과금 설명](/ko/platform/billing)을 참고
+- 먼저 현재 할당량을 모두 소진했는지 확인
+- 계정 잔액 확인: [identity.lurus.cn](https://identity.lurus.cn)
+- 충전 또는 플랜 업그레이드, 규칙은 [요금 안내](/ko/platform/billing)를 참고
 
 </details>
 
@@ -152,7 +152,7 @@ description: Lurus 전 제품의 빈발 문제를 한 페이지에서 진단 —
   :steps="[
     { text: '에러 처리(전체 에러 코드)', link: '/ko/api/errors', primary: true },
     { text: '자주 묻는 질문', link: '/ko/guide/faq' },
-    { text: '과금 설명', link: '/ko/platform/billing' },
+    { text: '요금 안내', link: '/ko/platform/billing' },
   ]"
 />
 

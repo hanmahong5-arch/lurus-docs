@@ -7,7 +7,7 @@ description: Lurus 플랫폼 계정, 청구 및 서비스 관련 자주 묻는 �
 
 # 자주 묻는 질문
 
-플랫폼 계정, 구독 청구, 鹿贝 및 보안에 관한 자주 묻는 질문을 주제별로 정리했습니다.
+플랫폼 계정, 구독 청구, 지갑 및 보안에 관한 자주 묻는 질문을 주제별로 정리했습니다.
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> 계정</span>
@@ -38,7 +38,7 @@ description: Lurus 플랫폼 계정, 청구 및 서비스 관련 자주 묻는 �
 <details class="lurus-faq-item">
 <summary>계정은 어떻게 삭제하나요?</summary>
 
-[support@lurus.cn](mailto:support@lurus.cn) 으로 탈퇴를 요청하세요. 모든 데이터(API Key / 鹿贝 / 거래 내역)는 영구 삭제되며 복구할 수 없습니다.
+[support@lurus.cn](mailto:support@lurus.cn) 으로 탈퇴를 요청하세요. 모든 데이터(API Key / 지갑 잔액 / 거래 내역)는 영구 삭제되며 복구할 수 없습니다.
 
 </details>
 
@@ -71,13 +71,6 @@ GitHub, Google OAuth를 지원하며, 계정 설정에서 연동 / 연동 해제
 </details>
 
 <details class="lurus-faq-item">
-<summary>연간 결제와 월간 결제의 차이는 무엇인가요?</summary>
-
-연간 결제는 20% 할인(약 2.4개월 무료 사용)입니다. 연간 결제 기간에는 다운그레이드는 불가능하지만 업그레이드는 가능합니다.
-
-</details>
-
-<details class="lurus-faq-item">
 <summary>기업판에서 팀에 멤버를 추가하려면 어떻게 하나요?</summary>
 
 관리자 콘솔 → 팀 → 멤버 초대 → 이메일 입력 후 초대 발송 → 멤버 수락 후 합류 → 멤버별로 독립적인 API Key와 할당량을 배정할 수 있습니다.
@@ -88,42 +81,21 @@ GitHub, Google OAuth를 지원하며, 계정 설정에서 연동 / 연동 해제
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">전체 할당량 및 가격 규칙이 궁금하신가요?</p>
-    <div class="lurus-callout__body">자세한 내용은 <a href="/ko/platform/billing">청구 상세</a>를 참고하세요.</div>
+    <div class="lurus-callout__body">자세한 내용은 <a href="/ko/platform/billing">요금 안내</a>를 참고하세요.</div>
   </div>
 </div>
 
 ---
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
-  <h2 class="lurus-section-head__title">鹿贝</h2>
+  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 지갑</span>
+  <h2 class="lurus-section-head__title">지갑</h2>
 </div>
-
-<details class="lurus-faq-item">
-<summary>鹿贝는 어디에 쓰나요?</summary>
-
-구독 할당량을 초과한 API 호출 결제, Lucrum 유료 전략 구독, VIP 할인 혜택 등에 사용합니다.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>鹿贝는 만료되나요?</summary>
-
-구매한 鹿贝는 영구 유효합니다. 이벤트로 증정된 鹿贝는 유효 기간이 있을 수 있으며, 이벤트 규칙을 따릅니다.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>鹿贝를 출금할 수 있나요?</summary>
-
-충전·구매한 鹿贝 중 미사용분은 환불 가능합니다. Lucrum 전략 수익으로 정산된 鹿贝는 은행 계좌로 출금할 수 있습니다.
-
-</details>
 
 <details class="lurus-faq-item">
 <summary>잔액과 입출금 내역은 어떻게 확인하나요?</summary>
 
-[identity.lurus.cn](https://identity.lurus.cn) 로그인 → 지갑에서 현재 잔액, 수입 내역(충전 / 보상 / 전략 수익), 지출 내역(API 사용 / 전략 구독)을 확인할 수 있습니다.
+[identity.lurus.cn](https://identity.lurus.cn) 로그인 → 지갑에서 현재 잔액과 입출금 내역을 확인할 수 있습니다.
 
 </details>
 
@@ -134,25 +106,7 @@ GitHub, Google OAuth를 지원하며, 계정 설정에서 연동 / 연동 해제
   <h2 class="lurus-section-head__title">결제</h2>
 </div>
 
-결제 수단:
-
-<div class="lurus-cards lurus-cards--compact">
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="receipt" :size="20" /></span>
-    <div class="lurus-card__title">Stripe</div>
-    <p class="lurus-card__body">신용카드 / 직불카드, 전 세계</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">Creem</div>
-    <p class="lurus-card__body">암호화폐</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
-    <div class="lurus-card__title">Epay</div>
-    <p class="lurus-card__body">Alipay / WeChat Pay, 중국 본토</p>
-  </div>
-</div>
+이용 가능한 결제 채널은 결제 페이지 표시를 기준으로 하며, 기업 고객은 계약과 법인 계좌 이체를 이용할 수 있습니다.
 
 <details class="lurus-faq-item">
 <summary>결제했는데 입금이 확인되지 않을 때는 어떻게 하나요?</summary>

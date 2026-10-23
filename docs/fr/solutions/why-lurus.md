@@ -11,7 +11,6 @@ description: "Passerelle · Agent · Mémoire · Identité : comparatif TCO des 
 
 <MetricStats :items="[
   { label: 'Modèles accessibles via la passerelle', value: '50+', hint: 'Une seule Key' },
-  { label: 'Ordonnancement Kova', value: '3μs', hint: 'Benchmark Criterion' },
   { label: 'Identité unifiée', value: 'SSO/MFA', hint: 'IdP d’entreprise' },
   { label: 'Règles PII MemX', value: '12 types', hint: 'Incontournables' },
 ]" />
@@ -39,7 +38,6 @@ description: "Passerelle · Agent · Mémoire · Identité : comparatif TCO des 
   self-label="Kova"
   :competitors="['Temporal interne', 'LangGraph + Redis interne']"
   :rows="[
-    { dimension: 'Latence d’ordonnancement', self: '3μs', alt: { 'Temporal interne': '1-10ms', 'LangGraph + Redis interne': '5-20ms' } },
     { dimension: 'Reprise après crash', self: 'WAL automatique', alt: { 'Temporal interne': 'Event Sourcing', 'LangGraph + Redis interne': 'Semi-automatique' } },
     { dimension: 'Dépendances externes', self: 'Aucune', alt: { 'Temporal interne': 'Cassandra/MySQL', 'LangGraph + Redis interne': 'Redis/PG' } },
     { dimension: 'Mois-homme d’ingénierie', self: '0', alt: { 'Temporal interne': '3-6 mois-homme', 'LangGraph + Redis interne': '2-4 mois-homme' } },

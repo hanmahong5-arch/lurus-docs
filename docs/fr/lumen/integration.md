@@ -13,7 +13,7 @@ En tant qu’outil d’observabilité de la couche sémantique, Lumen se connect
   <a class="lurus-card lurus-card--kova" href="#kova">
     <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
     <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">Socle de persistance WAL, reprise après panne à l’échelle de la microseconde.</p>
+    <p class="lurus-card__body">Socle de persistance WAL, reprise depuis le point d’arrêt après une panne.</p>
   </a>
   <a class="lurus-card lurus-card--lumen" href="#langgraph">
     <span class="lurus-card__icon"><Icon name="repeat" :size="20" /></span>
@@ -34,7 +34,7 @@ En tant qu’outil d’observabilité de la couche sémantique, Lumen se connect
 
 ## Avec [Kova](/fr/kova/) {#kova}
 
-Kova prend en charge la persistance de l’état WAL de bas niveau et la reprise après panne à l’échelle de la microseconde ; Lumen gère l’annotation des traces de la couche sémantique et le suivi des coûts.
+Kova prend en charge la persistance de l’état WAL de bas niveau et la reprise après panne ; Lumen gère l’annotation des traces de la couche sémantique et le suivi des coûts.
 
 ```python
 from lumen_ai import LumenCheckpointer
@@ -58,7 +58,7 @@ Remplacez directement le Saver (l’API est entièrement compatible avec `BaseCh
 
 ## Avec [Lurus API](/fr/guide/introduction) {#lurus-api}
 
-Lorsque vous appelez un LLM via Lurus API, la facturation des tokens et la latence sont automatiquement associées à la trace Lumen :
+Lorsque vous appelez un LLM via Lurus Hub, la facturation des tokens et la latence sont automatiquement associées à la trace Lumen :
 
 ```python
 from openai import OpenAI
@@ -69,7 +69,7 @@ tracer = LumenTracer()
 
 with tracer.span("classify"):
     resp = client.chat.completions.create(...)
-    # 调用自动记录，鹿贝消费可追溯
+    # appel enregistré automatiquement, consommation traçable
 ```
 
 ## OpenTelemetry {#opentelemetry}

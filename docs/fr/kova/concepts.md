@@ -11,13 +11,6 @@ description: Les composants architecturaux fondamentaux de Kova — WAL, Agent L
   <p class="lurus-section-head__lede">D’Agent, Workflow et Swarm jusqu’à la persistance WAL — comprendre les composants architecturaux fondamentaux de Kova et sa philosophie de conception.</p>
 </div>
 
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3μs</span><span class="lurus-stat__label">Latence d’ordonnancement</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">315K</span><span class="lurus-stat__label">ops/s de débit</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">21</span><span class="lurus-stat__label">crates du workspace</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">&lt;10MB</span><span class="lurus-stat__label">Binaire unique</span></div>
-</div>
-
 <div class="lurus-cards lurus-cards--compact">
   <a class="lurus-card lurus-card--kova" href="#agent"><span class="lurus-card__icon"><Icon name="bot" :size="22" /></span><div class="lurus-card__title">Agent</div><p class="lurus-card__body">Unité d’exécution de base : Prompt + Model + Tools + Memory</p></a>
   <a class="lurus-card lurus-card--kova" href="#workflow"><span class="lurus-card__icon"><Icon name="workflow" :size="22" /></span><div class="lurus-card__title">Workflow</div><p class="lurus-card__body">Orchestre plusieurs Agents en un pipeline d’exécution ordonné</p></a>

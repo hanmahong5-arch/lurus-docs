@@ -119,7 +119,7 @@ Lurus는 `organization` 필드가 필요하지 않으며, 추가로 넣어도 �
 <NextSteps :steps="[
   { text: '모델 카탈로그', link: '/ko/guide/models', primary: true },
   { text: 'API 참조', link: '/ko/api/overview' },
-  { text: 'Lubei 과금', link: '/ko/platform/billing' },
+  { text: '요금 안내', link: '/ko/platform/billing' },
 ]" />
 
 </div>

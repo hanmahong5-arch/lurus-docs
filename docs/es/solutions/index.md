@@ -45,7 +45,7 @@ Puntos de entrada diseñados para responsables de decisión, compras, revisión 
   />
   <ActionCard
     name="PMO / Compras"
-    tagline="Facturación por unidad Lubei · Una sola factura · Licencias on-premise"
+    tagline="Facturación por contrato · Factura a empresa · Licencias on-premise"
     icon="receipt"
     color="var(--lurus-color-platform)"
     :actions="[

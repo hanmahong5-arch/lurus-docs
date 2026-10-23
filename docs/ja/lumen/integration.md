@@ -13,7 +13,7 @@ Lumen はセマンティックレイヤーの可観測性ツールとして、�
   <a class="lurus-card lurus-card--kova" href="#kova">
     <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
     <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">WAL 永続化基盤、マイクロ秒単位のクラッシュリカバリ。</p>
+    <p class="lurus-card__body">WAL 永続化基盤、クラッシュ後に中断地点から復旧。</p>
   </a>
   <a class="lurus-card lurus-card--lumen" href="#langgraph">
     <span class="lurus-card__icon"><Icon name="repeat" :size="20" /></span>
@@ -34,7 +34,7 @@ Lumen はセマンティックレイヤーの可観測性ツールとして、�
 
 ## [Kova](/ja/kova/) との連携 {#kova}
 
-Kova は下層の WAL 状態永続化とマイクロ秒単位のクラッシュリカバリを担当し、Lumen はセマンティックレイヤーの Trace アノテーションとコスト集計を担当します。
+Kova は下層の WAL 状態永続化とクラッシュリカバリを担当し、Lumen はセマンティックレイヤーの Trace アノテーションとコスト集計を担当します。
 
 ```python
 from lumen_ai import LumenCheckpointer
@@ -58,7 +58,7 @@ Saver をそのまま置き換えられます（API は `BaseCheckpointSaver` �
 
 ## [Lurus API](/ja/guide/introduction) との連携 {#lurus-api}
 
-Lurus API 経由で LLM を呼び出すと、Token 課金と所要時間が自動的に Lumen Trace に関連付けられます:
+Lurus Hub 経由で LLM を呼び出すと、Token 課金と所要時間が自動的に Lumen Trace に関連付けられます:
 
 ```python
 from openai import OpenAI
@@ -69,7 +69,7 @@ tracer = LumenTracer()
 
 with tracer.span("classify"):
     resp = client.chat.completions.create(...)
-    # 調用自動記録，鹿贝消费可追溯
+    # 呼び出しは自動記録され、利用量を追跡可能
 ```
 
 ## OpenTelemetry {#opentelemetry}

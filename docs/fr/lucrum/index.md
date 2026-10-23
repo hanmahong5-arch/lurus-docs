@@ -114,7 +114,7 @@ Un écosystème ouvert de stratégies quantitatives, reliant développeurs de st
 </li>
 <li>
 
-**Solde Lubei en filet de sécurité** — une fois le quota épuisé, le débit s’effectue automatiquement depuis le [portefeuille Lubei](/platform/billing#wallet), 1 Lubei = 10 000 tokens.
+**Solde du portefeuille en filet de sécurité** — une fois le quota épuisé, le débit s’effectue depuis le [portefeuille du compte](/fr/platform/#wallet).
 
 </li>
 </ol>

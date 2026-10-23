@@ -115,7 +115,6 @@ class MA_RSI_Strategy(CtaTemplate):
 | 戦略名 | MA_RSI_A股趋势 v2 |
 | 分配比率 | 作者 70% / プラットフォーム 30% |
 | 試用期間 | 7 日 |
-| 推奨サブスク価格 | 99 鹿貝/月 |
 
 コンプライアンス審査を通過すれば、[戦略マーケット](/ja/lucrum/strategies)に公開できます。
 

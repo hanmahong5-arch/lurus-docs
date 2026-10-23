@@ -7,7 +7,7 @@ description: Lurus 平台账号、计费和服务相关的常见问题与解答�
 
 # 常见问题
 
-平台账号、订阅计费、鹿贝与安全的高频问题，按主题分组。
+平台账号、订阅计费、钱包与安全的高频问题，按主题分组。
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> 账号</span>
@@ -38,7 +38,7 @@ description: Lurus 平台账号、计费和服务相关的常见问题与解答�
 <details class="lurus-faq-item">
 <summary>如何删除账号？</summary>
 
-联系 [support@lurus.cn](mailto:support@lurus.cn) 注销，所有数据（API Key / 鹿贝 / 交易记录）永久删除不可恢复。
+联系 [support@lurus.cn](mailto:support@lurus.cn) 注销，所有数据（API Key / 钱包余额 / 交易记录）永久删除不可恢复。
 
 </details>
 
@@ -71,13 +71,6 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
 </details>
 
 <details class="lurus-faq-item">
-<summary>年付 vs 月付有什么区别？</summary>
-
-年付 8 折（≈免费用 2.4 个月）；年付期间不可降级但可升级。
-
-</details>
-
-<details class="lurus-faq-item">
 <summary>企业版怎么给团队加成员？</summary>
 
 管理后台 → 团队 → 邀请成员 → 输邮箱发邀请 → 成员接受加入 → 可为每成员分配独立 API Key 和配额。
@@ -95,35 +88,14 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
 ---
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
-  <h2 class="lurus-section-head__title">鹿贝</h2>
+  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 钱包</span>
+  <h2 class="lurus-section-head__title">钱包</h2>
 </div>
-
-<details class="lurus-faq-item">
-<summary>鹿贝有什么用途？</summary>
-
-支付超订阅配额的 API 调用、订阅 Lucrum 付费策略、享 VIP 折扣。
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>鹿贝会过期吗？</summary>
-
-购买的永久有效；活动赠送可能有有效期，以活动规则为准。
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>鹿贝可以提现吗？</summary>
-
-充值购买的未使用可退款；Lucrum 策略收入结算的鹿贝可提现银行卡。
-
-</details>
 
 <details class="lurus-faq-item">
 <summary>怎么查余额和收支记录？</summary>
 
-登录 [identity.lurus.cn](https://identity.lurus.cn) → 钱包，查看当前余额、收入明细（充值 / 奖励 / 策略收入）、支出明细（API 消费 / 策略订阅）。
+登录 [identity.lurus.cn](https://identity.lurus.cn) → 钱包，查看当前余额与收支明细。
 
 </details>
 
@@ -134,25 +106,7 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
   <h2 class="lurus-section-head__title">支付</h2>
 </div>
 
-支付方式：
-
-<div class="lurus-cards lurus-cards--compact">
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="receipt" :size="20" /></span>
-    <div class="lurus-card__title">Stripe</div>
-    <p class="lurus-card__body">信用卡 / 借记卡，全球</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">Creem</div>
-    <p class="lurus-card__body">加密货币</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
-    <div class="lurus-card__title">Epay</div>
-    <p class="lurus-card__body">支付宝 / 微信，中国大陆</p>
-  </div>
-</div>
+可用的支付渠道以结算页显示为准；企业客户可走合同与对公转账。
 
 <details class="lurus-faq-item">
 <summary>付款未到账怎么办？</summary>

@@ -17,12 +17,12 @@ description: "Replace LangGraph's default SqliteSaver with Lumen, deploy to a Ko
   <div class="lurus-card">
     <span class="lurus-card__icon"><Icon name="package" :size="20" /></span>
     <div class="lurus-card__title">Before — Plain LangGraph</div>
-    <p class="lurus-card__body">Single machine, no remote backup · Cross-process requires locking · Millisecond crash recovery · No cost tracking.</p>
+    <p class="lurus-card__body">Single machine, no remote backup · Cross-process requires locking · No cost tracking.</p>
   </div>
   <div class="lurus-card lurus-card--lumen">
     <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
     <div class="lurus-card__title">After — Lumen + Kova</div>
-    <p class="lurus-card__body">Microsecond crash recovery (Kova WAL engine) · Native multi-process safety · Automatic Trace + Cost · Remote persistence.</p>
+    <p class="lurus-card__body">Resumes from the WAL breakpoint after a crash (Kova engine) · Native multi-process safety · Automatic Trace + Cost · Remote persistence.</p>
   </div>
 </div>
 
@@ -104,24 +104,6 @@ wal:
 ```bash
 lumen deploy --target kova://prod-cluster
 ```
-
-## <Icon name="gauge" :size="20" /> Crash-Recovery Comparison Experiment
-
-| Metric | SqliteSaver | Lumen + Kova |
-|------|-------------|--------------|
-| Recovery latency | 8ms (single machine) | **Microsecond** |
-| Multiple replicas | Requires extra locking | **Native** |
-| Cross-datacenter | Manual replication | **Async replication built in** |
-| LLM re-invocation | Re-invokes if SQLite write fails | **Never re-invokes** |
-| Trace | None | **Auto-correlated** |
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">Where the microsecond recovery comes from</p>
-    <div class="lurus-callout__body"><p>The Kova engine's scheduling latency is as low as 3μs (full FIFO pipeline Criterion benchmark of 3.17μs, 315K ops/s). <code>LumenCheckpointer</code> hands LangGraph's checkpoint writes to the Kova WAL — recovery uses engine-level WAL replay instead of SQLite file-level recovery, so it is microsecond-scale, far faster than single-machine SQLite's millisecond scale.</p></div>
-  </div>
-</div>
 
 ## Next Steps
 

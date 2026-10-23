@@ -25,7 +25,7 @@ description: 一页定位 Lurus 全产品高频问题 —— 401 / 模型无渠�
   <a class="lurus-card lurus-card--api" href="/platform/billing">
     <span class="lurus-card__icon"><Icon name="wallet" :size="22" /></span>
     <div class="lurus-card__title">计费与配额</div>
-    <p class="lurus-card__body">免费额度、订阅计划、鹿贝扣费规则，以及配额耗尽后的处理。</p>
+    <p class="lurus-card__body">订阅计划、余额扣费方式，以及配额耗尽后的处理。</p>
   </a>
   <a class="lurus-card lurus-card--api" href="/guide/clients/others">
     <span class="lurus-card__icon"><Icon name="plug" :size="22" /></span>
@@ -105,9 +105,9 @@ description: 一页定位 Lurus 全产品高频问题 —— 401 / 模型无渠�
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- 先确认是否已用完当天免费配额（Free 套餐 100 次/天）
-- 查看鹿贝余额：[identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
-- 自助充值或升级套餐，规则见 [计费说明](/platform/billing)
+- 先确认当前额度是否已用完
+- 查看账号余额：[identity.lurus.cn](https://identity.lurus.cn)
+- 充值或升级套餐，规则见 [计费详解](/platform/billing)
 
 </details>
 
@@ -152,7 +152,7 @@ description: 一页定位 Lurus 全产品高频问题 —— 401 / 模型无渠�
   :steps="[
     { text: '错误处理（完整错误码）', link: '/api/errors', primary: true },
     { text: '常见问题', link: '/guide/faq' },
-    { text: '计费说明', link: '/platform/billing' },
+    { text: '计费详解', link: '/platform/billing' },
   ]"
 />
 

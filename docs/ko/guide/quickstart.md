@@ -12,21 +12,13 @@ description: 5분 안에 첫 Lurus API 호출을 완료하세요. Python, Node.j
 </div>
 
 ::: info 사전 조건
-Lurus 계정 하나(가입하면 바로 무료 할당량 제공, 첫 단계에서 생성 안내) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL(택일) · 기본 터미널 지식. 예상 소요 시간 5분.
+Lurus 계정 하나(첫 단계에서 생성 안내) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL(택일) · 기본 터미널 지식. 예상 소요 시간 5분.
 :::
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> 1단계</span>
-  <h2 class="lurus-section-head__title">계정 가입 —— 무료로 시작</h2>
-  <p class="lurus-section-head__lede">가입하면 바로 무료 할당량을 받으며, 충전 없이도 이 튜토리얼을 완주할 수 있습니다.</p>
-</div>
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">가입 즉시 사용, 결제 불필요</p>
-    <div class="lurus-callout__body"><p>신규 계정은 자동으로 <strong>5 鹿贝 + 무료 할당량</strong>(Free 플랜 <strong>일 100회</strong>, <code>deepseek-chat</code>、<code>gpt-3.5-turbo</code> 포함)을 받으며, 이 튜토리얼을 완주하기에 충분합니다. 할당량과 업그레이드 상세는 <a href="/ko/guide/faq">자주 묻는 질문</a>과 <a href="/ko/platform/billing">요금 안내</a>를 참고하세요.</p></div>
-  </div>
+  <h2 class="lurus-section-head__title">계정 가입</h2>
+  <p class="lurus-section-head__lede">가입 또는 로그인한 뒤 API Key를 하나 생성합니다.</p>
 </div>
 
 이어서 API Key를 하나 생성합니다.
@@ -161,7 +153,7 @@ func main() {
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">모델 응답이 보이나요? 첫 호출에 성공했습니다 🎉</p>
-    <div class="lurus-callout__body"><p>이번 요청은 가입 시 제공된 무료 할당량으로 처리되었으며, 한 푼도 들지 않았습니다. 다음 단계로 다른 모델을 시도해 보세요 —— 코드는 거의 손댈 필요가 없습니다.</p></div>
+    <div class="lurus-callout__body"><p>다음 단계로 다른 모델을 시도해 보세요 —— 코드는 거의 손댈 필요가 없습니다.</p></div>
   </div>
 </div>
 

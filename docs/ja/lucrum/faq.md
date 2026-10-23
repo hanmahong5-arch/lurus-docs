@@ -22,7 +22,7 @@ description: Lucrum AI クオンツ取引プラットフォームのよくある
 <details class="lurus-faq-item">
 <summary>有料ですか？</summary>
 
-無料 / 有料の 2 種類があり、無料枠を超えた分は [鹿貝ウォレット](/ja/platform/billing#wallet) から課金されます。
+無料 / 有料の 2 種類があり、無料枠を超えた分は [アカウントウォレット](/ja/platform/#wallet) から課金されます。
 
 | 機能 | 無料 | 有料 |
 |------|------|------|
@@ -72,20 +72,13 @@ LLM + テクニカル分析に基づく参考情報を提供しますが、**投
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="bar-chart-3" :size="14" /> 戦略について</span>
-  <h2 class="lurus-section-head__title">バックテストの信頼性、出金、コード保護</h2>
+  <h2 class="lurus-section-head__title">バックテストの信頼性、コード保護</h2>
 </div>
 
 <details class="lurus-faq-item">
 <summary>バックテストのデータは信頼できますか？</summary>
 
 実際の過去相場を使用しますが、マーケットインパクトコストやスリッページは考慮されず（大口資金では差が生じます）、過度な最適化は過学習を招きやすく、過去は将来を保証しません。バックテスト後はまずシミュレーション取引で検証することをおすすめします。
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>戦略収益はどう出金しますか？</summary>
-
-収益は鹿貝としてウォレットに入ります → [identity.lurus.cn](https://identity.lurus.cn) にログイン →「ウォレット」→「出金」→ 金額と銀行口座を入力 → 通常 1〜3 営業日で着金します。
 
 </details>
 

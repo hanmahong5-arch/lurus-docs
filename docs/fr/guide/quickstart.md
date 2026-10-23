@@ -12,21 +12,13 @@ description: Réalisez votre premier appel à l’API Lurus en moins de 5 minute
 </div>
 
 ::: info Prérequis
-Un compte Lurus (l’inscription offre un quota gratuit ; la première étape vous guide pour le créer) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL (au choix) · des notions de base du terminal. Durée estimée : 5 minutes.
+Un compte Lurus (la première étape vous guide pour le créer) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL (au choix) · des notions de base du terminal. Durée estimée : 5 minutes.
 :::
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> Étape 1</span>
-  <h2 class="lurus-section-head__title">Créer un compte —— Démarrer gratuitement</h2>
-  <p class="lurus-section-head__lede">L’inscription offre un quota gratuit : aucun rechargement n’est nécessaire pour suivre ce tutoriel.</p>
-</div>
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">Utilisable dès l’inscription, sans frais</p>
-    <div class="lurus-callout__body"><p>Tout nouveau compte reçoit automatiquement <strong>5 鹿贝 + un quota gratuit</strong> (offre Free <strong>100 appels/jour</strong>, incluant <code>deepseek-chat</code> et <code>gpt-3.5-turbo</code>), largement suffisant pour suivre ce tutoriel. Pour les détails sur les quotas et la mise à niveau, voir la <a href="/fr/guide/faq">Foire aux questions</a> et les <a href="/fr/platform/billing">explications de facturation</a>.</p></div>
-  </div>
+  <h2 class="lurus-section-head__title">Créer un compte</h2>
+  <p class="lurus-section-head__lede">Inscrivez-vous ou connectez-vous, puis créez une clé d’API.</p>
 </div>
 
 Créez ensuite une clé d’API :
@@ -161,7 +153,7 @@ func main() {
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Le modèle a répondu ? Votre premier appel est réussi 🎉</p>
-    <div class="lurus-callout__body"><p>Cette requête a utilisé le quota gratuit offert à l’inscription, sans dépenser un centime. Étape suivante : essayez un autre modèle —— le code ne change presque pas.</p></div>
+    <div class="lurus-callout__body"><p>Étape suivante : essayez un autre modèle —— le code ne change presque pas.</p></div>
   </div>
 </div>
 

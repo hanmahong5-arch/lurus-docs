@@ -25,7 +25,7 @@ description: Lurus 全製品でよく発生する問題を 1 ページで特定 
   <a class="lurus-card lurus-card--api" href="/ja/platform/billing">
     <span class="lurus-card__icon"><Icon name="wallet" :size="22" /></span>
     <div class="lurus-card__title">課金とクォータ</div>
-    <p class="lurus-card__body">無料枠、サブスクリプションプラン、鹿贝の課金ルール、そしてクォータを使い切った後の対処。</p>
+    <p class="lurus-card__body">サブスクリプションプラン、残高からの課金方式、そしてクォータを使い切った後の対処。</p>
   </a>
   <a class="lurus-card lurus-card--api" href="/ja/guide/clients/others">
     <span class="lurus-card__icon"><Icon name="plug" :size="22" /></span>
@@ -105,9 +105,9 @@ description: Lurus 全製品でよく発生する問題を 1 ページで特定 
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- まず当日の無料クォータを使い切っていないか確認（Free プランは 100 回/日）
-- 鹿贝残高を確認：[identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
-- セルフチャージまたはプランのアップグレードを。ルールは [課金説明](/ja/platform/billing) を参照
+- まず現在の利用枠を使い切っていないか確認
+- アカウント残高を確認：[identity.lurus.cn](https://identity.lurus.cn)
+- チャージまたはプランのアップグレードを。ルールは [課金の詳細](/ja/platform/billing) を参照
 
 </details>
 
@@ -152,7 +152,7 @@ description: Lurus 全製品でよく発生する問題を 1 ページで特定 
   :steps="[
     { text: 'エラー処理（完全なエラーコード）', link: '/ja/api/errors', primary: true },
     { text: 'よくある質問', link: '/ja/guide/faq' },
-    { text: '課金説明', link: '/ja/platform/billing' },
+    { text: '課金の詳細', link: '/ja/platform/billing' },
   ]"
 />
 

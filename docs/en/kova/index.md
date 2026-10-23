@@ -1,28 +1,21 @@
 ---
 title: Kova — Durable Execution Engine for AI Agents
-description: WAL-First architecture built in Rust, with automatic crash recovery, microsecond-scale scheduling, and zero external dependencies.
+description: A WAL-First durable execution engine built in Rust that resumes from its log after a process interruption. Current stage: early pilot.
 ---
 
 <div class="kova-page">
 
 <ProductHero product-id="kova" />
 
-<MetricStats :items="[
-  { label: 'FIFO scheduling', value: '3.17μs', hint: 'Criterion full pipeline' },
-  { label: 'Throughput', value: '315K ops/s' },
-  { label: 'Codebase', value: '178K LOC', hint: '21-crate workspace' },
-  { label: 'External deps', value: 'Zero', hint: 'No Redis / Postgres' },
-]" />
-
 ## What is Kova?
 
-**Kova** is Lurus’s core AI Agent infrastructure — a high-performance, durable execution engine built in Rust. It solves **how agents reliably run for long periods, recover their state after a crash, and coordinate complex workflows**. Traditional frameworks (LangChain, CrewAI) run in memory, so state is lost the moment the process exits. Kova adopts a <Term t="WAL">WAL (Write-Ahead Log)</Term>-first architecture: every execution step is persisted as a record, so even after a crash it can recover precisely to the point of interruption — without re-calling the LLM, losing progress, or incurring extra cost.
+**Kova** is Lurus’s AI Agent infrastructure — a durable execution engine built in Rust. It solves **how agents reliably run for long periods, recover their state after a crash, and coordinate complex workflows**. An agent that only runs in memory loses its state the moment the process exits. Kova adopts a <Term t="WAL">WAL (Write-Ahead Log)</Term>-first architecture: every execution step is persisted as a record, so even after a crash it can recover precisely to the point of interruption — without re-calling the LLM, losing progress, or incurring extra cost.
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Key metrics</p>
-    <div class="lurus-callout__body"><Term t="FIFO">FIFO</Term> full-pipeline latency of <strong>3.17μs</strong> (Criterion benchmark, see <code>docs/benchmark-report.md</code>), <strong>315K ops/s</strong> throughput, and <strong>zero external service dependencies</strong>.</div>
+    <p class="lurus-callout__title">Current stage</p>
+    <div class="lurus-callout__body">Early pilot. In the default configuration it runs on local WAL files and needs no external services such as Redis / Postgres.</div>
   </div>
 </div>
 
@@ -31,16 +24,15 @@ description: WAL-First architecture built in Rust, with automatic crash recovery
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="zap" :size="14" /> Core capabilities</span>
   <h2 class="lurus-section-head__title">Why choose Kova</h2>
-  <p class="lurus-section-head__lede">WAL-First durability, microsecond-scale scheduling, zero-dependency deployment, and four access methods.</p>
+  <p class="lurus-section-head__lede">WAL-First durability, runs on local files, and four access methods.</p>
 </div>
 
 <CapabilityGrid
   accent="var(--lurus-color-kova)"
   :items="[
     { title: 'WAL crash recovery', body: 'Write-ahead log + CRC32 checksum per step; replays from the breakpoint after a crash, without re-calling the LLM', icon: 'database-backup' },
-    { title: '3μs scheduling latency', body: 'FIFO full-pipeline Criterion benchmark of 3.17μs, 315K ops/s throughput', icon: 'gauge' },
     { title: 'Zero external dependencies', body: 'No Redis / Postgres required; runs with just a local WAL file', icon: 'package' },
-    { title: 'Four access methods', body: 'Rust SDK / gRPC / REST / MCP, modularized across a 21-crate workspace', icon: 'puzzle' },
+    { title: 'Four access methods', body: 'Rust SDK / gRPC / REST / MCP, modularized as workspace crates', icon: 'puzzle' },
   ]"
 />
 
@@ -92,7 +84,7 @@ CRC32 checksums guard against corruption; a power-of-2 ring buffer makes efficie
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="layers" :size="20" /></span>
     <div class="lurus-card__title">Multi-model support</div>
-    <p class="lurus-card__body">Access all mainstream LLMs through the <a href="/en/guide/introduction">Lurus API</a> (DeepSeek for everyday use / GPT-4o for reasoning / Claude for long contexts / Gemini for multimodal), switching dynamically per task at runtime.</p>
+    <p class="lurus-card__body">Can reach models from multiple providers through an OpenAI-compatible gateway such as <a href="/hub/">Lurus Hub</a>, switching per task at runtime.</p>
   </div>
 </div>
 
@@ -116,13 +108,11 @@ CRC32 checksums guard against corruption; a power-of-2 ring buffer makes efficie
 />
 
 ```
-Kova REST API (Axum: 35+ endpoints, WebSocket)
+Kova REST API (Axum, WebSocket)
  → Kova Core: Agent Engine(单/多 Agent) + Workflow(有序编排)
               → WAL + Ring Buffer(持久化状态管理 CRC32)
               子 crate: kova-llm / kova-tools / kova-mcp
 ```
-
-Kova is a workspace of **21 Rust crates**, **178,284 lines of code**, and **1,565+ tests** (loom concurrency / proptest / chaos) plus **4 fuzz targets**. It is currently a **v0.2.0 pre-release** (heading toward 1.0.0-beta.1), with strict lints fully enabled (`#[deny(clippy::unwrap_used, clippy::panic, missing_docs)]`).
 
 ---
 
@@ -136,7 +126,7 @@ Kova is a workspace of **21 Rust crates**, **178,284 lines of code**, and **1,56
 | **Long-running agents** | WAL durability with automatic recovery after a crash |
 | **Complex workflows** | Multi-step orchestration, conditional branches, parallel execution |
 | **Multi-agent collaboration** | Swarm mode with direct agent-to-agent communication |
-| **Enterprise deployment** | Rust performance, low resource footprint, no GC pauses |
+| **Self-hosted deployment** | Single binary or container, local WAL, no external database required |
 | **MCP tool integration** | Native support for the Model Context Protocol |
 | **Security-sensitive scenarios** | Optional encryption (SM4/AES), WAL HMAC integrity verification |
 
@@ -147,26 +137,6 @@ Kova is a workspace of **21 Rust crates**, **178,284 lines of code**, and **1,56
     { role: 'Architect', title: 'Replace the LangGraph Checkpointer', summary: 'Use Kova to store checkpoints in a LangGraph project', link: '/tutorials/lumen-kova-langgraph' },
   ]"
 />
-
----
-
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="layers" :size="14" /> Comparison</span>
-  <h2 class="lurus-section-head__title">Compared with other agent frameworks</h2>
-</div>
-
-| Capability | LangChain | CrewAI | AutoGen | **Kova** |
-|------|-----------|--------|---------|----------|
-| Language | Python | Python | Python | **Rust** |
-| State persistence | None (needs external) | None | None | **WAL-First** |
-| Crash recovery | None | None | None | **Automatic recovery** |
-| Performance | Medium | Medium | Medium | **Very high** |
-| Memory efficiency | Low | Low | Low | **Very high** |
-| MCP support | Third-party | None | None | **Native** |
-| A2A protocol | None | None | None | **Native** |
-| Encryption | None | None | None | **SM4-GCM / ChaCha20** |
-| Multi-protocol | None | None | None | **Four access methods: Rust SDK / gRPC / REST / MCP** |
-| Deployment form | Python process | Python process | Python process | **Single binary / container / embedded library** |
 
 ---
 

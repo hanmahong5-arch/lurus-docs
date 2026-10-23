@@ -1,6 +1,6 @@
 ---
 title: Lurus Platform — 계정 및 결제
-description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제 시스템 설명.
+description: Lurus 통합 계정 체계, 구독 플랜, 계정 지갑 및 결제 시스템 설명.
 ---
 
 <div class="platform-page">
@@ -13,12 +13,11 @@ description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제
 
 <CapabilityGrid
   accent="var(--lurus-color-platform)"
-  title="플랫폼의 네 가지 핵심 축"
+  title="플랫폼 기본 기능"
   :items="[
     { title: '통합 계정', body: '모든 Lurus 제품에서 동일한 신원, 잔액, 구독을 공유', icon: 'user-check' },
-    { title: '鹿贝 지갑', body: '통합 결제 단위, 사용량 기반 차감, 실시간 잔액 조회', icon: 'coins' },
-    { title: '구독 플랜', body: '무료 한도 + 사용량 기반 결제 + 기업 패키지', icon: 'package-2' },
-    { title: 'VIP 체계', body: '사용액에 따른 등급 상승, 전용 모델과 고객 지원 잠금 해제', icon: 'crown' },
+    { title: '계정 지갑', body: '잔액과 거래 내역을 기록하며 사용량 기반 차감에 사용', icon: 'coins' },
+    { title: '구독 플랜', body: '개인 구독과 기업 계약 두 가지 방식', icon: 'package-2' },
   ]"
 />
 
@@ -35,16 +34,6 @@ description: Lurus 통합 계정 체계, 구독 플랜, 鹿贝 지갑 및 결제
     <span class="lurus-card__icon"><Icon name="user-check" :size="20" /></span>
     <div class="lurus-card__title">통합 사용자 신원</div>
     <p class="lurus-card__body">하나의 계정으로 모든 제품에서 공통 사용</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">초기 5 鹿贝</div>
-    <p class="lurus-card__body">최초 가입 시 바로 지급, 즉시 체험 가능</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
-    <div class="lurus-card__title">무료 할당량</div>
-    <p class="lurus-card__body">가입 후 즉시 Lurus API 체험 가능</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="mail" :size="20" /></span>
@@ -85,70 +74,27 @@ Lurus 는 「구독 + 사용량」 이중 트랙 결제 모델을 채택하여 �
 
 ### 사용량 기반 결제
 
-구독에 포함된 한도를 초과하면 鹿贝 지갑에서 자동으로 차감됩니다. 모델마다 단가가 다르며, 콘솔에 표시되는 값을 기준으로 합니다.
+구독에 포함된 한도를 초과하면 계정 지갑 잔액에서 차감됩니다. 모델마다 단가가 다르며, 콘솔에 표시되는 값을 기준으로 합니다.
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">전체 가격, 할당량 규칙과 충전 비율이 궁금하신가요?</p>
-    <div class="lurus-callout__body"><a href="/ko/platform/billing">결제 상세</a> 에서 구독 플랜 비교, 할당량 계산, 鹿贝 환전 비율과 환불 정책을 분석합니다.</div>
+    <p class="lurus-callout__title">과금 방식과 환불</p>
+    <div class="lurus-callout__body"><a href="/ko/platform/billing">요금 안내</a>에서 현재 과금 방식, 잔액 부족 시 처리, 세금계산서와 환불을 설명합니다.</div>
   </div>
 </div>
 
 ---
 
-## 鹿贝 지갑 {#wallet}
+## 계정 지갑 {#wallet}
 
-**鹿贝(LB)** 는 Lurus 플랫폼의 범용 포인트 화폐로, 모든 초과 사용 요금을 결제하는 데 사용됩니다.
-
-### 鹿贝 획득
-
-| 경로 | 보상 | 설명 |
-|------|------|------|
-| **신규 사용자 가입** | 5 LB | 최초 가입 시 바로 지급 |
-| **첫 충전** | 10 LB 추가 보상 | 첫 충전 시 추가 증정 |
-| **첫 구독** | 30 LB 추가 보상 | 임의의 유료 플랜 첫 구독 |
-| **구독 갱신** | 충전 금액 x 5% | 처음 6회 갱신 시 리베이트 적용 |
-| **매일 출석 체크** | 랜덤 LB | 매일 출석 체크로 수령 |
-| **친구 추천** | 초대 보상 | 친구 가입 후 양쪽 모두 보상 획득 |
-| **전략 수익** | 분배 정산 | Lucrum 전략 구독 수익 |
-| **충전 구매** | 비율에 따라 환전 | 鹿贝 직접 구매 |
-
-### 鹿贝 사용
-
-다음 용도로 사용할 수 있습니다: 구독 할당량을 초과한 API 호출 요금 결제, Lucrum 유료 전략 구독, 고급 기능/확장 패키지 구매.
-
-### VIP 등급
-
-누적 鹿贝 사용액에 따라 다단계 VIP 가 잠금 해제되며, 할인은 모든 鹿贝 소비에 자동 적용됩니다.
-
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">입문</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Silver</span><span class="lurus-stat__label">실버</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Gold</span><span class="lurus-stat__label">골드</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Platinum</span><span class="lurus-stat__label">플래티넘</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Diamond</span><span class="lurus-stat__label">다이아몬드</span></div>
-</div>
-
-임계값과 할인은 [identity.lurus.cn](https://identity.lurus.cn) 계정 센터 VIP 페이지를 참조하세요.
+계정 지갑은 잔액과 거래 내역을 기록하며, 구독 한도를 초과한 사용량 결제에 사용됩니다. 잔액, 거래 내역, 충전 입구는 [identity.lurus.cn](https://identity.lurus.cn) 계정 센터에서 확인하세요. 가격, 증정 및 할인 규칙은 콘솔을 기준으로 하며, 이 문서에는 구체적인 수치를 적지 않습니다.
 
 ---
 
 ## 결제 수단
 
-모든 결제는 안전한 Webhook 을 통해 비동기로 확인되어, 네트워크 변동으로 인한 중복 차감을 방지합니다.
-
-| 수단 | 시나리오 | 설명 |
-|------|----------|------|
-| **Stripe** | 구독 + 충전 | 신용카드/체크카드(Visa, Mastercard) |
-| **Creem** | 충전 | 암호화폐 결제 |
-| **Epay** | 충전 | 알리페이/위챗페이(서드파티) |
-
----
-
-## 추천 프로그램
-
-[identity.lurus.cn](https://identity.lurus.cn) 에서 전용 추천 링크(추천 코드 포함)를 복사하여 친구에게 공유하세요. 보상: 친구가 링크를 통해 가입하면 양쪽 모두 鹿贝를 받습니다. 친구가 처음 유료 구독을 하면 구독 금액의 일정 비율을 추가 리베이트로 받습니다. 초대 횟수 제한은 없습니다.
+모든 결제는 Webhook 을 통해 비동기로 확인되어, 네트워크 변동으로 인한 중복 차감을 방지합니다. 이용 가능한 결제 채널은 결제 페이지 표시를 기준으로 하며, 기업 고객은 계약과 법인 계좌 이체를 이용할 수 있습니다.
 
 ---
 

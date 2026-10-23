@@ -1,28 +1,21 @@
 ---
 title: Kova — AI Agent 持久执行引擎
-description: Rust 构建的 WAL-First 架构，崩溃自动恢复，微秒级调度，零外部依赖。
+description: Rust 构建的 WAL-First 持久执行引擎，进程中断后从日志继续。当前阶段：早期试点。
 ---
 
 <div class="kova-page">
 
 <ProductHero product-id="kova" />
 
-<MetricStats :items="[
-  { label: 'FIFO 调度', value: '3.17μs', hint: 'Criterion 完整管道' },
-  { label: '吞吐', value: '315K ops/s' },
-  { label: '代码量', value: '178K LOC', hint: '21 crate workspace' },
-  { label: '外部依赖', value: '零', hint: '无 Redis / Postgres' },
-]" />
-
 ## 什么是 Kova？
 
-**Kova** 是 Lurus 核心 AI Agent 基础设施，Rust 构建的高性能持久化执行引擎，解决 **Agent 如何可靠长时间运行、崩溃后恢复状态、复杂工作流协同**。传统框架（LangChain、CrewAI）在内存运行，进程退出即丢状态；Kova 采用 <Term t="WAL">WAL（Write-Ahead Log）</Term> 优先架构，每步执行持久化记录，崩溃也能精确恢复到中断点——不重调 LLM、不丢进度、不产生额外费用。
+**Kova** 是 Lurus 的 AI Agent 基础设施，Rust 构建的持久化执行引擎，解决 **Agent 如何可靠长时间运行、崩溃后恢复状态、复杂工作流协同**。只在内存中运行的 Agent 进程退出即丢状态；Kova 采用 <Term t="WAL">WAL（Write-Ahead Log）</Term> 优先架构，每步执行持久化记录，崩溃也能精确恢复到中断点——不重调 LLM、不丢进度、不产生额外费用。
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">核心指标</p>
-    <div class="lurus-callout__body"><Term t="FIFO">FIFO</Term> 完整管道延迟 <strong>3.17μs</strong>（Criterion 基准，见 <code>docs/benchmark-report.md</code>）、吞吐 <strong>315K ops/s</strong>、<strong>零外部服务依赖</strong>。</div>
+    <p class="lurus-callout__title">当前阶段</p>
+    <div class="lurus-callout__body">早期试点。默认配置下以本地 WAL 文件运行，不需要 Redis / Postgres 等外部服务。</div>
   </div>
 </div>
 
@@ -31,16 +24,15 @@ description: Rust 构建的 WAL-First 架构，崩溃自动恢复，微秒级调
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="zap" :size="14" /> 核心能力</span>
   <h2 class="lurus-section-head__title">为什么选择 Kova</h2>
-  <p class="lurus-section-head__lede">WAL-First 持久化、微秒级调度、零依赖部署、四种接入方式。</p>
+  <p class="lurus-section-head__lede">WAL-First 持久化、本地文件即可运行、四种接入方式。</p>
 </div>
 
 <CapabilityGrid
   accent="var(--lurus-color-kova)"
   :items="[
     { title: 'WAL 崩溃恢复', body: '每步执行预写日志 + CRC32 校验，崩溃后从断点重放，不重调 LLM', icon: 'database-backup' },
-    { title: '3μs 调度延迟', body: 'FIFO 完整管道 Criterion 基准 3.17μs，315K ops/s 吞吐', icon: 'gauge' },
     { title: '零外部依赖', body: '无需 Redis / Postgres，本地 WAL 文件即可运行', icon: 'package' },
-    { title: '四种接入方式', body: 'Rust SDK / gRPC / REST / MCP，21 workspace crate 模块化', icon: 'puzzle' },
+    { title: '四种接入方式', body: 'Rust SDK / gRPC / REST / MCP，按 workspace crate 模块化', icon: 'puzzle' },
   ]"
 />
 
@@ -92,7 +84,7 @@ CRC32 校验防损坏；Power-of-2 环形缓冲高效利用存储；锁顺序 **
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="layers" :size="20" /></span>
     <div class="lurus-card__title">多模型支持</div>
-    <p class="lurus-card__body">经 <a href="/guide/introduction">Lurus API</a> 接入所有主流 LLM（DeepSeek 日常 / GPT-4o 推理 / Claude 长文本 / Gemini 多模态），运行时按任务动态切换。</p>
+    <p class="lurus-card__body">可经 <a href="/hub/">Lurus Hub</a> 等 OpenAI 兼容网关接入多家模型，运行时按任务切换。</p>
   </div>
 </div>
 
@@ -111,13 +103,11 @@ CRC32 校验防损坏；Power-of-2 环形缓冲高效利用存储；锁顺序 **
 </DiagramFigure>
 
 ```
-Kova REST API (Axum: 35+ endpoints, WebSocket)
+Kova REST API (Axum, WebSocket)
  → Kova Core: Agent Engine(单/多 Agent) + Workflow(有序编排)
               → WAL + Ring Buffer(持久化状态管理 CRC32)
               子 crate: kova-llm / kova-tools / kova-mcp
 ```
-
-Kova 是 **21 个 Rust crate** 的工作空间，**178,284 行代码**，**1,565+ 测试**（loom 并发 / proptest / chaos）+ **4 个 fuzz target**。当前 **v0.2.0 预发布**（朝向 1.0.0-beta.1），全面启用严格 lint（`#[deny(clippy::unwrap_used, clippy::panic, missing_docs)]`）。
 
 ---
 
@@ -131,7 +121,7 @@ Kova 是 **21 个 Rust crate** 的工作空间，**178,284 行代码**，**1,565
 | **长时间运行的 Agent** | WAL 持久化，崩溃后自动恢复 |
 | **复杂工作流** | 多步骤编排，条件分支，并行执行 |
 | **多 Agent 协作** | Swarm 模式，Agent 间直接通信 |
-| **企业级部署** | Rust 性能，低资源占用，无 GC 停顿 |
+| **自托管部署** | 单二进制或容器，本地 WAL，无需外部数据库 |
 | **MCP 工具集成** | 原生支持 Model Context Protocol |
 | **安全敏感场景** | 可选加密 (SM4/AES)，WAL HMAC 完整性校验 |
 
@@ -142,26 +132,6 @@ Kova 是 **21 个 Rust crate** 的工作空间，**178,284 行代码**，**1,565
     { role: '架构师', title: '替换 LangGraph Checkpointer', summary: '在 LangGraph 项目里用 Kova 存 checkpoint', link: '/tutorials/lumen-kova-langgraph' },
   ]"
 />
-
----
-
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="layers" :size="14" /> 对标</span>
-  <h2 class="lurus-section-head__title">与其他 Agent 框架对比</h2>
-</div>
-
-| 能力 | LangChain | CrewAI | AutoGen | **Kova** |
-|------|-----------|--------|---------|----------|
-| 语言 | Python | Python | Python | **Rust** |
-| 状态持久化 | 无（需外部） | 无 | 无 | **WAL-First** |
-| 崩溃恢复 | 无 | 无 | 无 | **自动恢复** |
-| 性能 | 中 | 中 | 中 | **极高** |
-| 内存效率 | 低 | 低 | 低 | **极高** |
-| MCP 支持 | 第三方 | 无 | 无 | **原生** |
-| A2A 协议 | 无 | 无 | 无 | **原生** |
-| 加密能力 | 无 | 无 | 无 | **SM4-GCM / ChaCha20** |
-| 多协议 | 无 | 无 | 无 | **四种接入方式：Rust SDK / gRPC / REST / MCP** |
-| 部署形态 | Python 进程 | Python 进程 | Python 进程 | **单二进制 / 容器 / 嵌入式库** |
 
 ---
 

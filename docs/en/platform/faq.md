@@ -7,7 +7,7 @@ description: Common questions and answers about Lurus platform accounts, billing
 
 # FAQ
 
-Frequently asked questions about platform accounts, subscription billing, Lubei, and security, grouped by topic.
+Frequently asked questions about platform accounts, subscription billing, wallet, and security, grouped by topic.
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> Account</span>
@@ -38,7 +38,7 @@ Click "Forgot password" on the login page; a reset link will be sent to your reg
 <details class="lurus-faq-item">
 <summary>How do I delete my account?</summary>
 
-Contact [support@lurus.cn](mailto:support@lurus.cn) to close your account. All data (API keys / Lubei / transaction records) is permanently deleted and cannot be recovered.
+Contact [support@lurus.cn](mailto:support@lurus.cn) to close your account. All data (API keys / wallet balance / transaction records) is permanently deleted and cannot be recovered.
 
 </details>
 
@@ -71,13 +71,6 @@ It is automatically downgraded to Free. Your API keys remain valid but are subje
 </details>
 
 <details class="lurus-faq-item">
-<summary>What’s the difference between annual and monthly billing?</summary>
-
-Annual plans are 20% off (≈ 2.4 months free); during the annual term you can upgrade but not downgrade.
-
-</details>
-
-<details class="lurus-faq-item">
 <summary>How does the Enterprise plan add team members?</summary>
 
 Admin Console → Team → Invite Member → enter an email and send the invitation → the member accepts and joins → you can assign each member a dedicated API key and quota.
@@ -88,42 +81,21 @@ Admin Console → Team → Invite Member → enter an email and send the invitat
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Want the full quota and pricing rules?</p>
-    <div class="lurus-callout__body">See <a href="/en/platform/billing">Billing Details</a>.</div>
+    <div class="lurus-callout__body">See <a href="/en/platform/billing">Billing Explained</a>.</div>
   </div>
 </div>
 
 ---
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> Lubei</span>
-  <h2 class="lurus-section-head__title">Lubei</h2>
+  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> Wallet</span>
+  <h2 class="lurus-section-head__title">Wallet</h2>
 </div>
-
-<details class="lurus-faq-item">
-<summary>What is Lubei used for?</summary>
-
-Paying for API calls beyond your subscription quota, subscribing to paid Lucrum strategies, and enjoying VIP discounts.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>Does Lubei expire?</summary>
-
-Purchased Lubei never expires; promotional Lubei may have an expiration date, subject to the rules of the promotion.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>Can Lubei be withdrawn?</summary>
-
-Unused Lubei bought via top-up is refundable; Lubei settled from Lucrum strategy income can be withdrawn to a bank card.
-
-</details>
 
 <details class="lurus-faq-item">
 <summary>How do I check my balance and transaction history?</summary>
 
-Log in to [identity.lurus.cn](https://identity.lurus.cn) → Wallet to view your current balance, income details (top-ups / rewards / strategy income), and spending details (API consumption / strategy subscriptions).
+Log in to [identity.lurus.cn](https://identity.lurus.cn) → Wallet to view your current balance and transaction history.
 
 </details>
 
@@ -134,25 +106,7 @@ Log in to [identity.lurus.cn](https://identity.lurus.cn) → Wallet to view your
   <h2 class="lurus-section-head__title">Payment</h2>
 </div>
 
-Payment methods:
-
-<div class="lurus-cards lurus-cards--compact">
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="receipt" :size="20" /></span>
-    <div class="lurus-card__title">Stripe</div>
-    <p class="lurus-card__body">Credit / debit card, worldwide</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">Creem</div>
-    <p class="lurus-card__body">Cryptocurrency</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
-    <div class="lurus-card__title">Epay</div>
-    <p class="lurus-card__body">Alipay / WeChat Pay, mainland China</p>
-  </div>
-</div>
+Available payment channels are shown on the checkout page; enterprise customers can pay by contract and corporate bank transfer.
 
 <details class="lurus-faq-item">
 <summary>What if my payment hasn’t arrived?</summary>
@@ -201,7 +155,7 @@ Immediately disable the key in the console → create a new key → review the c
   title="Next Steps"
   :steps="[
     { text: 'Platform Overview', link: '/en/platform/', primary: true },
-    { text: 'Billing Details', link: '/en/platform/billing' },
+    { text: 'Billing Explained', link: '/en/platform/billing' },
     { text: 'Get an API Key', link: '/en/guide/get-api-key' },
   ]"
 />

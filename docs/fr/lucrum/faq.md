@@ -22,7 +22,7 @@ Sur [lucrum.lurus.cn](https://lucrum.lurus.cn), connectez-vous avec le compte un
 <details class="lurus-faq-item">
 <summary>Faut-il payer ?</summary>
 
-Deux formules, gratuite / payante ; au-delà du quota gratuit, les frais sont prélevés depuis le [portefeuille 鹿贝](/fr/platform/billing#wallet).
+Deux formules, gratuite / payante ; au-delà du quota gratuit, les frais sont prélevés depuis le [portefeuille du compte](/fr/platform/#wallet).
 
 | Fonctionnalité | Gratuit | Payant |
 |------|------|------|
@@ -79,13 +79,6 @@ Oui. Décrivez votre idée et l’IA génère un squelette de code Python, que v
 <summary>Les données de backtest sont-elles fiables ?</summary>
 
 Elles utilisent des cours historiques réels, mais ne tiennent pas compte du coût d’impact ni du slippage (différence pour les gros capitaux), une suroptimisation conduit facilement au surapprentissage, et le passé ne garantit pas l’avenir. Il est recommandé, après un backtest, de valider d’abord en compte de simulation.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>Comment retirer les revenus d’une stratégie ?</summary>
-
-Les revenus arrivent en 鹿贝 dans le portefeuille → connectez-vous à [identity.lurus.cn](https://identity.lurus.cn) → « Portefeuille » → « Retrait » → saisissez le montant et la carte bancaire → crédité en général sous 1 à 3 jours ouvrés.
 
 </details>
 

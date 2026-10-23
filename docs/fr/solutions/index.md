@@ -45,7 +45,7 @@ Des points d’entrée conçus pour les décideurs, les achats, la revue d’arc
   />
   <ActionCard
     name="PMO / Achats"
-    tagline="Facturation à l’unité Lubei · Une seule facture · Licence on-premise"
+    tagline="Facturation sur contrat · Facture d’entreprise · Licence on-premise"
     icon="receipt"
     color="var(--lurus-color-platform)"
     :actions="[

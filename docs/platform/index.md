@@ -1,6 +1,6 @@
 ---
 title: Lurus Platform — 账号与计费
-description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系统说明。
+description: Lurus 统一账号体系、订阅计划、账号钱包和计费系统说明。
 ---
 
 <div class="platform-page">
@@ -13,12 +13,11 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
 
 <CapabilityGrid
   accent="var(--lurus-color-platform)"
-  title="平台四大支柱"
+  title="平台基础能力"
   :items="[
     { title: '统一账号', body: '跨所有 Lurus 产品共享同一身份、余额、订阅', icon: 'user-check' },
-    { title: '鹿贝钱包', body: '统一计费单位，按量扣费，实时余额查询', icon: 'coins' },
-    { title: '订阅计划', body: '免费额度 + 按需付费 + 企业套餐', icon: 'package-2' },
-    { title: 'VIP 体系', body: '消费升级，解锁专属模型与客服', icon: 'crown' },
+    { title: '账号钱包', body: '记录余额与交易明细，用于按量扣费', icon: 'coins' },
+    { title: '订阅计划', body: '个人订阅与企业合同两种方式', icon: 'package-2' },
   ]"
 />
 
@@ -35,16 +34,6 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
     <span class="lurus-card__icon"><Icon name="user-check" :size="20" /></span>
     <div class="lurus-card__title">统一用户身份</div>
     <p class="lurus-card__body">一份账号跨所有产品通用</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">初始 5 鹿贝</div>
-    <p class="lurus-card__body">首次注册即得，可立即试用</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
-    <div class="lurus-card__title">免费配额</div>
-    <p class="lurus-card__body">注册后可立即试用 Lurus API</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="mail" :size="20" /></span>
@@ -85,70 +74,27 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 
 ### 按量计费
 
-超出订阅包含额度后，自动从鹿贝钱包扣费。不同模型的单价不同，以控制台显示为准。
+超出订阅包含额度后，从账号钱包余额扣费。不同模型的单价不同，以控制台显示为准。
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">想看完整定价、配额规则与充值比例？</p>
-    <div class="lurus-callout__body"><a href="/platform/billing">计费详解</a> 拆解了订阅计划对比、配额计算、鹿贝兑换比例与退款政策。</div>
+    <p class="lurus-callout__title">计费方式与退款</p>
+    <div class="lurus-callout__body"><a href="/platform/billing">计费详解</a> 说明了当前的计费方式、余额不足时的处理、发票与退款。</div>
   </div>
 </div>
 
 ---
 
-## 鹿贝钱包 {#wallet}
+## 账号钱包 {#wallet}
 
-**鹿贝（LB）** 是 Lurus 平台的通用积分货币，用于支付所有超量使用费用。
-
-### 获取鹿贝
-
-| 途径 | 奖励 | 说明 |
-|------|------|------|
-| **新用户注册** | 5 LB | 首次注册即得 |
-| **首次充值** | 10 LB 额外奖励 | 首次充值额外赠送 |
-| **首次订阅** | 30 LB 额外奖励 | 首次订阅任意付费计划 |
-| **订阅续费** | 充值金额 x 5% | 前 6 次续费享受返利 |
-| **每日签到** | 随机 LB | 每日签到领取 |
-| **推荐好友** | 邀请奖励 | 好友注册后双方获奖 |
-| **策略收入** | 分成结算 | Lucrum 策略订阅收入 |
-| **充值购买** | 按比例兑换 | 直接购买鹿贝 |
-
-### 使用鹿贝
-
-可用于：支付超订阅配额的 API 调用费、订阅 Lucrum 付费策略、购买高级功能/扩展包。
-
-### VIP 等级
-
-累计消费鹿贝解锁多级 VIP，折扣自动应用于所有鹿贝消费。
-
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">入门</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Silver</span><span class="lurus-stat__label">白银</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Gold</span><span class="lurus-stat__label">黄金</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Platinum</span><span class="lurus-stat__label">铂金</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Diamond</span><span class="lurus-stat__label">钻石</span></div>
-</div>
-
-阈值与折扣详见 [identity.lurus.cn](https://identity.lurus.cn) 账号中心 VIP 页。
+账号钱包记录余额与交易明细，用于支付超出订阅额度的用量。余额、交易记录与充值入口见 [identity.lurus.cn](https://identity.lurus.cn) 账号中心。价格、赠送与折扣规则以控制台为准，本文档不列具体数值。
 
 ---
 
 ## 支付方式
 
-所有支付经安全 Webhook 异步确认，避免网络波动重复扣费。
-
-| 方式 | 场景 | 说明 |
-|------|----------|------|
-| **Stripe** | 订阅 + 充值 | 信用卡/借记卡（Visa、Mastercard） |
-| **Creem** | 充值 | 加密货币支付 |
-| **Epay** | 充值 | 支付宝/微信支付（第三方） |
-
----
-
-## 推荐计划
-
-[identity.lurus.cn](https://identity.lurus.cn) 复制专属推荐链接（含推荐码）分享好友。奖励：好友经链接注册双方各得鹿贝；好友首次付费订阅你额外得订阅金额一定比例返利；无邀请上限。
+所有支付经 Webhook 异步确认，避免网络波动造成重复扣费。可用的支付渠道以结算页显示为准；企业客户可走合同与对公转账。
 
 ---
 

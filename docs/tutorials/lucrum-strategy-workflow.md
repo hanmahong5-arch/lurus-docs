@@ -115,7 +115,6 @@ class MA_RSI_Strategy(CtaTemplate):
 | 策略名 | MA_RSI_A股趋势 v2 |
 | 分成比例 | 作者 70% / 平台 30% |
 | 试用期 | 7 天 |
-| 推荐订阅价 | 99 鹿贝/月 |
 
 通过合规审核后即可在[策略市场](/lucrum/strategies)上架。
 

@@ -119,7 +119,7 @@ Lurus は `organization` フィールドを必要とせず、付与してもエ�
 <NextSteps :steps="[
   { text: 'モデルカタログ', link: '/ja/guide/models', primary: true },
   { text: 'API リファレンス', link: '/ja/api/overview' },
-  { text: 'ルーベイ課金', link: '/ja/platform/billing' },
+  { text: '課金の詳細', link: '/ja/platform/billing' },
 ]" />
 
 </div>

@@ -13,7 +13,7 @@ Lumen 作为语义层可观测性工具，向下接 Kova 执行引擎与 Lurus A
   <a class="lurus-card lurus-card--kova" href="#kova">
     <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
     <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">WAL 持久化底座，微秒级崩溃恢复。</p>
+    <p class="lurus-card__body">WAL 持久化底座，崩溃后从断点恢复。</p>
   </a>
   <a class="lurus-card lurus-card--lumen" href="#langgraph">
     <span class="lurus-card__icon"><Icon name="repeat" :size="20" /></span>
@@ -34,7 +34,7 @@ Lumen 作为语义层可观测性工具，向下接 Kova 执行引擎与 Lurus A
 
 ## 与 [Kova](/kova/) {#kova}
 
-Kova 负责底层 WAL 状态持久化与微秒级崩溃恢复，Lumen 负责语义层 Trace 标注与成本统计。
+Kova 负责底层 WAL 状态持久化与崩溃恢复，Lumen 负责语义层 Trace 标注与成本统计。
 
 ```python
 from lumen_ai import LumenCheckpointer
@@ -58,7 +58,7 @@ graph.compile(checkpointer=LumenCheckpointer(kova_client=kova))
 
 ## 与 [Lurus API](/guide/introduction) {#lurus-api}
 
-经 Lurus API 调 LLM 时，Token 计费和耗时自动关联到 Lumen Trace：
+经 Lurus Hub 调 LLM 时，Token 计费和耗时自动关联到 Lumen Trace：
 
 ```python
 from openai import OpenAI
@@ -69,7 +69,7 @@ tracer = LumenTracer()
 
 with tracer.span("classify"):
     resp = client.chat.completions.create(...)
-    # 调用自动记录，鹿贝消费可追溯
+    # 调用自动记录，用量可追溯
 ```
 
 ## OpenTelemetry {#opentelemetry}

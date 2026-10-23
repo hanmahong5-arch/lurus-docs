@@ -22,7 +22,7 @@ Sign in at [lucrum.lurus.cn](https://lucrum.lurus.cn) with your Lurus unified ac
 <details class="lurus-faq-item">
 <summary>Is it free or paid?</summary>
 
-There are free and paid tiers; usage beyond the free quota is charged from your [Lubei wallet](/en/platform/billing#wallet).
+There are free and paid tiers; usage beyond the free quota is charged from your [account wallet](/en/platform/#wallet).
 
 | Feature | Free | Paid |
 |------|------|------|
@@ -79,13 +79,6 @@ Yes. Describe your idea and the AI generates a Python code scaffold that you can
 <summary>Is the backtest data trustworthy?</summary>
 
 It uses real historical market data, but does not account for market impact or slippage (which differ for large capital), is prone to overfitting from excessive optimization, and past performance does not guarantee future results. We recommend validating in paper trading first after backtesting.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>How do I withdraw strategy income?</summary>
-
-Income enters your wallet as Lubei → sign in at [identity.lurus.cn](https://identity.lurus.cn) → "Wallet" → "Withdraw" → enter the amount and bank card → funds typically arrive within 1-3 business days.
 
 </details>
 

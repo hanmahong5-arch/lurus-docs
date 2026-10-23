@@ -119,7 +119,7 @@ Lurus no requiere el campo `organization`; si lo incluyes de más, no da error.
 <NextSteps :steps="[
   { text: 'Catálogo de modelos', link: '/es/guide/models', primary: true },
   { text: 'Referencia de la API', link: '/es/api/overview' },
-  { text: 'Facturación de Lurus', link: '/es/platform/billing' },
+  { text: 'Detalles de facturación', link: '/es/platform/billing' },
 ]" />
 
 </div>

@@ -11,7 +11,6 @@ description: "Gateway, Agent, Memory, Identity — a TCO comparison of the four 
 
 <MetricStats :items="[
   { label: 'Models via gateway', value: '50+', hint: 'One key' },
-  { label: 'Kova scheduling', value: '3μs', hint: 'Criterion benchmark' },
   { label: 'Unified identity', value: 'SSO/MFA', hint: 'Connects to enterprise IdP' },
   { label: 'MemX PII rules', value: '12', hint: 'Non-bypassable' },
 ]" />
@@ -39,7 +38,6 @@ description: "Gateway, Agent, Memory, Identity — a TCO comparison of the four 
   self-label="Kova"
   :competitors="['Self-built Temporal', 'Self-built LangGraph + Redis']"
   :rows="[
-    { dimension: 'Scheduling latency', self: '3μs', alt: { 'Self-built Temporal': '1-10ms', 'Self-built LangGraph + Redis': '5-20ms' } },
     { dimension: 'Crash recovery', self: 'WAL automatic', alt: { 'Self-built Temporal': 'Event Sourcing', 'Self-built LangGraph + Redis': 'Semi-automatic' } },
     { dimension: 'External dependencies', self: 'None', alt: { 'Self-built Temporal': 'Cassandra/MySQL', 'Self-built LangGraph + Redis': 'Redis/PG' } },
     { dimension: 'Engineering person-months', self: '0', alt: { 'Self-built Temporal': '3-6 person-months', 'Self-built LangGraph + Redis': '2-4 person-months' } },

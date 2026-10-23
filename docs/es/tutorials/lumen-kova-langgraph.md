@@ -17,12 +17,12 @@ description: "Reemplaza el SqliteSaver predeterminado de LangGraph por Lumen, de
   <div class="lurus-card">
     <span class="lurus-card__icon"><Icon name="package" :size="20" /></span>
     <div class="lurus-card__title">Antes — LangGraph puro</div>
-    <p class="lurus-card__body">Una sola máquina, sin copia de seguridad remota · Requiere bloqueo entre procesos · Recuperación tras fallo en milisegundos · Sin seguimiento de costes.</p>
+    <p class="lurus-card__body">Una sola máquina, sin copia de seguridad remota · Requiere bloqueo entre procesos · Sin seguimiento de costes.</p>
   </div>
   <div class="lurus-card lurus-card--lumen">
     <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
     <div class="lurus-card__title">Después — Lumen + Kova</div>
-    <p class="lurus-card__body">Recuperación tras fallo en microsegundos (motor WAL de Kova) · Seguridad multiproceso nativa · Trace + Cost automáticos · Persistencia remota.</p>
+    <p class="lurus-card__body">Recuperación desde el punto de interrupción del WAL tras un fallo (motor Kova) · Seguridad multiproceso nativa · Trace + Cost automáticos · Persistencia remota.</p>
   </div>
 </div>
 
@@ -104,24 +104,6 @@ wal:
 ```bash
 lumen deploy --target kova://prod-cluster
 ```
-
-## <Icon name="gauge" :size="20" /> Experimento de comparación de recuperación tras un fallo
-
-| Métrica | SqliteSaver | Lumen + Kova |
-|------|-------------|--------------|
-| Latencia de recuperación | 8 ms (una sola máquina) | **microsegundos** |
-| Múltiples réplicas | Requiere bloqueo adicional | **nativo** |
-| Entre centros de datos | Copia manual | **replicación asíncrona integrada** |
-| Rellamada al LLM | Se rellama si falla la escritura en SQLite | **nunca se rellama** |
-| Trace | Ninguno | **correlación automática** |
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">De dónde viene la recuperación en microsegundos</p>
-    <div class="lurus-callout__body"><p>La latencia de planificación del motor Kova baja hasta los 3 μs (pipeline FIFO completo, benchmark de Criterion de 3,17 μs, 315K ops/s). <code>LumenCheckpointer</code> delega la escritura del checkpoint de LangGraph al WAL de Kova: la recuperación se realiza mediante la reproducción del WAL a nivel de motor en lugar de a nivel de archivo de SQLite, por lo que es de microsegundos, mucho más rápida que los milisegundos de SQLite en una sola máquina.</p></div>
-  </div>
-</div>
 
 ## Siguientes pasos
 

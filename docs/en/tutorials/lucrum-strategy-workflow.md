@@ -115,7 +115,6 @@ Accept the suggestions and re-run the backtest:
 | Strategy name | MA_RSI_A股趋势 v2 |
 | Revenue split | Author 70% / Platform 30% |
 | Trial period | 7 days |
-| Suggested subscription price | 99 Lubei/month |
 
 Once it passes compliance review, it can be listed on the [strategy marketplace](/en/lucrum/strategies).
 

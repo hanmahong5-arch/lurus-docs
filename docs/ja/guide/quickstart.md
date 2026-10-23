@@ -12,21 +12,13 @@ description: 5 分以内に初めての Lurus API 呼び出しを完了します
 </div>
 
 ::: info 前提条件
-Lurus アカウント 1 つ（登録するだけで無料枠が手に入ります。第 1 ステップで作成します）· Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（いずれか）· ターミナルの基本知識。所要時間は約 5 分。
+Lurus アカウント 1 つ（第 1 ステップで作成します）· Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL（いずれか）· ターミナルの基本知識。所要時間は約 5 分。
 :::
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> 第 1 ステップ</span>
-  <h2 class="lurus-section-head__title">アカウント登録 —— 無料で始める</h2>
-  <p class="lurus-section-head__lede">登録するだけで無料枠が手に入り、チャージなしでこのチュートリアルを動かせます。</p>
-</div>
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">登録するだけで使える、支払い不要</p>
-    <div class="lurus-callout__body"><p>新規アカウントには自動で <strong>5 鹿贝 + 無料枠</strong>（Free プラン <strong>100 回/日</strong>、<code>deepseek-chat</code>・<code>gpt-3.5-turbo</code> を含む）が付与され、本チュートリアルを動かすには十分すぎるほどです。枠とアップグレードの詳細は <a href="/ja/guide/faq">よくある質問</a> と <a href="/ja/platform/billing">料金について</a> をご覧ください。</p></div>
-  </div>
+  <h2 class="lurus-section-head__title">アカウント登録</h2>
+  <p class="lurus-section-head__lede">登録またはログインしたら、API Key を作成します。</p>
 </div>
 
 続いて API Key を作成します:
@@ -161,7 +153,7 @@ func main() {
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">モデルの返答が見えましたか? 最初の呼び出しが動きました 🎉</p>
-    <div class="lurus-callout__body"><p>今回のリクエストは、登録時にもらった無料枠を使っており、一円もかかっていません。次はモデルを切り替えて試してみましょう —— コードはほとんど変える必要がありません。</p></div>
+    <div class="lurus-callout__body"><p>次はモデルを切り替えて試してみましょう —— コードはほとんど変える必要がありません。</p></div>
   </div>
 </div>
 

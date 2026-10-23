@@ -114,7 +114,7 @@ Un ecosistema abierto de estrategias cuantitativas que conecta a desarrolladores
 </li>
 <li>
 
-**Respaldo con saldo de 鹿贝** — al agotar la cuota se descuenta automáticamente de la [billetera de 鹿贝](/es/platform/billing#wallet); 1 鹿贝 = 10.000 tokens.
+**Respaldo con el saldo de la billetera** — al agotar la cuota se descuenta de la [billetera de la cuenta](/es/platform/#wallet).
 
 </li>
 </ol>

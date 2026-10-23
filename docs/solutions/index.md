@@ -45,7 +45,7 @@ description: 按行业和角色入口分类 Lurus 企业级能力。
   />
   <ActionCard
     name="PMO / 采购"
-    tagline="鹿贝单位计费 · 一张发票 · 私有化授权"
+    tagline="合同计费 · 对公发票 · 私有化授权"
     icon="receipt"
     color="var(--lurus-color-platform)"
     :actions="[

@@ -17,12 +17,12 @@ description: "Lumen で LangGraph デフォルトの SqliteSaver を置き換え
   <div class="lurus-card">
     <span class="lurus-card__icon"><Icon name="package" :size="20" /></span>
     <div class="lurus-card__title">Before — 純粋な LangGraph</div>
-    <p class="lurus-card__body">単一マシン・リモートバックアップなし · プロセス間ではロックが必要 · クラッシュ復旧はミリ秒級 · コスト追跡なし。</p>
+    <p class="lurus-card__body">単一マシン・リモートバックアップなし · プロセス間ではロックが必要 · コスト追跡なし。</p>
   </div>
   <div class="lurus-card lurus-card--lumen">
     <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
     <div class="lurus-card__title">After — Lumen + Kova</div>
-    <p class="lurus-card__body">マイクロ秒級のクラッシュ復旧（Kova WAL エンジン）· ネイティブなマルチプロセス安全性 · 自動 Trace + Cost · リモート永続化。</p>
+    <p class="lurus-card__body">クラッシュ後に WAL の中断地点から復旧（Kova エンジン）· ネイティブなマルチプロセス安全性 · 自動 Trace + Cost · リモート永続化。</p>
   </div>
 </div>
 
@@ -104,24 +104,6 @@ wal:
 ```bash
 lumen deploy --target kova://prod-cluster
 ```
-
-## <Icon name="gauge" :size="20" /> クラッシュ復旧の比較実験
-
-| 指標 | SqliteSaver | Lumen + Kova |
-|------|-------------|--------------|
-| 復旧レイテンシ | 8ms（単一マシン） | **マイクロ秒級** |
-| 複数レプリカ | 追加のロックが必要 | **ネイティブ** |
-| 複数データセンター間 | 手動コピー | **非同期レプリケーション内蔵** |
-| LLM 再呼び出し | SQLite 書き込みが失敗すると再呼び出し | **再呼び出しは決して発生しない** |
-| Trace | なし | **自動関連付け** |
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">マイクロ秒級の復旧はどこから来るのか</p>
-    <div class="lurus-callout__body"><p>Kova エンジンのスケジューリングレイテンシは最小 3μs です（FIFO の完全パイプラインの Criterion ベンチマークで 3.17μs、315K ops/s）。<code>LumenCheckpointer</code> は LangGraph の checkpoint 書き込みを Kova WAL に委譲します —— 復旧は SQLite のファイルレベルではなくエンジンレベルの WAL リプレイを経由するため、マイクロ秒級となり、単一マシンの SQLite のミリ秒級よりはるかに高速です。</p></div>
-  </div>
-</div>
 
 ## 次のステップ
 

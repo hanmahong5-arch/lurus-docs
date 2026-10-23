@@ -11,7 +11,6 @@ description: "게이트웨이 · Agent · 메모리 · 신원 네 가지 핵심 
 
 <MetricStats :items="[
   { label: '게이트웨이 연동 모델', value: '50+', hint: '단일 Key' },
-  { label: 'Kova 스케줄링', value: '3μs', hint: 'Criterion 벤치마크' },
   { label: '통합 신원', value: 'SSO/MFA', hint: '기업 IdP 연동' },
   { label: 'MemX PII 규칙', value: '12종', hint: '우회 불가' },
 ]" />
@@ -39,7 +38,6 @@ description: "게이트웨이 · Agent · 메모리 · 신원 네 가지 핵심 
   self-label="Kova"
   :competitors="['자체 구축 Temporal', '자체 구축 LangGraph + Redis']"
   :rows="[
-    { dimension: '스케줄링 지연', self: '3μs', alt: { '자체 구축 Temporal': '1-10ms', '자체 구축 LangGraph + Redis': '5-20ms' } },
     { dimension: '크래시 복구', self: 'WAL 자동', alt: { '자체 구축 Temporal': 'Event Sourcing', '자체 구축 LangGraph + Redis': '반자동' } },
     { dimension: '외부 의존성', self: '없음', alt: { '자체 구축 Temporal': 'Cassandra/MySQL', '자체 구축 LangGraph + Redis': 'Redis/PG' } },
     { dimension: '엔지니어링 인월', self: '0', alt: { '자체 구축 Temporal': '3-6 인월', '자체 구축 LangGraph + Redis': '2-4 인월' } },

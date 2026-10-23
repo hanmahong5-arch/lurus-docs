@@ -25,7 +25,7 @@ description: One page to pinpoint high-frequency issues across all Lurus product
   <a class="lurus-card lurus-card--api" href="/en/platform/billing">
     <span class="lurus-card__icon"><Icon name="wallet" :size="22" /></span>
     <div class="lurus-card__title">Billing & quota</div>
-    <p class="lurus-card__body">Free allowance, subscription plans, 鹿贝 deduction rules, and what to do after quota runs out.</p>
+    <p class="lurus-card__body">Subscription plans, how balance deductions work, and what to do after quota runs out.</p>
   </a>
   <a class="lurus-card lurus-card--api" href="/en/guide/clients/others">
     <span class="lurus-card__icon"><Icon name="plug" :size="22" /></span>
@@ -105,9 +105,9 @@ For retry code examples, see [Error handling · Best practices](/en/api/errors#e
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- First confirm whether you’ve used up today’s free quota (Free plan: 100 calls/day)
-- Check your 鹿贝 balance: [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
-- Top up yourself or upgrade your plan; for the rules, see [Billing](/en/platform/billing)
+- First confirm whether your current quota is used up
+- Check your account balance: [identity.lurus.cn](https://identity.lurus.cn)
+- Top up or upgrade your plan; for the rules, see [Billing Explained](/en/platform/billing)
 
 </details>
 
@@ -152,7 +152,7 @@ For example `deepseek-chat` is 64K and `gemini-3-pro-preview` is 1M; when you ex
   :steps="[
     { text: 'Error handling (complete error codes)', link: '/en/api/errors', primary: true },
     { text: 'FAQ', link: '/en/guide/faq' },
-    { text: 'Billing', link: '/en/platform/billing' },
+    { text: 'Billing Explained', link: '/en/platform/billing' },
   ]"
 />
 

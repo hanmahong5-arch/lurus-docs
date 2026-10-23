@@ -12,21 +12,13 @@ description: Completa tu primera llamada a la API de Lurus en 5 minutos, con sop
 </div>
 
 ::: info Requisitos previos
-Una cuenta de Lurus (al registrarte obtienes cuota gratuita; el primer paso te guía para crearla) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL (a elegir) · conocimientos básicos de terminal. Tiempo estimado: 5 minutos.
+Una cuenta de Lurus (el primer paso te guía para crearla) · Python 3.8+ / Node.js 18+ / Go 1.21+ / cURL (a elegir) · conocimientos básicos de terminal. Tiempo estimado: 5 minutos.
 :::
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> Paso uno</span>
-  <h2 class="lurus-section-head__title">Crea una cuenta —— empieza gratis</h2>
-  <p class="lurus-section-head__lede">Al registrarte obtienes cuota gratuita; puedes completar este tutorial sin recargar saldo.</p>
-</div>
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">Listo para usar al registrarte, sin pagar</p>
-    <div class="lurus-callout__body"><p>Las cuentas nuevas reciben automáticamente <strong>5 鹿贝 + cuota gratuita</strong> (plan Free: <strong>100 llamadas/día</strong>, incluye <code>deepseek-chat</code> y <code>gpt-3.5-turbo</code>), más que suficiente para este tutorial. Para detalles de cuota y mejoras de plan, consulta las <a href="/es/guide/faq">preguntas frecuentes</a> y la <a href="/es/platform/billing">guía de facturación</a>.</p></div>
-  </div>
+  <h2 class="lurus-section-head__title">Crea una cuenta</h2>
+  <p class="lurus-section-head__lede">Regístrate o inicia sesión y crea una API Key.</p>
 </div>
 
 A continuación, crea una API Key:
@@ -161,7 +153,7 @@ func main() {
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">¿Ves la respuesta del modelo? Tu primera llamada ya funciona 🎉</p>
-    <div class="lurus-callout__body"><p>Esta solicitud usó la cuota gratuita de regalo por el registro, sin gastar ni un céntimo. El siguiente paso es probar otro modelo —— casi no hay que tocar el código.</p></div>
+    <div class="lurus-callout__body"><p>El siguiente paso es probar otro modelo —— casi no hay que tocar el código.</p></div>
   </div>
 </div>
 

@@ -115,7 +115,6 @@ Acepta las sugerencias y vuelve a ejecutar el backtest:
 | Nombre de la estrategia | MA_RSI_A股趋势 v2 |
 | Reparto de ingresos | Autor 70 % / Plataforma 30 % |
 | Periodo de prueba | 7 días |
-| Precio de suscripción recomendado | 99 lubei/mes |
 
 Tras superar la revisión de cumplimiento, podrás publicarla en el [mercado de estrategias](/es/lucrum/strategies).
 

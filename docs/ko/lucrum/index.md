@@ -114,7 +114,7 @@ LangGraph 기반으로 오케스트레이션된 멀티 Agent 투자 분석 시�
 </li>
 <li>
 
-**鹿贝 잔액 백업** — 쿼터 소진 후 [鹿贝 지갑](/ko/platform/billing#wallet)에서 자동 차감, 1 鹿贝 = 10,000 tokens.
+**지갑 잔액 백업** — 쿼터 소진 후 [계정 지갑](/ko/platform/#wallet)에서 차감.
 
 </li>
 </ol>

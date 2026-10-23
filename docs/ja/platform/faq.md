@@ -7,7 +7,7 @@ description: Lurus プラットフォームのアカウント、課金、サー�
 
 # よくある質問
 
-プラットフォームのアカウント、サブスクリプション課金、鹿贝、セキュリティに関する頻出の質問を、テーマ別にまとめています。
+プラットフォームのアカウント、サブスクリプション課金、ウォレット、セキュリティに関する頻出の質問を、テーマ別にまとめています。
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> アカウント</span>
@@ -38,7 +38,7 @@ description: Lurus プラットフォームのアカウント、課金、サー�
 <details class="lurus-faq-item">
 <summary>アカウントを削除するには？</summary>
 
-[support@lurus.cn](mailto:support@lurus.cn) に連絡して解約してください。すべてのデータ（API Key / 鹿贝 / 取引記録）は永久に削除され、復元できません。
+[support@lurus.cn](mailto:support@lurus.cn) に連絡して解約してください。すべてのデータ（API Key / ウォレット残高 / 取引記録）は永久に削除され、復元できません。
 
 </details>
 
@@ -71,13 +71,6 @@ GitHub、Google OAuth に対応しており、アカウント設定で連携 / �
 </details>
 
 <details class="lurus-faq-item">
-<summary>年払いと月払いの違いは何ですか？</summary>
-
-年払いは 20% オフ（約 2.4 か月分が無料）です。年払い期間中はダウングレードできませんが、アップグレードは可能です。
-
-</details>
-
-<details class="lurus-faq-item">
 <summary>エンタープライズ版でチームにメンバーを追加するには？</summary>
 
 管理コンソール → チーム → メンバー招待 → メールアドレスを入力して招待を送信 → メンバーが承諾して参加 → 各メンバーに独立した API Key と割り当てを付与できます。
@@ -95,35 +88,14 @@ GitHub、Google OAuth に対応しており、アカウント設定で連携 / �
 ---
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
-  <h2 class="lurus-section-head__title">鹿贝</h2>
+  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> ウォレット</span>
+  <h2 class="lurus-section-head__title">ウォレット</h2>
 </div>
-
-<details class="lurus-faq-item">
-<summary>鹿贝にはどんな用途がありますか？</summary>
-
-サブスクリプションの割り当てを超えた API 呼び出しの支払い、Lucrum 有料ストラテジーの購読、VIP 割引の利用に使えます。
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>鹿贝に有効期限はありますか？</summary>
-
-購入したものは永久に有効です。キャンペーンで付与されたものには有効期限がある場合があり、キャンペーンのルールに従います。
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>鹿贝は出金できますか？</summary>
-
-チャージ購入した未使用分は返金可能です。Lucrum ストラテジー収益から精算された鹿贝は銀行口座に出金できます。
-
-</details>
 
 <details class="lurus-faq-item">
 <summary>残高や収支記録はどう確認しますか？</summary>
 
-[identity.lurus.cn](https://identity.lurus.cn) にログイン → ウォレットで、現在の残高、収入明細（チャージ / 報酬 / ストラテジー収益）、支出明細（API 消費 / ストラテジー購読）を確認できます。
+[identity.lurus.cn](https://identity.lurus.cn) にログイン → ウォレットで、現在の残高と収支明細を確認できます。
 
 </details>
 
@@ -134,25 +106,7 @@ GitHub、Google OAuth に対応しており、アカウント設定で連携 / �
   <h2 class="lurus-section-head__title">支払い</h2>
 </div>
 
-支払い方法：
-
-<div class="lurus-cards lurus-cards--compact">
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="receipt" :size="20" /></span>
-    <div class="lurus-card__title">Stripe</div>
-    <p class="lurus-card__body">クレジットカード / デビットカード、グローバル</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">Creem</div>
-    <p class="lurus-card__body">暗号通貨</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
-    <div class="lurus-card__title">Epay</div>
-    <p class="lurus-card__body">Alipay / WeChat、中国本土</p>
-  </div>
-</div>
+利用できる支払いチャネルは決済ページの表示を基準とします。法人のお客様は契約と銀行振込をご利用いただけます。
 
 <details class="lurus-faq-item">
 <summary>支払いが反映されない場合は？</summary>

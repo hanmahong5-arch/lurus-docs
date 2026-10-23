@@ -11,13 +11,6 @@ description: Kova의 WAL, Agent Loop, Checkpoint 등 핵심 아키텍처 구성 
   <p class="lurus-section-head__lede">Agent, Workflow, Swarm부터 WAL 영속화까지 —— Kova의 핵심 아키텍처 구성 요소와 설계 철학을 이해합니다.</p>
 </div>
 
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3μs</span><span class="lurus-stat__label">스케줄링 지연</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">315K</span><span class="lurus-stat__label">ops/s 처리량</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">21</span><span class="lurus-stat__label">workspace crate</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">&lt;10MB</span><span class="lurus-stat__label">단일 바이너리</span></div>
-</div>
-
 <div class="lurus-cards lurus-cards--compact">
   <a class="lurus-card lurus-card--kova" href="#agent"><span class="lurus-card__icon"><Icon name="bot" :size="22" /></span><div class="lurus-card__title">Agent</div><p class="lurus-card__body">기본 실행 단위: Prompt + Model + Tools + Memory</p></a>
   <a class="lurus-card lurus-card--kova" href="#workflow"><span class="lurus-card__icon"><Icon name="workflow" :size="22" /></span><div class="lurus-card__title">Workflow</div><p class="lurus-card__body">여러 Agent를 순차 실행 파이프라인으로 오케스트레이션</p></a>

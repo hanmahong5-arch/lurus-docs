@@ -13,7 +13,7 @@ Lumen은 시맨틱 계층 관측 도구로서, 아래로는 Kova 실행 엔진�
   <a class="lurus-card lurus-card--kova" href="#kova">
     <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
     <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">WAL 영속화 기반, 마이크로초 단위 크래시 복구.</p>
+    <p class="lurus-card__body">WAL 영속화 기반, 크래시 후 중단 지점에서 복구.</p>
   </a>
   <a class="lurus-card lurus-card--lumen" href="#langgraph">
     <span class="lurus-card__icon"><Icon name="repeat" :size="20" /></span>
@@ -34,7 +34,7 @@ Lumen은 시맨틱 계층 관측 도구로서, 아래로는 Kova 실행 엔진�
 
 ## [Kova](/ko/kova/)와 통합 {#kova}
 
-Kova는 하위 계층의 WAL 상태 영속화와 마이크로초 단위 크래시 복구를 담당하고, Lumen은 시맨틱 계층의 트레이스 어노테이션과 비용 집계를 담당합니다.
+Kova는 하위 계층의 WAL 상태 영속화와 크래시 복구를 담당하고, Lumen은 시맨틱 계층의 트레이스 어노테이션과 비용 집계를 담당합니다.
 
 ```python
 from lumen_ai import LumenCheckpointer
@@ -58,7 +58,7 @@ Saver를 직접 교체하면 됩니다(API가 `BaseCheckpointSaver`와 완전히
 
 ## [Lurus API](/ko/guide/introduction)와 통합 {#lurus-api}
 
-Lurus API를 통해 LLM을 호출하면 Token 과금과 소요 시간이 자동으로 Lumen 트레이스에 연동됩니다:
+Lurus Hub를 통해 LLM을 호출하면 Token 과금과 소요 시간이 자동으로 Lumen 트레이스에 연동됩니다:
 
 ```python
 from openai import OpenAI
@@ -69,7 +69,7 @@ tracer = LumenTracer()
 
 with tracer.span("classify"):
     resp = client.chat.completions.create(...)
-    # 调用自动记录，鹿贝消费可追溯
+    # 호출이 자동 기록되어 사용량을 추적할 수 있음
 ```
 
 ## OpenTelemetry {#opentelemetry}

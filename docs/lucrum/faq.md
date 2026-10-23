@@ -22,7 +22,7 @@ description: Lucrum AI 量化交易平台的常见问题与解答。
 <details class="lurus-faq-item">
 <summary>需要付费吗？</summary>
 
-免费 / 付费两种，超免费额度从 [鹿贝钱包](/platform/billing#wallet) 扣费。
+免费 / 付费两种，超出免费额度的部分从 [账号钱包](/platform/#wallet) 扣费。
 
 | 功能 | 免费 | 付费 |
 |------|------|------|
@@ -79,13 +79,6 @@ description: Lucrum AI 量化交易平台的常见问题与解答。
 <summary>回测数据可信吗？</summary>
 
 用真实历史行情，但不考虑冲击成本和滑点（大资金有差异）、过度优化易过拟合、过去不保证未来。建议回测后先用模拟盘验证。
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>如何提现策略收入？</summary>
-
-收入以鹿贝进钱包 → 登录 [identity.lurus.cn](https://identity.lurus.cn) →「钱包」→「提现」→ 输金额和银行卡 → 通常 1-3 个工作日到账。
 
 </details>
 

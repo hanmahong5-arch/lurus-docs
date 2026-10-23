@@ -22,7 +22,7 @@ description: Lucrum AI 퀀트 트레이딩 플랫폼의 자주 묻는 질문과 
 <details class="lurus-faq-item">
 <summary>유료인가요?</summary>
 
-무료 / 유료 두 가지가 있으며, 무료 한도를 초과하면 [鹿贝 지갑](/ko/platform/billing#wallet)에서 차감됩니다.
+무료 / 유료 두 가지가 있으며, 무료 한도를 초과한 부분은 [계정 지갑](/ko/platform/#wallet)에서 차감됩니다.
 
 | 기능 | 무료 | 유료 |
 |------|------|------|
@@ -79,13 +79,6 @@ LLM + 기술적 분석을 기반으로 참고 자료를 제공하며, **투자 �
 <summary>백테스트 데이터를 신뢰할 수 있나요?</summary>
 
 실제 과거 시세를 사용하지만, 충격 비용과 슬리피지는 고려하지 않으며(대규모 자금에서는 차이가 발생) 과도한 최적화는 과적합되기 쉽고, 과거가 미래를 보장하지 않습니다. 백테스트 후 먼저 모의 투자로 검증하는 것을 권장합니다.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>전략 수익은 어떻게 출금하나요?</summary>
-
-수익은 鹿贝로 지갑에 들어옵니다 → [identity.lurus.cn](https://identity.lurus.cn) 로그인 →「지갑」→「출금」→ 금액과 은행 카드 입력 → 보통 1~3 영업일 내 입금됩니다.
 
 </details>
 

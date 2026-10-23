@@ -1,6 +1,6 @@
 ---
 title: Lurus Platform — Compte et facturation
-description: Présentation du système de comptes unifiés, des plans d’abonnement, du portefeuille 鹿贝 et de la facturation de Lurus.
+description: Présentation du système de comptes unifiés, des plans d’abonnement, du portefeuille du compte et de la facturation de Lurus.
 ---
 
 <div class="platform-page">
@@ -13,12 +13,11 @@ description: Présentation du système de comptes unifiés, des plans d’abonne
 
 <CapabilityGrid
   accent="var(--lurus-color-platform)"
-  title="Les quatre piliers de la plateforme"
+  title="Capacités de base de la plateforme"
   :items="[
     { title: 'Compte unifié', body: 'Une seule identité, un seul solde et un seul abonnement partagés par tous les produits Lurus', icon: 'user-check' },
-    { title: 'Portefeuille 鹿贝', body: 'Unité de facturation unifiée, débit à l\'usage, consultation du solde en temps réel', icon: 'coins' },
-    { title: 'Plans d\'abonnement', body: 'Quota gratuit + paiement à l\'usage + offres entreprise', icon: 'package-2' },
-    { title: 'Système VIP', body: 'Plus vous consommez, plus vous débloquez des modèles exclusifs et un support dédié', icon: 'crown' },
+    { title: 'Portefeuille du compte', body: 'Enregistre le solde et le détail des transactions, utilisé pour le débit à l\'usage', icon: 'coins' },
+    { title: 'Plans d\'abonnement', body: 'Abonnement individuel ou contrat entreprise', icon: 'package-2' },
   ]"
 />
 
@@ -35,16 +34,6 @@ Rendez-vous sur n’importe quel produit Lurus ([hub.lurus.cn](https://hub.lurus
     <span class="lurus-card__icon"><Icon name="user-check" :size="20" /></span>
     <div class="lurus-card__title">Identité utilisateur unifiée</div>
     <p class="lurus-card__body">Un seul compte commun à tous les produits</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">5 鹿贝 de départ</div>
-    <p class="lurus-card__body">Offerts dès l’inscription, utilisables immédiatement</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
-    <div class="lurus-card__title">Quota gratuit</div>
-    <p class="lurus-card__body">Essayez Lurus API immédiatement après l’inscription</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="mail" :size="20" /></span>
@@ -85,70 +74,27 @@ Les tarifs précis font foi sur la console [identity.lurus.cn](https://identity.
 
 ### Facturation à l’usage
 
-Une fois le quota inclus dans l’abonnement dépassé, le débit s’effectue automatiquement depuis le portefeuille 鹿贝. Les tarifs unitaires varient selon les modèles ; ceux affichés sur la console font foi.
+Une fois le quota inclus dans l’abonnement dépassé, le débit s’effectue depuis le solde du portefeuille du compte. Les tarifs unitaires varient selon les modèles ; ceux affichés sur la console font foi.
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Vous voulez voir les tarifs complets, les règles de quota et les ratios de recharge ?</p>
-    <div class="lurus-callout__body"><a href="/fr/platform/billing">Facturation en détail</a> décompose la comparaison des plans d’abonnement, le calcul des quotas, le ratio de conversion des 鹿贝 et la politique de remboursement.</div>
+    <p class="lurus-callout__title">Mode de facturation et remboursements</p>
+    <div class="lurus-callout__body"><a href="/fr/platform/billing">Facturation en détail</a> explique le mode de facturation actuel, la gestion d’un solde insuffisant, les factures et les remboursements.</div>
   </div>
 </div>
 
 ---
 
-## Portefeuille 鹿贝 {#wallet}
+## Portefeuille du compte {#wallet}
 
-Les **鹿贝 (LB)** sont la monnaie de points universelle de la plateforme Lurus, utilisée pour régler tous les frais d’usage en dépassement.
-
-### Obtenir des 鹿贝
-
-| Moyen | Récompense | Description |
-|------|------|------|
-| **Inscription d’un nouvel utilisateur** | 5 LB | Offerts dès l’inscription |
-| **Première recharge** | 10 LB en bonus | Bonus supplémentaire à la première recharge |
-| **Premier abonnement** | 30 LB en bonus | Au premier abonnement à n’importe quel plan payant |
-| **Renouvellement d’abonnement** | montant rechargé x 5 % | Cashback pour les 6 premiers renouvellements |
-| **Pointage quotidien** | LB aléatoires | À récupérer au pointage quotidien |
-| **Parrainage d’amis** | Récompense de parrainage | Les deux parties sont récompensées après l’inscription de l’ami |
-| **Revenus de stratégie** | Règlement des parts | Revenus d’abonnement aux stratégies Lucrum |
-| **Achat par recharge** | Conversion au prorata | Achat direct de 鹿贝 |
-
-### Utiliser les 鹿贝
-
-Utilisables pour : régler les frais d’appels API dépassant le quota d’abonnement, vous abonner aux stratégies payantes Lucrum, acheter des fonctionnalités avancées / packs d’extension.
-
-### Niveaux VIP
-
-La consommation cumulée de 鹿贝 débloque plusieurs niveaux VIP, dont la remise s’applique automatiquement à toutes les dépenses en 鹿贝.
-
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">Débutant</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Silver</span><span class="lurus-stat__label">Argent</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Gold</span><span class="lurus-stat__label">Or</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Platinum</span><span class="lurus-stat__label">Platine</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">Diamond</span><span class="lurus-stat__label">Diamant</span></div>
-</div>
-
-Les seuils et remises sont détaillés sur la page VIP du centre de compte [identity.lurus.cn](https://identity.lurus.cn).
+Le portefeuille du compte enregistre le solde et le détail des transactions ; il sert à régler l’usage qui dépasse le quota de l’abonnement. Le solde, l’historique des transactions et la recharge se trouvent dans le centre de compte [identity.lurus.cn](https://identity.lurus.cn). Les tarifs, bonus et remises font foi sur la console ; cette documentation ne donne pas de valeurs chiffrées.
 
 ---
 
 ## Moyens de paiement
 
-Tous les paiements sont confirmés de manière asynchrone via un Webhook sécurisé, évitant les doubles débits dus aux fluctuations du réseau.
-
-| Moyen | Cas d’usage | Description |
-|------|----------|------|
-| **Stripe** | Abonnement + recharge | Carte de crédit/débit (Visa, Mastercard) |
-| **Creem** | Recharge | Paiement en cryptomonnaie |
-| **Epay** | Recharge | Alipay/WeChat Pay (tiers) |
-
----
-
-## Programme de parrainage
-
-Sur [identity.lurus.cn](https://identity.lurus.cn), copiez votre lien de parrainage personnel (incluant votre code de parrainage) et partagez-le avec vos amis. Récompenses : lorsqu’un ami s’inscrit via le lien, les deux parties reçoivent des 鹿贝 ; lorsqu’un ami souscrit son premier abonnement payant, vous recevez en plus un cashback correspondant à un certain pourcentage du montant de l’abonnement ; aucune limite au nombre de parrainages.
+Tous les paiements sont confirmés de manière asynchrone via un Webhook, ce qui évite les doubles débits dus aux fluctuations du réseau. Les moyens de paiement disponibles sont ceux affichés sur la page de paiement ; les clients entreprise peuvent passer par un contrat et un virement bancaire.
 
 ---
 

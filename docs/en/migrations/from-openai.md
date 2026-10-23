@@ -119,7 +119,7 @@ Lurus does not require the `organization` field; supplying it does not cause an 
 <NextSteps :steps="[
   { text: 'Model catalog', link: '/en/guide/models', primary: true },
   { text: 'API reference', link: '/en/api/overview' },
-  { text: 'Lubei billing', link: '/en/platform/billing' },
+  { text: 'Billing Explained', link: '/en/platform/billing' },
 ]" />
 
 </div>

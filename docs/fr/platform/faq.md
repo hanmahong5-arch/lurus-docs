@@ -7,7 +7,7 @@ description: Questions fréquentes et réponses concernant les comptes, la factu
 
 # Questions fréquentes
 
-Les questions les plus fréquentes sur les comptes de la plateforme, la facturation des abonnements, les 鹿贝 et la sécurité, regroupées par thème.
+Les questions les plus fréquentes sur les comptes de la plateforme, la facturation des abonnements, le portefeuille et la sécurité, regroupées par thème.
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="user-check" :size="14" /> Compte</span>
@@ -38,7 +38,7 @@ Sur la page de connexion, cliquez sur « Mot de passe oublié », un lien de ré
 <details class="lurus-faq-item">
 <summary>Comment supprimer mon compte ?</summary>
 
-Contactez [support@lurus.cn](mailto:support@lurus.cn) pour la résiliation ; toutes les données (clé API / 鹿贝 / historique des transactions) seront définitivement supprimées et irrécupérables.
+Contactez [support@lurus.cn](mailto:support@lurus.cn) pour la résiliation ; toutes les données (clé API / solde du portefeuille / historique des transactions) seront définitivement supprimées et irrécupérables.
 
 </details>
 
@@ -71,13 +71,6 @@ Rétrogradation automatique vers Free ; la clé API reste valide mais soumise au
 </details>
 
 <details class="lurus-faq-item">
-<summary>Quelle est la différence entre le paiement annuel et mensuel ?</summary>
-
-Paiement annuel à -20 % (≈ 2,4 mois gratuits) ; pendant la période annuelle, la rétrogradation est impossible mais la montée en gamme reste possible.
-
-</details>
-
-<details class="lurus-faq-item">
 <summary>Comment ajouter des membres à l’équipe sur la version Entreprise ?</summary>
 
 Console d’administration → Équipe → Inviter un membre → Saisir l’e-mail et envoyer l’invitation → Le membre accepte et rejoint → Possibilité d’attribuer à chaque membre une clé API et un quota dédiés.
@@ -88,42 +81,21 @@ Console d’administration → Équipe → Inviter un membre → Saisir l’e-ma
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Vous souhaitez consulter les règles complètes de quota et de tarification ?</p>
-    <div class="lurus-callout__body">Voir le <a href="/fr/platform/billing">guide de facturation</a>.</div>
+    <div class="lurus-callout__body">Voir <a href="/fr/platform/billing">Facturation en détail</a>.</div>
   </div>
 </div>
 
 ---
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
-  <h2 class="lurus-section-head__title">鹿贝</h2>
+  <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> Portefeuille</span>
+  <h2 class="lurus-section-head__title">Portefeuille</h2>
 </div>
-
-<details class="lurus-faq-item">
-<summary>À quoi servent les 鹿贝 ?</summary>
-
-À payer les appels API dépassant le quota d’abonnement, à souscrire aux stratégies payantes de Lucrum et à bénéficier de remises VIP.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>Les 鹿贝 expirent-ils ?</summary>
-
-Ceux achetés sont valables à vie ; ceux offerts lors de promotions peuvent avoir une date d’expiration, selon les règles de la promotion.
-
-</details>
-
-<details class="lurus-faq-item">
-<summary>Peut-on retirer ses 鹿贝 ?</summary>
-
-Les 鹿贝 achetés par recharge et non utilisés sont remboursables ; les 鹿贝 issus du règlement des revenus de stratégies Lucrum peuvent être retirés vers une carte bancaire.
-
-</details>
 
 <details class="lurus-faq-item">
 <summary>Comment consulter le solde et l’historique des opérations ?</summary>
 
-Connectez-vous sur [identity.lurus.cn](https://identity.lurus.cn) → Portefeuille, pour consulter le solde actuel, le détail des entrées (recharge / récompenses / revenus de stratégies) et le détail des sorties (consommation API / abonnement aux stratégies).
+Connectez-vous sur [identity.lurus.cn](https://identity.lurus.cn) → Portefeuille, pour consulter le solde actuel et le détail des entrées et sorties.
 
 </details>
 
@@ -134,25 +106,7 @@ Connectez-vous sur [identity.lurus.cn](https://identity.lurus.cn) → Portefeuil
   <h2 class="lurus-section-head__title">Paiement</h2>
 </div>
 
-Modes de paiement :
-
-<div class="lurus-cards lurus-cards--compact">
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="receipt" :size="20" /></span>
-    <div class="lurus-card__title">Stripe</div>
-    <p class="lurus-card__body">Carte de crédit / débit, international</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">Creem</div>
-    <p class="lurus-card__body">Cryptomonnaie</p>
-  </div>
-  <div class="lurus-card lurus-card--platform">
-    <span class="lurus-card__icon"><Icon name="wallet" :size="20" /></span>
-    <div class="lurus-card__title">Epay</div>
-    <p class="lurus-card__body">Alipay / WeChat, Chine continentale</p>
-  </div>
-</div>
+Les moyens de paiement disponibles sont ceux affichés sur la page de paiement ; les clients entreprise peuvent passer par un contrat et un virement bancaire.
 
 <details class="lurus-faq-item">
 <summary>Que faire si un paiement n’est pas crédité ?</summary>

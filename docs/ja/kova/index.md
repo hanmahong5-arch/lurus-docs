@@ -1,28 +1,21 @@
 ---
 title: Kova — AI エージェント永続実行エンジン
-description: Rust で構築された WAL-First アーキテクチャ。クラッシュ自動復旧、マイクロ秒級スケジューリング、外部依存ゼロ。
+description: Rust で構築された WAL-First の永続実行エンジン。プロセスが中断してもログから続行します。現在の段階：初期パイロット。
 ---
 
 <div class="kova-page">
 
 <ProductHero product-id="kova" />
 
-<MetricStats :items="[
-  { label: 'FIFO スケジューリング', value: '3.17μs', hint: 'Criterion 完全パイプライン' },
-  { label: 'スループット', value: '315K ops/s' },
-  { label: 'コード量', value: '178K LOC', hint: '21 crate workspace' },
-  { label: '外部依存', value: 'ゼロ', hint: 'Redis / Postgres 不要' },
-]" />
-
 ## Kova とは？
 
-**Kova** は Lurus のコア AI エージェント基盤であり、Rust で構築された高性能な永続化実行エンジンです。**エージェントをいかに信頼性高く長時間稼働させ、クラッシュ後に状態を復旧し、複雑なワークフローを協調させるか** という課題を解決します。従来のフレームワーク（LangChain、CrewAI）はメモリ上で動作し、プロセスが終了すると状態を失います。Kova は <Term t="WAL">WAL（Write-Ahead Log）</Term> 優先アーキテクチャを採用し、各ステップの実行を永続的に記録するため、クラッシュしても中断地点まで正確に復旧できます——LLM を再呼び出しせず、進捗を失わず、追加費用も発生しません。
+**Kova** は Lurus の AI エージェント基盤であり、Rust で構築された永続化実行エンジンです。**エージェントをいかに信頼性高く長時間稼働させ、クラッシュ後に状態を復旧し、複雑なワークフローを協調させるか** という課題を解決します。メモリ上だけで動作するエージェントは、プロセスが終了すると状態を失います。Kova は <Term t="WAL">WAL（Write-Ahead Log）</Term> 優先アーキテクチャを採用し、各ステップの実行を永続的に記録するため、クラッシュしても中断地点まで正確に復旧できます——LLM を再呼び出しせず、進捗を失わず、追加費用も発生しません。
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">コア指標</p>
-    <div class="lurus-callout__body"><Term t="FIFO">FIFO</Term> 完全パイプライン遅延 <strong>3.17μs</strong>（Criterion ベンチマーク、<code>docs/benchmark-report.md</code> 参照）、スループット <strong>315K ops/s</strong>、<strong>外部サービス依存ゼロ</strong>。</div>
+    <p class="lurus-callout__title">現在の段階</p>
+    <div class="lurus-callout__body">初期パイロット。デフォルト構成ではローカルの WAL ファイルで動作し、Redis / Postgres などの外部サービスは不要です。</div>
   </div>
 </div>
 
@@ -31,16 +24,15 @@ description: Rust で構築された WAL-First アーキテクチャ。クラッ
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="zap" :size="14" /> コア機能</span>
   <h2 class="lurus-section-head__title">Kova を選ぶ理由</h2>
-  <p class="lurus-section-head__lede">WAL-First 永続化、マイクロ秒級スケジューリング、依存ゼロのデプロイ、4 種類の接続方式。</p>
+  <p class="lurus-section-head__lede">WAL-First 永続化、ローカルファイルだけで動作、4 種類の接続方式。</p>
 </div>
 
 <CapabilityGrid
   accent="var(--lurus-color-kova)"
   :items="[
     { title: 'WAL クラッシュ復旧', body: '各ステップ実行前にログを先行書き込み + CRC32 検証。クラッシュ後は中断地点から再生し、LLM を再呼び出ししない', icon: 'database-backup' },
-    { title: '3μs スケジューリング遅延', body: 'FIFO 完全パイプラインの Criterion ベンチマークで 3.17μs、315K ops/s スループット', icon: 'gauge' },
     { title: '外部依存ゼロ', body: 'Redis / Postgres は不要。ローカルの WAL ファイルだけで動作', icon: 'package' },
-    { title: '4 種類の接続方式', body: 'Rust SDK / gRPC / REST / MCP、21 workspace crate のモジュール構成', icon: 'puzzle' },
+    { title: '4 種類の接続方式', body: 'Rust SDK / gRPC / REST / MCP、workspace crate によるモジュール構成', icon: 'puzzle' },
   ]"
 />
 
@@ -92,7 +84,7 @@ CRC32 検証で破損を防止。Power-of-2 リングバッファでストレー
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="layers" :size="20" /></span>
     <div class="lurus-card__title">マルチモデル対応</div>
-    <p class="lurus-card__body"><a href="/ja/guide/introduction">Lurus API</a> 経由で主要な LLM をすべて利用（DeepSeek 日常用 / GPT-4o 推論 / Claude 長文 / Gemini マルチモーダル）、実行時にタスクに応じて動的に切り替え。</p>
+    <p class="lurus-card__body"><a href="/hub/">Lurus Hub</a> などの OpenAI 互換ゲートウェイ経由で複数のモデルに接続でき、実行時にタスクに応じて切り替えられます。</p>
   </div>
 </div>
 
@@ -112,17 +104,15 @@ CRC32 検証で破損を防止。Power-of-2 リングバッファでストレー
   B --> D[Scheduler<br/>FIFO]
   B --> E[Tool Runtime<br/>MCP]
   C -.recover.-> B
-  D --> F[LLM Provider<br/>via Lurus API]"
+  D --> F[LLM Provider<br/>via Lurus Hub]"
 />
 
 ```
-Kova REST API (Axum: 35+ endpoints, WebSocket)
+Kova REST API (Axum, WebSocket)
  → Kova Core: Agent Engine(单/多 Agent) + Workflow(有序编排)
               → WAL + Ring Buffer(持久化状态管理 CRC32)
               子 crate: kova-llm / kova-tools / kova-mcp
 ```
-
-Kova は **21 個の Rust crate** で構成されるワークスペースで、**178,284 行のコード**、**1,565+ のテスト**（loom 並行性 / proptest / chaos）+ **4 個の fuzz target** を備えます。現在は **v0.2.0 プレリリース**（1.0.0-beta.1 に向けて）で、厳格な lint を全面的に有効化しています（`#[deny(clippy::unwrap_used, clippy::panic, missing_docs)]`）。
 
 ---
 
@@ -136,7 +126,7 @@ Kova は **21 個の Rust crate** で構成されるワークスペースで、*
 | **長時間稼働するエージェント** | WAL 永続化により、クラッシュ後に自動復旧 |
 | **複雑なワークフロー** | 複数ステップのオーケストレーション、条件分岐、並列実行 |
 | **複数エージェントの協調** | Swarm モード、エージェント間の直接通信 |
-| **エンタープライズ級デプロイ** | Rust の性能、低リソース消費、GC 停止なし |
+| **セルフホストデプロイ** | 単一バイナリまたはコンテナ、ローカル WAL、外部データベース不要 |
 | **MCP ツール統合** | Model Context Protocol をネイティブにサポート |
 | **セキュリティ重視のシーン** | オプションの暗号化 (SM4/AES)、WAL HMAC 完全性検証 |
 
@@ -147,26 +137,6 @@ Kova は **21 個の Rust crate** で構成されるワークスペースで、*
     { role: 'アーキテクト', title: 'LangGraph Checkpointer を置き換える', summary: 'LangGraph プロジェクトで Kova を使って checkpoint を保存', link: '/tutorials/lumen-kova-langgraph' },
   ]"
 />
-
----
-
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="layers" :size="14" /> 比較</span>
-  <h2 class="lurus-section-head__title">他のエージェントフレームワークとの比較</h2>
-</div>
-
-| 能力 | LangChain | CrewAI | AutoGen | **Kova** |
-|------|-----------|--------|---------|----------|
-| 言語 | Python | Python | Python | **Rust** |
-| 状態の永続化 | なし（外部が必要） | なし | なし | **WAL-First** |
-| クラッシュ復旧 | なし | なし | なし | **自動復旧** |
-| 性能 | 中 | 中 | 中 | **極めて高い** |
-| メモリ効率 | 低 | 低 | 低 | **極めて高い** |
-| MCP 対応 | サードパーティ | なし | なし | **ネイティブ** |
-| A2A プロトコル | なし | なし | なし | **ネイティブ** |
-| 暗号化機能 | なし | なし | なし | **SM4-GCM / ChaCha20** |
-| マルチプロトコル | なし | なし | なし | **4 種類の接続方式：Rust SDK / gRPC / REST / MCP** |
-| デプロイ形態 | Python プロセス | Python プロセス | Python プロセス | **単一バイナリ / コンテナ / 組み込みライブラリ** |
 
 ---
 

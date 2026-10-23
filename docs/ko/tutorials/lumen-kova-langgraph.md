@@ -17,12 +17,12 @@ description: "Lumen으로 LangGraph 기본 SqliteSaver를 교체하고 Kova Clus
   <div class="lurus-card">
     <span class="lurus-card__icon"><Icon name="package" :size="20" /></span>
     <div class="lurus-card__title">Before — 순수 LangGraph</div>
-    <p class="lurus-card__body">단일 머신, 원격 백업 없음 · 프로세스 간 락 필요 · 밀리초급 크래시 복구 · 비용 추적 없음.</p>
+    <p class="lurus-card__body">단일 머신, 원격 백업 없음 · 프로세스 간 락 필요 · 비용 추적 없음.</p>
   </div>
   <div class="lurus-card lurus-card--lumen">
     <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
     <div class="lurus-card__title">After — Lumen + Kova</div>
-    <p class="lurus-card__body">마이크로초급 크래시 복구(Kova WAL 엔진) · 네이티브 멀티프로세스 안전성 · 자동 Trace + Cost · 원격 영속화.</p>
+    <p class="lurus-card__body">크래시 후 WAL 중단 지점에서 복구(Kova 엔진) · 네이티브 멀티프로세스 안전성 · 자동 Trace + Cost · 원격 영속화.</p>
   </div>
 </div>
 
@@ -104,24 +104,6 @@ wal:
 ```bash
 lumen deploy --target kova://prod-cluster
 ```
-
-## <Icon name="gauge" :size="20" /> 크래시 복구 비교 실험
-
-| 지표 | SqliteSaver | Lumen + Kova |
-|------|-------------|--------------|
-| 복구 지연 | 8ms(단일 머신) | **마이크로초급** |
-| 다중 복제본 | 추가 락 필요 | **네이티브** |
-| 크로스 데이터센터 | 수동 복제 | **비동기 복제 내장** |
-| LLM 재호출 | SQLite 쓰기 실패 시 재호출 | **재호출 없음** |
-| Trace | 없음 | **자동 연계** |
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">마이크로초급 복구는 어디서 오는가</p>
-    <div class="lurus-callout__body"><p>Kova 엔진의 스케줄링 지연은 3μs까지 낮습니다(FIFO 전체 파이프라인 Criterion 벤치마크 3.17μs, 315K ops/s). <code>LumenCheckpointer</code>는 LangGraph의 checkpoint 쓰기를 Kova WAL에 위임합니다 — 복구는 SQLite 파일 레벨이 아니라 엔진 레벨의 WAL 리플레이로 진행되므로 마이크로초급이며, 단일 머신 SQLite의 밀리초급보다 훨씬 빠릅니다.</p></div>
-  </div>
-</div>
 
 ## 다음 단계
 

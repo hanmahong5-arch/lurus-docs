@@ -11,7 +11,6 @@ description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 
 
 <MetricStats :items="[
   { label: '网关接入模型', value: '50+', hint: '一个 Key' },
-  { label: 'Kova 调度', value: '3μs', hint: 'Criterion 基准' },
   { label: '统一身份', value: 'SSO/MFA', hint: '接企业 IdP' },
   { label: 'MemX PII 规则', value: '12 种', hint: '不可绕过' },
 ]" />
@@ -39,7 +38,6 @@ description: 网关 · Agent · 记忆 · 身份四项核心能力 vs 自建的 
   self-label="Kova"
   :competitors="['自建 Temporal', '自建 LangGraph + Redis']"
   :rows="[
-    { dimension: '调度延迟', self: '3μs', alt: { '自建 Temporal': '1-10ms', '自建 LangGraph + Redis': '5-20ms' } },
     { dimension: '崩溃恢复', self: 'WAL 自动', alt: { '自建 Temporal': 'Event Sourcing', '自建 LangGraph + Redis': '半自动' } },
     { dimension: '外部依赖', self: '零', alt: { '自建 Temporal': 'Cassandra/MySQL', '自建 LangGraph + Redis': 'Redis/PG' } },
     { dimension: '工程人月', self: '0', alt: { '自建 Temporal': '3-6 人月', '自建 LangGraph + Redis': '2-4 人月' } },
