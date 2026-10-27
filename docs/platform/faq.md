@@ -59,21 +59,21 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
 <details class="lurus-faq-item">
 <summary>如何升级 / 降级套餐？</summary>
 
-登录 [identity.lurus.cn](https://identity.lurus.cn) → 订阅管理 →「变更套餐」：升级立即生效按比例补差价；降级下个计费周期生效。
+登录 [identity.lurus.cn](https://identity.lurus.cn) → 订阅管理 →「变更套餐」：升级、降级都立即生效，差价按剩余天数从钱包补扣或退回。月付和年付之间不能直接切换。
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>订阅到期后会怎样？</summary>
 
-自动降级 Free，API Key 仍有效但受 Free 配额限制，数据保留随时续费恢复。
+到期后有 3 天宽限期，之后回到 Free；API Key 仍有效但受 Free 额度限制，数据保留，随时续费恢复。
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>年付 vs 月付有什么区别？</summary>
 
-年付 8 折（≈免费用 2.4 个月）；年付期间不可降级但可升级。
+年付总价低于 12 个月月付，具体价格以控制台为准；年付与月付之间不能直接切换。
 
 </details>
 
@@ -102,28 +102,28 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
 <details class="lurus-faq-item">
 <summary>鹿贝有什么用途？</summary>
 
-支付超订阅配额的 API 调用、订阅 Lucrum 付费策略、享 VIP 折扣。
+支付所有产品的按量费用（超出订阅额度的 API 调用等），也可用于购买订阅。1 鹿贝 = 1 元。
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>鹿贝会过期吗？</summary>
 
-购买的永久有效；活动赠送可能有有效期，以活动规则为准。
+充值得到的余额不过期；活动赠送的额度可能有有效期，以活动规则为准。
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>鹿贝可以提现吗？</summary>
 
-充值购买的未使用可退款；Lucrum 策略收入结算的鹿贝可提现银行卡。
+不能提现。付款后 7 天内、未动用的那笔充值可以整笔申请退款。
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>怎么查余额和收支记录？</summary>
 
-登录 [identity.lurus.cn](https://identity.lurus.cn) → 钱包，查看当前余额、收入明细（充值 / 奖励 / 策略收入）、支出明细（API 消费 / 策略订阅）。
+登录 [identity.lurus.cn](https://identity.lurus.cn) → 钱包，查看当前余额、收入明细（充值 / 奖励 / 退款）、支出明细（API 消费 / 订阅）。
 
 </details>
 
@@ -164,7 +164,7 @@ GitHub、Google OAuth，账号设置中绑定 / 解绑。
 <details class="lurus-faq-item">
 <summary>如何申请发票？</summary>
 
-管理后台 → 账单 → 申请发票（增值税普通 / 专用），通常 1 个工作日内发邮箱。
+每笔已付款订单可在控制台申请发票，填写抬头与税号，由人工开具后可下载。
 
 </details>
 

@@ -19,7 +19,7 @@ description: Common questions and answers for using the Lurus API, including bil
 <details class="lurus-faq-item">
 <summary>How do I sign up?</summary>
 
-At [hub.lurus.cn](https://hub.lurus.cn), enter your email and password (or sign in with GitHub/Google) to automatically receive 5 Lubei + a free quota. All products share the same account.
+At [hub.lurus.cn](https://hub.lurus.cn), enter your email and password (or sign in with GitHub/Google). New accounts start on the Free plan with a daily free quota; all products share the same account and wallet.
 
 </details>
 

@@ -18,7 +18,7 @@ description: Présentation du système de comptes unifiés, des plans d’abonne
     { title: 'Compte unifié', body: 'Une seule identité, un seul solde et un seul abonnement partagés par tous les produits Lurus', icon: 'user-check' },
     { title: 'Portefeuille 鹿贝', body: 'Unité de facturation unifiée, débit à l\'usage, consultation du solde en temps réel', icon: 'coins' },
     { title: 'Plans d\'abonnement', body: 'Quota gratuit + paiement à l\'usage + offres entreprise', icon: 'package-2' },
-    { title: 'Système VIP', body: 'Plus vous consommez, plus vous débloquez des modèles exclusifs et un support dédié', icon: 'crown' },
+    { title: 'Système VIP', body: 'Le niveau monte avec les recharges cumulées ; les abonnements sont remisés', icon: 'crown' },
   ]"
 />
 
@@ -38,8 +38,8 @@ Rendez-vous sur n’importe quel produit Lurus ([hub.lurus.cn](https://hub.lurus
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">5 鹿贝 de départ</div>
-    <p class="lurus-card__body">Offerts dès l’inscription, utilisables immédiatement</p>
+    <div class="lurus-card__title">Portefeuille 鹿贝</div>
+    <p class="lurus-card__body">Ouvert dès l’inscription ; 1 CNY = 1 鹿贝, commun à tous les produits</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
@@ -81,7 +81,7 @@ Lurus adopte un modèle de facturation double « abonnement + à l’usage », a
 | **Pro annuel** | Réduction sur l’abonnement Pro annuel | Utilisateurs réguliers |
 | **Enterprise** | Personnalisation entreprise + SLA | Équipes / entreprises |
 
-Les tarifs précis font foi sur la console [identity.lurus.cn](https://identity.lurus.cn) (page de gestion des abonnements).
+Il existe aussi un forfait distinct dédié à Claude Code. Les tarifs précis font foi sur la console [identity.lurus.cn](https://identity.lurus.cn) (page de gestion des abonnements).
 
 ### Facturation à l’usage
 
@@ -91,7 +91,7 @@ Une fois le quota inclus dans l’abonnement dépassé, le débit s’effectue a
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Vous voulez voir les tarifs complets, les règles de quota et les ratios de recharge ?</p>
-    <div class="lurus-callout__body"><a href="/fr/platform/billing">Facturation en détail</a> décompose la comparaison des plans d’abonnement, le calcul des quotas, le ratio de conversion des 鹿贝 et la politique de remboursement.</div>
+    <div class="lurus-callout__body"><a href="/fr/platform/billing">Facturation en détail</a> décompose la comparaison des plans d’abonnement, le calcul des quotas, les règles de recharge des 鹿贝 et la politique de remboursement.</div>
   </div>
 </div>
 
@@ -99,28 +99,23 @@ Une fois le quota inclus dans l’abonnement dépassé, le débit s’effectue a
 
 ## Portefeuille 鹿贝 {#wallet}
 
-Les **鹿贝 (LB)** sont la monnaie de points universelle de la plateforme Lurus, utilisée pour régler tous les frais d’usage en dépassement.
+Les **鹿贝 (LB)** sont l’unité de compte du portefeuille de la plateforme Lurus : 1 鹿贝 = 1 CNY. Ils servent à régler les frais à l’usage de tous les produits.
 
 ### Obtenir des 鹿贝
 
 | Moyen | Récompense | Description |
 |------|------|------|
-| **Inscription d’un nouvel utilisateur** | 5 LB | Offerts dès l’inscription |
-| **Première recharge** | 10 LB en bonus | Bonus supplémentaire à la première recharge |
-| **Premier abonnement** | 30 LB en bonus | Au premier abonnement à n’importe quel plan payant |
-| **Renouvellement d’abonnement** | montant rechargé x 5 % | Cashback pour les 6 premiers renouvellements |
-| **Pointage quotidien** | LB aléatoires | À récupérer au pointage quotidien |
-| **Parrainage d’amis** | Récompense de parrainage | Les deux parties sont récompensées après l’inscription de l’ami |
-| **Revenus de stratégie** | Règlement des parts | Revenus d’abonnement aux stratégies Lucrum |
-| **Achat par recharge** | Conversion au prorata | Achat direct de 鹿贝 |
+| **Achat par recharge** | 1 CNY = 1 鹿贝 | Vous recevez exactement le montant rechargé ; en cas d’offre de recharge, l’affichage de la page de recharge fait foi |
+| **Pointage quotidien** | 0,1 鹿贝 par jour | ×1,5 pour chaque série complète de 7 jours consécutifs, 1 鹿贝 maximum par jour |
+| **Parrainage d’amis** | Jusqu’à 45 鹿贝 par filleul + commissions | Inscription via votre lien : 5 ; première recharge payée : +10 ; premier abonnement payé : +30 ; ensuite 5 % de chaque abonnement ou renouvellement payé (jusqu’à 6 fois) ; aucune limite de parrainages |
 
 ### Utiliser les 鹿贝
 
-Utilisables pour : régler les frais d’appels API dépassant le quota d’abonnement, vous abonner aux stratégies payantes Lucrum, acheter des fonctionnalités avancées / packs d’extension.
+Utilisables pour : régler les frais à l’usage de tous les produits (appels API dépassant le quota d’abonnement, etc.), ainsi que l’achat d’abonnements.
 
 ### Niveaux VIP
 
-La consommation cumulée de 鹿贝 débloque plusieurs niveaux VIP, dont la remise s’applique automatiquement à toutes les dépenses en 鹿贝.
+Le niveau VIP est déterminé par le montant cumulé des recharges (ou par un abonnement annuel). La remise VIP s’applique automatiquement à l’achat et au renouvellement d’un abonnement ; les recharges et les débits à l’usage ne sont pas remisés. Seuils par défaut : recharges cumulées de ¥500 / ¥2 000 / ¥10 000 / ¥50 000, pour une remise de 2 % / 5 % / 8 % / 10 % respectivement ; la console fait foi.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">Débutant</span></div>
@@ -148,7 +143,7 @@ Tous les paiements sont confirmés de manière asynchrone via un Webhook sécuri
 
 ## Programme de parrainage
 
-Sur [identity.lurus.cn](https://identity.lurus.cn), copiez votre lien de parrainage personnel (incluant votre code de parrainage) et partagez-le avec vos amis. Récompenses : lorsqu’un ami s’inscrit via le lien, les deux parties reçoivent des 鹿贝 ; lorsqu’un ami souscrit son premier abonnement payant, vous recevez en plus un cashback correspondant à un certain pourcentage du montant de l’abonnement ; aucune limite au nombre de parrainages.
+Sur [identity.lurus.cn](https://identity.lurus.cn), copiez votre lien de parrainage personnel (incluant votre code de parrainage) et partagez-le avec vos amis. Récompense (entièrement pour le parrain) : 5 鹿贝 à l’inscription d’un ami, +10 à sa première recharge payée, +30 à son premier abonnement payé, puis 5 % de chaque abonnement ou renouvellement payé, jusqu’à 6 fois. Seuls les paiements réels comptent ; les crédits offerts, codes prépayés et activations manuelles ne comptent pas. Aucune limite au nombre de parrainages.
 
 ---
 

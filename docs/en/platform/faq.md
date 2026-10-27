@@ -59,21 +59,21 @@ GitHub and Google OAuth — link / unlink them in Account Settings.
 <details class="lurus-faq-item">
 <summary>How do I upgrade / downgrade my plan?</summary>
 
-Log in to [identity.lurus.cn](https://identity.lurus.cn) → Subscription Management → "Change Plan": upgrades take effect immediately with a prorated charge for the difference; downgrades take effect in the next billing cycle.
+Log in to [identity.lurus.cn](https://identity.lurus.cn) → Subscription Management → "Change Plan": both upgrades and downgrades take effect immediately, and the difference for the remaining days is charged to or refunded to your wallet. You can’t switch directly between monthly and annual billing.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>What happens when my subscription expires?</summary>
 
-It is automatically downgraded to Free. Your API keys remain valid but are subject to Free-tier quotas; your data is retained and is restored when you renew.
+After expiry there is a 3-day grace period, after which you return to Free. Your API keys remain valid but are subject to Free-tier quotas; your data is retained and is restored whenever you renew.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>What’s the difference between annual and monthly billing?</summary>
 
-Annual plans are 20% off (≈ 2.4 months free); during the annual term you can upgrade but not downgrade.
+The annual total costs less than 12 months of monthly billing; see the console for exact prices. You can’t switch directly between annual and monthly billing.
 
 </details>
 
@@ -102,28 +102,28 @@ Admin Console → Team → Invite Member → enter an email and send the invitat
 <details class="lurus-faq-item">
 <summary>What is Lubei used for?</summary>
 
-Paying for API calls beyond your subscription quota, subscribing to paid Lucrum strategies, and enjoying VIP discounts.
+Paying usage-based charges across all products (such as API calls beyond your subscription quota); it can also be used to purchase subscriptions. 1 Lubei = 1 CNY.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>Does Lubei expire?</summary>
 
-Purchased Lubei never expires; promotional Lubei may have an expiration date, subject to the rules of the promotion.
+Topped-up balance never expires; credit granted in promotions may have an expiration date, subject to the rules of the promotion.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>Can Lubei be withdrawn?</summary>
 
-Unused Lubei bought via top-up is refundable; Lubei settled from Lucrum strategy income can be withdrawn to a bank card.
+No, it can’t be withdrawn. A top-up that hasn’t been used can be refunded as a whole order within 7 days of payment.
 
 </details>
 
 <details class="lurus-faq-item">
 <summary>How do I check my balance and transaction history?</summary>
 
-Log in to [identity.lurus.cn](https://identity.lurus.cn) → Wallet to view your current balance, income details (top-ups / rewards / strategy income), and spending details (API consumption / strategy subscriptions).
+Log in to [identity.lurus.cn](https://identity.lurus.cn) → Wallet to view your current balance, income details (top-ups / rewards / refunds), and spending details (API consumption / subscriptions).
 
 </details>
 
@@ -164,7 +164,7 @@ It is usually confirmed within 1 minute; if it hasn’t arrived after 5 minutes,
 <details class="lurus-faq-item">
 <summary>How do I request an invoice?</summary>
 
-Admin Console → Billing → Request Invoice (standard / special VAT invoice); it is usually emailed within one business day.
+You can request an invoice for each paid order in the console by entering the invoice title and tax ID; it is issued manually and can then be downloaded.
 
 </details>
 

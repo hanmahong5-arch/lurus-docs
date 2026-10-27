@@ -105,7 +105,7 @@ Un ejemplo de código de reintento está en [Manejo de errores · Buenas prácti
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- Comprueba primero si has agotado la cuota gratuita del día (el plan Free permite 100 veces/día)
+- Comprueba primero si has agotado la cuota gratuita del día (la cuota diaria del plan Free se rige por la consola)
 - Consulta el saldo de 鹿贝: [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
 - Recarga por autoservicio o sube de plan; las reglas están en [Información de facturación](/es/platform/billing)
 

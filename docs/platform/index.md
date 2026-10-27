@@ -18,7 +18,7 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
     { title: '统一账号', body: '跨所有 Lurus 产品共享同一身份、余额、订阅', icon: 'user-check' },
     { title: '鹿贝钱包', body: '统一计费单位，按量扣费，实时余额查询', icon: 'coins' },
     { title: '订阅计划', body: '免费额度 + 按需付费 + 企业套餐', icon: 'package-2' },
-    { title: 'VIP 体系', body: '消费升级，解锁专属模型与客服', icon: 'crown' },
+    { title: 'VIP 体系', body: '按累计充值升级，订阅享折扣', icon: 'crown' },
   ]"
 />
 
@@ -38,8 +38,8 @@ description: Lurus 统一账号体系、订阅计划、鹿贝钱包和计费系�
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">初始 5 鹿贝</div>
-    <p class="lurus-card__body">首次注册即得，可立即试用</p>
+    <div class="lurus-card__title">鹿贝钱包</div>
+    <p class="lurus-card__body">注册即开通，1 元 = 1 鹿贝，所有产品共用</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
@@ -81,7 +81,7 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 | **Pro 年付** | Pro 年付优惠 | 稳定用户 |
 | **Enterprise** | 企业定制 + SLA | 团队 / 企业 |
 
-具体定价以 [identity.lurus.cn](https://identity.lurus.cn) 控制台（订阅管理页）为准。
+另有面向 Claude Code 的独立套餐。具体价格以 [identity.lurus.cn](https://identity.lurus.cn) 控制台（订阅管理页）为准。
 
 ### 按量计费
 
@@ -91,7 +91,7 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">想看完整定价、配额规则与充值比例？</p>
-    <div class="lurus-callout__body"><a href="/platform/billing">计费详解</a> 拆解了订阅计划对比、配额计算、鹿贝兑换比例与退款政策。</div>
+    <div class="lurus-callout__body"><a href="/platform/billing">计费详解</a> 拆解了订阅计划对比、配额计算、鹿贝充值规则与退款政策。</div>
   </div>
 </div>
 
@@ -99,28 +99,23 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 
 ## 鹿贝钱包 {#wallet}
 
-**鹿贝（LB）** 是 Lurus 平台的通用积分货币，用于支付所有超量使用费用。
+**鹿贝（LB）** 是 Lurus 平台钱包的记账单位，1 鹿贝 = 1 元人民币，用于支付所有产品的按量费用。
 
 ### 获取鹿贝
 
 | 途径 | 奖励 | 说明 |
 |------|------|------|
-| **新用户注册** | 5 LB | 首次注册即得 |
-| **首次充值** | 10 LB 额外奖励 | 首次充值额外赠送 |
-| **首次订阅** | 30 LB 额外奖励 | 首次订阅任意付费计划 |
-| **订阅续费** | 充值金额 x 5% | 前 6 次续费享受返利 |
-| **每日签到** | 随机 LB | 每日签到领取 |
-| **推荐好友** | 邀请奖励 | 好友注册后双方获奖 |
-| **策略收入** | 分成结算 | Lucrum 策略订阅收入 |
-| **充值购买** | 按比例兑换 | 直接购买鹿贝 |
+| **充值购买** | 1 元 = 1 鹿贝 | 充值多少到账多少；如有充值优惠，以充值页显示为准 |
+| **每日签到** | 每天 0.1 鹿贝 | 连续签到每满 7 天奖励 ×1.5，单日最多 1 鹿贝 |
+| **推荐好友** | 每位好友最多 45 鹿贝 + 提成 | 好友经你的链接注册得 5，首次付费充值再得 10，首次付费订阅再得 30，之后付费订阅或续费每次 5% 提成（最多 6 次）；无邀请上限 |
 
 ### 使用鹿贝
 
-可用于：支付超订阅配额的 API 调用费、订阅 Lucrum 付费策略、购买高级功能/扩展包。
+可用于：支付超出订阅额度的 API 调用等所有产品的按量费用，以及购买订阅。
 
 ### VIP 等级
 
-累计消费鹿贝解锁多级 VIP，折扣自动应用于所有鹿贝消费。
+按累计充值金额（或年付订阅）评定 VIP 等级。VIP 折扣在购买和续费订阅时自动生效；充值和按量扣费不打折。默认门槛为累计充值 ¥500 / ¥2,000 / ¥10,000 / ¥50,000，对应 98 / 95 / 92 / 90 折，以控制台为准。
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">入门</span></div>
@@ -158,7 +153,7 @@ Lurus 采用「订阅 + 按量」双轨计费模型，灵活适配不同使用�
 
 ## 推荐计划
 
-[identity.lurus.cn](https://identity.lurus.cn) 复制专属推荐链接（含推荐码）分享好友。奖励：好友经链接注册双方各得鹿贝；好友首次付费订阅你额外得订阅金额一定比例返利；无邀请上限。
+[identity.lurus.cn](https://identity.lurus.cn) 复制专属推荐链接（含推荐码）分享好友。奖励都发给推荐人：好友注册得 5 鹿贝，好友首次付费充值再得 10，首次付费订阅再得 30，之后好友每次付费订阅或续费得订阅金额 5% 的提成，最多 6 次。只按真实付款计，赠送额度、预付兑换码和手工开通不算；无邀请上限。
 
 ---
 

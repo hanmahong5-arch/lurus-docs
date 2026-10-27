@@ -11,10 +11,10 @@ Forfaits d’abonnement, gestion des quotas et système économique 鹿贝.
 
 <MetricStats
   :items="[
-    { label: 'Forfaits d\'abonnement', value: '4 niveaux', hint: 'Free → Enterprise' },
+    { label: 'Forfaits d\'abonnement', value: '5 niveaux', hint: 'Free → Enterprise, plus un forfait Claude Code' },
     { label: 'Moyens de paiement', value: '3 types', hint: 'Stripe / Creem / Epay' },
-    { label: 'Bonus de recharge', value: 'jusqu\'à 5 %', hint: '6 premiers renouvellements' },
-    { label: 'Fenêtre de remboursement', value: '7 jours', hint: 'Remboursement intégral du premier abonnement' },
+    { label: '鹿贝', value: '1 CNY = 1 LB', hint: 'Vous recevez exactement le montant rechargé' },
+    { label: 'Fenêtre de remboursement', value: '7 jours', hint: 'Commande entière, dans les 7 jours suivant le paiement' },
   ]"
 />
 
@@ -26,18 +26,20 @@ Forfaits d’abonnement, gestion des quotas et système économique 鹿贝.
   <p class="lurus-section-head__lede">De l’essai gratuit au SLA entreprise, choisissez selon votre volume d’utilisation.</p>
 </div>
 
-| Forfait | Appels API | Modèles disponibles | Lucrum | Support / Autres |
-|------|---------|---------|--------|------------|
-| **Free** | 100 fois/jour | De base (deepseek-chat, gpt-3.5-turbo) | Assistant IA : 10 conversations/jour | Support communautaire |
-| **Basic** | Abonnement mensuel d’entrée de gamme, tarification selon la console | — | — | Pour développeurs individuels souhaitant essayer |
-| **Pro** (paiement mensuel/annuel, réduction sur le paiement annuel) | 10 000 fois/mois | Tous | Assistant IA illimité ; jusqu’à 3 déploiements de stratégie | Tickets par e-mail (réponse sous 24 h) |
-| **Enterprise** (sur mesure) | À la demande | Tous + déploiement privé | Membres d’équipe illimités | SLA 99,9 % ; chargé de clientèle dédié + réponse instantanée ; centre de données au choix |
+| Forfait | Positionnement | Description |
+|------|------|------|
+| **Free** | Essai gratuit | Quota gratuit quotidien, moins de modèles disponibles |
+| **Basic** | Abonnement mensuel d’entrée de gamme | Développeurs individuels |
+| **Pro** | Abonnement avancé, mensuel ou annuel | Le total annuel coûte moins que 12 mois en mensuel |
+| **Enterprise** | Équipes / entreprises | Déploiement privé, SLA, etc. selon accord commercial |
+
+Le prix, le quota quotidien et les modèles disponibles de chaque niveau font foi sur la console [identity.lurus.cn](https://identity.lurus.cn) (page de gestion des abonnements) ; les ajustements de l’administrateur s’appliquent immédiatement, c’est pourquoi cette page ne recopie pas les chiffres. Il existe aussi un forfait distinct dédié à Claude Code, pour lequel la console fait également foi.
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="briefcase" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Offre entreprise</p>
-    <div class="lurus-callout__body">Besoin d’un déploiement privé, d’un centre de données dédié ou d’un SLA 99,9 % ? Contactez <a href="mailto:business@lurus.cn">business@lurus.cn</a>.</div>
+    <div class="lurus-callout__body">Besoin d’un déploiement privé, d’un centre de données dédié ou d’un SLA ? Contactez <a href="mailto:business@lurus.cn">business@lurus.cn</a>.</div>
   </div>
 </div>
 
@@ -46,18 +48,12 @@ Forfaits d’abonnement, gestion des quotas et système économique 鹿贝.
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="gauge" :size="14" /> Quota</span>
   <h2 class="lurus-section-head__title">Gestion des quotas</h2>
-  <p class="lurus-section-head__lede">Chaque appel décompte du quota selon le modèle et la consommation de tokens ; en cas de dépassement, le décompte bascule automatiquement sur les 鹿贝.</p>
+  <p class="lurus-section-head__lede">Le quota d’abonnement est utilisé en premier ; une fois épuisé, le portefeuille 鹿贝 est débité au prix unitaire du modèle.</p>
 </div>
 
 ### Calcul du quota
 
-Le quota consommé par chaque appel API dépend du modèle et de la consommation de tokens :
-
-| Type de modèle | Règle de consommation de quota |
-|---------|-------------|
-| Modèles de base (deepseek-chat, etc.) | 1 appel = 1 quota |
-| Modèles avancés (gpt-4o, etc.) | 1 appel = 3 quotas |
-| Génération d’image/vidéo | Selon la complexité de la tâche = 5 à 20 quotas |
+Chaque appel est facturé selon le prix unitaire du modèle et la consommation de tokens : les modèles de conversation facturent séparément l’entrée et la sortie, tandis que la génération d’images et les tâches similaires sont facturées à l’appel. Les prix unitaires affichés dans la console font foi.
 
 ### Traitement en cas de dépassement de quota
 
@@ -74,62 +70,37 @@ Vous recevez une erreur `402` / `insufficient_quota` ? Consultez les étapes de 
   <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">Aucune défaillance silencieuse</p>
-    <div class="lurus-callout__body">Lorsque le solde est insuffisant, une alerte préalable est envoyée par e-mail + message interne ; le service ne sera jamais interrompu à votre insu.</div>
+    <div class="lurus-callout__body">Vous recevez un rappel lorsque le solde du portefeuille passe sous le seuil que vous avez défini ; en cas de solde insuffisant, la requête renvoie directement une erreur 402 — pas de dette accumulée puis réclamée ensuite.</div>
   </div>
 </div>
-
-### Alertes de quota
-
-| Seuil d’alerte | Mode de notification |
-|---------|---------|
-| 30 % restants | Message interne |
-| 10 % restants | Message interne + e-mail |
-| Quota épuisé | Message interne + e-mail + notification WebSocket |
 
 ---
 
 <div class="lurus-section-head">
   <span class="lurus-section-head__eyebrow"><Icon name="coins" :size="14" /> 鹿贝</span>
   <h2 class="lurus-section-head__title">Économie 鹿贝</h2>
-  <p class="lurus-section-head__lede">Monnaie de points unifiée, convertible proportionnellement en tokens et en nombre d’appels.</p>
+  <p class="lurus-section-head__lede">L’unité de compte du portefeuille : 1 鹿贝 = 1 CNY.</p>
 </div>
 
-### Valeur des 鹿贝
+### Recharge
 
-Valeur de référence de 1 鹿贝 (LB) :
+Recharger 1 CNY crédite 1 鹿贝, sans bonus par paliers. Si l’administrateur a mis en place une offre de recharge, le montant à payer affiché sur la page de recharge fait foi.
 
-| Ressource | Convertible avec 1 LB |
-|------|------------|
-| Tokens (modèles de base) | environ 10 000 tokens |
-| Tokens (modèles avancés) | environ 3 000 tokens |
-| Appels API | environ 5 à 10 fois (selon le modèle) |
+### Remises VIP
 
-### Taux de recharge
-
-| Montant rechargé (CNY) | 鹿贝 obtenus | Prix unitaire |
-|----------------|---------|------|
-| ¥10 | 10 LB | ¥1,00/LB |
-| ¥50 | 55 LB | ¥0,91/LB |
-| ¥100 | 115 LB | ¥0,87/LB |
-| ¥500 | 600 LB | ¥0,83/LB |
-
-Plus vous rechargez, plus le prix unitaire est bas.
-
-### Cumul des remises VIP
-
-La remise VIP s’applique automatiquement lors de la consommation des 鹿贝.
+Le niveau VIP est déterminé par le montant cumulé des recharges (ou par un abonnement annuel), et la remise s’applique automatiquement à l’achat et au renouvellement d’un abonnement ; les recharges et les débits à l’usage ne sont pas remisés.
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="crown" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Exemple : carte Gold, remise de 10 %</p>
-    <div class="lurus-callout__body">Pour un utilisateur titulaire d’une carte Gold appelant gpt-4o (3 LB/appel), le décompte réel = <code>3 × 0.9 = 2.7 LB/次</code>.</div>
+    <p class="lurus-callout__title">Exemple : carte Gold, remise de 5 %</p>
+    <div class="lurus-callout__body">Avec les seuils par défaut, ¥2 000 de recharges cumulées donnent la carte Gold ; le renouvellement d’un abonnement mensuel à ¥99 coûte alors <code>99 × 0.95 = ¥94.05</code>. Les seuils et remises affichés dans la console font foi.</div>
   </div>
 </div>
 
 ### Durée de validité des 鹿贝
 
-Les 鹿贝 achetés sont valables à vie ; les 鹿贝 offerts lors d’opérations promotionnelles dépendent des conditions de l’opération ; les remboursements ne portent que sur la partie payée en espèces, les 鹿贝 offerts ne sont pas remboursables.
+Le solde obtenu par recharge n’expire pas ; les crédits offerts lors de promotions peuvent avoir une date d’expiration, selon les conditions de l’opération.
 
 ---
 
@@ -139,7 +110,7 @@ Les 鹿贝 achetés sont valables à vie ; les 鹿贝 offerts lors d’opératio
 </div>
 
 - **Consulter les factures** ([identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)) : récapitulatif mensuel de la consommation, détail des transactions, mouvements de 鹿贝, statistiques d’utilisation des quotas.
-- **Émettre une facture** (factures TVA ordinaires/spéciales prises en charge) : « Factures » → « Demander une facture » → renseigner les informations de facturation (préremplies automatiquement après le premier enregistrement) → choisir le montant et le mois. La facture électronique est généralement envoyée par e-mail sous 1 jour ouvré.
+- **Émettre une facture** : chaque commande payée peut faire l’objet d’une demande de facture en indiquant la raison sociale et le numéro fiscal ; la facture est établie manuellement puis téléchargeable dans la console.
 
 ---
 
@@ -150,11 +121,11 @@ Les 鹿贝 achetés sont valables à vie ; les 鹿贝 offerts lors d’opératio
 
 | Type | Politique |
 |------|------|
-| Remboursement d’abonnement | Remboursement intégral possible dans les 7 jours suivant le premier abonnement |
-| Remboursement de recharge de 鹿贝 | Les 鹿贝 non utilisés peuvent faire l’objet d’une demande de remboursement (déduction faite de la partie offerte) |
+| Abonnement | Demande dans la console dans les 7 jours suivant le paiement ; après validation, la commande entière est remboursée |
+| Recharge | Dans les 7 jours suivant le paiement, si cette recharge n’a pas été utilisée, la commande entière peut être remboursée |
 | Partie déjà consommée | Non remboursable |
 
-Pour un remboursement, contactez [support@lurus.cn](mailto:support@lurus.cn).
+Les paiements par Alipay, WeChat Pay et Stripe sont remboursés sur le moyen de paiement d’origine ; les autres moyens sont remboursés sur le portefeuille.
 
 <NextSteps
   title="Étapes suivantes"

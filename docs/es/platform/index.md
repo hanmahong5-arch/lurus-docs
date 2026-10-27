@@ -18,7 +18,7 @@ description: Descripción del sistema unificado de cuentas, los planes de suscri
     { title: 'Cuenta unificada', body: 'Identidad, saldo y suscripción compartidos entre todos los productos de Lurus', icon: 'user-check' },
     { title: 'Billetera 鹿贝', body: 'Unidad de facturación unificada, cobro por uso y consulta de saldo en tiempo real', icon: 'coins' },
     { title: 'Planes de suscripción', body: 'Cuota gratuita + pago por uso + planes empresariales', icon: 'package-2' },
-    { title: 'Programa VIP', body: 'Sube de nivel con el consumo y desbloquea modelos y soporte exclusivos', icon: 'crown' },
+    { title: 'Programa VIP', body: 'Sube de nivel según tus recargas acumuladas; las suscripciones tienen descuento', icon: 'crown' },
   ]"
 />
 
@@ -38,8 +38,8 @@ Al registrarte con éxito obtienes:
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">5 鹿贝 iniciales</div>
-    <p class="lurus-card__body">Los recibes al registrarte por primera vez y puedes probar de inmediato</p>
+    <div class="lurus-card__title">Billetera 鹿贝</div>
+    <p class="lurus-card__body">Se abre al registrarte; 1 CNY = 1 鹿贝, compartida entre todos los productos</p>
   </div>
   <div class="lurus-card lurus-card--platform">
     <span class="lurus-card__icon"><Icon name="gauge" :size="20" /></span>
@@ -81,7 +81,7 @@ Lurus utiliza un modelo de facturación de doble vía «suscripción + por uso»
 | **Pro anual** | Descuento por pago anual de Pro | Usuarios estables |
 | **Enterprise** | Personalización empresarial + SLA | Equipos / empresas |
 
-Los precios concretos se rigen por la consola de [identity.lurus.cn](https://identity.lurus.cn) (página de gestión de suscripciones).
+También hay un plan independiente para Claude Code. Los precios concretos se rigen por la consola de [identity.lurus.cn](https://identity.lurus.cn) (página de gestión de suscripciones).
 
 ### Facturación por uso
 
@@ -91,7 +91,7 @@ Una vez superada la cuota incluida en la suscripción, el cobro se realiza autom
   <span class="lurus-callout__icon"><Icon name="receipt" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">¿Quieres ver los precios completos, las reglas de cuota y los ratios de recarga?</p>
-    <div class="lurus-callout__body"><a href="/es/platform/billing">Detalles de facturación</a> desglosa la comparación de planes de suscripción, el cálculo de cuotas, el ratio de conversión de 鹿贝 y la política de reembolsos.</div>
+    <div class="lurus-callout__body"><a href="/es/platform/billing">Detalles de facturación</a> desglosa la comparación de planes de suscripción, el cálculo de cuotas, las reglas de recarga de 鹿贝 y la política de reembolsos.</div>
   </div>
 </div>
 
@@ -99,28 +99,23 @@ Una vez superada la cuota incluida en la suscripción, el cobro se realiza autom
 
 ## Billetera 鹿贝 {#wallet}
 
-**鹿贝 (LB)** es la moneda de puntos de uso general de la plataforma Lurus, que se utiliza para pagar todos los cargos por consumo excedente.
+**鹿贝 (LB)** es la unidad contable de la billetera de la plataforma Lurus: 1 鹿贝 = 1 CNY. Se utiliza para pagar los cargos por uso de todos los productos.
 
 ### Obtener 鹿贝
 
 | Vía | Recompensa | Descripción |
 |------|------|------|
-| **Registro de nuevo usuario** | 5 LB | Se reciben al registrarse por primera vez |
-| **Primera recarga** | 10 LB de bonificación adicional | Bonificación adicional en la primera recarga |
-| **Primera suscripción** | 30 LB de bonificación adicional | Primera suscripción a cualquier plan de pago |
-| **Renovación de suscripción** | Importe de recarga x 5% | Las 6 primeras renovaciones disfrutan de reembolso |
-| **Registro diario** | LB aleatorios | Se reclaman con el registro diario |
-| **Recomendar amigos** | Recompensa por invitación | Ambas partes reciben recompensa tras el registro del amigo |
-| **Ingresos por estrategias** | Liquidación de reparto | Ingresos por suscripción a estrategias de Lucrum |
-| **Compra con recarga** | Conversión por ratio | Compra directa de 鹿贝 |
+| **Compra con recarga** | 1 CNY = 1 鹿贝 | Recibes exactamente lo que recargas; si hay una promoción de recarga, vale lo que muestre la página de recarga |
+| **Registro diario** | 0,1 鹿贝 al día | ×1,5 por cada racha completa de 7 días seguidos, máximo 1 鹿贝 al día |
+| **Recomendar amigos** | Hasta 45 鹿贝 por amigo + comisiones | Tu amigo se registra con tu enlace: 5; su primera recarga pagada: +10; su primera suscripción pagada: +30; después, 5% de cada suscripción o renovación pagada (hasta 6 veces); sin límite de invitaciones |
 
 ### Usar 鹿贝
 
-Se pueden usar para: pagar las llamadas a la API que exceden la cuota de la suscripción, suscribirse a estrategias de pago de Lucrum, y comprar funciones premium o paquetes de extensión.
+Se pueden usar para: pagar los cargos por uso de todos los productos (como las llamadas a la API que exceden la cuota de la suscripción) y comprar suscripciones.
 
 ### Niveles VIP
 
-El consumo acumulado de 鹿贝 desbloquea varios niveles VIP, y el descuento se aplica automáticamente a todo el consumo de 鹿贝.
+El nivel VIP se determina por el importe acumulado de recargas (o por una suscripción anual). El descuento VIP se aplica automáticamente al comprar y renovar suscripciones; las recargas y los cargos por uso no tienen descuento. Los umbrales predeterminados son recargas acumuladas de ¥500 / ¥2,000 / ¥10,000 / ¥50,000, con un 2% / 5% / 8% / 10% de descuento respectivamente; prevalece lo que indique la consola.
 
 <div class="lurus-stat-strip">
   <div class="lurus-stat"><span class="lurus-stat__value">Standard</span><span class="lurus-stat__label">Inicial</span></div>
@@ -148,7 +143,7 @@ Todos los pagos se confirman de forma asíncrona mediante un Webhook seguro, par
 
 ## Programa de recomendación
 
-En [identity.lurus.cn](https://identity.lurus.cn) copia tu enlace de recomendación exclusivo (con código de referido) y compártelo con tus amigos. Recompensas: cuando un amigo se registra a través del enlace, ambas partes reciben 鹿贝; cuando un amigo realiza su primera suscripción de pago, tú obtienes un reembolso adicional de un cierto porcentaje del importe de la suscripción; sin límite de invitaciones.
+En [identity.lurus.cn](https://identity.lurus.cn) copia tu enlace de recomendación exclusivo (con código de referido) y compártelo con tus amigos. Recompensa (todo para quien recomienda): 5 鹿贝 cuando un amigo se registra, +10 en su primera recarga pagada, +30 en su primera suscripción pagada y después un 5% de cada suscripción o renovación pagada, hasta 6 veces. Solo cuentan pagos reales; el saldo regalado, los códigos prepago y las activaciones manuales no cuentan. Sin límite de invitaciones.
 
 ---
 

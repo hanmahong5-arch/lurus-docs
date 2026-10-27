@@ -105,7 +105,7 @@ Pour un exemple de code de réessai, voir [Gestion des erreurs · Bonnes pratiqu
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- Vérifiez d’abord si le quota gratuit du jour est épuisé (plan Free : 100 appels/jour)
+- Vérifiez d’abord si le quota gratuit du jour est épuisé (le quota quotidien du plan Free est indiqué dans la console)
 - Consultez le solde de 鹿贝 : [identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
 - Rechargez en libre-service ou montez de plan ; pour les règles, voir [Facturation](/fr/platform/billing)
 

@@ -105,7 +105,7 @@ description: Lurus 全製品でよく発生する問題を 1 ページで特定 
 { "error": { "code": "insufficient_quota", "type": "billing_error" } }
 ```
 
-- まず当日の無料クォータを使い切っていないか確認（Free プランは 100 回/日）
+- まず当日の無料クォータを使い切っていないか確認（Free プランの 1 日あたりの枠はコンソールを基準とします）
 - 鹿贝残高を確認：[identity.lurus.cn/wallet](https://identity.lurus.cn/wallet)
 - セルフチャージまたはプランのアップグレードを。ルールは [課金説明](/ja/platform/billing) を参照
 

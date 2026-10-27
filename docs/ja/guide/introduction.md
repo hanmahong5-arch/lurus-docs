@@ -9,7 +9,7 @@ description: 1 つの API Key で 50 以上の主要 AI モデルに接続。Ope
 
 <MetricStats :items="[
   { label: '接続モデル', value: '50+' },
-  { label: '無料枠', value: '100 回/日' },
+  { label: '無料枠', value: '毎日付与' },
   { label: '互換性', value: 'OpenAI SDK' },
 ]" />
 

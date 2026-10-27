@@ -25,7 +25,7 @@ description: 5 分钟内完成首次 Lurus API 调用，支持 Python、Node.js�
   <span class="lurus-callout__icon"><Icon name="coins" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">注册即用，无需付费</p>
-    <div class="lurus-callout__body"><p>新账号自动获得 <strong>5 鹿贝 + 免费配额</strong>（Free 套餐 <strong>100 次/天</strong>，含 <code>deepseek-chat</code>、<code>gpt-3.5-turbo</code>），跑通本教程绰绰有余。配额与升级详情见 <a href="/guide/faq">常见问题</a> 与 <a href="/platform/billing">计费说明</a>。</p></div>
+    <div class="lurus-callout__body"><p>新账号默认是 Free 套餐，每天有免费额度，跑通本教程绰绰有余；具体额度与可用模型以控制台为准。配额与升级详情见 <a href="/guide/faq">常见问题</a> 与 <a href="/platform/billing">计费说明</a>。</p></div>
   </div>
 </div>
 

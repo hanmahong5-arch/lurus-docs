@@ -9,7 +9,7 @@ description: Une seule API Key pour accéder à plus de 50 modèles d’IA majeu
 
 <MetricStats :items="[
   { label: 'Modèles disponibles', value: '50+' },
-  { label: 'Quota gratuit', value: '100 requêtes/jour' },
+  { label: 'Quota gratuit', value: 'Chaque jour' },
   { label: 'Compatibilité', value: 'OpenAI SDK' },
 ]" />
 
