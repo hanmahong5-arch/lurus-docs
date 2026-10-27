@@ -18,6 +18,21 @@ description: MemX AI 记忆引擎的常见问题与解答。
 
 </details>
 
+<details class="lurus-faq-item"><summary>工程测试与覆盖率跑到什么程度？</summary>
+
+<p>以引擎仓 <code>doc/quality-baseline-2026-10-26.md</code> 为真源（WSL 实跑，口径与 CI 一致，排除 Python 绑定）：</p>
+
+| 项 | 结果 |
+|------|------|
+| 工作区测试 | 3125 passed / 0 failed / 12 ignored |
+| 主功能行覆盖（Schema Graph + LogStore） | 98.1%（门禁 ≥95%） |
+| Schema Graph HTTP 面 | 11 passed（含跨租户法定擦除、关图留库仍可擦除） |
+| 读写延迟 | 尚未系统测量，产品页与官网写「测量中」 |
+
+<p>公开基准（LongMemEval / LoCoMo）见产品站 <a href="https://lurus.cn/memorus/benchmarks">/memorus/benchmarks</a>，与工程测试分开记账，避免混读。</p>
+
+</details>
+
 <details class="lurus-faq-item"><summary>用什么语言实现？和 MemX、memorus 这两个名字是什么关系？</summary>
 
 引擎是 Rust 实现的原创工作区，不是任何上游项目的分支或移植。MemX 是本站对该产品的称呼；工程名为 memorus，命令行（`memorus-r`）与服务（`memorus-server`）的二进制沿用工程名。Python、Node.js 绑定与 C FFI 调用的是同一套 Rust 引擎。
