@@ -39,7 +39,7 @@ spec:
         fsGroup: 65534
       containers:
         - name: lurus-docs
-          image: ghcr.io/hanmahong5-arch/lurus-docs:main-c27e3ec
+          image: ghcr.io/hanmahong5-arch/lurus-docs:main-8b86f9d
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
