@@ -1,6 +1,6 @@
 ---
 title: Forge × Kova × Lumen 联测
-description: 三仓单一入口与带日期的实测账本。编排腿可复现；全链路证据依赖 LLM 余额。
+description: 三仓单一入口与带日期的实测账本。融资门可全绿（mock LLM）；真供应商轨迹另记。
 ---
 
 # Forge × Kova × Lumen 联测
@@ -13,12 +13,11 @@ description: 三仓单一入口与带日期的实测账本。编排腿可复现�
 
 <div class="lurus-callout lurus-callout--key">
   <div>
-    <p class="lurus-callout__title">最近实测 · 2026-10-28（UTC，两次；第二次 08:26Z）</p>
+    <p class="lurus-callout__title">最近实测 · 2026-10-28c（UTC 10:52Z，job tj-mock）</p>
     <div class="lurus-callout__body">
-      编排腿两次复现绿；举证腿仍红。<br/>
-      <strong>已绿</strong>：静态契约门 · Forge→Kova 鉴权 · agent 列表 · run enqueue。<br/>
-      <strong>未完成</strong>：真 LLM 轨迹（newapi <code>402 Insufficient Balance</code>）→ Lumen / 签名证据包顺延。<br/>
-      失败不粉饰：无 <code>trace_id</code> 时脚本响亮停止；<code>SKIP=77</code> 永不报 PASS。受托运维场景故事见仓内 <code>SCENARIO-OPS-HITL.zh-CN.md</code>。
+      <strong>全绿 rc=0</strong>（<code>JOINT_MOCK_LLM=1</code>）。lifecycle HTML · 证据包 · 钉钥 <code>Signature: VERIFIED</code> 均 present。<br/>
+      编排→终态→Lumen 看见→Kova 证明链路已复现。<br/>
+      <strong>诚实边界</strong>：本次 LLM 为离线 mock，不是 newapi 付费模型。去掉 mock 且未充值时仍会 402（见同日 a/b 账本）。
     </div>
   </div>
 </div>
@@ -35,34 +34,36 @@ description: 三仓单一入口与带日期的实测账本。编排腿可复现�
 
 ```bash
 # 在 2b-svc-kova 仓根（WSL 优先）
-bash scripts/triple.sh status    # git · OpenAPI · 二进制 · env · 活体 · last-run · NEXT
-bash scripts/triple.sh check     # 静态；无 Forge 仓 → 77
-bash scripts/triple.sh sync      # OpenAPI drift 时唯一合法修法
-bash scripts/triple.sh run       # Demo Day joint；写 last-run 标记
+bash scripts/triple.sh status              # git · OpenAPI · 二进制 · env · 活体 · last-run · NEXT
+bash scripts/triple.sh check               # 静态；无 Forge 仓 → 77
+JOINT_MOCK_LLM=1 bash scripts/triple.sh run  # 融资门 / Demo（不依赖供应商余额）
+bash scripts/triple.sh run                 # 真 LLM（需余额）
 ```
 
 Forge 仓等价：`bash tests/joint/forge-kova-lumen-fundraise.sh`。  
 Lumen 仓：读 [Connected 路径](/lumen/integration) 后回指 `TRIPLE.md`。
 
-## 2026-10-28 腿表（摘要）
+## 2026-10-28c 腿表（摘要）
 
 | 腿 | 结果 |
 |----|------|
 | OpenAPI 逐字节 / 入口互指 | PASS |
 | Kova `/status` `/health` | PASS |
-| Forge alembic + `/docs`（含孤儿端口清理） | PASS |
-| 独立租户 JWT + `GET /agents` 真列表 | PASS |
+| Forge alembic + `/docs` | PASS |
+| 独立租户 JWT + `GET /agents` | PASS |
 | 直建 agent + Forge enqueue | PASS |
-| 等到终态 | `failed` / `trace_id=unknown`（402） |
-| Forge 读回 / Lumen / evidence | 未跑（硬停） |
+| 等到终态（mock LLM） | PASS |
+| Lumen lifecycle HTML | present |
+| evidence pack + 钉钥验签 | VERIFIED |
 
-完整技术账本在产品仓：`docs/kova/runs/2026-10-28-triple-joint.md`；客户摘要：`docs/customer/TRIPLE-VERIFY.zh-CN.md`。
+完整技术账本在产品仓：`docs/kova/runs/2026-10-28c-triple-joint.md`；客户摘要：`docs/customer/TRIPLE-VERIFY.zh-CN.md`。同日 402 红账本保留为 a/b。
 
 ## 诚实边界
 
 - **HTML ≠ 证据包**：Lumen 是可读轨迹；可验证证据包走 Kova `evidence` CLI（Ed25519；可选锚点另见证据文档）。
+- **mock ≠ 真模型**：融资门全绿证明链路；不证明供应商付费回答。
 - **at-least-once**：崩溃窗口可能重做一步；写操作需调用方幂等。
-- 本页在 LLM 余额恢复并**重跑成功**前，不得改写成「全链路已绿」。
+- **SKIP ≠ PASS**：外部依赖不可达时报 77，从不粉饰。
 
 ## 相关
 
