@@ -32,6 +32,8 @@ Lumen 作为语义层可观测性工具，向下接 Kova 执行引擎与 Lurus A
   </a>
 </div>
 
+三仓联测（Forge 编排 · Kova 证明 · Lumen 看见）的公开账本：[Forge × Kova × Lumen 联测](/kova/triple-joint)。
+
 ## 与 [Kova](/kova/) {#kova}
 
 Kova 负责底层 WAL 状态持久化与微秒级崩溃恢复，Lumen 负责语义层 Trace 标注与成本统计。

@@ -23,6 +23,8 @@ description: 5 分钟跑通 Forge 第一个 AI Agent workflow — register → �
 
 AI Agent 工作台：浏览器里**画 / 跑 / 评估** Agent 工作流，**崩溃自动续跑，不重复花 LLM token**。
 
+与 Kova、Lumen 的三仓联测账本见 [Forge × Kova × Lumen 联测](/kova/triple-joint)（带日期、含未绿腿）。
+
 <div class="lurus-cards lurus-cards--compact">
   <div class="lurus-card lurus-card--forge">
     <span class="lurus-card__icon"><Icon name="history" :size="20" /></span>

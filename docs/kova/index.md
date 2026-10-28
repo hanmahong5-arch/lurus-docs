@@ -165,6 +165,10 @@ Kova 是 **21 个 Rust crate** 的工作空间，**178,284 行代码**，**1,565
 
 ---
 
+## 联测轨迹
+
+带日期的三仓实测（Forge 编排 · Kova 证明 · Lumen 看见）见 **[Forge × Kova × Lumen 联测](/kova/triple-joint)**。最近一次（2026-10-28）编排与鉴权腿已绿；全链路证据依赖 LLM 供应商余额。
+
 ## 下一步
 
 <NextSteps
@@ -172,6 +176,7 @@ Kova 是 **21 个 Rust crate** 的工作空间，**178,284 行代码**，**1,565
     { text: '快速开始 — 启动你的第一个 Kova Agent', link: '/kova/quickstart', primary: true },
     { text: '核心概念 — 深入理解 WAL、Agent、Workflow', link: '/kova/concepts' },
     { text: 'API 参考 — 完整的 REST API 文档', link: '/kova/api' },
+    { text: 'Forge × Lumen 联测账本', link: '/kova/triple-joint' },
     { text: '集成与 MCP 目录', link: '/integrations/' },
   ]"
 />
