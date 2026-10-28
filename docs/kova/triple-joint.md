@@ -13,11 +13,12 @@ description: 三仓单一入口与带日期的实测账本。融资门可全绿�
 
 <div class="lurus-callout lurus-callout--key">
   <div>
-    <p class="lurus-callout__title">最近实测 · 2026-10-28c（UTC 10:52Z，job tj-mock）</p>
+    <p class="lurus-callout__title">最近实测 · 2026-10-28（融资门，含稳定签发钥再跑）</p>
     <div class="lurus-callout__body">
-      <strong>全绿 rc=0</strong>（<code>JOINT_MOCK_LLM=1</code>）。lifecycle HTML · 证据包 · 钉钥 <code>Signature: VERIFIED</code> 均 present。<br/>
-      编排→终态→Lumen 看见→Kova 证明链路已复现。<br/>
-      <strong>诚实边界</strong>：本次 LLM 为离线 mock，不是 newapi 付费模型。去掉 mock 且未充值时仍会 402（见同日 a/b 账本）。
+      <strong>全绿</strong>（<code>JOINT_MOCK_LLM=1</code>）：24 PASS，含 LEG7 kill-9 + LEG8 钉钥 <code>Signature: VERIFIED</code>。<br/>
+      签发公钥稳定复用（仓内 <code>docs/customer/joint-fundraise.pub</code>；私钥仅本机 artifacts）。<br/>
+      Demo Day 翻页胶片：产品仓 <code>docs/customer/demo-reel/joint-day.html</code>。<br/>
+      <strong>诚实边界</strong>：mock ≠ 付费模型；去掉 mock 且未充值时仍会 402（同日 a/b 红账本保留）。
     </div>
   </div>
 </div>
@@ -40,8 +41,9 @@ JOINT_MOCK_LLM=1 bash scripts/triple.sh run  # 融资门 / Demo（不依赖供�
 bash scripts/triple.sh run                 # 真 LLM（需余额）
 ```
 
-Forge 仓等价：`bash tests/joint/forge-kova-lumen-fundraise.sh`。  
-Lumen 仓：读 [Connected 路径](/lumen/integration) 后回指 `TRIPLE.md`。
+Forge 仓等价：`bash tests/joint/forge-kova-lumen-fundraise.sh`（证据钥默认复用 `artifacts/issuer`）。  
+Lumen 仓：读 [Connected 路径](/lumen/integration) 后回指 `TRIPLE.md`。  
+客户验签卡（目录包）：产品仓 `docs/customer/JOINT-VERIFY-CARD.zh-CN.md`。
 
 ## 2026-10-28c 腿表（摘要）
 
