@@ -16,7 +16,9 @@ description: Rust 构建的 WAL-First 架构，崩溃自动恢复，微秒级调
 
 ## 什么是 Kova？
 
-**Kova** 是 Lurus 核心 AI Agent 基础设施，Rust 构建的高性能持久化执行引擎，解决 **Agent 如何可靠长时间运行、崩溃后恢复状态、复杂工作流协同**。传统框架（LangChain、CrewAI）在内存运行，进程退出即丢状态；Kova 采用 <Term t="WAL">WAL（Write-Ahead Log）</Term> 优先架构，每步执行持久化记录，崩溃也能精确恢复到中断点——不重调 LLM、不丢进度、不产生额外费用。
+在不能出错、不能出境、必须举证的场景里，Agent 跑过的每一步都能被第三方离线核验——且可部署在你自己的机器上。**Forge 编排 · Kova 证明 · Lumen 看见。**
+
+**Kova** 是 Lurus 核心 AI Agent 基础设施，Rust 构建的持久化执行引擎，解决 **Agent 如何可靠长时间运行、崩溃后恢复、事后向审计方举证**。传统框架（LangChain、CrewAI）在内存运行，进程退出即丢状态；Kova 采用 <Term t="WAL">WAL（Write-Ahead Log）</Term> 优先架构，每步执行持久化记录，崩溃也能精确恢复到中断点——不重调已完成的 LLM 决定、不丢进度。吞吐数字见下文基准附录，不是首要卖点。
 
 <div class="lurus-callout lurus-callout--key">
   <span class="lurus-callout__icon"><Icon name="database-backup" :size="18" /></span>

@@ -7,16 +7,18 @@ description: 三仓单一入口与带日期的实测账本。编排腿可复现�
 
 **口头一句**：Forge 编排 · Kova 证明 · Lumen 看见。
 
-本页是**公开可读的联测账本入口**。操作命令在产品仓：`bash scripts/triple.sh`（权威说明见仓内 `docs/kova/TRIPLE.md`）。
+钉子句：在不能出错、不能出境、必须举证的场景里，Agent 跑过的每一步都能被第三方离线核验——且可部署在你自己的机器上。
+
+本页是**公开可读的联测账本入口**。操作命令在产品仓：`bash scripts/triple.sh`（权威说明见仓内 `docs/kova/TRIPLE.md`）。典型应用故事见仓内客户页 `docs/customer/SCENARIO-OPS-HITL.zh-CN.md`（受托运维写操作闸；Switch 仅故事轻挂）。
 
 <div class="lurus-callout lurus-callout--key">
   <div>
-    <p class="lurus-callout__title">最近实测 · 2026-10-28（UTC）</p>
+    <p class="lurus-callout__title">最近实测 · 2026-10-28（UTC，两次；第二次 08:26Z）</p>
     <div class="lurus-callout__body">
-      Kova <code>c9482c56</code> · Forge <code>9737042</code> · Lumen <code>77ab426</code>。<br/>
-      <strong>已绿</strong>：静态契约门（22 条）· Forge→Kova 鉴权 · agent 列表 · run enqueue。<br/>
-      <strong>未完成</strong>：真 LLM 轨迹（newapi <code>402 Insufficient Balance</code>）→ Lumen 导出与签名证据包顺延。<br/>
-      失败不粉饰：无 <code>trace_id</code> 时脚本响亮停止；<code>SKIP=77</code> 永不报 PASS。
+      编排腿两次复现绿；举证腿仍红。<br/>
+      <strong>已绿</strong>：静态契约门 · Forge→Kova 鉴权 · agent 列表 · run enqueue。<br/>
+      <strong>未完成</strong>：真 LLM 轨迹（newapi <code>402 Insufficient Balance</code>）→ Lumen / 签名证据包顺延。<br/>
+      失败不粉饰：无 <code>trace_id</code> 时脚本响亮停止；<code>SKIP=77</code> 永不报 PASS。受托运维场景故事见仓内 <code>SCENARIO-OPS-HITL.zh-CN.md</code>。
     </div>
   </div>
 </div>
