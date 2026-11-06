@@ -1,23 +1,29 @@
 ---
 title: Lumen CLI Manual
-description: All subcommands, options, exit codes, and workflow scaffolding for lumen-cli.
+description: Real lumen subcommands — replay, cost, traces, dashboard, export, demo, pull, kova, tour.
 ---
 
 <div class="lumen-page">
 
-# Lumen CLI Manual <StatusBadge status="dev" />
+# Lumen CLI Manual <StatusBadge status="alpha" />
 
-`lumen-cli` is Lumen’s optional CLI (built in Rust), providing command-line workflow capabilities that don’t depend on the Python SDK.
+The `lumen` binary is a Rust CLI + local web dashboard. It reads trace JSON from disk (and optionally pulls from Kova). It is **not** an agent runtime: there is no `lumen run`, `lumen init`, `lumen deploy`, or `lumen doctor`.
 
 ## Installation
 
+Do **not** `cargo install lumen-cli` — that crates.io name is an unrelated third-party package.
+
 ```bash
-cargo install lumen-cli
-# 或
-curl -fsSL https://lumen.lurus.cn/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/hanmahong5-arch/lumen/main/docs/install-cli.sh | bash
+export PATH="$HOME/.local/bin:$PATH"
+lumen --version
 ```
 
-## Overview
+Windows: `irm https://raw.githubusercontent.com/hanmahong5-arch/lumen/main/docs/install-cli.ps1 | iex`
+
+Pin a release: `LUMEN_VERSION=lumen-cli-v0.3.2 bash docs/install-cli.sh`
+
+## Commands
 
 ```
 lumen <command> [options]
@@ -25,78 +31,47 @@ lumen <command> [options]
 
 | Command | Purpose |
 |------|------|
-| `doctor` | Environment self-check: token, network, disk, Python dependencies |
-| `init` | Generate a `lumen.yaml` config template in the project root |
-| `agent` | Agent-level operations: list / trace / replay / export |
-| `mcp` | MCP compatibility layer: expose Lumen capabilities to Claude/Codex |
-| `workflow` | Workflow executor based on `lumen.yaml` |
-| `deploy` | Push Agent definitions to the Kova Cluster |
-| `config` | View/modify local CLI configuration |
+| `demo` | Offline sample lifecycle HTML (no Kova / API key). `--live` needs Kova + LLM key |
+| `replay <trace-id>` | Zero-LLM replay from trace JSON. `--from-step N` starts mid-run |
+| `cost` | Spend report + per-run outliers (`--last 24h`, `--format text\|json\|md`) |
+| `traces` | List agent runs in `--trace-dir` (default `./traces`) |
+| `export <run>` | One run → self-contained lifecycle `.html` |
+| `dashboard` | Local web UI; Connected tabs need `--kova-url` / `--netdata-url` |
+| `metrics` | Headless Netdata metrics + ML anomaly snapshot |
+| `pull` | Fetch traces from Kova (`--watch` = live sync) |
+| `kova "<verb>"` | One-shot whitelisted Kova control verb (not a shell) |
+| `tour` | Assemble a multi-run index HTML |
 
-## Command Reference
+## Examples
 
 ```bash
-# doctor — 环境自检（退出码 0 全通过 / 1 至少一项失败）
-lumen doctor
-#   ✓ LURUS_API_KEY present  ✓ python3.11 detected  ✓ /var/lumen writable (5.2 GB free)
-#   ✗ port 7070 occupied — close the process or set LUMEN_PORT
-
-# init — 项目根生成 lumen.yaml（templates: langgraph / bare / multi-agent）
-lumen init --template langgraph
-
-# agent
-lumen agent list                  # 列出本地/远端 Agent
-lumen agent trace <run-id>        # 打印 trace 树
-lumen agent replay <run-id>       # 不消耗 Token 重放
-lumen agent export <run-id>       # 导出 JSON / HAR / OTel
-
-# mcp — 启动 MCP 服务端，暴露 Trace/Replay/Cost 为工具
-lumen mcp serve --port 3333       # 或 --manifest ./my-tools.yaml
-# Claude Code / Codex 的 mcp_servers 指向 http://127.0.0.1:3333 即可调用
-
-# workflow — 按 lumen.yaml 执行多 Agent 编排
-lumen workflow run                # 默认 pipeline；-e prod 指定环境；--dry-run 不实际调 LLM
-
-# deploy — 推送 Agent 定义到 Kova Cluster
-lumen deploy --target kova://my-cluster
-
-# config
-lumen config get api_key
-lumen config set api_key sk-xxxx
-lumen config unset telemetry.endpoint
+lumen demo
+lumen traces --trace-dir ./traces
+lumen cost --last 24h --format md
+lumen replay abc123 --from-step 3
+lumen export abc123
+lumen dashboard --kova-url http://127.0.0.1:3010 --api-key "$LUMEN_KOVA_API_KEY"
+lumen pull --kova-url http://127.0.0.1:3010 --watch
+lumen kova "agents"
+lumen kova "agent foo delete" --yes   # destructive verbs need --yes
 ```
 
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="rewind" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">Both replay and dry-run are free</p>
-    <div class="lurus-callout__body"><code>lumen agent replay &lt;run-id&gt;</code> replays from history records and <strong>does not consume tokens</strong>; <code>lumen workflow run --dry-run</code> walks through the full orchestration flow but <strong>does not actually call the LLM</strong>, making it ideal for validating your <code>lumen.yaml</code> configuration.</div>
-  </div>
-</div>
+## Connected notes
 
-## Exit Codes
+- API keys stay server-side (`LUMEN_KOVA_API_KEY` / `KOVA_API_KEY`); never sent to the browser.
+- Prefer `127.0.0.1` over `localhost` on Windows (IPv6 `::1` surprises).
+- Background sync default interval is 5s (`--sync-interval`, `--no-sync`).
 
-| Code | Meaning |
-|------|------|
-| `0` | Success |
-| `1` | Generic error |
-| `2` | Argument error |
-| `3` | Missing configuration |
-| `4` | Network error |
-| `5` | Remote service returned an error |
+## Exit behavior
 
-## Next Steps
+Unknown subcommands fail at clap parse time. Transport / missing-trace errors print to stderr and exit non-zero. There is no special `doctor` exit-code table.
+
+## Next steps
 
 <NextSteps :steps="[
-  { text: 'Back to Introduction', link: '/en/lumen/', primary: true },
-  { text: 'Python SDK', link: '/en/lumen/python-sdk' },
-  { text: 'Ecosystem Integration', link: '/en/lumen/integration' },
+  { text: 'Overview', link: '/en/lumen/', primary: true },
+  { text: 'Quick start', link: '/en/lumen/quickstart' },
+  { text: 'Integrations', link: '/en/lumen/integration' },
 ]" />
 
-<RelatedProducts product-id="lumen" />
-
 </div>
-
-<style>
-.lumen-page .lurus-callout { margin: 18px 0; }
-</style>

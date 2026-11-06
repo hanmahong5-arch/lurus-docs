@@ -1,141 +1,102 @@
 ---
 title: Lumen Python SDK
-description: LumenTracer / LumenCheckpointer / CostTracker 세 가지 핵심 클래스의 전체 사용 설명.
+description: lumen package — instrument, LangGraph LumenTracer / LumenCheckpointer, cost, replay, OTLP export.
 ---
 
 <div class="lumen-page">
 
-# Lumen Python SDK <StatusBadge status="dev" />
+# Lumen Python SDK <StatusBadge status="alpha" />
 
-`pip install lumen-ai` 이후 SDK는 수집, 영속화, 비용 집계를 아우르는 세 가지 핵심 클래스를 제공합니다:
+PyPI project name: **`lumen-ai`**. Import name: **`lumen`**.
 
-<div class="lurus-cards lurus-cards--compact">
-  <a class="lurus-card lurus-card--lumen" href="#lumentracer">
-    <span class="lurus-card__icon"><Icon name="activity" :size="20" /></span>
-    <div class="lurus-card__title">LumenTracer</div>
-    <p class="lurus-card__body">콜백 형태의 Trace + Cost 수집.</p>
-  </a>
-  <a class="lurus-card lurus-card--lumen" href="#lumencheckpointer">
-    <span class="lurus-card__icon"><Icon name="life-buoy" :size="20" /></span>
-    <div class="lurus-card__title">LumenCheckpointer</div>
-    <p class="lurus-card__body"><code>SqliteSaver</code>를 대체하는 영속화 계층.</p>
-  </a>
-  <a class="lurus-card lurus-card--lumen" href="#costtracker">
-    <span class="lurus-card__icon"><Icon name="coins" :size="20" /></span>
-    <div class="lurus-card__title">CostTracker</div>
-    <p class="lurus-card__body">Agent 간 비용 집계 조회.</p>
-  </a>
-</div>
+```bash
+pip install "lumen-ai[langgraph]"   # when published
+# else: pip install -e "./lumen-sdk[langgraph]" from the git clone
+```
+
+## Core imports
+
+```python
+from lumen import instrument, trace, CostTracker, ReplayEngine, LumenConfig
+from lumen.integrations.langgraph import LumenCheckpointer, LumenTracer
+```
+
+There is **no** public `lumen.Agent.run()` runtime. Stubs under `lumen.agent` are intentionally not exported.
+
+## instrument + trace (OpenAI / Anthropic)
+
+```python
+from lumen import instrument, trace
+
+instrument()  # patches OpenAI / Anthropic clients when installed
+# LangGraph: instrument() only detects the package — you still pass LumenTracer in callbacks
+
+with trace("research-task") as t:
+    resp = client.chat.completions.create(model="gpt-4o", messages=[...])
+    print(t.trace_id, t.total_cost_usd)
+```
 
 ## LumenTracer
 
+Writes AgentTrace JSON under `trace_dir` (default `./traces`).
+
 ```python
-from lumen_ai import LumenTracer
+from lumen.integrations.langgraph import LumenTracer
 
-tracer = LumenTracer(
-    project="my-agent",
-    tags={"env": "prod", "team": "core"},
-    redact=("api_key", "password"),   # 自动脱敏字段
-)
-
-graph = workflow.compile(callbacks=[tracer])
+tracer = LumenTracer(trace_dir="./traces")
+graph.invoke(inputs, config={"callbacks": [tracer], "configurable": {"thread_id": "t1"}})
 ```
-
-**주요 파라미터**:
-
-| 파라미터 | 기본값 | 설명 |
-|------|--------|------|
-| `project` | `"default"` | 프로젝트 식별자, 데이터 귀속을 결정 |
-| `tags` | `{}` | 각 Trace에 부가되는 키-값 태그 |
-| `redact` | `()` | 자동 마스킹할 필드명 튜플 |
-| `backend` | `"local"` | `local` / `lurus` / 사용자 정의 URL |
 
 ## LumenCheckpointer
 
-LangGraph의 `SqliteSaver`를 대체합니다:
+File-backed LangGraph `BaseCheckpointSaver`. Local Core resume story — **not** Kova WAL.
 
 ```python
-from lumen_ai import LumenCheckpointer
+from lumen.integrations.langgraph import LumenCheckpointer
 
-graph = workflow.compile(checkpointer=LumenCheckpointer())
+cp = LumenCheckpointer(storage_dir="./checkpoints")
+graph = workflow.compile(checkpointer=cp)
+print(cp.resume_hint("t1"))
+print(cp.latest_config("t1"))
 ```
 
-SqliteSaver와 비교하면:
+Persistence is best-effort on disk errors (writes are swallowed so the agent loop is not crashed by telemetry).
 
-| 항목 | SqliteSaver | LumenCheckpointer |
-|------|-------------|-------------------|
-| 복구 속도 | 밀리초 단위 | **마이크로초 단위**（Kova WAL 엔진 기반） |
-| 멀티프로세스 | 락 필요 | **네이티브 지원** |
-| 원격 영속화 | 직접 구현 필요 | **내장** |
-| 비용 연동 | 없음 | **자동** |
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="life-buoy" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">직접 교체, API 호환</p>
-    <div class="lurus-callout__body"><code>LumenCheckpointer</code>는 LangGraph의 <code>BaseCheckpointSaver</code> 인터페이스와 호환되어, 기존 <code>SqliteSaver</code>를 한 줄만 바꾸면 되며 그래프 구조를 수정할 필요가 없습니다. 자세한 내용은 <a href="/ko/lumen/integration">생태계 통합 · LangGraph</a>를 참고하세요.</div>
-  </div>
-</div>
-
-## CostTracker
-
-Agent 간 비용 집계 조회:
+## CostTracker / ReplayEngine
 
 ```python
-from lumen_ai import CostTracker
+from lumen import CostTracker, ReplayEngine
 
-# 过去 24h
-CostTracker.summary(hours=24)
+report = CostTracker(trace_dir="./traces").report(last="24h")
+print(report.total_usd, report.total_runs)
 
-# 按 Agent 拆分
-CostTracker.by_agent(hours=24)
-
-# 按 Graph 节点拆分
-CostTracker.by_node(graph_id="research-graph")
-
-# 预算告警
-CostTracker.set_budget(daily_rmb=50.0, on_exceed=my_handler)
+replay = ReplayEngine(trace_dir="./traces").replay("abc123")
+for step in replay.steps:
+    print(step.step, step.decision_type, step.tool_name or step.content)
 ```
 
-## 사용자 정의 Backend
+CLI `lumen replay --from-step N` filters in the CLI; the Python `ReplayEngine.replay()` API has no `from_step` argument today.
 
-기본적으로 데이터는 `~/.lumen/`에 기록됩니다. 원격으로 전송하려면: `LumenTracer(backend="https://lumen.lurus.cn/ingest")`. 또는 직접 정의할 수 있습니다:
+## Config / OTLP
 
-```python
-from lumen_ai.backend import Backend
-class MyBackend(Backend):
-    def send(self, event): ...
-LumenTracer(backend=MyBackend())
-```
+Hierarchy: defaults → `~/.lumen/config.toml` → `./lumen.toml` → `LUMEN_*` env → builder overrides.
 
-## Async 지원
+| Variable | Default | Meaning |
+|------|--------|------|
+| `LUMEN_TRACE_DIR` | `./traces` | Trace JSON directory |
+| `LUMEN_BUDGET_USD` | `0` | Ceiling; `0` = unlimited |
+| `LUMEN_KILL_ON_BUDGET` | `false` | Raise when budget exceeded |
+| `LUMEN_OTLP_ENABLED` | `false` | Fan out completed traces via OTLP/HTTP JSON |
+| `LUMEN_OTLP_ENDPOINT` | — | Collector base (appends `/v1/traces` if needed) |
 
-SDK의 모든 I/O는 비동기 친화적입니다:
+OTLP uses stdlib HTTP JSON only — no OpenTelemetry SDK dependency.
 
-```python
-import asyncio
-from lumen_ai import LumenTracer
-
-async def main():
-    tracer = LumenTracer()
-    async with tracer:
-        await graph.ainvoke({"query": "hi"})
-
-asyncio.run(main())
-```
-
-## 다음 단계
+## Next Steps
 
 <NextSteps :steps="[
-  { text: '소개로 돌아가기', link: '/ko/lumen/', primary: true },
-  { text: 'CLI 매뉴얼', link: '/ko/lumen/cli' },
-  { text: '생태계 통합', link: '/ko/lumen/integration' },
+  { text: 'Overview', link: '/en/lumen/', primary: true },
+  { text: 'CLI Manual', link: '/en/lumen/cli' },
+  { text: 'Integrations', link: '/en/lumen/integration' },
 ]" />
 
-<RelatedProducts product-id="lumen" />
-
 </div>
-
-<style>
-.lumen-page .lurus-cards--compact { margin: 18px 0 8px; }
-</style>

@@ -1,112 +1,58 @@
 ---
 title: Lumen 生态集成
-description: 与 Kova / LangGraph / Lurus API / OpenTelemetry / Grafana / Datadog 的集成范式。
+description: LangGraph checkpointer/tracer、可选 Kova Connected、OTLP/HTTP JSON 导出。
 ---
 
 <div class="lumen-page">
 
-# Lumen 生态集成 <StatusBadge status="dev" />
+# Lumen 生态集成 <StatusBadge status="alpha" />
 
-Lumen 作为语义层可观测性工具，向下接 Kova 执行引擎与 Lurus API 网关，向旁兼容 LangGraph，向外导出标准 OTel 链路到 Grafana / Datadog。
+Lumen 旁路挂接：你的代码仍直调 LLM；SDK 写本地 trace；CLI 做 replay / cost / lifecycle。Connected 可选加深 Kova / Netdata。
 
-<div class="lurus-cards lurus-cards--compact">
-  <a class="lurus-card lurus-card--kova" href="#kova">
-    <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
-    <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">WAL 持久化底座，微秒级崩溃恢复。</p>
-  </a>
-  <a class="lurus-card lurus-card--lumen" href="#langgraph">
-    <span class="lurus-card__icon"><Icon name="repeat" :size="20" /></span>
-    <div class="lurus-card__title">LangGraph</div>
-    <p class="lurus-card__body">一行替换 Saver。</p>
-  </a>
-  <a class="lurus-card lurus-card--api" href="#lurus-api">
-    <span class="lurus-card__icon"><Icon name="plug-zap" :size="20" /></span>
-    <div class="lurus-card__title">Lurus API</div>
-    <p class="lurus-card__body">Token 计费自动关联。</p>
-  </a>
-  <a class="lurus-card lurus-card--lumen" href="#opentelemetry">
-    <span class="lurus-card__icon"><Icon name="activity" :size="20" /></span>
-    <div class="lurus-card__title">OTel / Grafana / Datadog</div>
-    <p class="lurus-card__body">导出标准链路。</p>
-  </a>
-</div>
-
-三仓联测（Forge 编排 · Kova 证明 · Lumen 看见）的公开账本：[Forge × Kova × Lumen 联测](/kova/triple-joint)。
-
-## 与 [Kova](/kova/) {#kova}
-
-Kova 负责底层 WAL 状态持久化与微秒级崩溃恢复，Lumen 负责语义层 Trace 标注与成本统计。
+## LangGraph
 
 ```python
-from lumen_ai import LumenCheckpointer
-from kova import KovaClient
+from lumen.integrations.langgraph import LumenCheckpointer, LumenTracer
 
-kova = KovaClient("kova://prod")
-graph.compile(checkpointer=LumenCheckpointer(kova_client=kova))
+graph = workflow.compile(checkpointer=LumenCheckpointer(storage_dir="./checkpoints"))
+graph.invoke(inputs, config={
+    "configurable": {"thread_id": "t1"},
+    "callbacks": [LumenTracer(trace_dir="./traces")],
+})
 ```
 
-## 与 [LangGraph](https://langchain-ai.github.io/langgraph/) {#langgraph}
+`instrument()` **不会**自动 patch LangGraph。
 
-直接替换 Saver（API 完全兼容 `BaseCheckpointSaver`）：
+## Kova（Connected）
 
-```diff
-- from langgraph.checkpoint.sqlite import SqliteSaver
-+ from lumen_ai import LumenCheckpointer
-
-- graph = wf.compile(checkpointer=SqliteSaver.from_conn_string(":memory:"))
-+ graph = wf.compile(checkpointer=LumenCheckpointer())
+```bash
+export LUMEN_KOVA_URL=http://127.0.0.1:3010
+export LUMEN_KOVA_API_KEY=sk-kova-…
+lumen dashboard --kova-url "$LUMEN_KOVA_URL" --api-key "$LUMEN_KOVA_API_KEY"
+lumen pull --kova-url "$LUMEN_KOVA_URL" --watch
 ```
 
-## 与 [Lurus API](/guide/introduction) {#lurus-api}
+没有 `lumen deploy`。WAL 持久执行归 Kova。
 
-经 Lurus API 调 LLM 时，Token 计费和耗时自动关联到 Lumen Trace：
+## OpenTelemetry
 
-```python
-from openai import OpenAI
-from lumen_ai import LumenTracer
-
-client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-...")
-tracer = LumenTracer()
-
-with tracer.span("classify"):
-    resp = client.chat.completions.create(...)
-    # 调用自动记录，鹿贝消费可追溯
+```bash
+export LUMEN_OTLP_ENABLED=1
+export LUMEN_OTLP_ENDPOINT=http://localhost:4318
 ```
 
-## OpenTelemetry {#opentelemetry}
+无 `lumen_ai.otel` 辅助模块；无 gRPC/protobuf。
 
-导出为 OTel Trace：`LumenTracer(exporters=[to_otlp("http://otel-collector:4317")])`（`from lumen_ai.otel import to_otlp`）。
+## 明确不做
 
-## Grafana / Datadog
-
-链路如下，Lumen SDK 以 OTLP 协议把 Trace 推给 OTel Collector，再分发到 Grafana Tempo 或 Datadog APM：
-
-<ArchitectureDiagram
-  title="可观测性导出链路"
-  chart="graph LR
-  A[Lumen SDK] -->|OTLP| B[OTel Collector]
-  B --> C[Grafana Tempo]
-  B --> D[Datadog APM]"
-/>
-
-Grafana 仪表盘模板见 [Lurus 官方模板库](/updates/)（搜 "Lumen Dashboard"）。
+第二个 runtime、MCP 宿主、Temporal 式引擎、替代 Langfuse 的通用 APM。
 
 ## 下一步
 
-<NextSteps
-  :steps="[
-    { text: 'Python SDK 详解', link: '/lumen/python-sdk', primary: true },
-    { text: '跨产品教程', link: '/tutorials/lumen-kova-langgraph' },
-    { text: '从 LangGraph 迁移', link: '/migrations/from-langgraph' },
-  ]"
-  title="下一步"
-/>
-
-<RelatedProducts product-id="lumen" />
+<NextSteps :steps="[
+  { text: 'Python SDK', link: '/lumen/python-sdk', primary: true },
+  { text: '从 LangGraph 接入', link: '/migrations/from-langgraph' },
+  { text: 'CLI', link: '/lumen/cli' },
+]" />
 
 </div>
-
-<style>
-.lumen-page .lurus-cards--compact { margin: 18px 0 8px; }
-</style>

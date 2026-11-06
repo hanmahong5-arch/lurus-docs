@@ -1,109 +1,102 @@
 ---
-title: "Migrating from LangGraph to Lumen + Kova"
-description: "SqliteSaver → LumenCheckpointer + LumenTracer, deploy your Agent to a Kova cluster."
+title: "Adding Lumen to a LangGraph app"
+description: "Swap SqliteSaver for LumenCheckpointer, add LumenTracer, export lifecycle HTML. No lumen deploy."
 ---
 
 <div class="mig-lg-page">
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="git-branch" :size="14" /> Migrating from LangGraph</span>
-  <h1 class="lurus-section-head__title">Migrating from LangGraph to Lumen + Kova</h1>
-  <p class="lurus-section-head__lede"><code>SqliteSaver</code> → <code>LumenCheckpointer + LumenTracer</code>, deploy your Agent to a Kova cluster—no changes to your business code.</p>
+  <span class="lurus-section-head__eyebrow"><Icon name="git-branch" :size="14" /> LangGraph + Lumen</span>
+  <h1 class="lurus-section-head__title">Add Lumen beside LangGraph</h1>
+  <p class="lurus-section-head__lede">Keep your graph. Add local checkpoints + traces. Share a lifecycle HTML. Durable WAL depth stays on Kova when you use Connected — Lumen is not a deploy target.</p>
 </div>
 
-## <Icon name="sparkles" :size="20" /> What you get
+## What you get
 
-| Before (plain LangGraph) | After |
+| Before (plain LangGraph) | After (+ Lumen Core) |
 |---------------------|-------|
-| SqliteSaver single-node persistence | **LumenCheckpointer + Kova** microsecond-level WAL recovery |
-| No tracing | **LumenTracer** automatic capture |
-| No cost tracking | **CostTracker** aggregated per node |
-| Manual replay | **Replay.from_run_id()** in one line |
+| SqliteSaver / MemorySaver | **LumenCheckpointer** on local disk |
+| No spend view | **CostTracker** / `lumen cost` |
+| Logs only | **LumenTracer** → trace JSON + `lumen export` HTML |
+| LangGraph time-travel (re-executes nodes) | **$0 replay** from recorded traces (`lumen replay`) |
 
-## <Icon name="workflow" :size="20" /> Migration steps
+## Steps
 
 <ol class="lurus-steps">
 <li>
 
-**Replace the Checkpointer** — `LumenCheckpointer` implements `BaseCheckpointSaver` 100%, with no changes to your business code.
+**Install**
+
+```bash
+pip install "lumen-ai[langgraph]"   # or: pip install -e "./lumen-sdk[langgraph]"
+```
+
+</li>
+<li>
+
+**Replace the checkpointer**
 
 ```diff
 - from langgraph.checkpoint.sqlite import SqliteSaver
-+ from lumen_ai import LumenCheckpointer
++ from lumen.integrations.langgraph import LumenCheckpointer
 
 - graph = wf.compile(
 -     checkpointer=SqliteSaver.from_conn_string("./state.db")
 - )
 + graph = wf.compile(
-+     checkpointer=LumenCheckpointer()
++     checkpointer=LumenCheckpointer(storage_dir="./checkpoints")
 + )
 ```
 
 </li>
 <li>
 
-**Add the Tracer** — once running locally, visit `http://localhost:7070` to see the trace timeline.
+**Add the tracer via callbacks** (required — not auto-patched)
 
 ```diff
-+ from lumen_ai import LumenTracer
++ from lumen.integrations.langgraph import LumenTracer
 
-  graph = wf.compile(
-      checkpointer=LumenCheckpointer(),
-+     callbacks=[LumenTracer()],
+  result = graph.invoke(
+      inputs,
+      config={
+          "configurable": {"thread_id": "t1"},
++         "callbacks": [LumenTracer(trace_dir="./traces")],
+      },
   )
 ```
 
 </li>
 <li>
 
-**Deploy to Kova**
-
-```yaml
-# agent.yaml
-name: research-agent
-entry: python my_agent.py
-checkpointer: lumen
-replicas: 3
-```
+**Inspect / share (no deploy step)**
 
 ```bash
-lumen deploy --target kova://prod-cluster
+lumen traces
+lumen export <trace-id>
+lumen cost --format md
+lumen dashboard
 ```
+
+There is **no** `lumen deploy`. To deepen with durable WAL, run against [Kova](/en/kova/) and use Connected (`--kova-url`).
 
 </li>
 </ol>
 
-## <Icon name="terminal" :size="20" /> Local verification
+## Crash → resume ritual
 
-```bash
-python my_agent.py           # runs normally
-kill -9 $(pgrep -f my_agent) # simulate a crash
-python my_agent.py           # resumes from the interruption point, no LLM re-call
+```python
+cp = LumenCheckpointer(storage_dir="./checkpoints")
+print(cp.resume_hint("t1"))
+cfg = cp.latest_config("t1")
+graph.invoke(None, config={"configurable": cfg["configurable"], "callbacks": [LumenTracer(trace_dir="./traces")]})
 ```
 
-## <Icon name="gauge" :size="20" /> Performance comparison
-
-| Metric | Before | After |
-|------|--------|-------|
-| Recovery latency | 8ms | **microsecond-level** |
-| Multi-process | needs locking | **native** |
-| Cross-datacenter | manual | **async replication** |
-| LLM re-call | sometimes | **never** |
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="rewind" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">Rollback</p>
-    <div class="lurus-callout__body"><p>Keep the old SqliteSaver code commented out; revert the diff at any time to return to the original state. The data is not shared, but they can run in parallel.</p></div>
-  </div>
-</div>
-
-## Next steps
+## Next
 
 <NextSteps :steps="[
-  { text: 'Lumen Python SDK', link: '/en/lumen/python-sdk', primary: true },
-  { text: 'Deploy Kova', link: '/en/kova/quickstart' },
-  { text: 'Full tutorial', link: '/en/tutorials/lumen-kova-langgraph' },
+  { text: 'Lumen overview', link: '/en/lumen/', primary: true },
+  { text: 'Quick start', link: '/en/lumen/quickstart' },
+  { text: 'Kova', link: '/en/kova/' },
 ]" />
 
 </div>

@@ -1,203 +1,157 @@
 ---
-title: Lumen — Agent の可観測性と信頼性ツール
-description: Python SDK 優先 + Rust エンジン + オプションの CLI で、Agent 開発者に可観測性、デバッグ、信頼性を提供します。
+title: Lumen — Agent failure & spend black box
+description: Local-first replay, cost, and crash-resume for LangGraph agents. Alpha. Not an agent runtime.
 ---
 
 <div class="lumen-page">
 
 <ProductHero product-id="lumen" />
 
-<div class="lurus-callout lurus-callout--info">
-  <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
+<div class="lurus-callout lurus-callout--warning">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">前提条件</p>
-    <div class="lurus-callout__body"><ul><li>第一選択：Python 3.9+（<code>pip install lumen-ai</code>）</li><li>オプションの CLI：Rust 1.93+ でソースから <code>lumen-cli</code> をコンパイル</li><li>Lurus <Term t="API Key">API Key</Term> 一つ（<a href="/ja/guide/get-api-key">取得方法</a>）</li></ul></div>
+    <p class="lurus-callout__title">Alpha — honest scope</p>
+    <div class="lurus-callout__body">
+      <ul>
+        <li><strong>Not</strong> an agent runtime — Lumen does not run, deploy, or host agents.</li>
+        <li><strong>Not</strong> a general observability platform — it sells a shareable incident lifecycle (money × refuse × resume).</li>
+        <li>Python package import is <code>lumen</code> (PyPI name <code>lumen-ai</code>). Do <strong>not</strong> <code>cargo install lumen-cli</code> (unrelated crates.io package).</li>
+        <li>Kova is optional (Connected). Core works offline from local trace JSON.</li>
+      </ul>
+    </div>
   </div>
 </div>
 
-## Lumen とは？
+<div class="lurus-callout lurus-callout--info">
+  <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">Prerequisites</p>
+    <div class="lurus-callout__body">
+      <ul>
+        <li>Python 3.10+ for the SDK</li>
+        <li>Optional CLI binary from GitHub Releases (no Rust required)</li>
+        <li>No Lurus API key required for Core (local traces + <code>lumen demo</code>)</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-**Lumen** は AI Agent 開発者向けの**三位一体の信頼性ツール** — Replay（ゼロコストのリプレイ）+ Crash Recovery（マイクロ秒級の<Term t="Checkpoint">クラッシュリカバリ</Term>）+ Cost Tracking（リアルタイムのコスト追跡）です。**提供形態**：Python SDK 優先（`pip install lumen-ai`、LangGraph/Agent の第一選択）+ Rust エンジン（`lumen-core` パフォーマンスの土台）+ オプションの CLI（`lumen-cli` v0.1.0）。理念：*Illuminate your AI agents. Never lose a run. Never burn tokens blindly.*
+## What is Lumen?
+
+**Lumen** is the black box for agent failures and spend: open a run and see which step burned money, which tool was refused, and how to continue after a crash.
+
+Delivery: Python SDK (`lumen-ai` on PyPI when published; otherwise install from the [source repo](https://github.com/hanmahong5-arch/lumen)) + Rust CLI/dashboard (`lumen`). LangGraph is the one fully supported integration today.
 
 ```python
-pip install lumen-ai
+from lumen.integrations.langgraph import LumenCheckpointer, LumenTracer
 
-from lumen_ai import LumenTracer, LumenCheckpointer, CostTracker
-
-# 三行代码接入 — LangGraph 原生集成
-graph = workflow.compile(
-    checkpointer=LumenCheckpointer(),   # 崩溃恢复
-    callbacks=[LumenTracer()]            # 执行追踪 + 成本追踪
-)
+checkpointer = LumenCheckpointer(storage_dir="./checkpoints")
+tracer = LumenTracer(trace_dir="./traces")
+graph = workflow.compile(checkpointer=checkpointer)
+graph.invoke(inputs, config={"callbacks": [tracer], "configurable": {"thread_id": "t1"}})
 ```
 
-低レイヤーは Rust エンジン（lumen-core）が駆動し、Python SDK がフレンドリーなインターフェースを提供して、[Kova Agent エンジン](/ja/kova/) と Python エコシステムを接続します。
+Then share the incident:
+
+```bash
+lumen export <trace-id>   # self-contained lifecycle HTML
+lumen cost --format md    # pasteable spend summary
+lumen replay <trace-id>   # zero LLM cost
+```
 
 <div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3 行</span><span class="lurus-stat__label">LangGraph への接続</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">マイクロ秒級</span><span class="lurus-stat__label">クラッシュリカバリ</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">30+</span><span class="lurus-stat__label">モデル価格表</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">v0.1.0</span><span class="lurus-stat__label">lumen-cli</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">Core</span><span class="lurus-stat__label">local traces only</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">$0</span><span class="lurus-stat__label">deterministic replay</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">30+</span><span class="lurus-stat__label">model pricing entries</span></div>
+  <div class="lurus-stat"><span class="lurus-stat__value">Connected</span><span class="lurus-stat__label">optional Kova deepen</span></div>
 </div>
 
 ---
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="zap" :size="14" /> コア機能</span>
-  <h2 class="lurus-section-head__title">三位一体の信頼性</h2>
-  <p class="lurus-section-head__lede">リプレイ、リカバリ、コスト — 一度の接続ですべて準備完了。</p>
-</div>
+## Core capabilities
 
-<CapabilityGrid
-  accent="var(--lurus-color-lumen)"
-  :items="[
-    { title: 'Replay — ゼロコストの決定論的リプレイ', icon: 'rewind', body: 'trace JSON から任意の実行をリプレイし、LLM を呼ばずコストをかけずに、指定したステップから問題を精密に特定できます。lumen replay TRACE_ID（完全）/ --from 5（第 5 ステップから）。' },
-    { title: 'Crash Recovery — マイクロ秒級のクラッシュリカバリ', icon: 'life-buoy', body: 'LangGraph CheckpointSaver を完全実装し、ネイティブの SQLite/Redis Checkpointer をそのまま置き換えます。メモリ+ディスクの二層、アトミック書き込み、リカバリはエンジン級の WAL リプレイで実現し、外部サービスへの依存はゼロです。' },
-    { title: 'Cost Tracking — リアルタイムのコスト追跡', icon: 'coins', body: '30+ のモデル価格表（Claude / GPT-4o / Gemini / Llama / DeepSeek）を内蔵し、LLM が料金を返さなくても見積もり可能です。単一呼び出しが平均値の 2 倍を超えると自動でアラート。lumen cost --last 24h / lumen traces。' },
-  ]"
-/>
-
-### その他の機能
-
-| 機能 | 説明 |
-|------|------|
-| **Agent 管理** | Agent の作成、起動、停止、削除 |
-| **ワークフローのデバッグ** | ワークフローをローカルで実行し、ステップ単位でデバッグ |
-| **ログ閲覧** | Agent の実行ログをリアルタイムで閲覧 |
-| **デプロイ** | Agent を Kova クラウドインスタンスにデプロイ |
-| **MCP 管理** | MCP ツールサービスのインストールと設定 |
-| **インタラクティブ REPL** | ターミナルで直接 Agent と対話 |
+| Capability | What it is | What it is not |
+|------|------|------|
+| **Replay** | Reconstruct a past run from trace JSON (`lumen replay`, Python `ReplayEngine`) | Re-calling the LLM / live fork-intervene |
+| **Cost** | Per-run / per-model USD + outliers (`lumen cost`) | A billing gateway |
+| **Crash resume** | LangGraph `LumenCheckpointer` + `resume_hint` on disk | Kova WAL durable execution (that is Kova) |
+| **Lifecycle HTML** | `lumen demo` / `lumen export` shareable incident artifact | A hosted SaaS console |
+| **Dashboard** | Local web UI over `./traces`; Connected tabs need Kova/Netdata | A second agent control plane |
 
 ---
 
-## インストール
+## Installation
+
+**CLI** (recommended — no Rust):
 
 ```bash
-pip install lumen-ai                          # Python SDK（推荐）
-curl -fsSL https://get.lurus.cn/lumen | sh    # CLI macOS/Linux
-# Windows (PowerShell): irm https://get.lurus.cn/lumen.ps1 | iex
-# 从源码（Rust 1.93+，首次编译约 2-3 分钟）：
-git clone https://github.com/hanmahong5-arch/lumen.git && cd lumen && cargo build --release
-# 二进制在 target/release/lumen
+curl -fsSL https://raw.githubusercontent.com/hanmahong5-arch/lumen/main/docs/install-cli.sh | bash
+export PATH="$HOME/.local/bin:$PATH"
+lumen --version
+lumen demo
 ```
 
-検証：`lumen --version`（→ `lumen 0.1.0`）；`lumen doctor`（Lurus API connected / Kova optional をチェック）。
+Windows (PowerShell):
 
----
+```powershell
+irm https://raw.githubusercontent.com/hanmahong5-arch/lumen/main/docs/install-cli.ps1 | iex
+```
 
-## クイックスタート
+**Python SDK** — if PyPI publish is live:
 
 ```bash
-# 初始化项目（结构: agent.toml / prompts/system.md / tools/search.yaml / workflows/main.yaml）
-lumen init my-agent && cd my-agent
-
-# 配置 API Key
-lumen auth login                              # 浏览器登录授权自动配置
-lumen config set api_key sk-your-lurus-key    # 或直接设置
-
-# 本地运行 Agent
-lumen run --interactive                       # 交互模式
-lumen run "分析这段代码的性能问题" --file ./main.py
-lumen run "翻译这段文本" --model gpt-4o        # 指定模型
-
-# 工作流调试
-lumen workflow run main --input topic="AI trends"
-lumen workflow run main --step-by-step        # 逐步调试（每步暂停）
-lumen workflow history main --last            # 上次运行结果
+pip install "lumen-ai[langgraph]"
 ```
 
----
-
-## よく使うコマンド
+Otherwise install from source (always works):
 
 ```bash
-# Agent 管理
-lumen agent list / create researcher / info researcher / logs researcher / delete researcher
-# MCP 工具
-lumen mcp list / install github / test github / remove github
-# 部署
-lumen deploy --target kova        # 或 --target docker
-lumen deploy status
-# 配置
-lumen config list / set api_key xxx / get api_key
+git clone https://github.com/hanmahong5-arch/lumen.git && cd lumen
+pip install -e "./lumen-sdk[langgraph]"
 ```
+
+Full install notes: [INSTALL.md on GitHub](https://github.com/hanmahong5-arch/lumen/blob/main/docs/INSTALL.md).
 
 ---
 
-## 設定ファイル
+## Core vs Connected
 
-`agent.toml` は Agent プロジェクトのコア設定です：
+| Layer | Needs | What you get |
+|---|---|---|
+| **Core** | Local traces only | `instrument` / `replay` / `cost` / `traces` / lifecycle HTML / Overview |
+| **Connected** | `--kova-url` and/or `--netdata-url` | Flow, Terminal, Governor advisory, live Metrics |
 
-```toml
-[agent]
-name = "my-researcher"
-model = "deepseek-chat"
-max_iterations = 20
-
-[agent.llm]
-base_url = "https://hub.lurus.cn/v1"
-temperature = 0.7
-max_tokens = 4096
-
-[tools]
-builtin = ["web_search", "file_read", "file_write"]
-
-[[tools.mcp]]
-name = "github"
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-github"]
-
-[deploy]
-target = "kova"
-```
+Kova is a **deepener**, not a prerequisite. Triple story: Forge orchestrates · Kova proves · Lumen sees.
 
 ---
 
-## Kova との関係
+## Relationship with Kova
 
 <div class="lurus-cards lurus-cards--2">
   <div class="lurus-card lurus-card--lumen">
     <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
     <div class="lurus-card__title">Lumen</div>
-    <p class="lurus-card__body">開発者向けコマンドラインツール — ローカル開発、デバッグ、デプロイ。軽量ランタイム <code>lumen run</code> ですぐに使えます。</p>
+    <p class="lurus-card__body">Read surface — local traces → replay / cost / lifecycle HTML / dashboard. Never runs your agent loop.</p>
   </div>
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
     <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">Agent ランタイムエンジン — 永続化実行、WAL、クラスタ管理。<code>lumen deploy</code> 後に完全な永続化とクラスタ機能を獲得します。</p>
+    <p class="lurus-card__body">Durable execution engine — WAL, recovery depth, REST. Lumen Connected proxies Kova; it does not replace it.</p>
   </div>
 </div>
 
-ローカル開発では軽量ランタイム（`lumen run`）を使い、Kova にデプロイ（`lumen deploy`）すると完全な永続化とクラスタ機能を獲得できます。
-
 ---
 
-## 他のソリューションとの比較
-
-<ComparisonTable
-  self-label="Lumen"
-  :competitors="['Temporal', 'LangGraph Checkpointer', 'Conductor']"
-  :rows="[
-    { dimension: 'Replay', self: 'ゼロコストの LLM リプレイ', alt: { Temporal: 'Event replay', 'LangGraph Checkpointer': '部分対応', Conductor: 'Workflow replay' } },
-    { dimension: '接続コスト', self: '3 行のコード', alt: { Temporal: 'Worker + SDK', 'LangGraph Checkpointer': '設定', Conductor: 'Worker' } },
-    { dimension: 'Cost 追跡', self: '内蔵', alt: { Temporal: 'なし', 'LangGraph Checkpointer': 'なし', Conductor: 'なし' } },
-  ]"
-  title="比較"
-/>
-
----
-
-## 関連製品と次のステップ
+## Related pages
 
 <NextSteps
   :steps="[
-    { text: 'クイックスタート', link: '/ja/lumen/quickstart', primary: true },
-    { text: 'Python SDK', link: '/ja/lumen/python-sdk' },
-    { text: 'CLI ハンドブック', link: '/ja/lumen/cli' },
-    { text: '統合と MCP ディレクトリ', link: '/integrations/' },
-    { text: 'MCP プロトコル公式ドキュメント', link: 'https://modelcontextprotocol.io/', external: true },
+    { text: 'Quick start', link: '/en/lumen/quickstart', primary: true },
+    { text: 'Python SDK', link: '/en/lumen/python-sdk' },
+    { text: 'CLI manual', link: '/en/lumen/cli' },
+    { text: 'Integrations', link: '/en/lumen/integration' },
   ]"
-  title="次のステップ"
+  title="Next steps"
 />
 
 <RelatedProducts product-id="lumen" />

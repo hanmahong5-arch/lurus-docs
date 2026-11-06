@@ -1,161 +1,120 @@
 ---
-title: Lumen — Agent 可观测性与可靠性工具
-description: Python SDK 优先 + Rust 引擎 + 可选 CLI，为 Agent 开发者提供可观测性、调试和可靠性保障。
+title: Lumen — Agent 失败与烧钱的黑匣子
+description: 本地优先的 replay / cost / 崩溃续跑。Alpha。不是 Agent 运行时。
 ---
 
 <div class="lumen-page">
 
 <ProductHero product-id="lumen" />
 
+<div class="lurus-callout lurus-callout--warning">
+  <span class="lurus-callout__icon"><Icon name="alert-triangle" :size="18" /></span>
+  <div>
+    <p class="lurus-callout__title">Alpha — 诚实边界</p>
+    <div class="lurus-callout__body">
+      <ul>
+        <li><strong>不是</strong> Agent 运行时 — Lumen 不跑、不部署、不托管 Agent。</li>
+        <li><strong>不是</strong> 通用观测平台 — 卖的是可转发的事故 lifecycle（钱 × 拒绝 × 续跑）。</li>
+        <li>Python 导入名是 <code>lumen</code>（PyPI 名 <code>lumen-ai</code>）。禁止 <code>cargo install lumen-cli</code>（crates.io 无关第三方包）。</li>
+        <li>Kova 是可选加深（Connected）。Core 仅靠本地 trace JSON 即可用。</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
     <p class="lurus-callout__title">前置条件</p>
-    <div class="lurus-callout__body"><ul><li>首选：Python 3.9+（<code>pip install lumen-ai</code>）</li><li>可选 CLI：Rust 1.93+ 从源码编译 <code>lumen-cli</code></li><li>一个 Lurus <Term t="API Key">API Key</Term>（<a href="/guide/get-api-key">获取方式</a>）</li></ul></div>
+    <div class="lurus-callout__body">
+      <ul>
+        <li>SDK：Python 3.10+</li>
+        <li>可选 CLI：GitHub Release 二进制（无需 Rust）</li>
+        <li>Core / <code>lumen demo</code> 不需要 Lurus API Key</li>
+      </ul>
+    </div>
   </div>
 </div>
 
 ## 什么是 Lumen？
 
-**Lumen** 是面向 AI Agent 开发者的**三合一可靠性工具** — Replay（零成本重放）+ Crash Recovery（微秒级 <Term t="Checkpoint">崩溃恢复</Term>）+ Cost Tracking（实时成本追踪）。**交付形态**：Python SDK 优先（`pip install lumen-ai`，LangGraph/Agent 首选）+ Rust 引擎（`lumen-core` 性能底座）+ 可选 CLI（`lumen-cli` v0.1.0）。理念：*Illuminate your AI agents. Never lose a run. Never burn tokens blindly.*
+**Lumen** 是 Agent 失败与烧钱的黑匣子：打开一次运行，看哪步烧钱、哪步被拒、崩了怎么续。
+
+交付：Python SDK（PyPI `lumen-ai`；未发布时从[源码仓](https://github.com/hanmahong5-arch/lumen)安装）+ Rust CLI/面板（`lumen`）。目前完整支持 LangGraph。
 
 ```python
-pip install lumen-ai
+from lumen.integrations.langgraph import LumenCheckpointer, LumenTracer
 
-from lumen_ai import LumenTracer, LumenCheckpointer, CostTracker
-
-# 三行代码接入 — LangGraph 原生集成
-graph = workflow.compile(
-    checkpointer=LumenCheckpointer(),   # 崩溃恢复
-    callbacks=[LumenTracer()]            # 执行追踪 + 成本追踪
-)
+checkpointer = LumenCheckpointer(storage_dir="./checkpoints")
+tracer = LumenTracer(trace_dir="./traces")
+graph = workflow.compile(checkpointer=checkpointer)
+graph.invoke(inputs, config={"callbacks": [tracer], "configurable": {"thread_id": "t1"}})
 ```
 
-底层 Rust 引擎（lumen-core）驱动，Python SDK 提供友好接口，连接 [Kova Agent 引擎](/kova/) 和 Python 生态。
+然后分享事故：
 
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">3 行</span><span class="lurus-stat__label">接入 LangGraph</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">微秒级</span><span class="lurus-stat__label">崩溃恢复</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">30+</span><span class="lurus-stat__label">模型定价表</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">v0.1.0</span><span class="lurus-stat__label">lumen-cli</span></div>
-</div>
+```bash
+lumen export <trace-id>   # 自包含 lifecycle HTML
+lumen cost --format md
+lumen replay <trace-id>   # 零 LLM 花费
+```
 
 <DiagramFigure
-  caption="两段式：你的代码照常直接调自己的模型服务商，Python SDK 只在旁边把 trace 写成磁盘上的 JSON；内嵌的 Rust 核心与 CLI 事后读这份文件来做重放、算成本、渲染面板。橙色那条是 trace 落盘，也是全图的关键路径 —— Lumen 自己从不代你调模型，所以接入它不改变你的调用链路，也不多花一次 token。"
+  caption="两段式：你的代码照常直接调模型服务商，Python SDK 把 trace 写成磁盘 JSON；Rust CLI/core 事后读文件做重放、算成本、渲染面板。Lumen 自己从不代你调模型。"
   source="2c-cli-lumen · 与仓库 README 同一张图">
   <LumenArchitecture />
 </DiagramFigure>
 
 ---
 
-<div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="zap" :size="14" /> 核心能力</span>
-  <h2 class="lurus-section-head__title">三合一可靠性</h2>
-  <p class="lurus-section-head__lede">重放、恢复、成本 — 一次接入全部就绪。</p>
-</div>
+## 核心能力
 
-<CapabilityGrid
-  accent="var(--lurus-color-lumen)"
-  :items="[
-    { title: 'Replay — 零成本确定性重放', icon: 'rewind', body: '从 trace JSON 重放任意执行，不调 LLM 不花钱，可从指定步骤开始精确定位问题。lumen replay TRACE_ID（完整）/ --from 5（从第 5 步）。' },
-    { title: 'Crash Recovery — 微秒级崩溃恢复', icon: 'life-buoy', body: 'LangGraph CheckpointSaver 完整实现，直接替换原生 SQLite/Redis Checkpointer。内存+磁盘双层、原子写入，恢复走引擎级 WAL 重放，零外部服务依赖。' },
-    { title: 'Cost Tracking — 实时成本追踪', icon: 'coins', body: '内置 30+ 模型定价表（Claude / GPT-4o / Gemini / Llama / DeepSeek），LLM 不返回费用也能估算。单次调用 > 2x 平均值自动告警。lumen cost --last 24h / lumen traces。' },
-  ]"
-/>
-
-### 更多功能
-
-| 功能 | 说明 |
-|------|------|
-| **Agent 管理** | 创建、启动、停止、删除 Agent |
-| **工作流调试** | 本地运行工作流，逐步调试 |
-| **日志查看** | 实时查看 Agent 执行日志 |
-| **部署** | 将 Agent 部署到 Kova 云端实例 |
-| **MCP 管理** | 安装和配置 MCP 工具服务 |
-| **交互式 REPL** | 直接在终端与 Agent 对话 |
+| 能力 | 是什么 | 不是什么 |
+|------|------|------|
+| **Replay** | 从 trace JSON 重建运行 | 再调 LLM / 在线 fork |
+| **Cost** | 按 run/模型美元 + outlier | 计费网关 |
+| **Crash resume** | LangGraph `LumenCheckpointer` + `resume_hint` | Kova WAL（那是 Kova） |
+| **Lifecycle HTML** | `lumen demo` / `export` 可转发产物 | 托管 SaaS 控制台 |
+| **Dashboard** | 本地读 `./traces`；Connected 需 Kova/Netdata | 第二个 Agent 控制面 |
 
 ---
 
 ## 安装
 
+**CLI**（推荐）：
+
 ```bash
-pip install lumen-ai                          # Python SDK（推荐）
-curl -fsSL https://get.lurus.cn/lumen | sh    # CLI macOS/Linux
-# Windows (PowerShell): irm https://get.lurus.cn/lumen.ps1 | iex
-# 从源码（Rust 1.93+，首次编译约 2-3 分钟）：
-git clone https://github.com/hanmahong5-arch/lumen.git && cd lumen && cargo build --release
-# 二进制在 target/release/lumen
+curl -fsSL https://raw.githubusercontent.com/hanmahong5-arch/lumen/main/docs/install-cli.sh | bash
+export PATH="$HOME/.local/bin:$PATH"
+lumen --version
+lumen demo
 ```
 
-验证：`lumen --version`（→ `lumen 0.1.0`）；`lumen doctor`（检查 Lurus API connected / Kova optional）。
+Windows：`irm https://raw.githubusercontent.com/hanmahong5-arch/lumen/main/docs/install-cli.ps1 | iex`
 
----
-
-## 快速上手
+**Python SDK** — PyPI 已通时：
 
 ```bash
-# 初始化项目（结构: agent.toml / prompts/system.md / tools/search.yaml / workflows/main.yaml）
-lumen init my-agent && cd my-agent
+pip install "lumen-ai[langgraph]"
+```
 
-# 配置 API Key
-lumen auth login                              # 浏览器登录授权自动配置
-lumen config set api_key sk-your-lurus-key    # 或直接设置
+否则从源码：
 
-# 本地运行 Agent
-lumen run --interactive                       # 交互模式
-lumen run "分析这段代码的性能问题" --file ./main.py
-lumen run "翻译这段文本" --model gpt-4o        # 指定模型
-
-# 工作流调试
-lumen workflow run main --input topic="AI trends"
-lumen workflow run main --step-by-step        # 逐步调试（每步暂停）
-lumen workflow history main --last            # 上次运行结果
+```bash
+git clone https://github.com/hanmahong5-arch/lumen.git && cd lumen
+pip install -e "./lumen-sdk[langgraph]"
 ```
 
 ---
 
-## 常用命令
+## Core vs Connected
 
-```bash
-# Agent 管理
-lumen agent list / create researcher / info researcher / logs researcher / delete researcher
-# MCP 工具
-lumen mcp list / install github / test github / remove github
-# 部署
-lumen deploy --target kova        # 或 --target docker
-lumen deploy status
-# 配置
-lumen config list / set api_key xxx / get api_key
-```
+| 层 | 需要 | 得到 |
+|---|---|---|
+| **Core** | 仅本地 traces | replay / cost / lifecycle / Overview |
+| **Connected** | `--kova-url` 和/或 `--netdata-url` | Flow、Terminal、Governor、live Metrics |
 
----
-
-## 配置文件
-
-`agent.toml` 是 Agent 项目的核心配置：
-
-```toml
-[agent]
-name = "my-researcher"
-model = "deepseek-chat"
-max_iterations = 20
-
-[agent.llm]
-base_url = "https://hub.lurus.cn/v1"
-temperature = 0.7
-max_tokens = 4096
-
-[tools]
-builtin = ["web_search", "file_read", "file_write"]
-
-[[tools.mcp]]
-name = "github"
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-github"]
-
-[deploy]
-target = "kova"
-```
+口头一句（Triple）：**Forge 编排 · Kova 证明 · Lumen 看见。**
 
 ---
 
@@ -165,43 +124,25 @@ target = "kova"
   <div class="lurus-card lurus-card--lumen">
     <span class="lurus-card__icon"><Icon name="zap" :size="20" /></span>
     <div class="lurus-card__title">Lumen</div>
-    <p class="lurus-card__body">开发者命令行工具 — 本地开发、调试、部署。轻量运行时 <code>lumen run</code> 即起即用。</p>
+    <p class="lurus-card__body">读面 — 本地 trace → replay / cost / lifecycle HTML / dashboard。不跑 Agent 循环。</p>
   </div>
   <div class="lurus-card lurus-card--kova">
     <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
     <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">Agent 运行时引擎 — 持久化执行、WAL、集群管理。<code>lumen deploy</code> 后获得完整持久化与集群能力。</p>
+    <p class="lurus-card__body">持久执行引擎 — WAL、恢复深度、REST。Connected 代理 Kova，不替代它。</p>
   </div>
 </div>
 
-本地开发用轻量运行时（`lumen run`），部署到 Kova（`lumen deploy`）后获得完整持久化和集群能力。
-
 ---
 
-## 与其他方案对比
-
-<ComparisonTable
-  self-label="Lumen"
-  :competitors="['Temporal', 'LangGraph Checkpointer', 'Conductor']"
-  :rows="[
-    { dimension: 'Replay', self: '零成本 LLM 重放', alt: { Temporal: 'Event replay', 'LangGraph Checkpointer': '部分', Conductor: 'Workflow replay' } },
-    { dimension: '接入成本', self: '3 行代码', alt: { Temporal: 'Worker + SDK', 'LangGraph Checkpointer': '配置', Conductor: 'Worker' } },
-    { dimension: 'Cost 追踪', self: '内置', alt: { Temporal: '无', 'LangGraph Checkpointer': '无', Conductor: '无' } },
-  ]"
-  title="对标"
-/>
-
----
-
-## 相关产品与下一步
+## 相关页面
 
 <NextSteps
   :steps="[
     { text: '快速开始', link: '/lumen/quickstart', primary: true },
     { text: 'Python SDK', link: '/lumen/python-sdk' },
     { text: 'CLI 手册', link: '/lumen/cli' },
-    { text: '集成与 MCP 目录', link: '/integrations/' },
-    { text: 'MCP 协议官方文档', link: 'https://modelcontextprotocol.io/', external: true },
+    { text: '集成', link: '/lumen/integration' },
   ]"
   title="下一步"
 />
@@ -209,8 +150,3 @@ target = "kova"
 <RelatedProducts product-id="lumen" />
 
 </div>
-
-<style>
-.lumen-page .lurus-callout { margin: 20px 0 8px; }
-.lumen-page .lurus-stat-strip { margin: 18px 0 4px; }
-</style>

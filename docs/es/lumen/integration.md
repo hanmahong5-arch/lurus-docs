@@ -1,110 +1,94 @@
 ---
-title: Integración del ecosistema Lumen
-description: Patrones de integración con Kova / LangGraph / Lurus API / OpenTelemetry / Grafana / Datadog.
+title: Lumen Ecosystem Integration
+description: LangGraph checkpointer/tracer, optional Kova Connected path, OTLP/HTTP JSON export.
 ---
 
 <div class="lumen-page">
 
-# Integración del ecosistema Lumen <StatusBadge status="dev" />
+# Lumen Ecosystem Integration <StatusBadge status="alpha" />
 
-Como herramienta de observabilidad de la capa semántica, Lumen se conecta hacia abajo con el motor de ejecución Kova y la pasarela Lurus API, es compatible lateralmente con LangGraph, y exporta hacia afuera trazas OTel estándar a Grafana / Datadog.
+Lumen sits **beside** your agent: your code still calls the LLM provider; the SDK writes local traces; the CLI renders replay / cost / lifecycle. Connected mode optionally deepens against Kova and Netdata.
 
-<div class="lurus-cards lurus-cards--compact">
-  <a class="lurus-card lurus-card--kova" href="#kova">
-    <span class="lurus-card__icon"><Icon name="bot" :size="20" /></span>
-    <div class="lurus-card__title">Kova</div>
-    <p class="lurus-card__body">Base de persistencia WAL, recuperación ante fallos en microsegundos.</p>
-  </a>
-  <a class="lurus-card lurus-card--lumen" href="#langgraph">
-    <span class="lurus-card__icon"><Icon name="repeat" :size="20" /></span>
-    <div class="lurus-card__title">LangGraph</div>
-    <p class="lurus-card__body">Reemplazo del Saver en una línea.</p>
-  </a>
-  <a class="lurus-card lurus-card--api" href="#lurus-api">
-    <span class="lurus-card__icon"><Icon name="plug-zap" :size="20" /></span>
-    <div class="lurus-card__title">Lurus API</div>
-    <p class="lurus-card__body">Asociación automática de la facturación de tokens.</p>
-  </a>
-  <a class="lurus-card lurus-card--lumen" href="#opentelemetry">
-    <span class="lurus-card__icon"><Icon name="activity" :size="20" /></span>
-    <div class="lurus-card__title">OTel / Grafana / Datadog</div>
-    <p class="lurus-card__body">Exporta trazas estándar.</p>
-  </a>
-</div>
-
-## Con [Kova](/es/kova/) {#kova}
-
-Kova se encarga de la persistencia del estado WAL de bajo nivel y de la recuperación ante fallos en microsegundos; Lumen se encarga del etiquetado de trazas de la capa semántica y de las estadísticas de coste.
+## LangGraph {#langgraph}
 
 ```python
-from lumen_ai import LumenCheckpointer
-from kova import KovaClient
+from lumen.integrations.langgraph import LumenCheckpointer, LumenTracer
 
-kova = KovaClient("kova://prod")
-graph.compile(checkpointer=LumenCheckpointer(kova_client=kova))
+checkpointer = LumenCheckpointer(storage_dir="./checkpoints")
+tracer = LumenTracer(trace_dir="./traces")
+graph = workflow.compile(checkpointer=checkpointer)
+graph.invoke(
+    inputs,
+    config={
+        "configurable": {"thread_id": "t1"},
+        "callbacks": [tracer],
+    },
+)
 ```
-
-## Con [LangGraph](https://langchain-ai.github.io/langgraph/) {#langgraph}
-
-Reemplazo directo del Saver (la API es totalmente compatible con `BaseCheckpointSaver`):
 
 ```diff
 - from langgraph.checkpoint.sqlite import SqliteSaver
-+ from lumen_ai import LumenCheckpointer
++ from lumen.integrations.langgraph import LumenCheckpointer
 
 - graph = wf.compile(checkpointer=SqliteSaver.from_conn_string(":memory:"))
-+ graph = wf.compile(checkpointer=LumenCheckpointer())
++ graph = wf.compile(checkpointer=LumenCheckpointer(storage_dir="./checkpoints"))
 ```
 
-## Con [Lurus API](/es/guide/introduction) {#lurus-api}
+`instrument()` does **not** auto-patch LangGraph call sites — always pass `LumenTracer` via callbacks.
 
-Al invocar el LLM a través de Lurus API, la facturación de tokens y el tiempo de ejecución se asocian automáticamente a la traza de Lumen:
+## Kova (Connected) {#kova}
+
+Kova owns durable WAL execution. Lumen Core does not require Kova. With a live `kova-rest`:
+
+```bash
+export LUMEN_KOVA_URL=http://127.0.0.1:3010
+export LUMEN_KOVA_API_KEY=sk-kova-…
+lumen dashboard --kova-url "$LUMEN_KOVA_URL" --api-key "$LUMEN_KOVA_API_KEY"
+lumen pull --kova-url "$LUMEN_KOVA_URL" --watch
+lumen export <run-id>
+```
+
+Do not re-aggregate Flow / Governor in Lumen — proxy Kova as the source of truth.
+
+Forge Demo Day: set `FORGE_LUMEN_BIN` (or rely on sibling monorepo discovery) so `/demo` can auto-open lifecycle HTML when `lifecycle_ready`.
+
+## OpenAI / Anthropic clients
 
 ```python
-from openai import OpenAI
-from lumen_ai import LumenTracer
+from lumen import instrument, trace
 
-client = OpenAI(base_url="https://hub.lurus.cn/v1", api_key="sk-...")
-tracer = LumenTracer()
-
-with tracer.span("classify"):
-    resp = client.chat.completions.create(...)
-    # 调用自动记录，鹿贝消费可追溯
+instrument()
+with trace("task"):
+    client.chat.completions.create(...)
 ```
 
 ## OpenTelemetry {#opentelemetry}
 
-Exportar como traza OTel: `LumenTracer(exporters=[to_otlp("http://otel-collector:4317")])` (`from lumen_ai.otel import to_otlp`).
+Optional fan-out of completed traces as OTLP/HTTP JSON (stdlib only):
 
-## Grafana / Datadog
+```bash
+export LUMEN_OTLP_ENABLED=1
+export LUMEN_OTLP_ENDPOINT=http://localhost:4318
+```
 
-El flujo es el siguiente: el SDK de Lumen empuja las trazas al OTel Collector mediante el protocolo OTLP, que luego las distribuye a Grafana Tempo o a Datadog APM:
+Or `export.otlp` in `lumen.toml`. Point a collector at Grafana Tempo / Datadog / etc. There is no `lumen_ai.otel.to_otlp` helper and no gRPC/protobuf exporter in-tree.
 
-<ArchitectureDiagram
-  title="Flujo de exportación de observabilidad"
-  chart="graph LR
-  A[Lumen SDK] -->|OTLP| B[OTel Collector]
-  B --> C[Grafana Tempo]
-  B --> D[Datadog APM]"
-/>
+## What Lumen does not integrate as
 
-Las plantillas de paneles de Grafana están en la [biblioteca de plantillas oficial de Lurus](/updates/) (busca "Lumen Dashboard").
+- A second agent runtime (`lumen run` / deploy)
+- MCP server hosting
+- Temporal-style workflow engine
+- General APM replacing Langfuse / LangSmith
 
-## Próximos pasos
+## Next Steps
 
 <NextSteps
   :steps="[
-    { text: 'Guía detallada del Python SDK', link: '/es/lumen/python-sdk', primary: true },
-    { text: 'Tutorial multiproducto', link: '/tutorials/lumen-kova-langgraph' },
-    { text: 'Migrar desde LangGraph', link: '/migrations/from-langgraph' },
+    { text: 'Python SDK', link: '/en/lumen/python-sdk', primary: true },
+    { text: 'Migrating from LangGraph checkpointer', link: '/en/migrations/from-langgraph' },
+    { text: 'CLI', link: '/en/lumen/cli' },
   ]"
-  title="Próximos pasos"
+  title="Next Steps"
 />
 
-<RelatedProducts product-id="lumen" />
-
 </div>
-
-<style>
-.lumen-page .lurus-cards--compact { margin: 18px 0 8px; }
-</style>

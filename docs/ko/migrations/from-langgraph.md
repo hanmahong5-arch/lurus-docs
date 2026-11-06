@@ -1,109 +1,102 @@
 ---
-title: "LangGraph에서 Lumen + Kova로 마이그레이션"
-description: "SqliteSaver → LumenCheckpointer + LumenTracer, Agent를 Kova 클러스터에 배포합니다."
+title: "Adding Lumen to a LangGraph app"
+description: "Swap SqliteSaver for LumenCheckpointer, add LumenTracer, export lifecycle HTML. No lumen deploy."
 ---
 
 <div class="mig-lg-page">
 
 <div class="lurus-section-head">
-  <span class="lurus-section-head__eyebrow"><Icon name="git-branch" :size="14" /> LangGraph에서 마이그레이션</span>
-  <h1 class="lurus-section-head__title">LangGraph에서 Lumen + Kova로 마이그레이션</h1>
-  <p class="lurus-section-head__lede"><code>SqliteSaver</code> → <code>LumenCheckpointer + LumenTracer</code>, Agent를 Kova 클러스터에 배포합니다——비즈니스 코드는 그대로입니다.</p>
+  <span class="lurus-section-head__eyebrow"><Icon name="git-branch" :size="14" /> LangGraph + Lumen</span>
+  <h1 class="lurus-section-head__title">Add Lumen beside LangGraph</h1>
+  <p class="lurus-section-head__lede">Keep your graph. Add local checkpoints + traces. Share a lifecycle HTML. Durable WAL depth stays on Kova when you use Connected — Lumen is not a deploy target.</p>
 </div>
 
-## <Icon name="sparkles" :size="20" /> 얻게 되는 것
+## What you get
 
-| Before（순수 LangGraph） | After |
+| Before (plain LangGraph) | After (+ Lumen Core) |
 |---------------------|-------|
-| SqliteSaver 단일 머신 영속화 | **LumenCheckpointer + Kova** 마이크로초급 WAL 복구 |
-| Trace 없음 | **LumenTracer** 자동 수집 |
-| Cost 통계 없음 | **CostTracker** Node 단위 집계 |
-| 수동 Replay | **Replay.from_run_id()** 한 줄 |
+| SqliteSaver / MemorySaver | **LumenCheckpointer** on local disk |
+| No spend view | **CostTracker** / `lumen cost` |
+| Logs only | **LumenTracer** → trace JSON + `lumen export` HTML |
+| LangGraph time-travel (re-executes nodes) | **$0 replay** from recorded traces (`lumen replay`) |
 
-## <Icon name="workflow" :size="20" /> 마이그레이션 단계
+## Steps
 
 <ol class="lurus-steps">
 <li>
 
-**Checkpointer 교체** — `LumenCheckpointer`는 `BaseCheckpointSaver`를 100% 구현하므로 비즈니스 코드를 전혀 수정할 필요가 없습니다.
+**Install**
+
+```bash
+pip install "lumen-ai[langgraph]"   # or: pip install -e "./lumen-sdk[langgraph]"
+```
+
+</li>
+<li>
+
+**Replace the checkpointer**
 
 ```diff
 - from langgraph.checkpoint.sqlite import SqliteSaver
-+ from lumen_ai import LumenCheckpointer
++ from lumen.integrations.langgraph import LumenCheckpointer
 
 - graph = wf.compile(
 -     checkpointer=SqliteSaver.from_conn_string("./state.db")
 - )
 + graph = wf.compile(
-+     checkpointer=LumenCheckpointer()
++     checkpointer=LumenCheckpointer(storage_dir="./checkpoints")
 + )
 ```
 
 </li>
 <li>
 
-**Tracer 추가** — 로컬에서 기동한 후 `http://localhost:7070`에 접속하면 Trace 타임라인을 확인할 수 있습니다.
+**Add the tracer via callbacks** (required — not auto-patched)
 
 ```diff
-+ from lumen_ai import LumenTracer
++ from lumen.integrations.langgraph import LumenTracer
 
-  graph = wf.compile(
-      checkpointer=LumenCheckpointer(),
-+     callbacks=[LumenTracer()],
+  result = graph.invoke(
+      inputs,
+      config={
+          "configurable": {"thread_id": "t1"},
++         "callbacks": [LumenTracer(trace_dir="./traces")],
+      },
   )
 ```
 
 </li>
 <li>
 
-**Kova에 배포**
-
-```yaml
-# agent.yaml
-name: research-agent
-entry: python my_agent.py
-checkpointer: lumen
-replicas: 3
-```
+**Inspect / share (no deploy step)**
 
 ```bash
-lumen deploy --target kova://prod-cluster
+lumen traces
+lumen export <trace-id>
+lumen cost --format md
+lumen dashboard
 ```
+
+There is **no** `lumen deploy`. To deepen with durable WAL, run against [Kova](/en/kova/) and use Connected (`--kova-url`).
 
 </li>
 </ol>
 
-## <Icon name="terminal" :size="20" /> 로컬 검증
+## Crash → resume ritual
 
-```bash
-python my_agent.py           # 정상 실행
-kill -9 $(pgrep -f my_agent) # 크래시 시뮬레이션
-python my_agent.py           # 중단 지점부터 이어서 실행, LLM 재호출 없음
+```python
+cp = LumenCheckpointer(storage_dir="./checkpoints")
+print(cp.resume_hint("t1"))
+cfg = cp.latest_config("t1")
+graph.invoke(None, config={"configurable": cfg["configurable"], "callbacks": [LumenTracer(trace_dir="./traces")]})
 ```
 
-## <Icon name="gauge" :size="20" /> 성능 비교
-
-| 지표 | Before | After |
-|------|--------|-------|
-| 복구 지연 | 8ms | **마이크로초급** |
-| 다중 프로세스 | 락 필요 | **네이티브** |
-| 멀티 데이터센터 | 수동 | **비동기 복제** |
-| LLM 재호출 | 가끔 | **절대 없음** |
-
-<div class="lurus-callout lurus-callout--tip">
-  <span class="lurus-callout__icon"><Icon name="rewind" :size="18" /></span>
-  <div>
-    <p class="lurus-callout__title">롤백</p>
-    <div class="lurus-callout__body"><p>기존 SqliteSaver 코드를 주석으로 남겨 두면 언제든 diff를 되돌려 원상태로 복귀할 수 있습니다. 데이터는 서로 호환되지 않지만 병렬로 실행할 수 있습니다.</p></div>
-  </div>
-</div>
-
-## 다음 단계
+## Next
 
 <NextSteps :steps="[
-  { text: 'Lumen Python SDK', link: '/ko/lumen/python-sdk', primary: true },
-  { text: 'Kova 배포', link: '/ko/kova/quickstart' },
-  { text: '전체 튜토리얼', link: '/ko/tutorials/lumen-kova-langgraph' },
+  { text: 'Lumen overview', link: '/en/lumen/', primary: true },
+  { text: 'Quick start', link: '/en/lumen/quickstart' },
+  { text: 'Kova', link: '/en/kova/' },
 ]" />
 
 </div>

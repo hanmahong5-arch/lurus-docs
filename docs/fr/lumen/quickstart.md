@@ -1,25 +1,19 @@
 ---
-title: Démarrage rapide de Lumen
-description: Intégrez Lumen à vos projets LangGraph / Agent en trois lignes de code, et consultez votre première Trace et vos coûts.
+title: Lumen Quickstart
+description: Install CLI + SDK, see lumen demo, wire LangGraph checkpointer/tracer, export a shareable lifecycle HTML.
 ---
 
 <div class="lumen-page">
 
-# Démarrage rapide de Lumen <StatusBadge status="dev" />
+# Lumen Quickstart <StatusBadge status="alpha" />
 
-À réaliser en 10 minutes : installation → intégration à LangGraph → consultation de la première Trace → déclenchement d’un Replay → calcul des coûts sur 24 h.
-
-<div class="lurus-stat-strip">
-  <div class="lurus-stat"><span class="lurus-stat__value">10 minutes</span><span class="lurus-stat__label">au total</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">3 lignes</span><span class="lurus-stat__label">de code d’intégration</span></div>
-  <div class="lurus-stat"><span class="lurus-stat__value">0</span><span class="lurus-stat__label">modification de la logique métier</span></div>
-</div>
+Goal: install → offline aha (`lumen demo`) → instrument a LangGraph run → share lifecycle HTML.
 
 <div class="lurus-callout lurus-callout--info">
   <span class="lurus-callout__icon"><Icon name="check-circle" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Prérequis</p>
-    <div class="lurus-callout__body">Python 3.9+ · Une <Term t="API Key">API Key</Term> Lurus (<a href="/fr/guide/get-api-key">comment l’obtenir</a>) · Un projet Agent LangGraph/LangChain existant (sinon, utilisez l’exemple minimal ci-dessous).</div>
+    <p class="lurus-callout__title">Prerequisites</p>
+    <div class="lurus-callout__body">Python 3.10+ · optional Rust-free CLI binary · no API key for Core / <code>lumen demo</code>.</div>
   </div>
 </div>
 
@@ -27,84 +21,85 @@ description: Intégrez Lumen à vos projets LangGraph / Agent en trois lignes de
 
 <li>
 
-**Installation et intégration de LangGraph en trois lignes**
+**Install the CLI and see a lifecycle**
 
 ```bash
-pip install lumen-ai
+curl -fsSL https://raw.githubusercontent.com/hanmahong5-arch/lumen/main/docs/install-cli.sh | bash
+export PATH="$HOME/.local/bin:$PATH"
+lumen demo
+# writes lumen-demo-lifecycle.html and opens it
 ```
+
+</li>
+
+<li>
+
+**Install the Python SDK**
+
+```bash
+# Prefer PyPI when published:
+pip install "lumen-ai[langgraph]"
+
+# Or from source:
+git clone https://github.com/hanmahong5-arch/lumen.git && cd lumen
+pip install -e "./lumen-sdk[langgraph]"
+```
+
+Import package name is **`lumen`**, not `lumen_ai`.
+
+</li>
+
+<li>
+
+**Wire LangGraph (manual callback — `instrument()` does not monkey-patch LangGraph)**
+
 ```python
-from lumen_ai import LumenTracer, LumenCheckpointer
-graph = workflow.compile(
-    checkpointer=LumenCheckpointer(),   # 崩溃恢复
-    callbacks=[LumenTracer()],           # 执行追踪 + 成本追踪
+from lumen.integrations.langgraph import LumenCheckpointer, LumenTracer
+from langgraph.prebuilt import create_react_agent
+
+checkpointer = LumenCheckpointer(storage_dir="./checkpoints")
+tracer = LumenTracer(trace_dir="./traces")
+graph = create_react_agent(model, tools, checkpointer=checkpointer)
+
+THREAD = "research-1"
+graph.invoke(
+    {"messages": [("user", "…")]},
+    config={
+        "configurable": {"thread_id": THREAD},
+        "callbacks": [tracer],
+    },
 )
 ```
 
-Aucune modification de la logique métier n’est nécessaire : tous les appels LLM, appels d’outils et changements d’état sont enregistrés dans le backend Lumen.
+For OpenAI / Anthropic clients without LangGraph, `from lumen import instrument, trace` then `instrument()` patches those SDKs; group calls with `with trace("name"):`.
 
 </li>
 
 <li>
 
-**Exécuter un exemple minimal**
+**Inspect and share**
+
+```bash
+lumen traces
+lumen cost --last 24h --format md
+lumen export <trace-id>          # self-contained HTML
+lumen replay <trace-id>          # zero LLM cost
+lumen dashboard                  # local UI on ./traces
+```
+
+</li>
+
+<li>
+
+**After a crash (same `thread_id` + storage dir)**
 
 ```python
-from langgraph.graph import StateGraph, END
-from lumen_ai import LumenTracer, LumenCheckpointer
-from typing import TypedDict
-
-class State(TypedDict):
-    query: str
-    result: str
-
-def search(state: State) -> State:
-    return {**state, "result": f"已处理: {state['query']}"}
-
-wf = StateGraph(State)
-wf.add_node("search", search)
-wf.set_entry_point("search")
-wf.add_edge("search", END)
-
-graph = wf.compile(
-    checkpointer=LumenCheckpointer(),
-    callbacks=[LumenTracer()],
+print(checkpointer.resume_hint("research-1"))
+cfg = checkpointer.latest_config("research-1")
+graph.invoke(
+    None,  # continue; do not re-send the original user turn
+    config={"configurable": cfg["configurable"], "callbacks": [tracer]},
 )
-
-graph.invoke({"query": "什么是 WAL"})
-```
-
-</li>
-
-<li>
-
-**Consulter la Trace**
-
-Accédez à la console (par défaut `http://localhost:7070`) ou à la page Lumen de la console Lurus : chronologie complète de chaque exécution du graphe, entrées/sorties/durées de chaque nœud, et prompt/completion/nombre de Tokens de chaque appel LLM.
-
-</li>
-
-<li>
-
-**Déclencher un Replay**
-
-Rejouez une exécution à partir d’une séquence d’exécution historique, **sans consommer de Token** (pour reproduire un bug en local, valider une correction ou faire de l’A/B sur les prompts) :
-
-```python
-from lumen_ai import Replay
-Replay.from_run_id("run_abc123").play()
-```
-
-</li>
-
-<li>
-
-**Calculer les coûts sur 24 heures**
-
-```python
-from lumen_ai import CostTracker
-
-print(CostTracker.summary(hours=24))
-# { total_tokens: 128_340, cost_rmb: 12.47, by_model: {...} }
 ```
 
 </li>
@@ -114,26 +109,20 @@ print(CostTracker.summary(hours=24))
 <div class="lurus-callout lurus-callout--tip">
   <span class="lurus-callout__icon"><Icon name="rewind" :size="18" /></span>
   <div>
-    <p class="lurus-callout__title">Le Replay est gratuit</p>
-    <div class="lurus-callout__body">Le Replay rejoue à partir de la séquence d’exécution enregistrée, <strong>sans rappeler le LLM</strong> : reproduire un bug, valider une correction ou faire de l’A/B sur les prompts ne coûte donc aucun Token.</div>
+    <p class="lurus-callout__title">Replay costs nothing</p>
+    <div class="lurus-callout__body"><code>lumen replay</code> / <code>ReplayEngine</code> reconstruct from recorded traces and do <strong>not</strong> call the LLM again.</div>
   </div>
 </div>
 
-## Étapes suivantes
+## Next Steps
 
 <NextSteps
   :steps="[
-    { text: 'SDK Python — LumenTracer / LumenCheckpointer / CostTracker en détail', link: '/fr/lumen/python-sdk', primary: true },
-    { text: 'Manuel CLI — commandes courantes et échafaudage d\'automatisation', link: '/fr/lumen/cli' },
-    { text: 'Intégrations de l\'écosystème — coopération avec Kova / LangGraph / OpenTelemetry', link: '/fr/lumen/integration' },
+    { text: 'Python SDK', link: '/en/lumen/python-sdk', primary: true },
+    { text: 'CLI handbook', link: '/en/lumen/cli' },
+    { text: 'Integrations (Kova / OTLP)', link: '/en/lumen/integration' },
   ]"
-  title="Étapes suivantes"
+  title="Next Steps"
 />
 
-<RelatedProducts product-id="lumen" />
-
 </div>
-
-<style>
-.lumen-page .lurus-stat-strip { margin: 16px 0 8px; }
-</style>
